@@ -105,7 +105,11 @@ Thumbs.db
 *.log
 logs/
 
-# Model files and large data
+# =============================================================================
+# MODEL FILES AND LARGE DATA - IGNORE ALL MODELS BUT KEEP DIRECTORY STRUCTURE
+# =============================================================================
+
+# Large model files (all formats)
 *.bin
 *.safetensors
 *.onnx
@@ -116,16 +120,36 @@ logs/
 *.pickle
 *.pkl
 
-# Large directories - Models and Cache
-backend/data/models/
-backend/data/cache/
-backend/data/vectordb/
-backend/data/hf_cache/
+# HuggingFace model cache and downloads
+backend/data/models/hf_cache/
+backend/data/models/*/
+!backend/data/models/.gitkeep
+
+# Model directories (but preserve structure with .gitkeep)
 models/
-cache/
-vectordb/
 hf_cache/
-.cache/
+!**/.gitkeep
+
+# Cache directories
+backend/data/cache/*
+!backend/data/cache/.gitkeep
+
+# Vector database files
+backend/data/vectordb/*
+!backend/data/vectordb/.gitkeep
+
+# Transformer cache
+.transformers_cache/
+.torch/
+.tensorflow/
+
+# Specific model patterns to exclude
+*BAAI*
+*keepitreal*
+*phobert*
+*Vietnamese_Embedding_v2*
+*reranker*
+*embedding*
 
 # Audio files
 *.mp3
@@ -264,14 +288,6 @@ backend_RAG/
 *.tmp
 *.downloading
 
-# Specific model patterns to exclude
-*BAAI*
-*keepitreal*
-*phobert*
-*Vietnamese_Embedding_v2*
-*reranker*
-*embedding*
-
 # Vector database and search indices
 faiss/
 chroma/
@@ -279,7 +295,7 @@ weaviate/
 pinecone/
 elasticsearch/
 
-# ML/AI frameworks cache
-.transformers_cache/
-.torch/
-.tensorflow/
+# =============================================================================
+# IMPORTANT: .gitkeep files are ALWAYS kept to preserve directory structure
+# =============================================================================
+!.gitkeep
