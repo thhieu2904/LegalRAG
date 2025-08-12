@@ -1,0 +1,173 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/11.Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản.json",
+    "title": "Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản",
+    "code": "11",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "procedure_type": "chung_thuc",
+    "collection_mapping": "chung_thuc",
+    "keywords": [
+      "chứng thực bản sao",
+      "bản sao từ bản chính",
+      "chứng thực giấy tờ",
+      "bản sao có chứng thực",
+      "photo công chứng",
+      "sao y bản chính"
+    ]
+  },
+  "example_questions": [
+    {
+      "question_id": 1,
+      "question": "Thủ tục chứng thực bản sao cần những giấy tờ gì?",
+      "question_variants": [
+        "Hồ sơ chứng thực bản sao cần giấy tờ gì?",
+        "Muốn làm bản sao có chứng thực cần chuẩn bị gì?",
+        "Giấy tờ cần thiết để chứng thực bản sao?"
+      ],
+      "semantic_keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "thủ tục",
+        "chứng thực bản sao",
+        "bản chính"
+      ]
+    },
+    {
+      "question_id": 2,
+      "question": "Thời gian xử lý chứng thực bản sao mất bao lâu?",
+      "question_variants": [
+        "Bao lâu có kết quả chứng thực bản sao?",
+        "Thời hạn làm bản sao có chứng thực là bao nhiêu?",
+        "Mất mấy ngày để chứng thực bản sao?"
+      ],
+      "semantic_keywords": [
+        "thời gian",
+        "thời hạn",
+        "xử lý",
+        "kết quả",
+        "bao lâu"
+      ]
+    },
+    {
+      "question_id": 3,
+      "question": "Chi phí lệ phí chứng thực bản sao là bao nhiêu?",
+      "question_variants": [
+        "Phí tổn chứng thực bản sao bao nhiều tiền?",
+        "Lệ phí làm bản sao có chứng thực?",
+        "Có tốn tiền khi chứng thực bản sao không?"
+      ],
+      "semantic_keywords": ["chi phí", "lệ phí", "phí tổn", "tiền", "bản sao"]
+    },
+    {
+      "question_id": 4,
+      "question": "Ai có thể làm thủ tục chứng thực bản sao?",
+      "question_variants": [
+        "Điều kiện để được chứng thực bản sao?",
+        "Người nào được phép làm bản sao có chứng thực?",
+        "Yêu cầu đối với người làm thủ tục chứng thực bản sao?"
+      ],
+      "semantic_keywords": [
+        "điều kiện",
+        "được phép",
+        "yêu cầu",
+        "người làm thủ tục",
+        "chủ sở hữu"
+      ]
+    },
+    {
+      "question_id": 5,
+      "question": "Những loại giấy tờ nào được chứng thực bản sao?",
+      "question_variants": [
+        "Văn bản gì có thể làm bản sao có chứng thực?",
+        "Loại giấy tờ nào được phép chứng thực bản sao?",
+        "Phạm vi chứng thực bản sao bao gồm những gì?"
+      ],
+      "semantic_keywords": [
+        "loại giấy tờ",
+        "văn bản",
+        "phạm vi",
+        "được phép",
+        "bản sao"
+      ]
+    },
+    {
+      "question_id": 6,
+      "question": "Chứng thực bản sao được làm ở đâu?",
+      "question_variants": [
+        "Nộp hồ sơ chứng thực bản sao ở cơ quan nào?",
+        "Cơ quan thẩm quyền làm bản sao có chứng thực?",
+        "Đi đâu để làm thủ tục chứng thực bản sao?"
+      ],
+      "semantic_keywords": [
+        "cơ quan thẩm quyền",
+        "UBND cấp xã",
+        "nơi làm",
+        "nộp hồ sơ"
+      ]
+    },
+    {
+      "question_id": 7,
+      "question": "Quy trình chứng thực bản sao như thế nào?",
+      "question_variants": [
+        "Các bước làm thủ tục chứng thực bản sao?",
+        "Trình tự giải quyết chứng thực bản sao?",
+        "Quy trình xử lý việc làm bản sao có chứng thực?"
+      ],
+      "semantic_keywords": [
+        "quy trình",
+        "các bước",
+        "trình tự",
+        "xử lý",
+        "giải quyết"
+      ]
+    },
+    {
+      "question_id": 8,
+      "question": "Có cần mang bản chính khi chứng thực bản sao không?",
+      "question_variants": [
+        "Phải có bản chính khi làm chứng thực bản sao không?",
+        "Yêu cầu về bản chính trong thủ tục chứng thực bản sao?",
+        "Không có bản chính có làm được chứng thực bản sao không?"
+      ],
+      "semantic_keywords": [
+        "bản chính",
+        "cần thiết",
+        "yêu cầu",
+        "phải có",
+        "mang theo"
+      ]
+    },
+    {
+      "question_id": 9,
+      "question": "Những trường hợp nào không được chứng thực bản sao?",
+      "question_variants": [
+        "Khi nào từ chối chứng thực bản sao?",
+        "Điều kiện không được phép làm bản sao có chứng thực?",
+        "Hạn chế trong việc chứng thực bản sao?"
+      ],
+      "semantic_keywords": [
+        "không được",
+        "từ chối",
+        "hạn chế",
+        "điều kiện cấm",
+        "vi phạm"
+      ]
+    },
+    {
+      "question_id": 10,
+      "question": "Giá trị pháp lý của bản sao có chứng thực là gì?",
+      "question_variants": [
+        "Ý nghĩa của bản sao có chứng thực?",
+        "Tác dụng pháp lý của việc chứng thực bản sao?",
+        "Bản sao có chứng thực có giá trị như bản chính không?"
+      ],
+      "semantic_keywords": [
+        "giá trị pháp lý",
+        "ý nghĩa",
+        "tác dụng",
+        "hiệu lực",
+        "như bản chính"
+      ]
+    }
+  ]
+}

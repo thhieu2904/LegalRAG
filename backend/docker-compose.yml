@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  legalrag-api:
+    build: .
+    container_name: legalrag-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist models và data
+      - ./data:/app/data
+      # Remove app volume để tránh conflict
+      # - ./app:/app/app
+    environment:
+      - DEBUG=false
+      - HOST=0.0.0.0
+      - PORT=8000
+      # Models tự động download và lưu trong container
+      - HF_HOME=/app/data/models/hf_cache
+      - HUGGINGFACE_HUB_CACHE=/app/data/models/hf_cache/hub
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s # Tăng thời gian chờ để models download

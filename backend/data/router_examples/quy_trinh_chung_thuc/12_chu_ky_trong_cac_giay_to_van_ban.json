@@ -1,0 +1,179 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/12. Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản.json",
+    "title": "Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản",
+    "code": "12",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "procedure_type": "chung_thuc",
+    "collection_mapping": "chung_thuc",
+    "keywords": [
+      "chứng thực chữ ký",
+      "thủ tục chứng thực",
+      "chữ ký trong giấy tờ",
+      "chứng thực văn bản",
+      "xác nhận chữ ký",
+      "chứng thực chữ ký cá nhân"
+    ]
+  },
+  "example_questions": [
+    {
+      "question_id": 1,
+      "question": "Thủ tục chứng thực chữ ký cần những giấy tờ gì?",
+      "question_variants": [
+        "Hồ sơ chứng thực chữ ký cần giấy tờ gì?",
+        "Muốn chứng thực chữ ký cần chuẩn bị những gì?",
+        "Giấy tờ cần thiết để làm thủ tục chứng thực chữ ký?"
+      ],
+      "semantic_keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "thủ tục",
+        "chứng thực chữ ký",
+        "cần thiết"
+      ]
+    },
+    {
+      "question_id": 2,
+      "question": "Thời gian xử lý thủ tục chứng thực chữ ký mất bao lâu?",
+      "question_variants": [
+        "Bao lâu có kết quả chứng thực chữ ký?",
+        "Thời hạn giải quyết chứng thực chữ ký là bao nhiêu?",
+        "Mất mấy ngày để chứng thực chữ ký?"
+      ],
+      "semantic_keywords": [
+        "thời gian",
+        "thời hạn",
+        "xử lý",
+        "giải quyết",
+        "kết quả"
+      ]
+    },
+    {
+      "question_id": 3,
+      "question": "Chi phí lệ phí chứng thực chữ ký là bao nhiêu?",
+      "question_variants": [
+        "Phí tổn chứng thực chữ ký bao nhiều tiền?",
+        "Lệ phí cho việc chứng thực chữ ký?",
+        "Có tốn tiền khi chứng thực chữ ký không?"
+      ],
+      "semantic_keywords": [
+        "chi phí",
+        "lệ phí",
+        "phí tổn",
+        "tiền",
+        "chứng thực"
+      ]
+    },
+    {
+      "question_id": 4,
+      "question": "Ai có thể làm thủ tục chứng thực chữ ký?",
+      "question_variants": [
+        "Điều kiện để được chứng thực chữ ký?",
+        "Người nào được phép làm thủ tục chứng thực chữ ký?",
+        "Yêu cầu đối với người làm chứng thực chữ ký?"
+      ],
+      "semantic_keywords": [
+        "điều kiện",
+        "được phép",
+        "yêu cầu",
+        "người làm thủ tục",
+        "chủ sở hữu chữ ký"
+      ]
+    },
+    {
+      "question_id": 5,
+      "question": "Những loại giấy tờ nào được chứng thực chữ ký?",
+      "question_variants": [
+        "Văn bản gì có thể chứng thực chữ ký?",
+        "Loại giấy tờ nào được phép chứng thực chữ ký?",
+        "Phạm vi chứng thực chữ ký bao gồm những gì?"
+      ],
+      "semantic_keywords": [
+        "loại giấy tờ",
+        "văn bản",
+        "phạm vi",
+        "được phép",
+        "chứng thực"
+      ]
+    },
+    {
+      "question_id": 6,
+      "question": "Chứng thực chữ ký được làm ở đâu?",
+      "question_variants": [
+        "Nộp hồ sơ chứng thực chữ ký ở cơ quan nào?",
+        "Cơ quan thẩm quyền chứng thực chữ ký?",
+        "Đi đâu để làm thủ tục chứng thực chữ ký?"
+      ],
+      "semantic_keywords": [
+        "cơ quan thẩm quyền",
+        "UBND cấp xã",
+        "nơi làm",
+        "nộp hồ sơ"
+      ]
+    },
+    {
+      "question_id": 7,
+      "question": "Quy trình chứng thực chữ ký như thế nào?",
+      "question_variants": [
+        "Các bước làm thủ tục chứng thực chữ ký?",
+        "Trình tự giải quyết chứng thực chữ ký?",
+        "Quy trình xử lý việc chứng thực chữ ký?"
+      ],
+      "semantic_keywords": [
+        "quy trình",
+        "các bước",
+        "trình tự",
+        "xử lý",
+        "giải quyết"
+      ]
+    },
+    {
+      "question_id": 8,
+      "question": "Có cần phải có mặt trực tiếp khi chứng thực chữ ký không?",
+      "question_variants": [
+        "Phải đến trực tiếp khi làm chứng thực chữ ký không?",
+        "Có thể ủy quyền cho người khác chứng thực chữ ký không?",
+        "Yêu cầu có mặt trực tiếp trong thủ tục chứng thực chữ ký?"
+      ],
+      "semantic_keywords": [
+        "có mặt trực tiếp",
+        "đến trực tiếp",
+        "ủy quyền",
+        "yêu cầu",
+        "bắt buộc"
+      ]
+    },
+    {
+      "question_id": 9,
+      "question": "Những trường hợp nào không được chứng thực chữ ký?",
+      "question_variants": [
+        "Khi nào từ chối chứng thực chữ ký?",
+        "Điều kiện không được phép chứng thực chữ ký?",
+        "Hạn chế trong việc chứng thực chữ ký?"
+      ],
+      "semantic_keywords": [
+        "không được",
+        "từ chối",
+        "hạn chế",
+        "điều kiện cấm",
+        "vi phạm"
+      ]
+    },
+    {
+      "question_id": 10,
+      "question": "Giá trị pháp lý của chữ ký được chứng thực là gì?",
+      "question_variants": [
+        "Ý nghĩa của việc chứng thực chữ ký?",
+        "Tác dụng pháp lý của chứng thực chữ ký?",
+        "Chữ ký được chứng thực có giá trị như thế nào?"
+      ],
+      "semantic_keywords": [
+        "giá trị pháp lý",
+        "ý nghĩa",
+        "tác dụng",
+        "hiệu lực",
+        "pháp lý"
+      ]
+    }
+  ]
+}
