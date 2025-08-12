@@ -1,0 +1,23 @@
+# === Các gói ứng dụng Web ===
+fastapi
+uvicorn[standard]
+python-multipart
+aiofiles
+pydantic-settings
+python-dotenv
+
+# === Các gói AI/ML & Data ===
+langchain
+langchain-community
+sentence-transformers
+transformers
+chromadb
+scikit-learn
+pandas
+tiktoken
+datasets>=2.15.0  # Ghim phiên bản để tránh lỗi cũ
+
+# === Gói tiện ích ===
+python-docx
+requests
+httpx

@@ -1,0 +1,173 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/01. Đăng ký khai sinh.json",
+    "title": "Đăng ký khai sinh",
+    "code": "01",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "procedure_type": "ho_tich",
+    "collection_mapping": "ho_tich_cap_xa",
+    "keywords": [
+      "đăng ký khai sinh",
+      "giấy khai sinh",
+      "khai báo sinh",
+      "đăng ký sinh con",
+      "thủ tục khai sinh",
+      "cấp giấy khai sinh"
+    ]
+  },
+  "example_questions": [
+    {
+      "question_id": 1,
+      "question": "Thủ tục đăng ký khai sinh cần những giấy tờ gì?",
+      "question_variants": [
+        "Hồ sơ đăng ký khai sinh cần giấy tờ gì?",
+        "Muốn làm giấy khai sinh cần chuẩn bị những gì?",
+        "Giấy tờ cần thiết để đăng ký khai sinh cho trẻ em?"
+      ],
+      "semantic_keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "thủ tục",
+        "đăng ký khai sinh",
+        "giấy khai sinh"
+      ]
+    },
+    {
+      "question_id": 2,
+      "question": "Thời gian làm thủ tục đăng ký khai sinh mất bao lâu?",
+      "question_variants": [
+        "Bao lâu có kết quả đăng ký khai sinh?",
+        "Thời hạn xử lý hồ sơ khai sinh là bao nhiêu ngày?",
+        "Mất mấy ngày để có giấy khai sinh?"
+      ],
+      "semantic_keywords": [
+        "thời gian",
+        "thời hạn",
+        "xử lý",
+        "giải quyết hồ sơ",
+        "kết quả"
+      ]
+    },
+    {
+      "question_id": 3,
+      "question": "Chi phí lệ phí đăng ký khai sinh là bao nhiêu?",
+      "question_variants": [
+        "Phí tổn làm giấy khai sinh bao nhiều tiền?",
+        "Lệ phí đăng ký khai sinh là bao nhiêu?",
+        "Có tốn tiền khi làm thủ tục khai sinh không?"
+      ],
+      "semantic_keywords": ["chi phí", "lệ phí", "phí tổn", "tiền", "miễn phí"]
+    },
+    {
+      "question_id": 4,
+      "question": "Ai có thể làm thủ tục đăng ký khai sinh?",
+      "question_variants": [
+        "Người nào được phép đăng ký khai sinh cho trẻ?",
+        "Điều kiện để được làm thủ tục khai sinh?",
+        "Ai có quyền nộp hồ sơ đăng ký khai sinh?"
+      ],
+      "semantic_keywords": [
+        "người làm thủ tục",
+        "quyền đăng ký",
+        "cha mẹ",
+        "người thân",
+        "điều kiện"
+      ]
+    },
+    {
+      "question_id": 5,
+      "question": "Thời hạn đăng ký khai sinh là bao lâu sau khi sinh?",
+      "question_variants": [
+        "Phải đăng ký khai sinh trong vòng bao nhiêu ngày?",
+        "Hạn chót để làm thủ tục khai sinh?",
+        "Quá hạn đăng ký khai sinh thì phải làm gì?"
+      ],
+      "semantic_keywords": [
+        "thời hạn",
+        "hạn chót",
+        "sau khi sinh",
+        "quá hạn",
+        "60 ngày"
+      ]
+    },
+    {
+      "question_id": 6,
+      "question": "Đăng ký khai sinh được làm ở đâu?",
+      "question_variants": [
+        "Nộp hồ sơ khai sinh ở cơ quan nào?",
+        "Cơ quan thẩm quyền giải quyết đăng ký khai sinh?",
+        "Đi đâu để làm giấy khai sinh?"
+      ],
+      "semantic_keywords": [
+        "cơ quan thẩm quyền",
+        "UBND cấp xã",
+        "nơi đăng ký",
+        "nộp hồ sơ"
+      ]
+    },
+    {
+      "question_id": 7,
+      "question": "Quy trình đăng ký khai sinh như thế nào?",
+      "question_variants": [
+        "Các bước làm thủ tục đăng ký khai sinh?",
+        "Trình tự giải quyết hồ sơ khai sinh?",
+        "Quy trình xử lý việc đăng ký khai sinh?"
+      ],
+      "semantic_keywords": [
+        "quy trình",
+        "các bước",
+        "trình tự",
+        "tiếp nhận hồ sơ",
+        "xem xét",
+        "cấp giấy"
+      ]
+    },
+    {
+      "question_id": 8,
+      "question": "Có cần giấy chứng sinh từ bệnh viện không?",
+      "question_variants": [
+        "Giấy chứng sinh có bắt buộc khi đăng ký khai sinh?",
+        "Không có giấy chứng sinh có làm được khai sinh không?",
+        "Vai trò của giấy chứng sinh trong thủ tục khai sinh?"
+      ],
+      "semantic_keywords": [
+        "giấy chứng sinh",
+        "bệnh viện",
+        "bắt buộc",
+        "cần thiết",
+        "chứng minh"
+      ]
+    },
+    {
+      "question_id": 9,
+      "question": "Trường hợp sinh tại nhà có làm được đăng ký khai sinh không?",
+      "question_variants": [
+        "Sinh con ở nhà thì làm thủ tục khai sinh như thế nào?",
+        "Không sinh tại bệnh viện có được đăng ký khai sinh không?",
+        "Thủ tục khai sinh khi sinh tại nhà?"
+      ],
+      "semantic_keywords": [
+        "sinh tại nhà",
+        "không sinh bệnh viện",
+        "đặc biệt",
+        "trường hợp khác"
+      ]
+    },
+    {
+      "question_id": 10,
+      "question": "Có thể đăng ký khai sinh muộn không và cần làm gì?",
+      "question_variants": [
+        "Đăng ký khai sinh sau 60 ngày có được không?",
+        "Thủ tục đăng ký khai sinh chậm cần giấy tờ gì thêm?",
+        "Làm sao khi quá hạn đăng ký khai sinh?"
+      ],
+      "semantic_keywords": [
+        "đăng ký muộn",
+        "quá hạn",
+        "chậm",
+        "sau 60 ngày",
+        "giải trình"
+      ]
+    }
+  ]
+}

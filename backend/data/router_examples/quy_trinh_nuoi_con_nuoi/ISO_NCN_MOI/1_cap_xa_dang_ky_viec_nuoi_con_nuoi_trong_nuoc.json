@@ -1,0 +1,180 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_nuoi_con_nuoi/ISO NCN MOI/1. Cấp xã - Đăng ký việc nuôi con nuôi trong nước (1).json",
+    "title": "Đăng ký việc nuôi con nuôi trong nước",
+    "code": "QT 01/CX-HCTP",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "procedure_type": "nuoi_con_nuoi",
+    "collection_mapping": "nuoi_con_nuoi",
+    "keywords": [
+      "đăng ký nuôi con nuôi",
+      "nhận con nuôi",
+      "thủ tục nuôi con nuôi",
+      "người nhận con nuôi",
+      "trẻ em được nhận làm con nuôi",
+      "giấy chứng nhận đăng ký nuôi con nuôi",
+      "hồ sơ nhận con nuôi"
+    ]
+  },
+  "example_questions": [
+    {
+      "question_id": 1,
+      "question": "Thủ tục đăng ký việc nuôi con nuôi trong nước cần những giấy tờ gì?",
+      "question_variants": [
+        "Hồ sơ nhận con nuôi trong nước cần giấy tờ gì?",
+        "Muốn nhận con nuôi cần chuẩn bị những thủ tục gì?",
+        "Đăng ký nuôi con nuôi cần những giấy tờ gì?"
+      ],
+      "semantic_keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "thủ tục",
+        "đăng ký nuôi con nuôi",
+        "nhận con nuôi"
+      ]
+    },
+    {
+      "question_id": 2,
+      "question": "Điều kiện để được nhận con nuôi trong nước là gì?",
+      "question_variants": [
+        "Ai có thể làm thủ tục nhận con nuôi?",
+        "Yêu cầu đối với người muốn nhận con nuôi là gì?",
+        "Điều kiện người nhận con nuôi phải đáp ứng?"
+      ],
+      "semantic_keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "người nhận con nuôi",
+        "năng lực hành vi dân sự",
+        "sức khỏe kinh tế"
+      ]
+    },
+    {
+      "question_id": 3,
+      "question": "Thời gian xử lý thủ tục đăng ký nuôi con nuôi mất bao lâu?",
+      "question_variants": [
+        "Bao lâu thì có kết quả đăng ký nuôi con nuôi?",
+        "Thời hạn giải quyết hồ sơ nhận con nuôi là bao nhiêu ngày?",
+        "Mất bao nhiêu thời gian để hoàn tất thủ tục nuôi con nuôi?"
+      ],
+      "semantic_keywords": [
+        "thời gian",
+        "thời hạn",
+        "xử lý",
+        "giải quyết hồ sơ",
+        "30 ngày"
+      ]
+    },
+    {
+      "question_id": 4,
+      "question": "Chi phí lệ phí đăng ký việc nuôi con nuôi trong nước là bao nhiêu?",
+      "question_variants": [
+        "Phí tổn thủ tục nhận con nuôi trong nước bao nhiều tiền?",
+        "Lệ phí đăng ký nuôi con nuôi trong nước là bao nhiêu?",
+        "Có miễn phí thủ tục nuôi con nuôi không?"
+      ],
+      "semantic_keywords": [
+        "chi phí",
+        "lệ phí",
+        "phí tổn",
+        "400000 đồng",
+        "miễn lệ phí"
+      ]
+    },
+    {
+      "question_id": 5,
+      "question": "Trẻ em nào được phép làm con nuôi trong nước?",
+      "question_variants": [
+        "Điều kiện đối với trẻ được nhận làm con nuôi là gì?",
+        "Trẻ em như thế nào mới được làm con nuôi?",
+        "Yêu cầu về trẻ em trong thủ tục nuôi con nuôi?"
+      ],
+      "semantic_keywords": [
+        "trẻ em",
+        "điều kiện trẻ em",
+        "dưới 16 tuổi",
+        "bị bỏ rơi",
+        "mồ côi"
+      ]
+    },
+    {
+      "question_id": 6,
+      "question": "Quy trình đăng ký việc nuôi con nuôi trong nước như thế nào?",
+      "question_variants": [
+        "Các bước thực hiện thủ tục nhận con nuôi?",
+        "Trình tự giải quyết hồ sơ đăng ký nuôi con nuôi?",
+        "Quy trình xử lý việc đăng ký nuôi con nuôi?"
+      ],
+      "semantic_keywords": [
+        "quy trình",
+        "các bước",
+        "trình tự",
+        "tiếp nhận hồ sơ",
+        "lấy ý kiến",
+        "giao nhận"
+      ]
+    },
+    {
+      "question_id": 7,
+      "question": "Ai không được phép nhận con nuôi trong nước?",
+      "question_variants": [
+        "Những trường hợp nào bị cấm nhận con nuôi?",
+        "Điều kiện loại trừ đối với người muốn nhận con nuôi?",
+        "Ai bị hạn chế quyền nhận con nuôi?"
+      ],
+      "semantic_keywords": [
+        "không được nhận con nuôi",
+        "cấm",
+        "loại trừ",
+        "hạn chế quyền",
+        "án tích",
+        "chấp hành hình phạt"
+      ]
+    },
+    {
+      "question_id": 8,
+      "question": "Giấy khám sức khỏe trong hồ sơ nhận con nuôi có yêu cầu gì?",
+      "question_variants": [
+        "Yêu cầu về giấy khám sức khỏe khi nhận con nuôi?",
+        "Giấy khám sức khỏe phải mới trong bao lâu?",
+        "Điều kiện sức khỏe để nhận con nuôi?"
+      ],
+      "semantic_keywords": [
+        "giấy khám sức khỏe",
+        "điều kiện sức khỏe",
+        "chưa quá 6 tháng",
+        "sức khỏe người nhận con nuôi"
+      ]
+    },
+    {
+      "question_id": 9,
+      "question": "Thủ tục đăng ký nuôi con nuôi được giải quyết ở đâu?",
+      "question_variants": [
+        "Nộp hồ sơ nhận con nuôi ở cơ quan nào?",
+        "Cơ quan có thẩm quyền giải quyết việc đăng ký nuôi con nuôi?",
+        "Đi đâu để làm thủ tục nhận con nuôi?"
+      ],
+      "semantic_keywords": [
+        "cơ quan thẩm quyền",
+        "UBND cấp xã",
+        "nơi giải quyết",
+        "nộp hồ sơ"
+      ]
+    },
+    {
+      "question_id": 10,
+      "question": "Có cần phải có ý kiến đồng ý của ai khi đăng ký nuôi con nuôi không?",
+      "question_variants": [
+        "Ai cần đồng ý trong việc đăng ký nuôi con nuôi?",
+        "Thủ tục lấy ý kiến đồng ý khi nhận con nuôi?",
+        "Người liên quan nào cần đồng ý việc nuôi con nuôi?"
+      ],
+      "semantic_keywords": [
+        "ý kiến đồng ý",
+        "lấy ý kiến",
+        "người liên quan",
+        "đồng ý cho trẻ làm con nuôi"
+      ]
+    }
+  ]
+}

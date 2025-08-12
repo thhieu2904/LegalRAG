@@ -1,0 +1,147 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_nuoi_con_nuoi/ISO NCN MOI/2. Cấp xã - Đăng ký lại việc nuôi con nuôi trong nước.json",
+    "title": "Đăng ký lại việc nuôi con nuôi trong nước",
+    "code": "QT 02/CX-HCTP",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "procedure_type": "nuoi_con_nuoi",
+    "collection_mapping": "nuoi_con_nuoi",
+    "keywords": [
+      "đăng ký lại nuôi con nuôi",
+      "làm lại giấy đăng ký nuôi con nuôi",
+      "sổ đăng ký nuôi con nuôi bị mất",
+      "giấy tờ đăng ký nuôi con nuôi hư hỏng",
+      "cấp lại giấy chứng nhận đăng ký nuôi con nuôi"
+    ]
+  },
+  "example_questions": [
+    {
+      "question_id": 1,
+      "question": "Thủ tục đăng ký lại việc nuôi con nuôi trong nước khi nào cần thiết?",
+      "question_variants": [
+        "Trường hợp nào cần làm lại thủ tục đăng ký nuôi con nuôi?",
+        "Khi nào phải đăng ký lại việc nuôi con nuôi trong nước?",
+        "Điều kiện để được làm lại giấy đăng ký nuôi con nuôi?"
+      ],
+      "semantic_keywords": [
+        "đăng ký lại",
+        "làm lại",
+        "sổ đăng ký bị mất",
+        "giấy tờ hư hỏng",
+        "không sử dụng được"
+      ]
+    },
+    {
+      "question_id": 2,
+      "question": "Hồ sơ đăng ký lại việc nuôi con nuôi trong nước cần những giấy tờ gì?",
+      "question_variants": [
+        "Giấy tờ cần thiết để làm lại thủ tục đăng ký nuôi con nuôi?",
+        "Thành phần hồ sơ đăng ký lại nuôi con nuôi trong nước?",
+        "Cần chuẩn bị gì để làm lại giấy đăng ký nuôi con nuôi?"
+      ],
+      "semantic_keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "thành phần hồ sơ",
+        "đơn đăng ký lại",
+        "giấy khai sinh"
+      ]
+    },
+    {
+      "question_id": 3,
+      "question": "Thời gian xử lý hồ sơ đăng ký lại việc nuôi con nuôi là bao lâu?",
+      "question_variants": [
+        "Bao lâu có kết quả đăng ký lại nuôi con nuôi?",
+        "Thời hạn giải quyết thủ tục làm lại giấy đăng ký nuôi con nuôi?",
+        "Mất mấy ngày để hoàn tất đăng ký lại việc nuôi con nuôi?"
+      ],
+      "semantic_keywords": [
+        "thời gian",
+        "thời hạn",
+        "05 ngày làm việc",
+        "xử lý hồ sơ",
+        "giải quyết"
+      ]
+    },
+    {
+      "question_id": 4,
+      "question": "Lệ phí đăng ký lại việc nuôi con nuôi trong nước là bao nhiêu?",
+      "question_variants": [
+        "Chi phí làm lại thủ tục đăng ký nuôi con nuôi?",
+        "Phí tổn để đăng ký lại việc nuôi con nuôi?",
+        "Có tốn tiền khi làm lại giấy đăng ký nuôi con nuôi không?"
+      ],
+      "semantic_keywords": [
+        "lệ phí",
+        "chi phí",
+        "phí tổn",
+        "miễn lệ phí",
+        "không tốn tiền"
+      ]
+    },
+    {
+      "question_id": 5,
+      "question": "Điều kiện để được đăng ký lại việc nuôi con nuôi trong nước?",
+      "question_variants": [
+        "Yêu cầu gì để làm lại thủ tục đăng ký nuôi con nuôi?",
+        "Ai được phép đăng ký lại việc nuôi con nuôi?",
+        "Điều kiện đối với cha mẹ nuôi và con nuôi khi đăng ký lại?"
+      ],
+      "semantic_keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "cha mẹ nuôi còn sống",
+        "con nuôi còn sống",
+        "vào thời điểm yêu cầu"
+      ]
+    },
+    {
+      "question_id": 6,
+      "question": "Quy trình đăng ký lại việc nuôi con nuôi trong nước như thế nào?",
+      "question_variants": [
+        "Các bước làm lại thủ tục đăng ký nuôi con nuôi?",
+        "Trình tự giải quyết hồ sơ đăng ký lại nuôi con nuôi?",
+        "Quy trình xử lý việc làm lại giấy đăng ký nuôi con nuôi?"
+      ],
+      "semantic_keywords": [
+        "quy trình",
+        "các bước",
+        "trình tự",
+        "tiếp nhận hồ sơ",
+        "xem xét",
+        "cấp lại"
+      ]
+    },
+    {
+      "question_id": 7,
+      "question": "Đăng ký lại việc nuôi con nuôi được giải quyết ở đâu?",
+      "question_variants": [
+        "Nộp hồ sơ làm lại đăng ký nuôi con nuôi ở cơ quan nào?",
+        "Cơ quan thẩm quyền giải quyết việc đăng ký lại nuôi con nuôi?",
+        "Đi đâu để làm lại thủ tục đăng ký nuôi con nuôi?"
+      ],
+      "semantic_keywords": [
+        "cơ quan thẩm quyền",
+        "UBND cấp xã",
+        "nơi giải quyết",
+        "nộp hồ sơ"
+      ]
+    },
+    {
+      "question_id": 8,
+      "question": "Có cần giấy tờ chứng minh việc mất hoặc hư hỏng sổ đăng ký nuôi con nuôi không?",
+      "question_variants": [
+        "Cần chứng minh như thế nào về việc mất sổ đăng ký nuôi con nuôi?",
+        "Làm sao chứng minh giấy tờ đăng ký nuôi con nuôi bị hư hỏng?",
+        "Có phải trình bày lý do mất giấy đăng ký nuôi con nuôi không?"
+      ],
+      "semantic_keywords": [
+        "chứng minh",
+        "bị mất",
+        "hư hỏng",
+        "không sử dụng được",
+        "lý do đăng ký lại"
+      ]
+    }
+  ]
+}
