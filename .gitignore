@@ -9,6 +9,19 @@ __pycache__/
 # /backend/data/documents/
 backend/data/documents/
 
+# Backend AI Models and Cache (Large files)
+backend/data/models/hf_cache/
+backend/data/models/llm_dir/
+backend/data/vectordb/
+backend/data/cache/
+
+# Node.js / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+*.local
+
 # Distribution / packaging
 .Python
 build/

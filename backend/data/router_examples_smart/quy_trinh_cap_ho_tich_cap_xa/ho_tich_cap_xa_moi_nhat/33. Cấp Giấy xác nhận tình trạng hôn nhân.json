@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "title": "Cấp Giấy xác nhận tình trạng hôn nhân",
+    "code": "QT 33/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "category": "ket_hon_standard",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\33. Cấp Giấy xác nhận tình trạng hôn nhân.json",
+    "generated_at": "2025-08-13",
+    "version": "2.0",
+    "generator": "smart_router_v2"
+  },
+  "main_question": "Đăng ký kết hôn cần điều kiện gì?",
+  "question_variants": [
+    "Thủ tục kết hôn làm ở đâu?",
+    "Hồ sơ kết hôn gồm những giấy tờ nào?",
+    "Kết hôn mất bao lâu được cấp giấy?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Cấp Giấy xác nhận tình trạng hôn nhân"
+    ],
+    "title_keywords": [],
+    "procedure_code": [
+      "QT 33/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú hoặc tạm trú (nếu không có nơi thường trú)."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "free"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "free",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "title": "Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản",
+    "code": "QT 11/CX-HCTP",
+    "collection": "chung_thuc",
+    "category": "chung_thuc_copies",
+    "source_document": "quy_trinh_chung_thuc\\11.Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản.json",
+    "generated_at": "2025-08-13",
+    "version": "2.0",
+    "generator": "smart_router_v2"
+  },
+  "main_question": "Chứng thực bản sao từ bản chính cần lưu ý gì?",
+  "question_variants": [
+    "Giấy tờ nào được chứng thực bản sao?",
+    "Phí chứng thực bản sao bao nhiêu?",
+    "Chứng thực bản sao và photo công chứng khác gì?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản"
+    ],
+    "title_keywords": [
+      "giấy tờ",
+      "bản sao",
+      "chứng thực"
+    ],
+    "procedure_code": [
+      "QT 11/CX-HCTP"
+    ],
+    "agency": [
+      "Phòng công chứng"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "same_day"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "free",
+    "level": "unspecified",
+    "applicant_scope": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "expected_collection": "chung_thuc",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

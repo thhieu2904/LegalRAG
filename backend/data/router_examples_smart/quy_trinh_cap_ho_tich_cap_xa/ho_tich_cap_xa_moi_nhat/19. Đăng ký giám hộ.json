@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "title": "Đăng ký giám hộ",
+    "code": "QT 19/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "category": "general",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\19. Đăng ký giám hộ.json",
+    "generated_at": "2025-08-13",
+    "version": "2.0",
+    "generator": "smart_router_v2"
+  },
+  "main_question": "Thủ tục Đăng ký giám hộ cần điều kiện gì?",
+  "question_variants": [
+    "Làm Đăng ký giám hộ ở đâu?",
+    "Hồ sơ Đăng ký giám hộ gồm những gì?",
+    "Phí Đăng ký giám hộ bao nhiêu tiền?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký giám hộ"
+    ],
+    "title_keywords": [
+      "đăng ký"
+    ],
+    "procedure_code": [
+      "QT 19/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi cư trú của người được giám hộ hoặc người giám hộ."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "free"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Pháp nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "free",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Pháp nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

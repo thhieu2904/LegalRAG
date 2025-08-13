@@ -14,9 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.services.vectordb_service import VectorDBService
-from app.services.llm_service import LLMService
-from app.services.optimized_enhanced_rag_service import OptimizedEnhancedRAGService
+from app.services.vector_database import VectorDBService
+from app.services.language_model import LLMService
+from app.services.rag_engine import OptimizedEnhancedRAGService
 from app.api import optimized_routes
 
 # Cấu hình logging

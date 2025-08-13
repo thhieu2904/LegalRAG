@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "title": "Đăng ký khai sinh lưu động",
+    "code": "QT 30/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "category": "khai_sinh_mobile",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\30. Đăng ký khai sinh lưu động.json",
+    "generated_at": "2025-08-13",
+    "version": "2.0",
+    "generator": "smart_router_v2"
+  },
+  "main_question": "Đăng ký khai sinh lưu động khác gì so với đăng ký thường?",
+  "question_variants": [
+    "Khi nào cần đăng ký khai sinh lưu động?",
+    "Thủ tục khai sinh lưu động có phức tạp không?",
+    "Đăng ký khai sinh lưu động mất bao lâu?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký khai sinh lưu động"
+    ],
+    "title_keywords": [
+      "lưu động",
+      "đăng ký",
+      "khai sinh"
+    ],
+    "procedure_code": [
+      "QT 30/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "free"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "free",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}
