@@ -101,15 +101,16 @@ class RerankerService:
                 # 🔍 DEBUG: Log document content để phân tích
                 content = doc['content']
                 
-                # 🎯 CONTENT OPTIMIZATION for Vietnamese Reranker
-                # Truncate very long content để tránh reranker overwhelm
-                if len(content) > 1000:
-                    # Lấy phần đầu (thường chứa thông tin quan trọng nhất)
-                    content = content[:1000] + "..."
-                    logger.info(f"🔧 TRUNCATED DOC[{i}] from {len(doc['content'])} to 1000 chars for better reranking")
+                # 🎯 INTELLIGENT CONTENT EXTRACTION for Vietnamese Reranker
+                # Thay vì truncate random, hãy extract phần liên quan nhất
+                query_keywords = self._extract_query_keywords(query)
+                relevant_content = self._extract_relevant_content(content, query_keywords, max_length=800)
+                
+                if len(relevant_content) != len(content):
+                    logger.info(f"🔧 OPTIMIZED DOC[{i}] from {len(content)} to {len(relevant_content)} chars (focused content)")
                 
                 # Clean content: loại bỏ markdown symbols và ký tự đặc biệt
-                cleaned_content = content.replace("**", "").replace("*", "").replace("#", "")
+                cleaned_content = relevant_content.replace("**", "").replace("*", "").replace("#", "")
                 cleaned_content = " ".join(cleaned_content.split())  # Normalize whitespace
                 
                 if len(cleaned_content) > 200:
@@ -148,6 +149,91 @@ class RerankerService:
         except Exception as e:
             logger.error(f"Error during reranking: {e}")
             # Fallback về sắp xếp theo similarity score ban đầu
+            return sorted(documents, key=lambda x: x.get('similarity', 0), reverse=True)[:top_k] if top_k else documents
+    
+    def _extract_query_keywords(self, query: str) -> List[str]:
+        """Extract key terms từ query để tìm nội dung liên quan"""
+        # Loại bỏ stop words tiếng Việt và giữ các từ khóa quan trọng
+        stop_words = {'có', 'là', 'của', 'được', 'này', 'cho', 'từ', 'với', 'và', 'trong', 'khi', 'để', 'thì', 'như', 'về', 'theo', 'trên', 'dưới', 'bên', 'giữa', 'ngoài', 'sau', 'trước'}
+        
+        # Tách từ và loại bỏ stop words
+        words = query.lower().split()
+        keywords = []
+        
+        for word in words:
+            # Clean word (loại bỏ dấu câu)
+            clean_word = word.strip('.,!?":;()[]{}')
+            if len(clean_word) > 2 and clean_word not in stop_words:
+                keywords.append(clean_word)
+                
+        # Add specialized legal terms
+        legal_terms = {
+            'phí': ['phí', 'lệ phí', 'tiền', 'chi phí', 'miễn phí'],
+            'giấy': ['giấy tờ', 'hồ sơ', 'tài liệu', 'chứng từ'],
+            'thủ tục': ['thủ tục', 'quy trình', 'trình tự'],
+            'đăng ký': ['đăng ký', 'khai báo', 'nộp đơn']
+        }
+        
+        # Mở rộng keywords với legal terms
+        expanded_keywords = keywords.copy()
+        for keyword in keywords:
+            for category, terms in legal_terms.items():
+                if keyword in terms:
+                    expanded_keywords.extend([t for t in terms if t not in expanded_keywords])
+        
+        logger.info(f"🔑 Query keywords: {expanded_keywords}")
+        return expanded_keywords
+    
+    def _extract_relevant_content(self, content: str, keywords: List[str], max_length: int = 800) -> str:
+        """Extract những phần của content có chứa keywords quan trọng"""
+        if len(content) <= max_length:
+            return content
+        
+        content_lower = content.lower()
+        
+        # Tìm các câu chứa keywords
+        sentences = content.split('.')
+        relevant_sentences = []
+        score_sentences = []
+        
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if not sentence:
+                continue
+                
+            sentence_lower = sentence.lower()
+            score = 0
+            
+            # Tính score dựa trên số keywords matching
+            for keyword in keywords:
+                if keyword in sentence_lower:
+                    score += len(keyword)  # Từ dài hơn có weight cao hơn
+            
+            if score > 0:
+                score_sentences.append((sentence, score))
+        
+        # Sắp xếp theo score giảm dần
+        score_sentences.sort(key=lambda x: x[1], reverse=True)
+        
+        # Lấy các câu có score cao nhất cho đến khi đạt max_length
+        selected_sentences = []
+        current_length = 0
+        
+        for sentence, score in score_sentences:
+            if current_length + len(sentence) <= max_length:
+                selected_sentences.append(sentence)
+                current_length += len(sentence)
+            else:
+                break
+        
+        if selected_sentences:
+            relevant_content = '. '.join(selected_sentences)
+            logger.info(f"📄 Extracted {len(selected_sentences)} relevant sentences from {len(sentences)} total")
+            return relevant_content
+        else:
+            # Fallback: lấy phần đầu
+            logger.info("⚠️  No keyword matches found, using content start")
+            return content[:max_length] + "..."
             return sorted(documents, key=lambda x: x.get('similarity', 0), reverse=True)[:top_k] if top_k else documents
     
     def get_best_document(self, query: str, documents: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:

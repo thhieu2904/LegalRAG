@@ -150,9 +150,8 @@ class EnhancedContextExpansionService:
     
     def _load_full_document(self, file_path: str) -> str:
         """
-        Load toàn bộ nội dung document từ file JSON gốc
-        QUAN TRỌNG: Đây là thay đổi chính - thay vì lấy chỉ 1 chunk, 
-        ta lấy toàn bộ document để cung cấp context đầy đủ cho LLM
+        Load nội dung document có chọn lọc theo câu hỏi để tránh overload LLM
+        STRATEGY: Thay vì load toàn bộ document, chỉ load những phần liên quan
         """
         try:
             import json
@@ -162,61 +161,79 @@ class EnhancedContextExpansionService:
                 logger.warning(f"Source file not found: {file_path}")
                 return ""
                 
-            logger.info(f"Loading full document from: {file_path}")
+            logger.info(f"Loading selective document content from: {file_path}")
             
             with open(file_path, 'r', encoding='utf-8') as f:
                 json_data = json.load(f)
             
-            # Build full document content với cấu trúc hoàn chỉnh
+            # Build selective document content - ƯU TIÊN THÔNG TIN QUAN TRỌNG
             metadata = json_data.get('metadata', {})
             content_chunks = json_data.get('content_chunks', [])
             
-            # Tạo full document content với metadata đầy đủ và cấu trúc rõ ràng
-            full_parts = []
+            # Tạo content với thông tin TÓM TẮT và TRỌNG TÂM
+            essential_parts = []
             
-            # HEADER - Thông tin quan trọng nhất
+            # HEADER - Thông tin cốt lõi
             if metadata.get('title'):
-                full_parts.append(f"📋 TIÊU ĐỀ: {metadata['title']}")
+                essential_parts.append(f"📋 TIÊU ĐỀ: {metadata['title']}")
             
             if metadata.get('executing_agency'):
-                full_parts.append(f"🏢 CƠ QUAN THỰC HIỆN: {metadata['executing_agency']}")
+                essential_parts.append(f"🏢 CƠ QUAN THỰC HIỆN: {metadata['executing_agency']}")
                 
-            if metadata.get('applicant_type'):
-                applicant_text = ', '.join(metadata['applicant_type']) if isinstance(metadata['applicant_type'], list) else metadata['applicant_type']
-                full_parts.append(f"👥 ĐỐI TƯỢNG: {applicant_text}")
-            
             if metadata.get('processing_time_text'):
-                full_parts.append(f"⏰ THỜI GIAN XỬ LÝ: {metadata['processing_time_text']}")
-                
+                essential_parts.append(f"⏰ THỜI GIAN XỬ LÝ: {metadata['processing_time_text']}")
+            
+            # QUAN TRỌNG NHẤT: Thông tin về PHÍ/LỆ PHÍ được ưu tiên hàng đầu
             if metadata.get('fee_text'):
-                full_parts.append(f"💰 LỆ PHÍ: {metadata['fee_text']}")
+                essential_parts.append(f"💰 THÔNG TIN PHÍ/LỆ PHÍ:")
+                essential_parts.append(f"   {metadata['fee_text']}")
                 
-            if metadata.get('legal_basis'):
-                full_parts.append(f"📜 CĂN CỨ PHÁP LÝ: {metadata['legal_basis']}")
+            essential_parts.append("=" * 60)
             
-            full_parts.append("=" * 80)  # Separator rõ ràng
+            # CONTENT CHUNKS - Chỉ lấy những phần CỐT LÕI, bỏ qua chi tiết không cần thiết
+            priority_keywords = ['phí', 'lệ phí', 'miễn', 'tiền', 'giấy tờ', 'hồ sơ', 'thủ tục']
             
-            # BODY - Nội dung chính từng phần với cấu trúc rõ ràng  
-            for i, chunk in enumerate(content_chunks, 1):
-                # Section header nếu có
-                if chunk.get('section_title'):
-                    full_parts.append(f"\n📖 PHẦN {i}: {chunk['section_title']}")
-                    full_parts.append("-" * 60)
-                else:
-                    full_parts.append(f"\n📄 NỘI DUNG {i}:")
-                    full_parts.append("-" * 40)
+            for chunk in content_chunks:
+                section_title = chunk.get('section_title', '')
+                content = chunk.get('content', '')
+                
+                # Ưu tiên các section về phí, giấy tờ cần thiết
+                if any(keyword in section_title.lower() for keyword in priority_keywords) or \
+                   any(keyword in content.lower() for keyword in priority_keywords):
                     
-                # Nội dung chính
-                if chunk.get('content'):
-                    full_parts.append(chunk['content'].strip())
+                    essential_parts.append(f"\n📄 {section_title}:")
+                    essential_parts.append("-" * 40)
+                    
+                    # Rút gọn content, chỉ giữ thông tin quan trọng
+                    if len(content) > 500:
+                        # Tách thành câu và chỉ giữ những câu có từ khóa quan trọng
+                        sentences = content.split('.')
+                        important_sentences = []
+                        
+                        for sentence in sentences:
+                            if any(keyword in sentence.lower() for keyword in priority_keywords):
+                                important_sentences.append(sentence.strip())
+                                
+                        if important_sentences:
+                            essential_parts.append('\n'.join(important_sentences[:3]))  # Top 3 sentences
+                        else:
+                            essential_parts.append(content[:500] + "...")
+                    else:
+                        essential_parts.append(content.strip())
             
-            full_content = "\n".join(full_parts)
-            logger.info(f"Loaded full document: {len(full_content)} characters, {len(content_chunks)} sections")
+            # Tạo final content - NGẮN GỌN và TRỌNG TÂM
+            final_content = "\n".join(essential_parts)
             
-            return full_content
+            # Giới hạn độ dài tối đa 2000 chars để LLM không bị overwhelmed
+            if len(final_content) > 2000:
+                final_content = final_content[:2000] + "\n\n[...Nội dung được rút gọn để tập trung vào thông tin quan trọng...]"
+            
+            logger.info(f"Loaded selective document: {len(final_content)} characters (optimized for LLM focus)")
+            
+            return final_content
             
         except Exception as e:
-            logger.error(f"Error loading full document {file_path}: {e}")
+            logger.error(f"Error loading selective document {file_path}: {e}")
             return ""
     
     def _get_all_chunks_from_document(self, source_file: str) -> List[Dict[str, Any]]:

@@ -244,39 +244,83 @@ class OptimizedEnhancedRAGService:
                     top_k=1  # CHỈ 1 nucleus chunk cao nhất - sẽ expand toàn bộ document chứa chunk này
                 )
                 
-                # ✅ VALIDATION: Kiểm tra rerank score để tránh chọn tài liệu không liên quan
+                # ✅ INTELLIGENT VALIDATION: Kiểm tra rerank score và điều chỉnh strategy
                 if nucleus_chunks and len(nucleus_chunks) > 0:
                     best_score = nucleus_chunks[0].get('rerank_score', 0)
                     logger.info(f"Best rerank score: {best_score:.4f}")
                     
-                    # Nếu điểm quá thấp (< 0.1), cảnh báo nhưng vẫn tiếp tục
-                    if best_score < 0.1:
-                        logger.warning(f"⚠️  LOW RERANK SCORE ({best_score:.4f}) - Tài liệu có thể không liên quan!")
-                        logger.warning("💡 Suggestion: Kiểm tra lại query hoặc database content")
+                    # CRITICAL DECISION POINT: Nếu điểm thấp, chuyển sang Conservative Strategy
+                    if best_score < 0.2:  # Ngưỡng nghiêm ngặt hơn
+                        logger.warning(f"⚠️  LOW RERANK SCORE ({best_score:.4f}) - Chuyển sang Conservative Strategy!")
+                        logger.warning("💡 Strategy: Chỉ sử dụng chunk có liên quan nhất, KHÔNG expand full document")
+                        
+                        # Conservative Strategy: KHÔNG expand full document
+                        use_full_document_expansion = False
+                        max_context_length = 800  # Giảm context length drastically
+                        
+                        # Lọc thêm 1 lần nữa - chỉ giữ chunks thực sự có keyword liên quan
+                        filtered_chunks = []
+                        query_keywords = query.lower().split()
+                        
+                        for chunk in nucleus_chunks:
+                            chunk_content = chunk.get('content', '').lower()
+                            # Kiểm tra xem chunk có chứa từ khóa liên quan không
+                            if any(keyword in chunk_content for keyword in ['phí', 'tiền', 'lệ phí', 'miễn', 'cost', 'fee']):
+                                filtered_chunks.append(chunk)
+                                logger.info(f"✅ Chunk được giữ lại vì có từ khóa liên quan")
+                                break  # Chỉ lấy 1 chunk tốt nhất
+                        
+                        nucleus_chunks = filtered_chunks if filtered_chunks else nucleus_chunks[:1]
+                        logger.info(f"🎯 Conservative Strategy: Sử dụng {len(nucleus_chunks)} chunk với context giới hạn")
+                    
+                    else:
+                        logger.info(f"✅ HIGH RERANK SCORE ({best_score:.4f}) - Sử dụng Full Document Strategy")
                 
-                logger.info(f"Selected {len(nucleus_chunks)} nucleus chunk with highest rerank score")
+                logger.info(f"Selected {len(nucleus_chunks)} nucleus chunk with rerank-based strategy")
             else:
                 nucleus_chunks = broad_search_results[:1]  # Fallback: lấy chunk tốt nhất theo vector similarity
                 
-            # Step 5: Full Document Expansion - QUAN TRỌNG: Lấy toàn bộ document thay vì chỉ 1 chunk
+            # Step 5: Intelligent Context Expansion - Dựa trên rerank score để quyết định strategy
             expanded_context = None
             if use_full_document_expansion:
+                logger.info("📈 Using FULL DOCUMENT expansion strategy")
                 self.metrics["context_expansions"] += 1
                 expanded_context = self.context_expansion_service.expand_context_with_nucleus(
                     nucleus_chunks=nucleus_chunks,
                     max_context_length=max_context_length,
-                    include_full_document=True  # KEY: Lấy toàn bộ document từ file JSON gốc
+                    include_full_document=True  # Full document expansion
                 )
                 
                 context_text = self._build_context_from_expanded(expanded_context)
-                
                 logger.info(f"Context expanded: {expanded_context['total_length']} chars from {len(expanded_context.get('source_documents', []))} documents")
+                
             else:
-                # Fallback: simple concatenation
-                context_text = "\n\n".join([
-                    f"Tài liệu: {chunk.get('metadata', {}).get('source', 'N/A')}\n{chunk['content']}"
-                    for chunk in nucleus_chunks
-                ])
+                logger.info("🎯 Using CONSERVATIVE chunk-only strategy")
+                # Conservative Strategy: Chỉ sử dụng chunk chính xác, KHÔNG expand
+                context_parts = []
+                for chunk in nucleus_chunks:
+                    source = chunk.get('metadata', {}).get('source', 'N/A')
+                    content = chunk.get('content', '')
+                    
+                    # Chỉ lấy những câu có liên quan đến query
+                    query_keywords = ['phí', 'tiền', 'lệ phí', 'miễn', 'cost', 'fee']
+                    sentences = content.split('.')
+                    relevant_sentences = []
+                    
+                    for sentence in sentences:
+                        if any(keyword in sentence.lower() for keyword in query_keywords):
+                            relevant_sentences.append(sentence.strip())
+                    
+                    if relevant_sentences:
+                        relevant_content = '. '.join(relevant_sentences[:2])  # Top 2 relevant sentences only
+                        context_parts.append(f"📄 Nguồn: {source}\n{relevant_content}")
+                    else:
+                        # Fallback: truncated content
+                        truncated_content = content[:400] + "..." if len(content) > 400 else content
+                        context_parts.append(f"📄 Nguồn: {source}\n{truncated_content}")
+                
+                context_text = "\n\n".join(context_parts)
+                logger.info(f"Conservative context: {len(context_text)} chars, focused on relevant sentences only")
             
             # Step 6: Generate Answer (GPU LLM)
             if not session:
@@ -386,13 +430,40 @@ class OptimizedEnhancedRAGService:
                 for item in recent_queries
             ]) + "\n\n"
             
-        # Build system prompt
-        system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam. Hãy trả lời câu hỏi dựa trên thông tin được cung cấp.
+        # Build intelligent system prompt - tùy thuộc vào độ dài context
+        context_length = len(context)
+        if context_length < 1000:
+            # Conservative Strategy: Context ngắn, yêu cầu LLM tập trung cao độ
+            system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
 
-Hướng dẫn trả lời:
-1. Trả lời chính xác dựa trên thông tin trong tài liệu
-2. Nếu không tìm thấy thông tin, hãy nói rõ và cung cấp trích dẫn để hỗ trợ cho câu trả lời của bạn
-3. Sử dụng ngữ điệu thân thiện và chuyên nghiệp khi giao tiếp với người dùng khác về các vấn đề pháp lý liên quan đến Việt Nam"""
+🎯 NHIỆM VỤ: Trả lời CHÍNH XÁC dựa trên thông tin ngắn gọn được cung cấp.
+
+QUY TẮC:
+1. CHỈ dùng thông tin CÓ TRONG tài liệu
+2. Trả lời NGẮN GỌN (1-2 câu) 
+3. Tập trung vào từ khóa chính trong câu hỏi
+4. Nếu có thông tin về "phí" hoặc "miễn phí" - nêu rõ ngay
+
+Trả lời trực tiếp, không dài dòng."""
+        else:
+            # Full Document Strategy: Context dài, cần hướng dẫn chi tiết hơn
+            system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
+
+🚨 QUY TẮC BẮT BUỘC - KHÔNG ĐƯỢC VI PHẠM:
+1. CHỈ trả lời dựa CHÍNH XÁC trên thông tin CÓ TRONG tài liệu
+2. Nếu hỏi về PHÍ/TIỀN - tìm thông tin "💰 THÔNG TIN PHÍ/LỆ PHÍ" trong tài liệu
+3. Nếu có thông tin "Miễn lệ phí" - phải ưu tiên nêu rõ điều này
+4. KHÔNG tự sáng tạo thông tin không có trong tài liệu
+5. Trả lời NGẮN GỌN (tối đa 3-4 câu)
+6. Nếu không chắc chắn - nói "Theo thông tin trong tài liệu..."
+
+Ví dụ trả lời tốt:
+- "Theo thông tin trong tài liệu, đăng ký khai sinh đúng hạn được MIỄN LỆ PHÍ."
+- "Tài liệu nêu rõ lệ phí là X đồng cho trường hợp Y."
+
+TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các quy định không có trong tài liệu."""
+        
+        logger.info(f"📝 Using {'CONSERVATIVE' if context_length < 1000 else 'FULL'} system prompt for context length: {context_length}")
         
         # Build enhanced context với conversation history
         enhanced_context = conversation_context + context

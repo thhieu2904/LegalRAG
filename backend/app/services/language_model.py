@@ -82,24 +82,25 @@ class LLMService:
             raise
     
     def _format_prompt(self, system_prompt: str, user_query: str, context: str = "") -> str:
-        """Format prompt theo template chính xác của PhoGPT"""
-        # Tạo instruction bao gồm system prompt, context và user query
+        """Format prompt theo template tối ưu để tránh confusion"""
+        # Sử dụng format đơn giản và rõ ràng hơn
         if context:
             instruction = f"""{system_prompt}
 
-Ngữ cảnh thông tin:
+THÔNG TIN TÀI LIỆU:
 {context}
 
-Câu hỏi của người dùng: {user_query}"""
+CÂUHỎI: {user_query}
+
+TRẢ LỜI:"""
         else:
             instruction = f"""{system_prompt}
 
-Câu hỏi của người dùng: {user_query}"""
+CÂUHỎI: {user_query}
+
+TRẢ LỜI:"""
         
-        # Sử dụng format chính xác của PhoGPT
-        full_prompt = f"### Câu hỏi: {instruction}\n### Trả lời:"
-        
-        return full_prompt
+        return instruction
     
     def generate_response(
         self, 
@@ -114,15 +115,23 @@ Câu hỏi của người dùng: {user_query}"""
         if not self.model:
             raise Exception("Model not loaded")
         
-        # Sử dụng values từ config với tối ưu
+        # Sử dụng values từ config với tối ưu anti-hallucination
         if max_tokens is None:
-            max_tokens = min(settings.max_tokens, 512)  # Giảm max_tokens để tránh lặp
+            max_tokens = min(settings.max_tokens, 300)  # Giảm max_tokens để tránh lặp và hallucination
         if temperature is None:
-            temperature = max(settings.temperature, 0.3)  # Tăng temperature để tránh lặp
+            temperature = min(settings.temperature, 0.1)  # Giảm temperature để tăng tính deterministic
         
-        # System prompt tối ưu cho legal domain
+        # System prompt tối ưu cho legal domain - IMPROVED VERSION
         if system_prompt is None:
-            system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam. Trả lời ngắn gọn, chính xác và có cấu trúc rõ ràng. Không lặp lại thông tin."""
+            system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam. 
+
+QUY TẮC BẮT BUỘC:
+1. CHỈ trả lời dựa trên thông tin trong tài liệu
+2. Trả lời NGẮN GỌN và TRỰC TIẾP 
+3. KHÔNG tự sáng tạo thông tin
+4. Nếu hỏi về phí/tiền - tìm chính xác thông tin "LỆ PHÍ"
+
+Trả lời chính xác, ngắn gọn."""
         
         # Format prompt
         formatted_prompt = self._format_prompt(system_prompt, user_query, context)
@@ -138,7 +147,7 @@ Câu hỏi của người dùng: {user_query}"""
                 top_p=0.9,  # Nucleus sampling để tăng đa dạng
                 top_k=40,   # Top-K sampling
                 repeat_penalty=1.1,  # Penalty cho từ lặp
-                stop=["### Câu hỏi:", "### Trả lời:", "\n\n###", "Câu hỏi:", "Question:"],
+                stop=["CÂUHỎI:", "THÔNG TIN TÀI LIỆU:", "TRẢ LỜI:", "\n\nCÂUHỎI:", "\n\nTRẢ LỜI:"],
                 echo=False,
                 stream=False  # Ensure non-streaming response
             )
