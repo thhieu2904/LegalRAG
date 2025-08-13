@@ -408,6 +408,7 @@ class EnhancedSmartQueryRouter:
             best_score = 0.0
             best_example = None
             best_source = None
+            best_filters = {}
             collection_scores = {}
             
             for collection_name, questions in self.example_questions.items():
@@ -432,10 +433,23 @@ class EnhancedSmartQueryRouter:
                     best_collection = collection_name
                     best_example = questions[max_idx]['text']
                     best_source = questions[max_idx]['source']
+                    best_filters = questions[max_idx].get('filters', {})
+                    
+                    # 🐛 DEBUG: Log the exact match info
+                    logger.info(f"🔍 NEW BEST MATCH: score={max_similarity:.3f}, collection={collection_name}")
+                    logger.info(f"🔍 Question text: '{best_example[:100]}...'")
+                    logger.info(f"🔍 Source procedure: {best_source}")
+                    if 'exact_title' in best_filters:
+                        logger.info(f"🔍 Exact title from filters: {best_filters['exact_title']}")
             
             logger.info(f"🎯 Query: '{query[:50]}...' -> Best match: {best_collection} ({best_score:.3f})")
             if best_example:
                 logger.info(f"📝 Matched example: '{best_example[:80]}...'")
+            
+            # 🐛 DEBUG: Final validation before returning
+            if best_filters:
+                final_title = best_filters.get('exact_title', ['Unknown'])
+                logger.info(f"🔍 FINAL FILTERS CHECK - Exact title: {final_title}")
             
             # Determine routing decision
             if best_score >= self.high_confidence_threshold:
@@ -448,7 +462,8 @@ class EnhancedSmartQueryRouter:
                     'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
                     'clarification_needed': False,
                     'matched_example': best_example,
-                    'source_procedure': best_source
+                    'source_procedure': best_source,
+                    'inferred_filters': best_filters
                 }
             
             elif best_score >= self.similarity_threshold:
@@ -461,7 +476,8 @@ class EnhancedSmartQueryRouter:
                     'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
                     'clarification_needed': False,
                     'matched_example': best_example,
-                    'source_procedure': best_source
+                    'source_procedure': best_source,
+                    'inferred_filters': best_filters
                 }
             
             else:
@@ -474,7 +490,8 @@ class EnhancedSmartQueryRouter:
                     'display_name': None,
                     'clarification_needed': True,
                     'matched_example': best_example,
-                    'source_procedure': best_source
+                    'source_procedure': best_source,
+                    'inferred_filters': best_filters
                 }
                 
         except Exception as e:
@@ -487,7 +504,8 @@ class EnhancedSmartQueryRouter:
                 'display_name': None,
                 'clarification_needed': True,
                 'matched_example': None,
-                'source_procedure': None
+                'source_procedure': None,
+                'inferred_filters': {}
             }
     
     def get_collection_info(self) -> Dict[str, Any]:

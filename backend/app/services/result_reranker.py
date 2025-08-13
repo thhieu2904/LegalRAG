@@ -92,8 +92,32 @@ class RerankerService:
             return []
         
         try:
+            # 🔍 DEBUG: Log query được truyền vào reranker
+            logger.info(f"🔍 RERANK QUERY: '{query}' ({len(query)} chars)")
+            
             # Chuẩn bị pairs (query, document_content) cho reranker
-            pairs = [(query, doc['content']) for doc in documents]
+            pairs = []
+            for i, doc in enumerate(documents):
+                # 🔍 DEBUG: Log document content để phân tích
+                content = doc['content']
+                
+                # 🎯 CONTENT OPTIMIZATION for Vietnamese Reranker
+                # Truncate very long content để tránh reranker overwhelm
+                if len(content) > 1000:
+                    # Lấy phần đầu (thường chứa thông tin quan trọng nhất)
+                    content = content[:1000] + "..."
+                    logger.info(f"🔧 TRUNCATED DOC[{i}] from {len(doc['content'])} to 1000 chars for better reranking")
+                
+                # Clean content: loại bỏ markdown symbols và ký tự đặc biệt
+                cleaned_content = content.replace("**", "").replace("*", "").replace("#", "")
+                cleaned_content = " ".join(cleaned_content.split())  # Normalize whitespace
+                
+                if len(cleaned_content) > 200:
+                    logger.info(f"🔍 RERANK DOC[{i}] sample: '{cleaned_content[:200]}...' (total: {len(cleaned_content)} chars)")
+                else:
+                    logger.info(f"🔍 RERANK DOC[{i}] full: '{cleaned_content}' ({len(cleaned_content)} chars)")
+                
+                pairs.append((query, cleaned_content))
             
             # Tính rerank scores
             logger.info(f"Reranking {len(documents)} documents")

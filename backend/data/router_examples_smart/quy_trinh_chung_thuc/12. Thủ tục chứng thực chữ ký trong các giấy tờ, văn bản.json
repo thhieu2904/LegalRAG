@@ -9,47 +9,29 @@
     "version": "2.0",
     "generator": "smart_router_v2"
   },
-  "main_question": "Đăng ký kết hôn cần điều kiện gì?",
+  "main_question": "Chứng thực chữ ký trong giấy tờ cần thủ tục gì?",
   "question_variants": [
-    "Thủ tục kết hôn làm ở đâu?",
-    "Hồ sơ kết hôn gồm những giấy tờ nào?",
-    "Kết hôn mất bao lâu được cấp giấy?"
+    "Thủ tục chứng thực chữ ký làm ở đâu?",
+    "Hồ sơ chứng thực chữ ký gồm những gì?",
+    "Chứng thực chữ ký mất bao lâu?"
   ],
   "smart_filters": {
     "exact_title": [
       "Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được)"
     ],
-    "title_keywords": [
-      "giấy tờ",
-      "chữ ký",
-      "chứng thực"
-    ],
-    "procedure_code": [
-      "QT 12/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "same_day"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "title_keywords": ["giấy tờ", "chữ ký", "chứng thực"],
+    "procedure_code": ["QT 12/CX-HCTP"],
+    "agency": ["Ủy ban nhân dân cấp xã"],
+    "agency_level": ["commune"],
+    "cost_type": ["paid"],
+    "processing_speed": ["same_day"],
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "free",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "chung_thuc",
   "confidence_threshold": 0.75,

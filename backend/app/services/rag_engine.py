@@ -180,21 +180,37 @@ class OptimizedEnhancedRAGService:
                 else:
                     # Query không mơ hồ - có target collection rồi
                     target_collection = routing_result['target_collection']
+                    inferred_filters = routing_result.get('inferred_filters', {})
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
                     logger.info(f"Smart routed to collection: {target_collection} (confidence: {routing_result['confidence']:.2f})")
+                    if inferred_filters:
+                        logger.info(f"Using smart filters: {list(inferred_filters.keys())}")
             else:
-                # Fallback: sử dụng default collection
-                best_collections = [settings.chroma_collection_name]
+                # Even without ambiguous detection, still use smart routing for better targeting
+                routing_result = self.smart_router.route_query(query)
+                if routing_result['status'] == 'routed' and routing_result['target_collection']:
+                    target_collection = routing_result['target_collection']
+                    inferred_filters = routing_result.get('inferred_filters', {})
+                    best_collections = [target_collection]
+                    logger.info(f"Smart routed to collection: {target_collection} (confidence: {routing_result['confidence']:.2f})")
+                    if inferred_filters:
+                        logger.info(f"Using smart filters: {list(inferred_filters.keys())}")
+                else:
+                    # True fallback: sử dụng default collection
+                    best_collections = [settings.chroma_collection_name]
+                    inferred_filters = {}
             
-            # Step 2: Focused Search trong target collection
+            # Step 2: Focused Search trong target collection với smart filters
             broad_search_results = []
             for collection_name in best_collections[:2]:  # Limit to top 2 collections
                 try:
+                    # ✅ CRITICAL FIX: Pass smart filters to vector search
                     results = self.vectordb_service.search_in_collection(
                         collection_name=collection_name,
                         query=query,
                         top_k=settings.broad_search_k,
-                        similarity_threshold=settings.similarity_threshold
+                        similarity_threshold=settings.similarity_threshold,
+                        where_filter=inferred_filters if inferred_filters else None
                     )
                     
                     for result in results:
