@@ -74,11 +74,20 @@ def check_and_setup_models(verify_only: bool = False):
         from app.core.config import settings
         settings.setup_environment()
         
+        # Ensure models directory exists
+        models_cache_dir = settings.hf_cache_path
+        models_cache_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"   📁 Models cache directory: {models_cache_dir}")
+        
         # Check embedding model
         logger.info("   📊 Embedding Model:")
         try:
             from sentence_transformers import SentenceTransformer
-            embedding_model = SentenceTransformer(settings.embedding_model_name)
+            # Use cache directory for download/load
+            embedding_model = SentenceTransformer(
+                settings.embedding_model_name,
+                cache_folder=str(models_cache_dir)
+            )
             logger.info(f"      ✅ {settings.embedding_model_name} loaded successfully")
             
             # Test với một câu
@@ -90,7 +99,10 @@ def check_and_setup_models(verify_only: bool = False):
                 logger.info("      💡 Attempting to download...")
                 try:
                     from sentence_transformers import SentenceTransformer
-                    SentenceTransformer(settings.embedding_model_name)
+                    SentenceTransformer(
+                        settings.embedding_model_name,
+                        cache_folder=str(models_cache_dir)
+                    )
                     logger.info("      ✅ Download successful!")
                 except Exception as e2:
                     logger.error(f"      ❌ Download failed: {e2}")
@@ -102,7 +114,11 @@ def check_and_setup_models(verify_only: bool = False):
         logger.info("   🎯 Reranker Model:")
         try:
             from sentence_transformers import CrossEncoder
-            reranker_model = CrossEncoder(settings.reranker_model_name)
+            # Use cache directory for download/load
+            reranker_model = CrossEncoder(
+                settings.reranker_model_name,
+                cache_folder=str(models_cache_dir)
+            )
             logger.info(f"      ✅ {settings.reranker_model_name} loaded successfully")
             
             # Test với một cặp câu
@@ -114,7 +130,10 @@ def check_and_setup_models(verify_only: bool = False):
                 logger.info("      💡 Attempting to download...")
                 try:
                     from sentence_transformers import CrossEncoder
-                    CrossEncoder(settings.reranker_model_name)
+                    CrossEncoder(
+                        settings.reranker_model_name,
+                        cache_folder=str(models_cache_dir)
+                    )
                     logger.info("      ✅ Download successful!")
                 except Exception as e2:
                     logger.error(f"      ❌ Download failed: {e2}")
@@ -125,14 +144,41 @@ def check_and_setup_models(verify_only: bool = False):
         # Check LLM model
         logger.info("   🧠 LLM Model:")
         llm_path = Path(settings.llm_model_path)
+        llm_dir = llm_path.parent
+        
         if llm_path.exists():
             file_size_mb = llm_path.stat().st_size / (1024 * 1024)
             logger.info(f"      ✅ LLM model found: {llm_path}")
             logger.info(f"      📊 File size: {file_size_mb:.1f}MB")
         else:
             logger.error(f"      ❌ LLM model not found: {llm_path}")
-            logger.info("      💡 Please manually download the LLM model")
-            return False
+            if not verify_only and settings.llm_model_url:
+                logger.info("      💡 Attempting to download LLM model...")
+                try:
+                    # Create LLM directory if needed
+                    llm_dir.mkdir(parents=True, exist_ok=True)
+                    
+                    # Download using requests or wget
+                    import requests
+                    import shutil
+                    
+                    logger.info(f"      📥 Downloading from: {settings.llm_model_url}")
+                    response = requests.get(settings.llm_model_url, stream=True)
+                    response.raise_for_status()
+                    
+                    with open(llm_path, 'wb') as f:
+                        shutil.copyfileobj(response.raw, f)
+                    
+                    file_size_mb = llm_path.stat().st_size / (1024 * 1024)
+                    logger.info(f"      ✅ Download successful! Size: {file_size_mb:.1f}MB")
+                    
+                except Exception as e:
+                    logger.error(f"      ❌ Download failed: {e}")
+                    logger.info("      💡 Please manually download the LLM model")
+                    return False
+            else:
+                logger.info("      💡 Please set LLM_MODEL_URL in .env or download manually")
+                return False
         
         logger.info("   ✅ All models available!")
         logger.info("")

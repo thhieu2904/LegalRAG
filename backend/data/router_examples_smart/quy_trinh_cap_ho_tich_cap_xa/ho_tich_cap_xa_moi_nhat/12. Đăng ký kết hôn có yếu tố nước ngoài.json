@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "title": "Đăng ký kết hôn có yếu tố nước ngoài",
+    "code": "QT 12/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "category": "ket_hon_foreign",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\12. Đăng ký kết hôn có yếu tố nước ngoài.json",
+    "generated_at": "2025-08-13",
+    "version": "2.0",
+    "generator": "smart_router_v2"
+  },
+  "main_question": "Đăng ký kết hôn có yếu tố nước ngoài cần điều kiện gì?",
+  "question_variants": [
+    "Thủ tục kết hôn có yếu tố nước ngoài làm ở đâu?",
+    "Hồ sơ kết hôn có yếu tố nước ngoài gồm những giấy tờ nào?",
+    "Kết hôn có yếu tố nước ngoài mất bao lâu được cấp giấy?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký kết hôn có yếu tố nước ngoài"
+    ],
+    "title_keywords": [
+      "kết hôn",
+      "nước ngoài",
+      "đăng ký"
+    ],
+    "procedure_code": [
+      "QT 12/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã"
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "free"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "free",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

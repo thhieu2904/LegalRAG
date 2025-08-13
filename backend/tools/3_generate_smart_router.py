@@ -442,8 +442,8 @@ class SmartRouterGenerator:
         }
     
     def generate_all_smart_examples(self) -> int:
-        """Generate complete smart router examples - MAIN LOGIC từ generate_smart_router_examples.py"""
-        logger.info("🎯 Generating smart router examples...")
+        """Generate individual smart router examples - One file per document"""
+        logger.info("🎯 Generating individual smart router examples...")
         
         if not self.documents_dir.exists():
             logger.error(f"❌ Documents directory not found: {self.documents_dir}")
@@ -457,7 +457,7 @@ class SmartRouterGenerator:
         
         logger.info(f"   📄 Found {len(json_files)} JSON files")
         
-        # Group by collection
+        # Group by collection for statistics
         collections = {}
         for json_file in json_files:
             collection = self._detect_collection_from_path(str(json_file))
@@ -469,104 +469,90 @@ class SmartRouterGenerator:
             logger.info(f"   📂 {collection}: {len(files)} files")
         
         total_examples = 0
+        processed_files = 0
         
-        # Process each collection
-        for collection_name, files in collections.items():
-            logger.info(f"   📂 Processing collection: {collection_name}")
-            
-            collection_examples = []
-            
-            for json_file in files:
-                try:
-                    # Load document
-                    with open(json_file, 'r', encoding='utf-8') as f:
-                        doc = json.load(f)
-                    
-                    # Analyze metadata
-                    analysis = self.analyze_document_metadata(doc)
-                    
-                    # Generate questions
-                    questions = self.generate_smart_questions(analysis, doc.get('metadata', {}))
-                    
-                    # Create main example
-                    main_example = {
-                        'question': questions['main_question'],
+        # Process each document individually
+        for json_file in json_files:
+            try:
+                # Load document
+                with open(json_file, 'r', encoding='utf-8') as f:
+                    doc = json.load(f)
+                
+                # Get collection info
+                collection_name = self._detect_collection_from_path(str(json_file))
+                
+                # Analyze metadata
+                analysis = self.analyze_document_metadata(doc)
+                
+                # Generate questions
+                questions = self.generate_smart_questions(analysis, doc.get('metadata', {}))
+                
+                # Create relative path from documents dir
+                relative_path = json_file.relative_to(self.documents_dir)
+                
+                # Create output path with same structure
+                output_file = self.output_dir / relative_path
+                output_file.parent.mkdir(parents=True, exist_ok=True)
+                
+                # Create individual router file
+                router_data = {
+                    'metadata': {
+                        'title': doc.get('metadata', {}).get('title', ''),
+                        'code': doc.get('metadata', {}).get('code', ''),
                         'collection': collection_name,
-                        'filters': analysis['smart_filters'],
-                        'source_document': json_file.name,
-                        'question_type': 'main',
                         'category': analysis['category'],
-                        'priority_score': self._calculate_priority_score(analysis),
-                        'metadata': {
-                            'title': doc.get('metadata', {}).get('title', ''),
-                            'code': doc.get('metadata', {}).get('code', ''),
-                            'category': collection_name,
-                            'key_attributes': analysis['key_attributes']
-                        }
-                    }
-                    collection_examples.append(main_example)
-                    
-                    # Create variant examples
-                    for variant in questions.get('question_variants', []):
-                        variant_example = {
-                            'question': variant,
-                            'collection': collection_name,
-                            'filters': analysis['smart_filters'],
-                            'source_document': json_file.name,
-                            'question_type': 'variant',
-                            'category': analysis['category'],
-                            'priority_score': self._calculate_priority_score(analysis) - 0.1,  # Slightly lower priority
-                            'metadata': {
-                                'title': doc.get('metadata', {}).get('title', ''),
-                                'code': doc.get('metadata', {}).get('code', ''),
-                                'category': collection_name,
-                                'key_attributes': analysis['key_attributes']
-                            }
-                        }
-                        collection_examples.append(variant_example)
+                        'source_document': str(relative_path),
+                        'generated_at': '2025-08-13',
+                        'version': '2.0',
+                        'generator': 'smart_router_v2'
+                    },
+                    'main_question': questions['main_question'],
+                    'question_variants': questions.get('question_variants', []),
+                    'smart_filters': analysis['smart_filters'],
+                    'key_attributes': analysis['key_attributes'],
+                    'expected_collection': collection_name,
+                    'confidence_threshold': 0.75,
+                    'priority_score': self._calculate_priority_score(analysis)
+                }
                 
-                except Exception as e:
-                    logger.warning(f"      ⚠️ Error processing {json_file.name}: {e}")
-                    continue
-            
-            # Save collection examples
-            if collection_examples:
-                output_file = self.output_dir / f"{collection_name}_smart_examples.json"
-                
+                # Save individual router file
                 with open(output_file, 'w', encoding='utf-8') as f:
-                    json.dump({
-                        'collection': collection_name,
-                        'total_examples': len(collection_examples),
-                        'generated_at': 'smart_router_generator_v2.0',
-                        'examples': collection_examples
-                    }, f, ensure_ascii=False, indent=2)
+                    json.dump(router_data, f, ensure_ascii=False, indent=2)
                 
-                logger.info(f"      ✅ Generated {len(collection_examples)} smart examples")
-                total_examples += len(collection_examples)
+                processed_files += 1
+                total_examples += 1 + len(questions.get('question_variants', []))
+                
+                if processed_files % 10 == 0:
+                    logger.info(f"   📝 Processed {processed_files}/{len(json_files)} files...")
             
-            else:
-                logger.warning(f"      ⚠️ No examples generated for {collection_name}")
+            except Exception as e:
+                logger.warning(f"      ⚠️ Error processing {json_file.name}: {e}")
+                continue
         
         # Generate summary file
         summary = {
-            'total_collections': len(collections),
+            'total_files_processed': processed_files,
             'total_examples': total_examples,
             'collections': {name: len(files) for name, files in collections.items()},
-            'output_files': [f"{name}_smart_examples.json" for name in collections.keys()],
-            'generator_version': 'smart_router_generator_v2.0',
+            'generator_version': 'smart_router_individual_v2.0',
+            'output_structure': 'individual_files_mirror_source',
             'improvements': [
-                'Câu hỏi đặc trưng cho từng thủ tục',
-                'Filter keywords chính xác',
-                'Khai thác đầy đủ metadata',
-                'Priority scoring cho routing'
+                'Một file router cho mỗi document gốc',
+                'Cấu trúc thư mục mirror document structure',
+                'Dễ maintain và trace từng document',
+                'Better scalability và performance'
             ]
         }
         
-        summary_file = self.output_dir / "smart_examples_summary.json"
+        summary_file = self.output_dir / "router_generation_summary.json"
         with open(summary_file, 'w', encoding='utf-8') as f:
             json.dump(summary, f, ensure_ascii=False, indent=2)
         
-        return total_examples
+        logger.info(f"   ✅ Generated {processed_files} individual router files")
+        logger.info(f"   📊 Total examples: {total_examples}")
+        logger.info(f"   📁 Output structure mirrors source documents")
+        
+        return processed_files
     
     def _detect_collection_from_path(self, file_path: str) -> str:
         """Detect collection name from file path"""

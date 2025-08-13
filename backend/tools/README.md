@@ -1,283 +1,197 @@
-# LegalRAG Backend Tools
+# LegalRAG Tools
 
-Bộ công cụ cần thiết cho LegalRAG system setup và maintenance.
+## 4 Essential Tools for LegalRAG System Setup
 
-## 🚀 Quick Setup cho máy mới (3 bước đơn giản)
+### Overview
 
-### Bước 1: Download AI Models
+This directory contains 4 essential tools for setting up and maintaining the LegalRAG system. These tools should be run in order for a fresh installation.
+
+> **⚡ Architecture Note**: Tool 2 has been consolidated from 2 separate components into 1 unified tool for simpler architecture.
+
+---
+
+## 🔧 Tool 1: Setup Models & Environment
+
+**File:** `1_setup_models.py`
+
+**Purpose:** Initialize the complete AI model environment
+
+- Create required directory structure
+- Download and verify Vietnamese embedding model (AITeamVN/Vietnamese_Embedding_v2)
+- Download and verify Vietnamese reranker model (AITeamVN/Vietnamese_Reranker)
+- Check LLM model availability (PhoGPT-4B-Chat)
+- Test model functionality
+
+**Usage:**
 
 ```bash
+# Full setup with model downloads
+python tools/1_setup_models.py
+
+# Verify existing models only (no downloads)
+python tools/1_setup_models.py --verify-only
+```
+
+**Requirements:**
+
+- ~4.5GB free disk space for models
+- Internet connection for downloads
+- CUDA-compatible GPU recommended
+
+---
+
+## 📊 Tool 2: Build Vector Database (UNIFIED)
+
+**File:** `2_build_vectordb_unified.py`
+
+**Purpose:** Unified tool for JSON processing and vector database building
+
+- Process JSON documents with integrated document processing
+- Generate embeddings for all document chunks
+- Create ChromaDB vector database with proper metadata
+- Support context expansion through document_id and chunk_index_num
+- Single tool replaces both document processing and database building steps
+
+**Usage:**
+
+```bash
+# Build vector database from documents/
+python tools/2_build_vectordb_unified.py
+
+# Force rebuild (clear existing)
+python tools/2_build_vectordb_unified.py --force
+
+# Clean entire vectordb directory
+python tools/2_build_vectordb_unified.py --clean
+```
+
+**Requirements:**
+
+- Documents in `data/documents/` directory
+- Models from Tool 1 already setup
+- Sufficient RAM for embedding generation
+
+---
+
+## 🎯 Tool 3: Generate Smart Router
+
+**File:** `3_generate_smart_router.py`
+
+**Purpose:** Create intelligent query routing examples
+
+- Generate advanced question templates with metadata-aware specificity
+- Create smart filters with multi-dimensional filtering
+- Extract key attributes from document metadata
+- Generate priority scores for routing decisions
+
+**Usage:**
+
+```bash
+# Generate smart router examples
+python tools/3_generate_smart_router.py
+
+# Force rebuild existing examples
+python tools/3_generate_smart_router.py --force
+```
+
+**Output:** Smart router examples in `data/router_examples_smart/`
+
+---
+
+## ⚡ Tool 4: Build Router Cache
+
+**File:** `4_build_router_cache.py`
+
+**Purpose:** Pre-compute embeddings cache for fast router startup
+
+- Load all router examples from `router_examples_smart/`
+- Generate embeddings for questions and variants
+- Save embeddings cache for instant router initialization
+- Dramatically reduce server startup time
+
+**Usage:**
+
+```bash
+# Build embeddings cache
+python tools/4_build_router_cache.py
+
+# Force rebuild cache
+python tools/4_build_router_cache.py --force
+
+# Allow model downloads if needed
+python tools/4_build_router_cache.py --allow-download --force
+
+# Verify existing cache only
+python tools/4_build_router_cache.py --verify-only
+
+# Clean incomplete model downloads
+python tools/4_build_router_cache.py --clean-model
+```
+
+**Output:** Router embeddings cache in `data/cache/router_embeddings.pkl`
+
+---
+
+## 🚀 Complete Setup Workflow
+
+For a fresh installation, run tools in this order:
+
+```bash
+# Step 1: Setup AI models
+conda activate LegalRAG_v1
 cd backend
-python tools/download_models.py
-```
-
-**Mục đích**: Download các AI models cần thiết về đúng vị trí
-
-- Vietnamese embedding model
-- Reranker model
-- Vietnamese LLM model
-
-**Lưu ý**: Bước này cần internet và có thể mất vài phút
-
----
-
-### Bước 2: Setup hệ thống hoàn chỉnh
-
-```bash
-cd backend
-python tools/setup_system.py
-```
-
-**Mục đích**: Setup toàn bộ hệ thống
-
-- Tạo cấu trúc thư mục
-- Kiểm tra documents
-- Kiểm tra models
-- Build vector database
-- Test hệ thống
-
----
-
-### Bước 3: Build Router Cache (optional, để startup nhanh)
-
-```bash
-cd backend
-python tools/build_router_cache.py
-```
-
-**Mục đích**: Tạo cache để hệ thống khởi động nhanh (0.06s thay vì 30-60s)
-
-## 📋 Individual Tools (cho advanced users)
-
-### download_models.py
-
-**Purpose**: Download AI models về đúng vị trí
-
-**Usage**:
-
-```bash
-python tools/download_models.py              # Download missing models
-python tools/download_models.py --force      # Force re-download all
-python tools/download_models.py --verify-only # Only verify existing models
-```
-
-**Models downloaded**:
-
-- `keepitreal/vietnamese-sbert` (embedding)
-- `BAAI/bge-reranker-base` (reranker)
-- `vinai/phobert-base-v2` (Vietnamese LLM)
-
----
-
-### setup_system.py
-
-**Purpose**: Setup hệ thống hoàn chỉnh trên máy mới
-
-**Usage**:
-
-```bash
-python tools/setup_system.py                 # Normal setup
-python tools/setup_system.py --force-rebuild # Force rebuild vector DB
-```
-
-**What it does**:
-
-1. ✅ Tạo cấu trúc thư mục cần thiết
-2. ✅ Kiểm tra documents tồn tại
-3. ✅ Verify models đã download
-4. ✅ Build vector database từ documents
-5. ✅ Test hệ thống hoạt động
-
-**Prerequisites**:
-
-- Documents trong `data/documents/`
-- Models đã download (chạy `download_models.py` trước)
-
----
-
-### build_router_cache.py
-
-**Purpose**: Build router cache để startup nhanh
-
-**Usage**:
-
-```bash
-python tools/build_router_cache.py
-```
-
-**Benefits**:
-
-- ✅ Fast startup: 0.06s instead of 30-60s
-- ✅ Pre-computed embeddings
-- ✅ Smart routing decisions
-
-**Output**: Cache files trong `data/cache/`
-
----
-
-### generate_router_examples.py
-
-**Purpose**: Tạo router examples từ documents (đã integrated vào setup_system.py)
-
-**Usage**:
-
-```bash
-python tools/generate_router_examples.py
-```
-
-**Output**: Router examples trong `data/router_examples/`
-
----
-
-## 🔧 Troubleshooting
-
-### Lỗi "Models not found"
-
-```bash
-python tools/download_models.py --force
-```
-
-### Lỗi "No documents found"
-
-- Đảm bảo documents JSON trong `data/documents/quy_trinh_*/`
-- Check structure: `data/documents/quy_trinh_cap_ho_tich_cap_xa/*.json`
-
-### Vector database không build được
-
-```bash
-python tools/setup_system.py --force-rebuild
-```
-
-### Startup chậm
-
-```bash
-python tools/build_router_cache.py
-```
-
-## 📊 System Requirements
-
-- Python 3.11+
-- Conda environment: `LegalRAG_v1`
-- Internet (for model download)
-- ~2GB disk space (for models)
-- GPU optional (but recommended)
-
-## 🎯 Recommended Workflow cho máy mới
-
-1. **First time setup**:
-
-   ```bash
-   cd backend
-   conda activate LegalRAG_v1
-   python tools/download_models.py     # Download models
-   python tools/setup_system.py       # Setup everything
-   python tools/build_router_cache.py # Build cache (optional)
-   ```
-
-2. **Start system**:
-
-   ```bash
-   python main.py
-   ```
-
-3. **Rebuild when needed**:
-   ```bash
-   python tools/setup_system.py --force-rebuild
-   ```
-
-Mỗi tool hoạt động độc lập và có thể chạy riêng lẻ khi cần thiết.
-
----
-
-### 2. enhance_filter_keywords.py
-
-**Purpose**: Phân tích và cải thiện filter keywords cho "trinh sát & chỉ điểm"
-
-**Usage**:
-
-```bash
-cd backend
-python tools/enhance_filter_keywords.py
-python tools/enhance_filter_keywords.py --interactive
-```
-
-**Benefits**: Optimize keywords cho kế hoạch filtered search
-
----
-
-### 3. build_router_cache.py
-
-**Purpose**: Tạo cache cho Enhanced Smart Query Router sử dụng Vietnamese embedding model
-
-**Usage**:
-
-```bash
-cd backend
-python tools/build_router_cache.py
-```
-
-**Output**: `data/cache/router_cache.pkl` (1.10 MB, 272 câu hỏi vectors)
-
-**Benefits**: Giảm startup time từ 30-60s xuống 0.06s
-
----
-
-### 2. build_document_vectordb.py
-
-**Purpose**: Xây dựng vector database từ documents trong `data/documents/`
-
-**Usage**:
-
-```bash
-cd backend
-python tools/build_document_vectordb.py
-```
-
-**Output**: Vector database trong `data/vectordb/`
-
-**Note**: Cần có JSON documents trong `data/documents/`
-
----
-
-## 🎯 Workflow cho máy mới
-
-### Option 1: Complete Setup (Recommended)
-
-```bash
-cd backend
-
-# Download models first (one-time)
-python scripts/fresh_install_setup.py
-
-# Complete setup in one command
-python tools/complete_setup.py
-
-# Start application
-python main.py
-```
-
-### Option 2: Manual Setup
-
-```bash
-cd backend
-
-# Step 1: Download models
-python scripts/fresh_install_setup.py
+python tools/1_setup_models.py
 
 # Step 2: Build vector database
-python tools/build_document_vectordb.py
+python tools/2_build_vectordb_unified.py
 
-# Step 3: Build router cache
-python tools/build_router_cache.py
+# Step 3: Generate smart router examples
+python tools/3_generate_smart_router.py
 
-# Step 4: Start application
+# Step 4: Build router cache for fast startup
+python tools/4_build_router_cache.py --force
+
+# Now you can start the main server
 python main.py
 ```
 
-## ✅ Verification
+---
 
-Sau khi setup, bạn sẽ có:
+## 📝 Notes
 
-- `data/vectordb/` - Vector database
-- `data/cache/router_cache.pkl` - Router cache
-- App startup trong ~0.06s thay vì 30-60s
+- **Tool 1** must be run first to setup the AI models
+- **Tool 2** processes your legal documents into searchable format
+- **Tool 3** creates intelligent routing for better query handling
+- **Tool 4** pre-computes embeddings for instant router startup
+
+**Total Setup Time:** ~10-15 minutes (including model downloads)
+**Disk Space Required:** ~5-6GB (models + data + cache)
+
+---
+
+## 🐛 Troubleshooting
+
+**Model Download Issues:**
+
+```bash
+# Clean incomplete downloads and retry
+python tools/4_build_router_cache.py --clean-model
+python tools/1_setup_models.py
+```
+
+**Vector Database Issues:**
+
+```bash
+# Clean and rebuild vector database
+python tools/2_build_vectordb_unified.py --clean
+python tools/2_build_vectordb_unified.py
+```
+
+**Cache Issues:**
+
+```bash
+# Force rebuild router cache
+python tools/4_build_router_cache.py --force
+```
+
+For more issues, check the individual tool logs and error messages.
