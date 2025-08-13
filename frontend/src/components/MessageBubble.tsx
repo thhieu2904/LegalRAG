@@ -1,15 +1,43 @@
 import React from "react";
 import type { Message } from "../types/chat";
 
-interface MessageBubbleProps {
-  message: Message;
+interface ClarificationOption {
+  id: string;
+  title: string;
+  description: string;
+  confidence?: string;
+  examples?: string[];
+  action: string;
+  collection?: string;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+interface MessageBubbleProps {
+  message: Message;
+  onClarificationSelect?: (
+    option: ClarificationOption,
+    sessionId?: string
+  ) => void;
+}
+
+const MessageBubble: React.FC<MessageBubbleProps> = ({
+  message,
+  onClarificationSelect,
+}) => {
   const isUser = message.type === "user";
+  const isClarification = message.type === "clarification";
+
+  const handleOptionClick = (option: ClarificationOption) => {
+    if (onClarificationSelect && message.session_id) {
+      onClarificationSelect(option, message.session_id);
+    }
+  };
 
   return (
-    <div className={`message-bubble ${isUser ? "user" : "assistant"}`}>
+    <div
+      className={`message-bubble ${isUser ? "user" : "assistant"} ${
+        isClarification ? "clarification" : ""
+      }`}
+    >
       <div className="message-header">
         <span className="message-type">{isUser ? "Bạn" : "Trợ lý"}</span>
         <span className="message-time">
@@ -18,6 +46,36 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       </div>
 
       <div className="message-content">{message.content}</div>
+
+      {/* Render clarification options */}
+      {isClarification &&
+        message.clarificationOptions &&
+        message.clarificationOptions.length > 0 && (
+          <div className="clarification-options">
+            <div className="options-container">
+              {message.clarificationOptions.map((option, index) => (
+                <div
+                  key={option.id || index}
+                  className="clarification-option"
+                  onClick={() => handleOptionClick(option)}
+                >
+                  <div className="option-title">{option.title}</div>
+                  <div className="option-description">{option.description}</div>
+                  {option.confidence && (
+                    <div className="option-confidence">
+                      Độ tin cậy: {option.confidence}
+                    </div>
+                  )}
+                  {option.examples && option.examples.length > 0 && (
+                    <div className="option-examples">
+                      <strong>Ví dụ:</strong> {option.examples.join(", ")}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
       {!isUser && message.processing_time && (
         <div className="message-meta">

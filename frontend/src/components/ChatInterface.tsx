@@ -3,6 +3,16 @@ import MessageBubble from "./MessageBubble";
 import { chatApi } from "../services/api";
 import type { Message } from "../types/chat";
 
+interface ClarificationOption {
+  id: string;
+  title: string;
+  description: string;
+  confidence?: string;
+  examples?: string[];
+  action: string;
+  collection?: string;
+}
+
 const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -56,15 +66,17 @@ const ChatInterface: React.FC = () => {
       });
 
       if (response.type === "clarification_needed") {
-        // Handle clarification response
+        // Handle clarification response - fix nested structure access
+        const clarificationData =
+          response.clarification?.clarification || response.clarification;
         const clarificationMessage: Message = {
           id: (Date.now() + 1).toString(),
           type: "clarification",
           content:
-            response.clarification?.template ||
-            "Bạn có thể làm rõ câu hỏi không?",
+            clarificationData?.message || "Bạn có thể làm rõ câu hỏi không?",
           timestamp: new Date(),
-          clarificationOptions: response.clarification?.options || [],
+          clarificationOptions: clarificationData?.options || [],
+          clarificationStyle: clarificationData?.style || "default",
           session_id: response.session_id,
           processing_time: response.processing_time,
         };
@@ -90,6 +102,72 @@ const ChatInterface: React.FC = () => {
         type: "assistant",
         content:
           "Xin lỗi, đã có lỗi xảy ra khi xử lý tin nhắn của bạn. Vui lòng thử lại sau.",
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClarificationSelect = async (
+    option: ClarificationOption,
+    sessionId?: string
+  ) => {
+    // Add user's selection as a message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      type: "user",
+      content: `Đã chọn: ${option.title}`,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
+
+    try {
+      // Send follow-up query based on selection
+      let followUpQuery = "";
+
+      if (
+        option.action === "proceed_with_collection" ||
+        option.action === "proceed_with_routing"
+      ) {
+        followUpQuery = `Tôi muốn biết về ${option.title}`;
+      } else if (option.action === "explore_category") {
+        followUpQuery = `Hãy giải thích về ${option.title}`;
+      } else {
+        followUpQuery = option.title;
+      }
+
+      const response = await chatApi.sendMessage({
+        query: followUpQuery,
+        session_id: sessionId,
+        max_tokens: 2048,
+        temperature: 0.1,
+        top_k: 5,
+      });
+
+      if (response.type === "answer") {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: "assistant",
+          content: response.answer || "Không có câu trả lời",
+          timestamp: new Date(),
+          sources: response.context_info?.source_documents || [],
+          source_files: response.context_info?.source_collections || [],
+          processing_time: response.processing_time,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      }
+    } catch (error) {
+      console.error("Lỗi khi xử lý clarification:", error);
+
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: "assistant",
+        content: "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại.",
         timestamp: new Date(),
       };
 
@@ -136,7 +214,11 @@ const ChatInterface: React.FC = () => {
         )}
 
         {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
+          <MessageBubble
+            key={message.id}
+            message={message}
+            onClarificationSelect={handleClarificationSelect}
+          />
         ))}
 
         {isLoading && (

@@ -71,7 +71,9 @@ class RerankerService:
         self, 
         query: str, 
         documents: List[Dict[str, Any]], 
-        top_k: Optional[int] = None
+        top_k: Optional[int] = None,
+        router_confidence: Optional[float] = None,
+        router_confidence_level: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
         Rerank danh sách documents dựa trên độ liên quan với query
@@ -80,6 +82,8 @@ class RerankerService:
             query: Câu hỏi cần tìm
             documents: Danh sách documents cần rerank
             top_k: Số lượng documents tốt nhất cần trả về (nếu None thì trả về tất cả)
+            router_confidence: Confidence score từ router (0.0-1.0)
+            router_confidence_level: Level từ router ('low', 'medium', 'high')
         
         Returns:
             Danh sách documents đã được sắp xếp lại theo độ liên quan
@@ -90,6 +94,11 @@ class RerankerService:
         
         if not documents:
             return []
+        
+        # 🛡️ ROUTER TRUST MODE: Khi router có HIGH confidence, tin tưởng router hơn
+        trust_router = (router_confidence_level == 'high' and router_confidence and router_confidence >= 0.85)
+        if trust_router:
+            logger.info(f"🛡️ ROUTER TRUST MODE: Router confidence {router_confidence:.3f} (HIGH) - Minimal rerank interference")
         
         try:
             # 🔍 DEBUG: Log query được truyền vào reranker
@@ -139,6 +148,12 @@ class RerankerService:
                 top_doc = reranked_docs[0]
                 logger.info(f"Top document after reranking: score={top_doc['rerank_score']:.4f}, "
                           f"similarity={top_doc.get('similarity', 'N/A')}")
+                
+                # 🛡️ ROUTER TRUST MODE: Không trigger conservative strategy khi router HIGH confidence
+                if trust_router:
+                    logger.info(f"🛡️ TRUSTING ROUTER: Accepting rerank results without conservative override (router: {router_confidence:.3f})")
+                elif top_doc['rerank_score'] < 0.2:
+                    logger.warning(f"⚠️  LOW RERANK SCORE ({top_doc['rerank_score']:.4f}) - Conservative strategy may be triggered")
             
             # Trả về top_k documents nếu được chỉ định
             if top_k:

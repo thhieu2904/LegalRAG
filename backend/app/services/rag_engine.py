@@ -10,7 +10,8 @@ Tích hợp:
 import logging
 import time
 import uuid
-from typing import Dict, List, Any, Optional, Tuple
+import numpy as np
+from typing import Dict, List, Any, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -18,10 +19,28 @@ from .vector_database import VectorDBService
 from .language_model import LLMService
 from .result_reranker import RerankerService
 from .smart_router import EnhancedSmartQueryRouter, RouterBasedAmbiguousQueryService
+from .smart_clarification import SmartClarificationService
 from .context_expander import EnhancedContextExpansionService
 from ..core.config import settings
 
 logger = logging.getLogger(__name__)
+
+def convert_numpy_types(obj: Any) -> Any:
+    """Convert numpy types to Python native types for JSON serialization"""
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, dict):
+        return {k: convert_numpy_types(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(v) for v in obj]
+    elif isinstance(obj, tuple):
+        return tuple(convert_numpy_types(v) for v in obj)
+    else:
+        return obj
 
 @dataclass
 class OptimizedChatSession:
@@ -88,6 +107,10 @@ class OptimizedEnhancedRAGService:
                 router=self.smart_router
             )
             logger.info("✅ Router-based Ambiguous Query Service initialized (CPU)")
+            
+            # Smart Clarification Service
+            self.clarification_service = SmartClarificationService()
+            logger.info("✅ Smart Clarification Service initialized")
             
             # Enhanced Context Expansion Service  
             self.context_expansion_service = EnhancedContextExpansionService(
@@ -229,86 +252,34 @@ class OptimizedEnhancedRAGService:
                 nucleus_chunks = self.reranker_service.rerank_documents(
                     query=query,
                     documents=docs_to_rerank,
-                    top_k=1  # CHỈ 1 nucleus chunk cao nhất - sẽ expand toàn bộ document chứa chunk này
+                    top_k=1,  # CHỈ 1 nucleus chunk cao nhất - sẽ expand toàn bộ document chứa chunk này
+                    router_confidence=routing_result.get('confidence', 0.0),
+                    router_confidence_level=routing_result.get('confidence_level', 'low')
                 )
                 
-                # ✅ INTELLIGENT VALIDATION: Kiểm tra rerank score và điều chỉnh strategy
+                # ✅ RERANKER ONLY - NO CONSERVATIVE STRATEGY
+                # User requested: "tắt lớp bảo vệ, chỉ làm nhiệm vụ rerank thôi"
                 if nucleus_chunks and len(nucleus_chunks) > 0:
                     best_score = nucleus_chunks[0].get('rerank_score', 0)
                     logger.info(f"Best rerank score: {best_score:.4f}")
-                    
-                    # CRITICAL DECISION POINT: Nếu điểm thấp, chuyển sang Conservative Strategy
-                    if best_score < 0.2:  # Ngưỡng nghiêm ngặt hơn
-                        logger.warning(f"⚠️  LOW RERANK SCORE ({best_score:.4f}) - Chuyển sang Conservative Strategy!")
-                        logger.warning("💡 Strategy: Chỉ sử dụng chunk có liên quan nhất, KHÔNG expand full document")
-                        
-                        # Conservative Strategy: KHÔNG expand full document
-                        use_full_document_expansion = False
-                        max_context_length = 800  # Giảm context length drastically
-                        
-                        # Lọc thêm 1 lần nữa - chỉ giữ chunks thực sự có keyword liên quan
-                        filtered_chunks = []
-                        query_keywords = query.lower().split()
-                        
-                        for chunk in nucleus_chunks:
-                            chunk_content = chunk.get('content', '').lower()
-                            # Kiểm tra xem chunk có chứa từ khóa liên quan không
-                            if any(keyword in chunk_content for keyword in ['phí', 'tiền', 'lệ phí', 'miễn', 'cost', 'fee']):
-                                filtered_chunks.append(chunk)
-                                logger.info(f"✅ Chunk được giữ lại vì có từ khóa liên quan")
-                                break  # Chỉ lấy 1 chunk tốt nhất
-                        
-                        nucleus_chunks = filtered_chunks if filtered_chunks else nucleus_chunks[:1]
-                        logger.info(f"🎯 Conservative Strategy: Sử dụng {len(nucleus_chunks)} chunk với context giới hạn")
-                    
-                    else:
-                        logger.info(f"✅ HIGH RERANK SCORE ({best_score:.4f}) - Sử dụng Full Document Strategy")
+                    logger.info("🎯 PURE RERANKER MODE - No protective logic, full expansion strategy")
                 
                 logger.info(f"Selected {len(nucleus_chunks)} nucleus chunk with rerank-based strategy")
             else:
                 nucleus_chunks = broad_search_results[:1]  # Fallback: lấy chunk tốt nhất theo vector similarity
                 
-            # Step 5: Intelligent Context Expansion - Dựa trên rerank score để quyết định strategy
+            # Step 5: ALWAYS use FULL DOCUMENT expansion - No conservative strategy
             expanded_context = None
-            if use_full_document_expansion:
-                logger.info("📈 Using FULL DOCUMENT expansion strategy")
-                self.metrics["context_expansions"] += 1
-                expanded_context = self.context_expansion_service.expand_context_with_nucleus(
-                    nucleus_chunks=nucleus_chunks,
-                    max_context_length=max_context_length,
-                    include_full_document=True  # Full document expansion
-                )
-                
-                context_text = self._build_context_from_expanded(expanded_context)
-                logger.info(f"Context expanded: {expanded_context['total_length']} chars from {len(expanded_context.get('source_documents', []))} documents")
-                
-            else:
-                logger.info("🎯 Using CONSERVATIVE chunk-only strategy")
-                # Conservative Strategy: Chỉ sử dụng chunk chính xác, KHÔNG expand
-                context_parts = []
-                for chunk in nucleus_chunks:
-                    source = chunk.get('metadata', {}).get('source', 'N/A')
-                    content = chunk.get('content', '')
-                    
-                    # Chỉ lấy những câu có liên quan đến query
-                    query_keywords = ['phí', 'tiền', 'lệ phí', 'miễn', 'cost', 'fee']
-                    sentences = content.split('.')
-                    relevant_sentences = []
-                    
-                    for sentence in sentences:
-                        if any(keyword in sentence.lower() for keyword in query_keywords):
-                            relevant_sentences.append(sentence.strip())
-                    
-                    if relevant_sentences:
-                        relevant_content = '. '.join(relevant_sentences[:2])  # Top 2 relevant sentences only
-                        context_parts.append(f"📄 Nguồn: {source}\n{relevant_content}")
-                    else:
-                        # Fallback: truncated content
-                        truncated_content = content[:400] + "..." if len(content) > 400 else content
-                        context_parts.append(f"📄 Nguồn: {source}\n{truncated_content}")
-                
-                context_text = "\n\n".join(context_parts)
-                logger.info(f"Conservative context: {len(context_text)} chars, focused on relevant sentences only")
+            logger.info("📈 ALWAYS using FULL DOCUMENT expansion strategy (Conservative mode disabled)")
+            self.metrics["context_expansions"] += 1
+            expanded_context = self.context_expansion_service.expand_context_with_nucleus(
+                nucleus_chunks=nucleus_chunks,
+                max_context_length=max_context_length,
+                include_full_document=True  # Always full document expansion
+            )
+            
+            context_text = self._build_context_from_expanded(expanded_context)
+            logger.info(f"Context expanded: {expanded_context['total_length']} chars from {len(expanded_context.get('source_documents', []))} documents")
             
             # Step 6: Generate Answer (GPU LLM)
             if not session:
@@ -418,24 +389,8 @@ class OptimizedEnhancedRAGService:
                 for item in recent_queries
             ]) + "\n\n"
             
-        # Build intelligent system prompt - tùy thuộc vào độ dài context
-        context_length = len(context)
-        if context_length < 1000:
-            # Conservative Strategy: Context ngắn, yêu cầu LLM tập trung cao độ
-            system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
-
-🎯 NHIỆM VỤ: Trả lời CHÍNH XÁC dựa trên thông tin ngắn gọn được cung cấp.
-
-QUY TẮC:
-1. CHỈ dùng thông tin CÓ TRONG tài liệu
-2. Trả lời NGẮN GỌN (1-2 câu) 
-3. Tập trung vào từ khóa chính trong câu hỏi
-4. Nếu có thông tin về "phí" hoặc "miễn phí" - nêu rõ ngay
-
-Trả lời trực tiếp, không dài dòng."""
-        else:
-            # Full Document Strategy: Context dài, cần hướng dẫn chi tiết hơn
-            system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
+        # ALWAYS use FULL system prompt - No conservative strategy
+        system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
 
 🚨 QUY TẮC BẮT BUỘC - KHÔNG ĐƯỢC VI PHẠM:
 1. CHỈ trả lời dựa CHÍNH XÁC trên thông tin CÓ TRONG tài liệu
@@ -451,7 +406,7 @@ Ví dụ trả lời tốt:
 
 TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các quy định không có trong tài liệu."""
         
-        logger.info(f"📝 Using {'CONSERVATIVE' if context_length < 1000 else 'FULL'} system prompt for context length: {context_length}")
+        logger.info(f"📝 ALWAYS using FULL system prompt (Conservative mode disabled), context length: {len(context)}")
         
         # Build enhanced context với conversation history
         enhanced_context = conversation_context + context
@@ -620,85 +575,48 @@ TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các qu
             }
     
     def _generate_smart_clarification(self, routing_result: Dict[str, Any], query: str, session_id: str, start_time: float) -> Dict[str, Any]:
-        """Tạo clarification thông minh dựa trên routing result"""
+        """Tạo clarification thông minh dựa trên confidence level"""
         try:
-            self.metrics["ambiguous_detected"] += 1
+            # Gọi Smart Clarification Service để tạo clarification thông minh
+            clarification_service = SmartClarificationService()
+            clarification_response = clarification_service.generate_clarification(
+                query=query,
+                confidence=routing_result.get('confidence', 0.0),
+                routing_result=routing_result
+            )
             
-            # Tạo clarification với suggestions từ routing result
-            best_match = routing_result.get('matched_example', '')
-            source_procedure = routing_result.get('source_procedure', '')
-            confidence = routing_result.get('confidence', 0.0)
-            
-            # Tạo clarification message với context
-            clarification_msg = f"Tôi nghĩ bạn có thể muốn hỏi về '{source_procedure}' (độ tin cậy: {confidence:.3f}). Đúng không?"
-            
-            # Tạo options dựa trên best match và các alternatives
-            options = []
-            
-            # Option 1: Best match từ router
-            if source_procedure:
-                options.append({
-                    'id': '1',
-                    'title': f"Đúng - về {source_procedure}",
-                    'description': f"Câu hỏi tương tự: {best_match[:100]}..." if best_match else "Đúng, tôi muốn hỏi về thủ tục này",
-                    'collection': routing_result.get('target_collection'),
-                    'procedure': source_procedure
-                })
-            
-            # Option 2: Generic alternatives
-            options.append({
-                'id': '2', 
-                'title': "Không, tôi muốn hỏi về thủ tục khác",
-                'description': "Hãy cho tôi biết rõ hơn thủ tục nào bạn quan tâm",
-                'collection': None,
-                'procedure': None
-            })
-            
-            if not options:
-                # Fallback nếu không có suggestions - return proper structure
-                return {
-                    "type": "clarification_needed",
-                    "status": "smart_clarification",
-                    "confidence": routing_result.get('confidence', 0.0),
-                    "clarification": {
-                        "message": "Xin lỗi, tôi không rõ ý định của câu hỏi. Bạn có thể diễn đạt rõ hơn không?",
-                        "options": [],
-                        "suggestions": [
-                            "Bạn có thể nói rõ hơn về thủ tục nào bạn muốn thực hiện?",
-                            "Ví dụ: đăng ký khai sinh, kết hôn, chứng thực, hay thủ tục khác?"
-                        ]
-                    },
-                    "session_id": session_id,
-                    "processing_time": time.time() - start_time,
-                    "strategy": "generic_clarification"
-                }
-            
-            logger.info(f"Generated smart clarification with {len(options)} options")
-            
-            return {
+            # Return with proper structure and processing time - convert numpy types
+            response = {
                 "type": "clarification_needed",
                 "status": "smart_clarification", 
                 "confidence": routing_result.get('confidence', 0.0),
-                "clarification": {
-                    "message": clarification_msg,
-                    "options": options
-                },
-                "matched_example": routing_result.get('matched_example'),
-                "source_procedure": routing_result.get('source_procedure'),
+                "clarification": clarification_response,
                 "session_id": session_id,
                 "processing_time": time.time() - start_time,
-                "strategy": "smart_suggestion"
+                "strategy": clarification_response.get("level", "unknown")
             }
+            return convert_numpy_types(response)
             
         except Exception as e:
             logger.error(f"Error generating smart clarification: {e}")
-            return {
-                "type": "clarification_needed", 
-                "status": "error",
-                "clarification": "Xin lỗi, có lỗi khi xử lý câu hỏi. Bạn có thể thử lại không?",
+            fallback_response = {
+                "type": "clarification_needed",
+                "status": "smart_clarification",
+                "confidence": routing_result.get('confidence', 0.0),
+                "clarification": {
+                    "message": "Xin lỗi, tôi không rõ ý định của câu hỏi. Bạn có thể diễn đạt rõ hơn không?",
+                    "options": [],
+                    "suggestions": [
+                        "Bạn có thể nói rõ hơn về thủ tục nào bạn muốn thực hiện?",
+                        "Ví dụ: đăng ký khai sinh, kết hôn, chứng thực, hay thủ tục khác?"
+                    ],
+                    "level": "fallback"
+                },
                 "session_id": session_id,
-                "processing_time": time.time() - start_time
+                "processing_time": time.time() - start_time,
+                "strategy": "generic_clarification"
             }
+            return convert_numpy_types(fallback_response)
     
     def _activate_vector_backup_strategy(self, routing_result: Dict[str, Any], query: str, session_id: str, start_time: float) -> Dict[str, Any]:
         """Kích hoạt Vector Backup Strategy khi Smart Router hoàn toàn thất bại"""
