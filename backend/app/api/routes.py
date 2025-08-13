@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from app.models.schemas import QueryRequest, QueryResponse, HealthResponse, IndexingRequest, IndexingResponse
-from app.services.rag_service import RAGService
+from app.services.rag_engine import OptimizedEnhancedRAGService as RAGService
 from typing import Optional
 import logging
 from datetime import datetime

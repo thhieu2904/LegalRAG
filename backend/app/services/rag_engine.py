@@ -73,7 +73,10 @@ class OptimizedEnhancedRAGService:
         """Khởi tạo các service hỗ trợ với Enhanced Smart Router"""
         try:
             # Enhanced Smart Query Router với Example Questions Database
-            self.smart_router = EnhancedSmartQueryRouter(embedding_model=self.vectordb_service.embedding_model)
+            embedding_model = self.vectordb_service.embedding_model
+            if embedding_model is None:
+                raise ValueError("VectorDB embedding model not initialized")
+            self.smart_router = EnhancedSmartQueryRouter(embedding_model=embedding_model)
             logger.info("✅ Enhanced Smart Query Router initialized")
             
             # Reranker Service (GPU)
@@ -454,3 +457,121 @@ Hướng dẫn trả lời:
             logger.info(f"Cleaned up {len(old_sessions)} old sessions")
             
         return len(old_sessions)
+
+    # API Compatibility Methods
+    def query(self, question: Optional[str] = None, query: Optional[str] = None, **kwargs) -> Dict[str, Any]:
+        """Compatibility method cho API routes"""
+        # Hỗ trợ cả 'question' và 'query' parameters
+        query_text = question or query
+        if not query_text:
+            raise ValueError("Either 'question' or 'query' parameter is required")
+        return self.enhanced_query(query_text, **kwargs)
+    
+    @property
+    def query_router(self):
+        """Compatibility property cho API routes"""
+        # Tạo wrapper với explain_routing method
+        class RouterWrapper:
+            def __init__(self, smart_router):
+                self.smart_router = smart_router
+                # Copy tất cả methods từ smart_router
+                for attr in dir(smart_router):
+                    if not attr.startswith('_') and callable(getattr(smart_router, attr)):
+                        setattr(self, attr, getattr(smart_router, attr))
+            
+            def explain_routing(self, question: str) -> Dict[str, Any]:
+                """Explain routing decision cho question"""
+                try:
+                    # Sử dụng smart router để classify
+                    route_result = self.smart_router.route_query(question)
+                    return {
+                        'question': question,
+                        'route': route_result.get('route_name', 'general'),
+                        'confidence': route_result.get('confidence', 0.0),
+                        'reasoning': route_result.get('reasoning', 'No reasoning available'),
+                        'suggested_collections': route_result.get('suggested_collections', [])
+                    }
+                except Exception as e:
+                    logger.error(f"Error explaining routing: {e}")
+                    return {
+                        'question': question,
+                        'route': 'general',
+                        'confidence': 0.0,
+                        'reasoning': f'Error: {str(e)}',
+                        'suggested_collections': []
+                    }
+        
+        return RouterWrapper(self.smart_router)
+
+    def build_index(self, collection_name: Optional[str] = None, force_rebuild: bool = False, **kwargs) -> Dict[str, Any]:
+        """Build index cho collection hoặc tất cả collections"""
+        try:
+            if collection_name:
+                # Build specific collection
+                if self.vectordb_service.collection_exists(collection_name):
+                    stats = self.vectordb_service.get_collection_stats(collection_name)
+                    return {
+                        'status': 'success',
+                        'collections_processed': 1,
+                        'collection_name': collection_name,
+                        'message': f'Collection {collection_name} already exists and ready',
+                        'document_count': stats.get('document_count', 0)
+                    }
+                else:
+                    return {
+                        'status': 'error',
+                        'collections_processed': 0,
+                        'collection_name': collection_name,
+                        'error': f'Collection {collection_name} does not exist',
+                        'suggestion': 'Run python tools/2_build_vectordb_final.py to build collections'
+                    }
+            else:
+                # Build all collections - return info about existing ones
+                collections = self.vectordb_service.list_collections()
+                return {
+                    'status': 'success',
+                    'collections_processed': len(collections),
+                    'message': f'Found {len(collections)} existing collections',
+                    'collections': [col['name'] for col in collections],
+                    'total_documents': sum(col.get('document_count', 0) for col in collections),
+                    'suggestion': 'Use python tools/2_build_vectordb_final.py to build new collections from documents'
+                }
+        except Exception as e:
+            logger.error(f"Error in build_index: {e}")
+            return {
+                'status': 'error',
+                'collections_processed': 0,
+                'error': str(e)
+            }
+    
+    @property  
+    def document_processor(self):
+        """Compatibility property cho API routes"""
+        import os
+        
+        class DocumentProcessorCompat:
+            def get_available_collections(self, documents_dir):
+                """Lấy danh sách collections có thể tạo từ documents"""
+                try:
+                    if not os.path.exists(documents_dir):
+                        return []
+                    
+                    collections = []
+                    for item in os.listdir(documents_dir):
+                        item_path = os.path.join(documents_dir, item)
+                        if os.path.isdir(item_path):
+                            # Đếm số files PDF trong thư mục
+                            pdf_count = len([f for f in os.listdir(item_path) 
+                                           if f.lower().endswith('.pdf')])
+                            if pdf_count > 0:
+                                collections.append({
+                                    'name': item,
+                                    'path': item_path,
+                                    'document_count': pdf_count
+                                })
+                    return collections
+                except Exception as e:
+                    logger.error(f"Error getting available collections: {e}")
+                    return []
+        
+        return DocumentProcessorCompat()

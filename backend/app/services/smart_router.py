@@ -22,22 +22,6 @@ class EnhancedSmartQueryRouter:
     def __init__(self, embedding_model: SentenceTransformer):
         self.embedding_model = embedding_model
         self.base_path = "data/router_examples"
-        
-        # Load configuration
-        self.config = self._load_config()
-        
-        # Example questions database
-        self.example_questions = {}
-        self.question_vectors = {}
-        self.collection_mappings = {}
-        
-        # Thresholds
-        self.similarity_threshold = 0.3
-        self.high_confidence_threshold = 0.5
-        
-    def __init__(self, embedding_model: SentenceTransformer):
-        self.embedding_model = embedding_model
-        self.base_path = "data/router_examples"
         self.cache_file = "data/cache/router_embeddings.pkl"
         
         # Load configuration
@@ -59,6 +43,8 @@ class EnhancedSmartQueryRouter:
             logger.info("🔄 Cache not available, loading from files (slow startup)...")
             self._load_example_questions()
             self._initialize_question_vectors()
+            # Save cache for next time
+            self._save_to_cache()
         
         logger.info(f"✅ Enhanced Smart Query Router initialized with {len(self.collection_mappings)} collections")
     
@@ -172,7 +158,7 @@ class EnhancedSmartQueryRouter:
                 logger.info("📦 No router cache found")
                 return False
             
-            # Check cache freshness
+            # Check cache freshness - với tolerance 10 seconds để tránh race condition
             cache_time = os.path.getmtime(self.cache_file)
             router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart"))
             
@@ -182,9 +168,14 @@ class EnhancedSmartQueryRouter:
                 
                 if router_files:
                     newest_router = max(f.stat().st_mtime for f in router_files)
-                    if cache_time < newest_router:
-                        logger.info("🔄 Cache is older than router files")
+                    # Thêm tolerance 10 giây để tránh cache bị invalidate không cần thiết
+                    if cache_time < (newest_router - 10):
+                        logger.info(f"🔄 Cache is older than router files (cache: {cache_time}, newest: {newest_router})")
                         return False
+                    else:
+                        logger.info(f"📦 Cache is fresh enough (tolerance: 10s)")
+                else:
+                    logger.info("📦 No router files found, using cache")
             
             # Load cache
             logger.info("📦 Loading router from cache...")
@@ -220,6 +211,44 @@ class EnhancedSmartQueryRouter:
         except Exception as e:
             logger.error(f"❌ Error loading cache: {e}")
             return False
+
+    def _save_to_cache(self):
+        """Save router data to cache for faster startup next time"""
+        try:
+            # Ensure cache directory exists
+            cache_dir = os.path.dirname(self.cache_file)
+            os.makedirs(cache_dir, exist_ok=True)
+            
+            logger.info("💾 Saving router cache...")
+            start_time = time.time()
+            
+            # Prepare cache data
+            cache_data = {
+                'metadata': {
+                    'version': '1.0',
+                    'created': time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'total_questions': sum(len(questions) for questions in self.example_questions.values()),
+                    'collections': {name: len(questions) for name, questions in self.example_questions.items()}
+                },
+                'questions': self.example_questions,
+                'embeddings': self.question_vectors
+            }
+            
+            # Save cache
+            import pickle
+            with open(self.cache_file, 'wb') as f:
+                pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+            
+            save_time = time.time() - start_time
+            total_questions = cache_data['metadata']['total_questions']
+            file_size = os.path.getsize(self.cache_file) / (1024 * 1024)  # MB
+            
+            logger.info(f"💾 Cache saved: {total_questions} questions, {file_size:.1f}MB in {save_time:.1f}s")
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to save cache: {e}")
+            # Don't fail initialization just because of cache save failure
+            pass
     
     def _load_example_questions(self):
         """Load all example questions from individual router JSON files"""
