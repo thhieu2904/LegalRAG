@@ -13,15 +13,17 @@
   "question_variants": [
     "Phí chứng thực hợp đồng dân sự bao nhiêu?",
     "Chứng thực dân sự mất bao lâu?",
-    "Hồ sơ chứng thực dân sự cần gì?"
+    "Hồ sơ chứng thực dân sự cần gì?",
+    "Địa điểm chứng thực hợp đồng dân sự?",
+    "Thủ tục chứng thực dân sự phức tạp không?"
   ],
   "smart_filters": {
     "exact_title": [
       "Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực"
     ],
     "title_keywords": [
-      "hợp đồng",
       "bản sao",
+      "hợp đồng",
       "chứng thực"
     ],
     "procedure_code": [

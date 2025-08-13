@@ -13,7 +13,9 @@
   "question_variants": [
     "Kết hôn lưu động có khác gì kết hôn thường?",
     "Điều kiện để được kết hôn lưu động?",
-    "Phí kết hôn lưu động có cao hơn không?"
+    "Phí kết hôn lưu động có cao hơn không?",
+    "Kết hôn lưu động cần đặt lịch trước không?",
+    "Thủ tục kết hôn lưu động phức tạp ra sao?"
   ],
   "smart_filters": {
     "exact_title": [
@@ -21,8 +23,8 @@
     ],
     "title_keywords": [
       "kết hôn",
-      "lưu động",
-      "đăng ký"
+      "đăng ký",
+      "lưu động"
     ],
     "procedure_code": [
       "QT 31/CX-HCTP"

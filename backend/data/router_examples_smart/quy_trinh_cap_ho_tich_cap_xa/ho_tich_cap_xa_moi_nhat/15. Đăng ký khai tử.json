@@ -13,7 +13,9 @@
   "question_variants": [
     "Thủ tục khai báo tử như thế nào?",
     "Hồ sơ khai tử gồm những gì?",
-    "Khai tử làm ở đâu?"
+    "Khai tử làm ở đâu?",
+    "Thời hạn khai báo tử ?",
+    "Ai có quyền khai báo tử ?"
   ],
   "smart_filters": {
     "exact_title": [

@@ -13,7 +13,9 @@
   "question_variants": [
     "Hồ sơ nhận con nuôi gồm những gì?",
     "Quy trình nuôi con nuôi như thế nào?",
-    "Điều kiện để được nhận con nuôi ?"
+    "Điều kiện để được nhận con nuôi ?",
+    "Giấy tờ cần thiết cho việc nuôi con nuôi ?",
+    "Thời gian xử lý hồ sơ nuôi con nuôi ?"
   ],
   "smart_filters": {
     "exact_title": [

@@ -13,7 +13,9 @@
   "question_variants": [
     "Khai sinh cho con có cha mẹ là người nước ngoài?",
     "Thủ tục khai sinh có yếu tố nước ngoài phức tạp như thế nào?",
-    "Giấy tờ nước ngoài cần hợp pháp hóa không?"
+    "Giấy tờ nước ngoài cần hợp pháp hóa không?",
+    "Khai sinh với yếu tố nước ngoài cần dịch thuật không?",
+    "Thủ tục khai sinh cho người nước ngoài tại Việt Nam?"
   ],
   "smart_filters": {
     "exact_title": [
@@ -21,8 +23,8 @@
     ],
     "title_keywords": [
       "nước ngoài",
-      "đăng ký",
-      "khai sinh"
+      "khai sinh",
+      "đăng ký"
     ],
     "procedure_code": [
       "QT 08/CX-HCTP"

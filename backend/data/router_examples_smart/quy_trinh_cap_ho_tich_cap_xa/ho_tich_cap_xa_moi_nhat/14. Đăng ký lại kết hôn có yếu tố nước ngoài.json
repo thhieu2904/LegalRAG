@@ -13,15 +13,17 @@
   "question_variants": [
     "Thủ tục kết hôn có yếu tố nước ngoài làm ở đâu?",
     "Hồ sơ kết hôn có yếu tố nước ngoài gồm những giấy tờ nào?",
-    "Kết hôn có yếu tố nước ngoài mất bao lâu được cấp giấy?"
+    "Kết hôn có yếu tố nước ngoài mất bao lâu được cấp giấy?",
+    "Điều kiện để được đăng ký kết hôn có yếu tố nước ngoài?",
+    "Chi phí đăng ký kết hôn có yếu tố nước ngoài?"
   ],
   "smart_filters": {
     "exact_title": [
       "Đăng ký lại kết hôn có yếu tố nước ngoài"
     ],
     "title_keywords": [
-      "kết hôn",
       "nước ngoài",
+      "kết hôn",
       "đăng ký"
     ],
     "procedure_code": [

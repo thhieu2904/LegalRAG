@@ -13,15 +13,20 @@
   "question_variants": [
     "Làm giấy khai sinh kết hợp ở đâu và cần những gì?",
     "Thủ tục khai báo sinh con kết hợp như thế nào?",
-    "Hồ sơ đăng ký khai sinh kết hợp gồm những gì?"
+    "Hồ sơ đăng ký khai sinh kết hợp gồm những gì?",
+    "Đăng ký khai sinh kết hợp tốn bao nhiêu tiền?",
+    "Phí đăng ký khai sinh kết hợp cho con là bao nhiêu?",
+    "Lệ phí khai sinh kết hợp có tốn phí không?",
+    "Chi phí làm giấy khai sinh kết hợp như thế nào?",
+    "Khai sinh kết hợp có miễn phí không?"
   ],
   "smart_filters": {
     "exact_title": [
       "Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con"
     ],
     "title_keywords": [
-      "đăng ký",
-      "khai sinh"
+      "khai sinh",
+      "đăng ký"
     ],
     "procedure_code": [
       "QT 07/CX-HCTP"

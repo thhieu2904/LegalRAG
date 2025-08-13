@@ -157,46 +157,34 @@ class OptimizedEnhancedRAGService:
                 
             logger.info(f"Processing query in session {session_id}: {query[:50]}...")
             
-            # Step 1: Enhanced Smart Query Routing với Ambiguous Detection  
+            # Step 1: Enhanced Smart Query Routing với MULTI-LEVEL Confidence Processing
             if use_ambiguous_detection:
-                is_ambiguous, routing_result = self.ambiguous_service.is_ambiguous(query)
+                routing_result = self.smart_router.route_query(query)
+                confidence_level = routing_result.get('confidence_level', 'low')
                 
-                if is_ambiguous:
-                    self.metrics["ambiguous_detected"] += 1
-                    logger.info(f"Ambiguous query detected: {routing_result['status']} (confidence: {routing_result['confidence']:.2f})")
-                    
-                    clarification_response = self.ambiguous_service.generate_clarification_response(routing_result)
-                    
-                    return {
-                        "type": "clarification_needed",
-                        "status": routing_result['status'],
-                        "confidence": routing_result['confidence'],
-                        "clarification": clarification_response,
-                        "matched_example": routing_result.get('matched_example'),
-                        "source_procedure": routing_result.get('source_procedure'),
-                        "session_id": session_id,
-                        "processing_time": time.time() - start_time
-                    }
-                else:
-                    # Query không mơ hồ - có target collection rồi
+                logger.info(f"Router confidence: {confidence_level} (score: {routing_result['confidence']:.3f})")
+                
+                if confidence_level == 'high':
+                    # HIGH CONFIDENCE - Route trực tiếp
                     target_collection = routing_result['target_collection']
                     inferred_filters = routing_result.get('inferred_filters', {})
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
-                    logger.info(f"Smart routed to collection: {target_collection} (confidence: {routing_result['confidence']:.2f})")
-                    if inferred_filters:
-                        logger.info(f"Using smart filters: {list(inferred_filters.keys())}")
+                    logger.info(f"✅ HIGH CONFIDENCE routing to: {target_collection}")
+                    
+                else:
+                    # TẤT CẢ CONFIDENCE < HIGH THRESHOLD - Hỏi lại user, không route
+                    logger.info(f"🤔 CONFIDENCE KHÔNG ĐỦ CAO ({confidence_level}) - hỏi lại user thay vì route")
+                    return self._generate_smart_clarification(routing_result, query, session_id, start_time)
+            
             else:
-                # Even without ambiguous detection, still use smart routing for better targeting
+                # Fallback routing logic (giữ nguyên logic cũ)
                 routing_result = self.smart_router.route_query(query)
-                if routing_result['status'] == 'routed' and routing_result['target_collection']:
+                if routing_result.get('status') == 'routed' and routing_result.get('target_collection'):
                     target_collection = routing_result['target_collection']
                     inferred_filters = routing_result.get('inferred_filters', {})
                     best_collections = [target_collection]
-                    logger.info(f"Smart routed to collection: {target_collection} (confidence: {routing_result['confidence']:.2f})")
-                    if inferred_filters:
-                        logger.info(f"Using smart filters: {list(inferred_filters.keys())}")
+                    logger.info(f"Fallback routed to collection: {target_collection}")
                 else:
-                    # True fallback: sử dụng default collection
                     best_collections = [settings.chroma_collection_name]
                     inferred_filters = {}
             
@@ -629,6 +617,169 @@ TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các qu
                 'status': 'error',
                 'collections_processed': 0,
                 'error': str(e)
+            }
+    
+    def _generate_smart_clarification(self, routing_result: Dict[str, Any], query: str, session_id: str, start_time: float) -> Dict[str, Any]:
+        """Tạo clarification thông minh dựa trên routing result"""
+        try:
+            self.metrics["ambiguous_detected"] += 1
+            
+            # Tạo clarification với suggestions từ routing result
+            best_match = routing_result.get('matched_example', '')
+            source_procedure = routing_result.get('source_procedure', '')
+            confidence = routing_result.get('confidence', 0.0)
+            
+            # Tạo clarification message với context
+            clarification_msg = f"Tôi nghĩ bạn có thể muốn hỏi về '{source_procedure}' (độ tin cậy: {confidence:.3f}). Đúng không?"
+            
+            # Tạo options dựa trên best match và các alternatives
+            options = []
+            
+            # Option 1: Best match từ router
+            if source_procedure:
+                options.append({
+                    'id': '1',
+                    'title': f"Đúng - về {source_procedure}",
+                    'description': f"Câu hỏi tương tự: {best_match[:100]}..." if best_match else "Đúng, tôi muốn hỏi về thủ tục này",
+                    'collection': routing_result.get('target_collection'),
+                    'procedure': source_procedure
+                })
+            
+            # Option 2: Generic alternatives
+            options.append({
+                'id': '2', 
+                'title': "Không, tôi muốn hỏi về thủ tục khác",
+                'description': "Hãy cho tôi biết rõ hơn thủ tục nào bạn quan tâm",
+                'collection': None,
+                'procedure': None
+            })
+            
+            if not options:
+                # Fallback nếu không có suggestions - return proper structure
+                return {
+                    "type": "clarification_needed",
+                    "status": "smart_clarification",
+                    "confidence": routing_result.get('confidence', 0.0),
+                    "clarification": {
+                        "message": "Xin lỗi, tôi không rõ ý định của câu hỏi. Bạn có thể diễn đạt rõ hơn không?",
+                        "options": [],
+                        "suggestions": [
+                            "Bạn có thể nói rõ hơn về thủ tục nào bạn muốn thực hiện?",
+                            "Ví dụ: đăng ký khai sinh, kết hôn, chứng thực, hay thủ tục khác?"
+                        ]
+                    },
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time,
+                    "strategy": "generic_clarification"
+                }
+            
+            logger.info(f"Generated smart clarification with {len(options)} options")
+            
+            return {
+                "type": "clarification_needed",
+                "status": "smart_clarification", 
+                "confidence": routing_result.get('confidence', 0.0),
+                "clarification": {
+                    "message": clarification_msg,
+                    "options": options
+                },
+                "matched_example": routing_result.get('matched_example'),
+                "source_procedure": routing_result.get('source_procedure'),
+                "session_id": session_id,
+                "processing_time": time.time() - start_time,
+                "strategy": "smart_suggestion"
+            }
+            
+        except Exception as e:
+            logger.error(f"Error generating smart clarification: {e}")
+            return {
+                "type": "clarification_needed", 
+                "status": "error",
+                "clarification": "Xin lỗi, có lỗi khi xử lý câu hỏi. Bạn có thể thử lại không?",
+                "session_id": session_id,
+                "processing_time": time.time() - start_time
+            }
+    
+    def _activate_vector_backup_strategy(self, routing_result: Dict[str, Any], query: str, session_id: str, start_time: float) -> Dict[str, Any]:
+        """Kích hoạt Vector Backup Strategy khi Smart Router hoàn toàn thất bại"""
+        try:
+            logger.info("🚨 Activating Vector Backup Strategy - searching across all collections")
+            
+            # Thực hiện vector search trực tiếp trên tất cả collections để tìm topics liên quan
+            all_collections = self.vectordb_service.list_collections()
+            backup_results = []
+            
+            for collection_info in all_collections[:3]:  # Limit to top 3 collections for performance
+                collection_name = collection_info["name"]
+                try:
+                    collection = self.vectordb_service.get_collection(collection_name)
+                    search_results = self.vectordb_service.search_in_collection(
+                        collection_name,
+                        query,
+                        top_k=2,  # Chỉ lấy top 2 results per collection
+                        similarity_threshold=0.3,
+                        where_filter={}
+                    )
+                    
+                    if search_results:
+                        best_result = search_results[0]
+                        backup_results.append({
+                            'collection': collection_name,
+                            'score': best_result.get('similarity', best_result.get('score', 0)),
+                            'content': best_result.get('content', best_result.get('document', ''))[:200] + "...",
+                            'metadata': best_result.get('metadata', {}),
+                            'source': best_result.get('metadata', {}).get('source', 'N/A')
+                        })
+                        
+                except Exception as e:
+                    logger.warning(f"Error searching collection {collection_name}: {e}")
+                    continue
+            
+            # Sort by score và tạo suggestions
+            backup_results.sort(key=lambda x: x['score'], reverse=True)
+            
+            options = []
+            for i, result in enumerate(backup_results[:3], 1):
+                # Trích xuất title từ metadata nếu có
+                metadata = result.get('metadata', {})
+                title = metadata.get('document_title', metadata.get('title', f"Thủ tục {result['collection']}"))
+                
+                option = {
+                    'id': str(i),
+                    'title': title,
+                    'description': f"Điểm tương đồng: {result['score']:.2f} - {result['content']}",
+                    'collection': result['collection'],
+                    'backup_score': result['score']
+                }
+                options.append(option)
+            
+            clarification_msg = "Tôi không tìm thấy câu hỏi mẫu phù hợp, nhưng dựa trên tìm kiếm trong dữ liệu, câu hỏi của bạn có thể liên quan đến:"
+            
+            if not options:
+                clarification_msg = "Xin lỗi, tôi không tìm thấy thông tin phù hợp. Bạn có thể thử với từ khóa khác không?"
+            
+            logger.info(f"Vector backup strategy found {len(options)} potential matches")
+            
+            return {
+                "type": "clarification_needed",
+                "status": "vector_backup",
+                "confidence": routing_result.get('confidence', 0.0),
+                "clarification": clarification_msg,
+                "options": options,
+                "backup_results": len(backup_results),
+                "session_id": session_id,
+                "processing_time": time.time() - start_time,
+                "strategy": "vector_backup"
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in vector backup strategy: {e}")
+            return {
+                "type": "clarification_needed",
+                "status": "fallback_error", 
+                "clarification": "Xin lỗi, có lỗi hệ thống khi xử lý câu hỏi. Vui lòng thử lại sau.",
+                "session_id": session_id,
+                "processing_time": time.time() - start_time
             }
     
     @property  

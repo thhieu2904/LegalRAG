@@ -13,15 +13,17 @@
   "question_variants": [
     "Giấy tờ nào được chứng thực bản sao?",
     "Phí chứng thực bản sao bao nhiêu?",
-    "Chứng thực bản sao và photo công chứng khác gì?"
+    "Chứng thực bản sao và photo công chứng khác gì?",
+    "Bản sao chứng thực có giá trị bao lâu?",
+    "Thủ tục chứng thực bản sao đơn giản không?"
   ],
   "smart_filters": {
     "exact_title": [
       "Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản"
     ],
     "title_keywords": [
-      "giấy tờ",
       "bản sao",
+      "giấy tờ",
       "chứng thực"
     ],
     "procedure_code": [

@@ -13,15 +13,20 @@
   "question_variants": [
     "Làm giấy khai sinh lại ở đâu và cần những gì?",
     "Thủ tục khai báo sinh con lại như thế nào?",
-    "Hồ sơ đăng ký khai sinh lại gồm những gì?"
+    "Hồ sơ đăng ký khai sinh lại gồm những gì?",
+    "Đăng ký khai sinh lại tốn bao nhiêu tiền?",
+    "Phí đăng ký khai sinh lại cho con là bao nhiêu?",
+    "Lệ phí khai sinh lại có tốn phí không?",
+    "Chi phí làm giấy khai sinh lại như thế nào?",
+    "Khai sinh lại có miễn phí không?"
   ],
   "smart_filters": {
     "exact_title": [
       "Đăng ký lại khai sinh"
     ],
     "title_keywords": [
-      "đăng ký",
-      "khai sinh"
+      "khai sinh",
+      "đăng ký"
     ],
     "procedure_code": [
       "QT 03/CX-HCTP"

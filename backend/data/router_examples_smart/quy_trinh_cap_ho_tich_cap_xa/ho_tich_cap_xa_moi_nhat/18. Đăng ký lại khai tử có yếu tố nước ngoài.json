@@ -13,7 +13,9 @@
   "question_variants": [
     "Thủ tục khai báo tử có yếu tố nước ngoài như thế nào?",
     "Hồ sơ khai tử có yếu tố nước ngoài gồm những gì?",
-    "Khai tử có yếu tố nước ngoài làm ở đâu?"
+    "Khai tử có yếu tố nước ngoài làm ở đâu?",
+    "Thời hạn khai báo tử có yếu tố nước ngoài?",
+    "Ai có quyền khai báo tử có yếu tố nước ngoài?"
   ],
   "smart_filters": {
     "exact_title": [

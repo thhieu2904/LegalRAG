@@ -51,8 +51,11 @@ class SmartRouterGenerator:
                         "Làm giấy khai sinh {specificity} ở đâu và cần những gì?",
                         "Thủ tục khai báo sinh con {specificity} như thế nào?",
                         "Hồ sơ đăng ký khai sinh {specificity} gồm những gì?",
-                        "Giấy tờ cần thiết để khai sinh {specificity}?",
-                        "Quy trình đăng ký khai sinh {specificity} ra sao?"
+                        "Đăng ký khai sinh {specificity} tốn bao nhiêu tiền?",
+                        "Phí đăng ký khai sinh {specificity} cho con là bao nhiêu?",
+                        "Lệ phí khai sinh {specificity} có tốn phí không?",
+                        "Chi phí làm giấy khai sinh {specificity} như thế nào?",
+                        "Khai sinh {specificity} có miễn phí không?"
                     ]
                 },
                 'mobile': {
@@ -428,7 +431,7 @@ class SmartRouterGenerator:
         ).replace('  ', ' ').strip()
         
         variants = []
-        for variant_template in template['variants'][:3]:  # Limit to 3 variants
+        for variant_template in template['variants']:  # Lấy TẤT CẢ variants để phủ nhiều thông tin nhất
             variant = variant_template.format(
                 specificity=specificity,
                 contract_type=self._extract_contract_type(metadata.get('title', '')),

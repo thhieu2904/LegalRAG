@@ -9,29 +9,48 @@
     "version": "2.0",
     "generator": "smart_router_v2"
   },
-  "main_question": "Chứng thực chữ ký người dịch cần thủ tục gì?",
+  "main_question": "Đăng ký kết hôn cần điều kiện gì?",
   "question_variants": [
-    "Thủ tục chứng thực người dịch làm ở đâu?",
-    "Hồ sơ chứng thực chữ ký dịch thuật gồm gì?",
-    "Chứng thực dịch thuật mất bao lâu?"
+    "Thủ tục kết hôn làm ở đâu?",
+    "Hồ sơ kết hôn gồm những giấy tờ nào?",
+    "Kết hôn mất bao lâu được cấp giấy?",
+    "Điều kiện để được đăng ký kết hôn ?",
+    "Chi phí đăng ký kết hôn ?"
   ],
   "smart_filters": {
     "exact_title": [
       "Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã"
     ],
-    "title_keywords": ["chữ ký", "chứng thực"],
-    "procedure_code": ["QT 10/CX-HCTP"],
-    "agency": ["Ủy ban nhân dân cấp xã"],
-    "agency_level": ["commune"],
-    "cost_type": ["paid"],
-    "processing_speed": ["same_day"],
-    "applicant_type": ["Cá nhân"]
+    "title_keywords": [
+      "chữ ký",
+      "chứng thực"
+    ],
+    "procedure_code": [
+      "QT 10/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã"
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "same_day"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "free",
     "level": "commune",
-    "applicant_scope": ["Cá nhân"]
+    "applicant_scope": [
+      "Cá nhân"
+    ]
   },
   "expected_collection": "chung_thuc",
   "confidence_threshold": 0.75,

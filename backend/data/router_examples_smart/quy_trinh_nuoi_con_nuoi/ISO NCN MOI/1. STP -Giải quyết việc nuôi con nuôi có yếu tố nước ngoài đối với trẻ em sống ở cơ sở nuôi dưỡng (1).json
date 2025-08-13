@@ -13,7 +13,9 @@
   "question_variants": [
     "Hồ sơ nhận con nuôi có yếu tố nước ngoài gồm những gì?",
     "Quy trình nuôi con nuôi có yếu tố nước ngoài như thế nào?",
-    "Điều kiện để được nhận con nuôi có yếu tố nước ngoài?"
+    "Điều kiện để được nhận con nuôi có yếu tố nước ngoài?",
+    "Giấy tờ cần thiết cho việc nuôi con nuôi có yếu tố nước ngoài?",
+    "Thời gian xử lý hồ sơ nuôi con nuôi có yếu tố nước ngoài?"
   ],
   "smart_filters": {
     "exact_title": [

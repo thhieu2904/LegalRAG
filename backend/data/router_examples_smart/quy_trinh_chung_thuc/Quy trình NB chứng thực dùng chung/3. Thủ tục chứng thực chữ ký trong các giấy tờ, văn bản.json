@@ -13,7 +13,9 @@
   "question_variants": [
     "Chứng thực chữ ký trên giấy tờ ở đâu?",
     "Giấy tờ cần thiết cho chứng thực chữ ký trên giấy tờ?",
-    "Phí chứng thực chữ ký trên giấy tờ?"
+    "Phí chứng thực chữ ký trên giấy tờ?",
+    "Ai có thể chứng thực chữ ký trên giấy tờ?",
+    "Chữ ký chứng thực có hiệu lực bao lâu?"
   ],
   "smart_filters": {
     "exact_title": [

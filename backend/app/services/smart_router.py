@@ -32,9 +32,12 @@ class EnhancedSmartQueryRouter:
         self.question_vectors = {}
         self.collection_mappings = {}
         
-        # Thresholds
-        self.similarity_threshold = 0.3
-        self.high_confidence_threshold = 0.5
+        # Thresholds - CỰC CAO để tránh route nhầm, chuyển logic xuống clarification
+        self.high_confidence_threshold = 0.85  # CỰC CAO - chỉ route khi RẤT RẤT chắc chắn
+        self.min_confidence_threshold = 0.50   # Dưới threshold này = hỏi lại user
+        
+        logger.info(f"🎯 Router thresholds - Min: {self.min_confidence_threshold}, High: {self.high_confidence_threshold}")
+        logger.info("💡 STRATEGY: Threshold CỰC CAO, nếu không chắc chắn thì hỏi lại user")
         
         # Initialize database - cache first, fallback to live loading
         if self._load_from_cache():
@@ -451,11 +454,13 @@ class EnhancedSmartQueryRouter:
                 final_title = best_filters.get('exact_title', ['Unknown'])
                 logger.info(f"🔍 FINAL FILTERS CHECK - Exact title: {final_title}")
             
-            # Determine routing decision
+            # Determine routing decision - LOGIC MỚI với 3 mức tin cậy
             if best_score >= self.high_confidence_threshold:
-                # High confidence - route immediately
+                # High confidence - route immediately với tin cậy cao
+                logger.info(f"✅ HIGH CONFIDENCE routing: {best_score:.3f} >= {self.high_confidence_threshold}")
                 return {
                     'status': 'routed',
+                    'confidence_level': 'high',
                     'target_collection': best_collection,
                     'confidence': best_score,
                     'all_scores': collection_scores,
@@ -466,34 +471,57 @@ class EnhancedSmartQueryRouter:
                     'inferred_filters': best_filters
                 }
             
-            elif best_score >= self.similarity_threshold:
-                # Medium confidence - route but note
+            elif best_score >= self.min_confidence_threshold:
+                # Khả năng match có thể đúng nhưng chưa chắc chắn - ROUTE NHƯNG CAUTION
+                logger.info(f"⚠️ LOW-MEDIUM CONFIDENCE routing: {best_score:.3f} >= {self.min_confidence_threshold}")
                 return {
                     'status': 'routed',
+                    'confidence_level': 'low-medium', 
                     'target_collection': best_collection,
                     'confidence': best_score,
                     'all_scores': collection_scores,
                     'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
-                    'clarification_needed': False,
+                    'clarification_needed': False,  # Route nhưng sẽ có extra validation
                     'matched_example': best_example,
                     'source_procedure': best_source,
-                    'inferred_filters': best_filters
+                    'inferred_filters': best_filters,
+                    'warning': 'low_medium_confidence'
                 }
             
             else:
-                # Low similarity - needs clarification
+                # Below min threshold - cần clarification vì quá mơ hồ
+                logger.warning(f"🤔 TOO AMBIGUOUS - cần clarification: {best_score:.3f} < {self.min_confidence_threshold}")
                 return {
-                    'status': 'ambiguous',
-                    'target_collection': None,
+                    'status': 'clarification_needed',
+                    'confidence_level': 'low',
+                    'target_collection': best_collection,
                     'confidence': best_score,
                     'all_scores': collection_scores,
-                    'display_name': None,
+                    'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
                     'clarification_needed': True,
                     'matched_example': best_example,
                     'source_procedure': best_source,
-                    'inferred_filters': best_filters
+                    'inferred_filters': best_filters,
+                    'suggested_topics': []
                 }
-                
+            
+            # Below min threshold - backup strategy hoặc clarification
+            logger.warning(f"🚨 VERY LOW CONFIDENCE - kích hoạt backup strategy: {best_score:.3f} < {self.min_confidence_threshold}")
+            return {
+                'status': 'no_match',
+                'confidence_level': 'very_low',
+                'target_collection': None,
+                'confidence': best_score,
+                'all_scores': collection_scores,
+                'display_name': None,
+                'clarification_needed': True,
+                'matched_example': best_example,
+                'source_procedure': best_source,
+                'inferred_filters': best_filters,
+                'suggested_topics': [],
+                'needs_vector_backup': True
+            }
+            
         except Exception as e:
             logger.error(f"❌ Error in enhanced query routing: {e}")
             return {
@@ -507,6 +535,41 @@ class EnhancedSmartQueryRouter:
                 'source_procedure': None,
                 'inferred_filters': {}
             }
+    
+    def _get_top_suggestions(self, collection_scores: Dict[str, float], top_k: int = 3) -> List[Dict[str, Any]]:
+        """Lấy top suggestions từ collection scores để hiển thị cho user"""
+        try:
+            # Sort collections by score
+            sorted_collections = sorted(collection_scores.items(), key=lambda x: x[1], reverse=True)
+            
+            suggestions = []
+            for collection_name, score in sorted_collections[:top_k]:
+                if score > 0.2:  # Chỉ suggest nếu có ít nhất một chút liên quan
+                    display_name = self.collection_mappings.get(collection_name, {}).get('display_name', collection_name)
+                    
+                    # Lấy example question từ collection này để làm gợi ý
+                    example_questions = self.example_questions.get(collection_name, [])
+                    sample_question = None
+                    if example_questions:
+                        # Lấy main question hoặc question có priority cao
+                        main_questions = [q for q in example_questions if q.get('type') == 'main']
+                        if main_questions:
+                            sample_question = main_questions[0]['text']
+                        else:
+                            sample_question = example_questions[0]['text']
+                    
+                    suggestions.append({
+                        'collection': collection_name,
+                        'display_name': display_name,
+                        'score': score,
+                        'sample_question': sample_question
+                    })
+            
+            return suggestions
+            
+        except Exception as e:
+            logger.warning(f"Error getting top suggestions: {e}")
+            return []
     
     def get_collection_info(self) -> Dict[str, Any]:
         """Trả về thông tin về tất cả collections"""
@@ -543,23 +606,26 @@ class RouterBasedAmbiguousQueryService:
     def is_ambiguous(self, query: str) -> Tuple[bool, Dict[str, Any]]:
         """
         Kiểm tra query có ambiguous không dựa trên router results
+        UPDATED: Sử dụng logic mới với multi-level confidence
         
         Returns:
             (is_ambiguous, routing_result)
         """
         try:
             routing_result = self.router.route_query(query)
+            confidence_level = routing_result.get('confidence_level', 'low')
             
-            is_ambiguous = routing_result['status'] in ['ambiguous', 'no_match']
+            # Ambiguous nếu confidence không phải high
+            is_ambiguous = confidence_level in ['low', 'very_low']
             
             if is_ambiguous:
-                logger.info(f"🤔 Ambiguous query detected: {query[:50]}... (confidence: {routing_result['confidence']:.3f})")
+                logger.info(f"🤔 Ambiguous query detected: confidence_level={confidence_level}, score={routing_result['confidence']:.3f}")
             
             return is_ambiguous, routing_result
             
         except Exception as e:
             logger.error(f"❌ Error checking ambiguous query: {e}")
-            return True, {'status': 'error', 'confidence': 0.0}
+            return True, {'status': 'error', 'confidence': 0.0, 'confidence_level': 'very_low'}
     
     def generate_clarification_response(self, routing_result: Dict[str, Any]) -> str:
         """Generate clarification response dựa trên routing result"""

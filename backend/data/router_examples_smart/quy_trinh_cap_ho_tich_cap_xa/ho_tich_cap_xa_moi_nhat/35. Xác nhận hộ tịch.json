@@ -9,29 +9,49 @@
     "version": "2.0",
     "generator": "smart_router_v2"
   },
-  "main_question": "Xác nhận thông tin hộ tịch cần giấy tờ gì?",
+  "main_question": "Đăng ký kết hôn cần điều kiện gì?",
   "question_variants": [
-    "Thủ tục xác nhận hộ tịch làm ở đâu?",
-    "Hồ sơ xác nhận thông tin hộ tịch gồm gì?",
-    "Xác nhận hộ tịch mất bao lâu được cấp?"
+    "Thủ tục kết hôn làm ở đâu?",
+    "Hồ sơ kết hôn gồm những giấy tờ nào?",
+    "Kết hôn mất bao lâu được cấp giấy?",
+    "Điều kiện để được đăng ký kết hôn ?",
+    "Chi phí đăng ký kết hôn ?"
   ],
   "smart_filters": {
-    "exact_title": ["Xác nhận thông tin hộ tịch"],
+    "exact_title": [
+      "Xác nhận thông tin hộ tịch"
+    ],
     "title_keywords": [],
-    "procedure_code": ["QT 35/CX-HCTP"],
+    "procedure_code": [
+      "QT 35/CX-HCTP"
+    ],
     "agency": [
       "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã)."
     ],
-    "agency_level": ["commune"],
-    "cost_type": ["free"],
-    "processing_speed": ["multiple_days"],
-    "applicant_type": ["Cá nhân", "Cơ quan", "Tổ chức"]
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "free"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Cơ quan",
+      "Tổ chức"
+    ]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "free",
     "level": "commune",
-    "applicant_scope": ["Cá nhân", "Cơ quan", "Tổ chức"]
+    "applicant_scope": [
+      "Cá nhân",
+      "Cơ quan",
+      "Tổ chức"
+    ]
   },
   "expected_collection": "ho_tich_cap_xa",
   "confidence_threshold": 0.75,

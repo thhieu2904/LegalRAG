@@ -150,8 +150,8 @@ class EnhancedContextExpansionService:
     
     def _load_full_document(self, file_path: str) -> str:
         """
-        Load nội dung document có chọn lọc theo câu hỏi để tránh overload LLM
-        STRATEGY: Thay vì load toàn bộ document, chỉ load những phần liên quan
+        Load TOÀN BỘ nội dung document - không filtering, không truncation
+        Đây là fix cho vấn đề user không nhận được đầy đủ thông tin
         """
         try:
             import json
@@ -161,33 +161,47 @@ class EnhancedContextExpansionService:
                 logger.warning(f"Source file not found: {file_path}")
                 return ""
                 
-            logger.info(f"Loading selective document content from: {file_path}")
+            logger.info(f"Loading COMPLETE document content from: {file_path}")
             
             with open(file_path, 'r', encoding='utf-8') as f:
                 json_data = json.load(f)
             
-            # Build selective document content - ƯU TIÊN THÔNG TIN QUAN TRỌNG
+            # LOAD TOÀN BỘ DOCUMENT - TẤT CẢ thông tin
             metadata = json_data.get('metadata', {})
             content_chunks = json_data.get('content_chunks', [])
             
-            # Tạo content với thông tin TÓM TẮT và TRỌNG TÂM
-            essential_parts = []
+            # Build COMPLETE document content
+            complete_parts = []
             
-            # HEADER - Thông tin cốt lõi
-            if metadata.get('title'):
-                essential_parts.append(f"📋 TIÊU ĐỀ: {metadata['title']}")
+            # METADATA SECTION - Đầy đủ thông tin
+            if metadata:
+                complete_parts.append("=== THÔNG TIN THỦ TỤC ===")
+                for key, value in metadata.items():
+                    if value:  # Chỉ loại bỏ empty values
+                        complete_parts.append(f"{key.upper()}: {value}")
+                complete_parts.append("")  # Empty line separator
             
-            if metadata.get('executing_agency'):
-                essential_parts.append(f"🏢 CƠ QUAN THỰC HIỆN: {metadata['executing_agency']}")
-                
-            if metadata.get('processing_time_text'):
-                essential_parts.append(f"⏰ THỜI GIAN XỬ LÝ: {metadata['processing_time_text']}")
+            # CONTENT SECTIONS - Toàn bộ content chunks
+            if content_chunks:
+                complete_parts.append("=== NỘI DUNG CHI TIẾT ===")
+                for chunk in content_chunks:
+                    if chunk.get('content'):
+                        complete_parts.append(chunk['content'])
+                    if chunk.get('subcontent'):
+                        for sub in chunk['subcontent']:
+                            if sub.get('content'):
+                                complete_parts.append(sub['content'])
+                complete_parts.append("")
             
-            # QUAN TRỌNG NHẤT: Thông tin về PHÍ/LỆ PHÍ được ưu tiên hàng đầu
-            if metadata.get('fee_text'):
-                essential_parts.append(f"💰 THÔNG TIN PHÍ/LỆ PHÍ:")
-                essential_parts.append(f"   {metadata['fee_text']}")
-                
+            # Join tất cả content
+            complete_content = "\n".join(complete_parts)
+            
+            logger.info(f"Loaded COMPLETE document: {len(complete_content)} characters (NO filtering, NO truncation)")
+            return complete_content
+            
+        except Exception as e:
+            logger.error(f"Error loading document: {e}")
+            return ""
             essential_parts.append("=" * 60)
             
             # CONTENT CHUNKS - Chỉ lấy những phần CỐT LÕI, bỏ qua chi tiết không cần thiết
@@ -233,7 +247,7 @@ class EnhancedContextExpansionService:
             return final_content
             
         except Exception as e:
-            logger.error(f"Error loading selective document {file_path}: {e}")
+            logger.error(f"Error loading document: {e}")
             return ""
     
     def _get_all_chunks_from_document(self, source_file: str) -> List[Dict[str, Any]]:

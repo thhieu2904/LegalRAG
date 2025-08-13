@@ -1,0 +1,17 @@
+{
+  "total_files_processed": 53,
+  "total_examples": 313,
+  "collections": {
+    "ho_tich_cap_xa": 35,
+    "chung_thuc": 15,
+    "nuoi_con_nuoi": 3
+  },
+  "generator_version": "smart_router_individual_v2.0",
+  "output_structure": "individual_files_mirror_source",
+  "improvements": [
+    "Một file router cho mỗi document gốc",
+    "Cấu trúc thư mục mirror document structure",
+    "Dễ maintain và trace từng document",
+    "Better scalability và performance"
+  ]
+}

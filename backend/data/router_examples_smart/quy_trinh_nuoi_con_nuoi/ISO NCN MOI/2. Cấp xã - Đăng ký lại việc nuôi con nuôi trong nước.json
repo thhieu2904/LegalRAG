@@ -13,7 +13,9 @@
   "question_variants": [
     "Hồ sơ nhận con nuôi lại gồm những gì?",
     "Quy trình nuôi con nuôi lại như thế nào?",
-    "Điều kiện để được nhận con nuôi lại?"
+    "Điều kiện để được nhận con nuôi lại?",
+    "Giấy tờ cần thiết cho việc nuôi con nuôi lại?",
+    "Thời gian xử lý hồ sơ nuôi con nuôi lại?"
   ],
   "smart_filters": {
     "exact_title": [

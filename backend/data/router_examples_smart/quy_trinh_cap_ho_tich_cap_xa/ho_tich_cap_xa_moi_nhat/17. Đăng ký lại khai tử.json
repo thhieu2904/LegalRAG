@@ -13,7 +13,9 @@
   "question_variants": [
     "Thủ tục khai báo tử lại như thế nào?",
     "Hồ sơ khai tử lại gồm những gì?",
-    "Khai tử lại làm ở đâu?"
+    "Khai tử lại làm ở đâu?",
+    "Thời hạn khai báo tử lại?",
+    "Ai có quyền khai báo tử lại?"
   ],
   "smart_filters": {
     "exact_title": [

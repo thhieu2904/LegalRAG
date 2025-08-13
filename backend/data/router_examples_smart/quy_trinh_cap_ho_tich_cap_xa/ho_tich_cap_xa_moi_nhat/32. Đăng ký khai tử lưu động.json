@@ -13,16 +13,18 @@
   "question_variants": [
     "Thủ tục khai báo tử lưu động như thế nào?",
     "Hồ sơ khai tử lưu động gồm những gì?",
-    "Khai tử lưu động làm ở đâu?"
+    "Khai tử lưu động làm ở đâu?",
+    "Thời hạn khai báo tử lưu động?",
+    "Ai có quyền khai báo tử lưu động?"
   ],
   "smart_filters": {
     "exact_title": [
       "Đăng ký khai tử lưu động"
     ],
     "title_keywords": [
-      "lưu động",
       "khai tử",
-      "đăng ký"
+      "đăng ký",
+      "lưu động"
     ],
     "procedure_code": [
       "QT 32/CX-HCTP"
