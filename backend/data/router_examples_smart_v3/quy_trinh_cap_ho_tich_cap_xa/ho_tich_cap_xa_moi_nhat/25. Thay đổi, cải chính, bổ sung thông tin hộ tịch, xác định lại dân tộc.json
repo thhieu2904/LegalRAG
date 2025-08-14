@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "title": "Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc",
+    "code": "QT 25/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\25. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:22"
+  },
+  "main_question": "Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc cần điều kiện gì?",
+  "question_variants": [
+    "Làm Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc cần giấy tờ gì?",
+    "Chi phí Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc bao nhiêu?",
+    "Thời gian xử lý Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc là bao lâu?",
+    "Làm Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc ở đâu?",
+    "Điều kiện để được Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc?",
+    "Quy trình Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc"
+    ],
+    "title_keywords": [
+      "thay",
+      "đổi",
+      "cải",
+      "chính",
+      "sung"
+    ],
+    "procedure_code": [
+      "QT 25/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi đã đăng ký hộ tịch trước đây hoặc nơi cư trú của người yêu cầu."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "title": "Cấp Giấy xác nhận tình trạng hôn nhân",
+    "code": "QT 33/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\33. Cấp Giấy xác nhận tình trạng hôn nhân.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:30"
+  },
+  "main_question": "Thủ tục 'Cấp Giấy xác nhận tình trạng hôn nhân' là gì?",
+  "question_variants": [
+    "Làm Cấp Giấy xác nhận tình trạng hôn nhân cần giấy tờ gì?",
+    "Chi phí Cấp Giấy xác nhận tình trạng hôn nhân bao nhiêu?",
+    "Thời gian xử lý Cấp Giấy xác nhận tình trạng hôn nhân là bao lâu?",
+    "Làm Cấp Giấy xác nhận tình trạng hôn nhân ở đâu?",
+    "Điều kiện để được Cấp Giấy xác nhận tình trạng hôn nhân?",
+    "Quy trình Cấp Giấy xác nhận tình trạng hôn nhân ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Cấp Giấy xác nhận tình trạng hôn nhân"
+    ],
+    "title_keywords": [
+      "giấy",
+      "xác",
+      "nhận",
+      "tình",
+      "trạng"
+    ],
+    "procedure_code": [
+      "QT 33/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú hoặc tạm trú (nếu không có nơi thường trú)."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "free"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "free",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

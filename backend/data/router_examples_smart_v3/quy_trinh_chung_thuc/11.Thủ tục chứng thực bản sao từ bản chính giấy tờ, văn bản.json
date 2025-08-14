@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "title": "Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản",
+    "code": "QT 11/CX-HCTP",
+    "collection": "chung_thuc",
+    "source_document": "quy_trinh_chung_thuc\\11.Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:35"
+  },
+  "main_question": "Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản cần điều kiện gì?",
+  "question_variants": [
+    "Làm Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản cần giấy tờ gì?",
+    "Chi phí Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản bao nhiêu?",
+    "Thời gian xử lý Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản là bao lâu?",
+    "Làm Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản ở đâu?",
+    "Điều kiện để được Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản?",
+    "Quy trình Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản"
+    ],
+    "title_keywords": [
+      "chứng",
+      "thực",
+      "bản",
+      "sao",
+      "bản"
+    ],
+    "procedure_code": [
+      "QT 11/CX-HCTP"
+    ],
+    "agency": [
+      "Phòng công chứng"
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "immediate"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "expected_collection": "chung_thuc",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

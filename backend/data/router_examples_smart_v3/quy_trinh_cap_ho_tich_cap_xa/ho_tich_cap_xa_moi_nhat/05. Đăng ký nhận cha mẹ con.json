@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "title": "Đăng ký nhận cha, mẹ, con",
+    "code": "QT 05/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\05. Đăng ký nhận cha mẹ con.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:08"
+  },
+  "main_question": "Thủ tục 'Đăng ký nhận cha, mẹ, con' là gì?",
+  "question_variants": [
+    "Làm Đăng ký nhận cha, mẹ, con cần giấy tờ gì?",
+    "Chi phí Đăng ký nhận cha, mẹ, con bao nhiêu?",
+    "Thời gian xử lý Đăng ký nhận cha, mẹ, con là bao lâu?",
+    "Làm Đăng ký nhận cha, mẹ, con ở đâu?",
+    "Điều kiện để được Đăng ký nhận cha, mẹ, con?",
+    "Quy trình Đăng ký nhận cha, mẹ, con ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký nhận cha, mẹ, con"
+    ],
+    "title_keywords": [
+      "nhận",
+      "cha",
+      "con"
+    ],
+    "procedure_code": [
+      "QT 05/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi cư trú của người nhận hoặc người được nhận là cha, mẹ, con."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

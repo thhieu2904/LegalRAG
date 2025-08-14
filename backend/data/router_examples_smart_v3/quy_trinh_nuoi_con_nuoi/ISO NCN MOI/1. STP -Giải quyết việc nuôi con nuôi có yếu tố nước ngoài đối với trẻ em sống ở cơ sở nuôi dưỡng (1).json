@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "title": "Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng",
+    "code": "QT 01/CT-HCTP",
+    "collection": "nuoi_con_nuoi",
+    "source_document": "quy_trinh_nuoi_con_nuoi\\ISO NCN MOI\\1. STP -Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng (1).json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:49"
+  },
+  "main_question": "Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng cần điều kiện gì?",
+  "question_variants": [
+    "Làm Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng cần giấy tờ gì?",
+    "Chi phí Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng bao nhiêu?",
+    "Thời gian xử lý Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng là bao lâu?",
+    "Làm Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng ở đâu?",
+    "Hồ sơ Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng gồm những giấy tờ nào?",
+    "Điều kiện để được Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng"
+    ],
+    "title_keywords": [
+      "giải",
+      "quyết",
+      "nuôi",
+      "con",
+      "nuôi"
+    ],
+    "procedure_code": [
+      "QT 01/CT-HCTP"
+    ],
+    "agency": [
+      "Cục Hành chính tư pháp; UBND thành phố Cần Thơ; Sở Tư pháp thành phố Cần Thơ."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "slow"
+    ],
+    "applicant_type": [
+      "Văn phòng con nuôi nước ngoài",
+      "Người nước ngoài thường trú ở nước ngoài",
+      "Người Việt Nam định cư ở nước ngoài",
+      "Người nước ngoài đang làm việc, học tập tại Việt Nam",
+      "Cơ sở nuôi dưỡng trẻ em"
+    ]
+  },
+  "key_attributes": {
+    "speed": "slow",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Văn phòng con nuôi nước ngoài",
+      "Người nước ngoài thường trú ở nước ngoài",
+      "Người Việt Nam định cư ở nước ngoài",
+      "Người nước ngoài đang làm việc, học tập tại Việt Nam",
+      "Cơ sở nuôi dưỡng trẻ em"
+    ]
+  },
+  "expected_collection": "nuoi_con_nuoi",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

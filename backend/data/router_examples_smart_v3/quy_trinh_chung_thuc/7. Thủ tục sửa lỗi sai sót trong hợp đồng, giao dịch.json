@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "title": "Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch",
+    "code": "QT 07/CX-HCTP",
+    "collection": "chung_thuc",
+    "source_document": "quy_trinh_chung_thuc\\7. Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:42"
+  },
+  "main_question": "Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch là gì?",
+  "question_variants": [
+    "Làm Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch cần giấy tờ gì?",
+    "Chi phí Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch bao nhiêu?",
+    "Thời gian xử lý Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch là bao lâu?",
+    "Làm Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch ở đâu?",
+    "Điều kiện để được Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch?",
+    "Quy trình Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch"
+    ],
+    "title_keywords": [
+      "sửa",
+      "lỗi",
+      "sai",
+      "sót",
+      "hợp"
+    ],
+    "procedure_code": [
+      "QT 07/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã"
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "immediate"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "expected_collection": "chung_thuc",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

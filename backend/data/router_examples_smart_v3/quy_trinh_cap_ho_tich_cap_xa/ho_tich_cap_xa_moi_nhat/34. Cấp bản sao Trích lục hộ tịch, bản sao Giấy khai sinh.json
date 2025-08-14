@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "title": "Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh",
+    "code": "QT 34/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\34. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:30"
+  },
+  "main_question": "Thủ tục 'Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh' là gì?",
+  "question_variants": [
+    "Làm Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh cần giấy tờ gì?",
+    "Chi phí Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh bao nhiêu?",
+    "Thời gian xử lý Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh là bao lâu?",
+    "Làm Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh ở đâu?",
+    "Điều kiện để được Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh?",
+    "Quy trình Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh"
+    ],
+    "title_keywords": [
+      "bản",
+      "sao",
+      "trích",
+      "lục",
+      "tịch"
+    ],
+    "procedure_code": [
+      "QT 34/CX-HCTP"
+    ],
+    "agency": [
+      "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã)."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "immediate"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "title": "Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực",
+    "code": "QT 08/CX-HCTP",
+    "collection": "chung_thuc",
+    "source_document": "quy_trinh_chung_thuc\\8. Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:43"
+  },
+  "main_question": "Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực cần điều kiện gì?",
+  "question_variants": [
+    "Làm Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực cần giấy tờ gì?",
+    "Chi phí Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực bao nhiêu?",
+    "Thời gian xử lý Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực là bao lâu?",
+    "Làm Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực ở đâu?",
+    "Điều kiện để được Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực?",
+    "Quy trình Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực"
+    ],
+    "title_keywords": [
+      "bản",
+      "sao",
+      "chứng",
+      "thực",
+      "bản"
+    ],
+    "procedure_code": [
+      "QT 08/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi lưu trữ hợp đồng, giao dịch."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "immediate"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "expected_collection": "chung_thuc",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

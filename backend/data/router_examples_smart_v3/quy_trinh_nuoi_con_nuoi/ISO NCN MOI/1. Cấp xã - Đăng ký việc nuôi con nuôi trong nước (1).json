@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "title": "Đăng ký việc nuôi con nuôi trong nước",
+    "code": "QT 01/CX-HCTP",
+    "collection": "nuoi_con_nuoi",
+    "source_document": "quy_trinh_nuoi_con_nuoi\\ISO NCN MOI\\1. Cấp xã - Đăng ký việc nuôi con nuôi trong nước (1).json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:48"
+  },
+  "main_question": "Thủ tục 'Đăng ký việc nuôi con nuôi trong nước' là gì?",
+  "question_variants": [
+    "Làm Đăng ký việc nuôi con nuôi trong nước cần giấy tờ gì?",
+    "Chi phí Đăng ký việc nuôi con nuôi trong nước bao nhiêu?",
+    "Thời gian xử lý Đăng ký việc nuôi con nuôi trong nước là bao lâu?",
+    "Làm Đăng ký việc nuôi con nuôi trong nước ở đâu?",
+    "Điều kiện để được Đăng ký việc nuôi con nuôi trong nước?",
+    "Quy trình Đăng ký việc nuôi con nuôi trong nước ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký việc nuôi con nuôi trong nước"
+    ],
+    "title_keywords": [
+      "nuôi",
+      "con",
+      "nuôi",
+      "nước"
+    ],
+    "procedure_code": [
+      "QT 01/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã"
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "nuoi_con_nuoi",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "title": "Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được)",
+    "code": "QT 12/CX-HCTP",
+    "collection": "chung_thuc",
+    "source_document": "quy_trinh_chung_thuc\\12. Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:37"
+  },
+  "main_question": "Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) cần điều kiện gì?",
+  "question_variants": [
+    "Làm Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) cần giấy tờ gì?",
+    "Chi phí Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) bao nhiêu?",
+    "Thời gian xử lý Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) là bao lâu?",
+    "Làm Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) ở đâu?",
+    "Điều kiện để được Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được)?",
+    "Quy trình Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được)"
+    ],
+    "title_keywords": [
+      "chứng",
+      "thực",
+      "chữ",
+      "các",
+      "giấy"
+    ],
+    "procedure_code": [
+      "QT 12/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã"
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "immediate"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "chung_thuc",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

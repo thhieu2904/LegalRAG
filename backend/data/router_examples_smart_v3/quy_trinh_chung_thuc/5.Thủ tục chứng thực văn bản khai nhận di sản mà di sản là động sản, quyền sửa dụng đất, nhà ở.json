@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "title": "Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở",
+    "code": "QT 05/CX-HCTP",
+    "collection": "chung_thuc",
+    "source_document": "quy_trinh_chung_thuc\\5.Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sửa dụng đất, nhà ở.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:40"
+  },
+  "main_question": "Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở cần điều kiện gì?",
+  "question_variants": [
+    "Làm Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở cần giấy tờ gì?",
+    "Chi phí Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở bao nhiêu?",
+    "Thời gian xử lý Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở là bao lâu?",
+    "Làm Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở ở đâu?",
+    "Điều kiện để được Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở?",
+    "Quy trình Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở"
+    ],
+    "title_keywords": [
+      "chứng",
+      "thực",
+      "văn",
+      "bản",
+      "khai"
+    ],
+    "procedure_code": [
+      "QT 05/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã"
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "expected_collection": "chung_thuc",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

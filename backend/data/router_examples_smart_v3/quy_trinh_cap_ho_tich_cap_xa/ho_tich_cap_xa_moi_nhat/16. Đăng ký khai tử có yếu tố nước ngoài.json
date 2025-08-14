@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "title": "Đăng ký khai tử có yếu tố nước ngoài",
+    "code": "QT 16/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\16. Đăng ký khai tử có yếu tố nước ngoài.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:16"
+  },
+  "main_question": "Thủ tục 'Đăng ký khai tử có yếu tố nước ngoài' là gì?",
+  "question_variants": [
+    "Làm Đăng ký khai tử có yếu tố nước ngoài cần giấy tờ gì?",
+    "Chi phí Đăng ký khai tử có yếu tố nước ngoài bao nhiêu?",
+    "Thời gian xử lý Đăng ký khai tử có yếu tố nước ngoài là bao lâu?",
+    "Làm Đăng ký khai tử có yếu tố nước ngoài ở đâu?",
+    "Hồ sơ Đăng ký khai tử có yếu tố nước ngoài gồm những giấy tờ nào?",
+    "Điều kiện để được Đăng ký khai tử có yếu tố nước ngoài?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký khai tử có yếu tố nước ngoài"
+    ],
+    "title_keywords": [
+      "khai",
+      "yếu",
+      "nước",
+      "ngoài"
+    ],
+    "procedure_code": [
+      "QT 16/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã"
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "immediate"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Tổ chức"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

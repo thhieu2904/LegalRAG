@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
 from sentence_transformers import CrossEncoder
@@ -23,21 +24,22 @@ class RerankerService:
         try:
             logger.info(f"Loading reranker model: {self.model_name}")
             
-            # Thử load từ local cache trước - sử dụng GPU
+            # Thử load từ local cache trước - sử dụng GPU với max_length=512
             local_model_path = self._get_local_model_path()
             if local_model_path and local_model_path.exists():
                 logger.info(f"Found local model at: {local_model_path}")
                 try:
-                    self.model = CrossEncoder(str(local_model_path), device='cuda:0')
-                    logger.info("Reranker model loaded successfully from local cache on GPU")
+                    # 🚀 PERFORMANCE OPTIMIZATION: Giới hạn max_length=512 để tăng tốc
+                    self.model = CrossEncoder(str(local_model_path), device='cuda:0', max_length=512)
+                    logger.info("Reranker model loaded successfully from local cache on GPU (max_length=512)")
                     return
                 except Exception as e:
                     logger.warning(f"Failed to load from local cache on GPU: {e}")
             
-            # Fallback: load từ HuggingFace (sẽ download nếu cần) - sử dụng GPU
-            logger.info("Loading from HuggingFace (may download) on GPU")
-            self.model = CrossEncoder(self.model_name, device='cuda:0')
-            logger.info("Reranker model loaded successfully from HuggingFace on GPU")
+            # Fallback: load từ HuggingFace với max_length=512
+            logger.info("Loading from HuggingFace (may download) on GPU with optimized settings")
+            self.model = CrossEncoder(self.model_name, device='cuda:0', max_length=512)
+            logger.info("Reranker model loaded successfully from HuggingFace on GPU (max_length=512)")
             
         except Exception as e:
             logger.error(f"Failed to load reranker model: {e}")
@@ -101,37 +103,34 @@ class RerankerService:
             logger.info(f"🛡️ ROUTER TRUST MODE: Router confidence {router_confidence:.3f} (HIGH) - Minimal rerank interference")
         
         try:
-            # 🔍 DEBUG: Log query được truyền vào reranker
+            # 🔍 DEBUG: Log số lượng documents và thời gian rerank
+            rerank_start_time = time.time()
             logger.info(f"🔍 RERANK QUERY: '{query}' ({len(query)} chars)")
+            logger.info(f"🔢 RERANK INPUT: {len(documents)} documents to process")
             
-            # Chuẩn bị pairs (query, document_content) cho reranker
+            # 🚀 PERFORMANCE OPTIMIZATION: Loại bỏ CPU preprocessing 
+            # Chuẩn bị pairs (query, document_content) trực tiếp cho reranker
             pairs = []
             for i, doc in enumerate(documents):
-                # 🔍 DEBUG: Log document content để phân tích
                 content = doc['content']
                 
-                # 🎯 INTELLIGENT CONTENT EXTRACTION for Vietnamese Reranker
-                # Thay vì truncate random, hãy extract phần liên quan nhất
-                query_keywords = self._extract_query_keywords(query)
-                relevant_content = self._extract_relevant_content(content, query_keywords, max_length=800)
-                
-                if len(relevant_content) != len(content):
-                    logger.info(f"🔧 OPTIMIZED DOC[{i}] from {len(content)} to {len(relevant_content)} chars (focused content)")
-                
-                # Clean content: loại bỏ markdown symbols và ký tự đặc biệt
-                cleaned_content = relevant_content.replace("**", "").replace("*", "").replace("#", "")
+                # 🚀 MINIMAL PROCESSING: Chỉ truncate và clean cơ bản
+                # Để CrossEncoder tự xử lý với max_length=512 đã được set
+                cleaned_content = content.replace("**", "").replace("*", "").replace("#", "")
                 cleaned_content = " ".join(cleaned_content.split())  # Normalize whitespace
                 
-                if len(cleaned_content) > 200:
-                    logger.info(f"🔍 RERANK DOC[{i}] sample: '{cleaned_content[:200]}...' (total: {len(cleaned_content)} chars)")
-                else:
-                    logger.info(f"🔍 RERANK DOC[{i}] full: '{cleaned_content}' ({len(cleaned_content)} chars)")
+                # Truncate nếu quá dài (backup cho max_length limit)
+                if len(cleaned_content) > 1000:  # Soft limit trước khi tokenization
+                    cleaned_content = cleaned_content[:1000] + "..."
                 
+                logger.info(f"🔍 RERANK DOC[{i}]: {len(cleaned_content)} chars")
                 pairs.append((query, cleaned_content))
             
             # Tính rerank scores
-            logger.info(f"Reranking {len(documents)} documents")
+            logger.info(f"🔥 RERANKING {len(documents)} documents with optimized settings...")
             scores = self.model.predict(pairs)
+            rerank_time = time.time() - rerank_start_time
+            logger.info(f"⏱️ RERANK COMPLETED in {rerank_time:.2f}s ({len(documents)} docs)")
             
             # Gán điểm rerank vào mỗi document
             reranked_docs = []
@@ -166,90 +165,9 @@ class RerankerService:
             # Fallback về sắp xếp theo similarity score ban đầu
             return sorted(documents, key=lambda x: x.get('similarity', 0), reverse=True)[:top_k] if top_k else documents
     
-    def _extract_query_keywords(self, query: str) -> List[str]:
-        """Extract key terms từ query để tìm nội dung liên quan"""
-        # Loại bỏ stop words tiếng Việt và giữ các từ khóa quan trọng
-        stop_words = {'có', 'là', 'của', 'được', 'này', 'cho', 'từ', 'với', 'và', 'trong', 'khi', 'để', 'thì', 'như', 'về', 'theo', 'trên', 'dưới', 'bên', 'giữa', 'ngoài', 'sau', 'trước'}
-        
-        # Tách từ và loại bỏ stop words
-        words = query.lower().split()
-        keywords = []
-        
-        for word in words:
-            # Clean word (loại bỏ dấu câu)
-            clean_word = word.strip('.,!?":;()[]{}')
-            if len(clean_word) > 2 and clean_word not in stop_words:
-                keywords.append(clean_word)
-                
-        # Add specialized legal terms
-        legal_terms = {
-            'phí': ['phí', 'lệ phí', 'tiền', 'chi phí', 'miễn phí'],
-            'giấy': ['giấy tờ', 'hồ sơ', 'tài liệu', 'chứng từ'],
-            'thủ tục': ['thủ tục', 'quy trình', 'trình tự'],
-            'đăng ký': ['đăng ký', 'khai báo', 'nộp đơn']
-        }
-        
-        # Mở rộng keywords với legal terms
-        expanded_keywords = keywords.copy()
-        for keyword in keywords:
-            for category, terms in legal_terms.items():
-                if keyword in terms:
-                    expanded_keywords.extend([t for t in terms if t not in expanded_keywords])
-        
-        logger.info(f"🔑 Query keywords: {expanded_keywords}")
-        return expanded_keywords
-    
-    def _extract_relevant_content(self, content: str, keywords: List[str], max_length: int = 800) -> str:
-        """Extract những phần của content có chứa keywords quan trọng"""
-        if len(content) <= max_length:
-            return content
-        
-        content_lower = content.lower()
-        
-        # Tìm các câu chứa keywords
-        sentences = content.split('.')
-        relevant_sentences = []
-        score_sentences = []
-        
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if not sentence:
-                continue
-                
-            sentence_lower = sentence.lower()
-            score = 0
-            
-            # Tính score dựa trên số keywords matching
-            for keyword in keywords:
-                if keyword in sentence_lower:
-                    score += len(keyword)  # Từ dài hơn có weight cao hơn
-            
-            if score > 0:
-                score_sentences.append((sentence, score))
-        
-        # Sắp xếp theo score giảm dần
-        score_sentences.sort(key=lambda x: x[1], reverse=True)
-        
-        # Lấy các câu có score cao nhất cho đến khi đạt max_length
-        selected_sentences = []
-        current_length = 0
-        
-        for sentence, score in score_sentences:
-            if current_length + len(sentence) <= max_length:
-                selected_sentences.append(sentence)
-                current_length += len(sentence)
-            else:
-                break
-        
-        if selected_sentences:
-            relevant_content = '. '.join(selected_sentences)
-            logger.info(f"📄 Extracted {len(selected_sentences)} relevant sentences from {len(sentences)} total")
-            return relevant_content
-        else:
-            # Fallback: lấy phần đầu
-            logger.info("⚠️  No keyword matches found, using content start")
-            return content[:max_length] + "..."
-            return sorted(documents, key=lambda x: x.get('similarity', 0), reverse=True)[:top_k] if top_k else documents
+    # 🗑️ REMOVED: CPU intensive preprocessing functions
+    # _extract_query_keywords() và _extract_relevant_content() đã được loại bỏ
+    # để tối ưu hóa performance và để GPU CrossEncoder tự xử lý
     
     def get_best_document(self, query: str, documents: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """

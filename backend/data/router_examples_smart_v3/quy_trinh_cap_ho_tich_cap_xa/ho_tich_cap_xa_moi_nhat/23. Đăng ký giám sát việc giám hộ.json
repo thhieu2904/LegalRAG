@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "title": "Đăng ký giám sát việc giám hộ",
+    "code": "QT 23/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\23. Đăng ký giám sát việc giám hộ.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:21"
+  },
+  "main_question": "Thủ tục 'Đăng ký giám sát việc giám hộ' là gì?",
+  "question_variants": [
+    "Làm Đăng ký giám sát việc giám hộ cần giấy tờ gì?",
+    "Chi phí Đăng ký giám sát việc giám hộ bao nhiêu?",
+    "Thời gian xử lý Đăng ký giám sát việc giám hộ là bao lâu?",
+    "Làm Đăng ký giám sát việc giám hộ ở đâu?",
+    "Điều kiện để được Đăng ký giám sát việc giám hộ?",
+    "Quy trình Đăng ký giám sát việc giám hộ ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký giám sát việc giám hộ"
+    ],
+    "title_keywords": [
+      "giám",
+      "sát",
+      "giám"
+    ],
+    "procedure_code": [
+      "QT 23/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi cư trú của người được giám hộ."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Pháp nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Pháp nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

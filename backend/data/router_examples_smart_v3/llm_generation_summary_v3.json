@@ -1,0 +1,28 @@
+{
+  "generator_info": {
+    "version": "llm_powered_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:50",
+    "llm_model": "PhoGPT-4B-Chat",
+    "approach": "hybrid_structured_llm_with_rich_metadata"
+  },
+  "statistics": {
+    "total_files_processed": 53,
+    "total_source_files": 53,
+    "total_examples_generated": 371,
+    "collections_distribution": {
+      "ho_tich_cap_xa": 35,
+      "chung_thuc": 15,
+      "nuoi_con_nuoi": 3
+    }
+  },
+  "quality_metrics": {
+    "avg_variants_per_document": 7.0,
+    "success_rate": 100.0,
+    "features": [
+      "rich_smart_filters",
+      "context_specific_questions",
+      "proper_collection_detection",
+      "structured_metadata"
+    ]
+  }
+}

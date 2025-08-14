@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "title": "Đăng ký khai tử lưu động",
+    "code": "QT 32/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\32. Đăng ký khai tử lưu động.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:29"
+  },
+  "main_question": "Thủ tục 'Đăng ký khai tử lưu động' là gì?",
+  "question_variants": [
+    "Làm Đăng ký khai tử lưu động cần giấy tờ gì?",
+    "Chi phí Đăng ký khai tử lưu động bao nhiêu?",
+    "Thời gian xử lý Đăng ký khai tử lưu động là bao lâu?",
+    "Làm Đăng ký khai tử lưu động ở đâu?",
+    "Điều kiện để được Đăng ký khai tử lưu động?",
+    "Quy trình Đăng ký khai tử lưu động ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký khai tử lưu động"
+    ],
+    "title_keywords": [
+      "khai",
+      "lưu",
+      "động"
+    ],
+    "procedure_code": [
+      "QT 32/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết, hoặc nơi người đó chết/phát hiện thi thể."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

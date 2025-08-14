@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "title": "Xác nhận thông tin hộ tịch",
+    "code": "QT 35/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\35. Xác nhận hộ tịch.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:31"
+  },
+  "main_question": "Thủ tục 'Xác nhận thông tin hộ tịch' là gì?",
+  "question_variants": [
+    "Làm Xác nhận thông tin hộ tịch cần giấy tờ gì?",
+    "Chi phí Xác nhận thông tin hộ tịch bao nhiêu?",
+    "Thời gian xử lý Xác nhận thông tin hộ tịch là bao lâu?",
+    "Làm Xác nhận thông tin hộ tịch ở đâu?",
+    "Điều kiện để được Xác nhận thông tin hộ tịch?",
+    "Quy trình Xác nhận thông tin hộ tịch ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Xác nhận thông tin hộ tịch"
+    ],
+    "title_keywords": [
+      "xác",
+      "nhận",
+      "thông",
+      "tin",
+      "tịch"
+    ],
+    "procedure_code": [
+      "QT 35/CX-HCTP"
+    ],
+    "agency": [
+      "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã)."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Cơ quan",
+      "Tổ chức"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Cơ quan",
+      "Tổ chức"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

@@ -44,13 +44,53 @@ def convert_numpy_types(obj: Any) -> Any:
 
 @dataclass
 class OptimizedChatSession:
-    """Session chat với thông tin tối ưu"""
+    """Session chat với thông tin tối ưu với Stateful Router support"""
     session_id: str
     created_at: float
     last_accessed: float
     query_history: List[Dict[str, Any]] = field(default_factory=list)
     context_cache: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
+    
+    # Stateful Router State
+    last_successful_collection: Optional[str] = None
+    last_successful_confidence: float = 0.0
+    last_successful_timestamp: Optional[float] = None
+    cached_rag_content: Optional[Dict[str, Any]] = None
+    consecutive_low_confidence_count: int = 0
+    
+    def update_successful_routing(self, collection: str, confidence: float, rag_content: Optional[Dict[str, Any]] = None):
+        """Cập nhật state khi routing thành công với confidence cao"""
+        self.last_successful_collection = collection
+        self.last_successful_confidence = confidence
+        self.last_successful_timestamp = time.time()
+        if rag_content:
+            self.cached_rag_content = rag_content
+        self.consecutive_low_confidence_count = 0  # Reset counter
+        
+    def should_override_confidence(self, current_confidence: float, confidence_threshold: float = 0.50) -> bool:
+        """Kiểm tra có nên override confidence thấp không"""
+        if not self.last_successful_collection:
+            return False
+            
+        # Check time window - chỉ override trong vòng 10 phút
+        if self.last_successful_timestamp and (time.time() - self.last_successful_timestamp > 600):
+            return False
+            
+        # Override nếu confidence hiện tại thấp nhưng có successful context
+        return current_confidence < confidence_threshold and self.last_successful_confidence > 0.85
+        
+    def increment_low_confidence(self):
+        """Tăng counter khi gặp confidence thấp"""
+        self.consecutive_low_confidence_count += 1
+        
+    def clear_routing_state(self):
+        """Clear state khi user chuyển chủ đề hoàn toàn"""
+        self.last_successful_collection = None
+        self.last_successful_confidence = 0.0
+        self.last_successful_timestamp = None
+        self.cached_rag_content = None
+        self.consecutive_low_confidence_count = 0
 
 class OptimizedEnhancedRAGService:
     """
@@ -155,15 +195,17 @@ class OptimizedEnhancedRAGService:
         use_full_document_expansion: bool = True
     ) -> Dict[str, Any]:
         """
-        Query chính với tất cả tối ưu hóa
+        Query chính với tất cả tối ưu hóa - THIẾT KẾ GỐC: FULL DOCUMENT EXPANSION
         
         Flow:
         1. Detect ambiguous query (CPU embedding)
         2. Route query nếu clear
         3. Broad search (CPU embedding) 
         4. Rerank (GPU reranker)
-        5. Context expansion với nucleus strategy
+        5. Context expansion: TOÀN BỘ DOCUMENT (đảm bảo ngữ cảnh pháp luật đầy đủ)
         6. Generate answer (GPU LLM)
+        
+        TRIẾT LÝ: Văn bản pháp luật phải được hiểu trong TOÀN BỘ ngữ cảnh của document gốc
         """
         start_time = time.time()
         self.metrics["total_queries"] += 1
@@ -180,28 +222,39 @@ class OptimizedEnhancedRAGService:
                 
             logger.info(f"Processing query in session {session_id}: {query[:50]}...")
             
-            # Step 1: Enhanced Smart Query Routing với MULTI-LEVEL Confidence Processing
+            # Step 1: Enhanced Smart Query Routing với MULTI-LEVEL Confidence Processing + Stateful Router
             if use_ambiguous_detection:
-                routing_result = self.smart_router.route_query(query)
+                routing_result = self.smart_router.route_query(query, session)
                 confidence_level = routing_result.get('confidence_level', 'low')
+                was_overridden = routing_result.get('was_overridden', False)
                 
                 logger.info(f"Router confidence: {confidence_level} (score: {routing_result['confidence']:.3f})")
+                if was_overridden:
+                    logger.info(f"🔥 Session-based confidence override applied!")
                 
-                if confidence_level == 'high':
-                    # HIGH CONFIDENCE - Route trực tiếp
+                if confidence_level in ['high', 'override_high']:
+                    # HIGH CONFIDENCE (including overridden) - Route trực tiếp
                     target_collection = routing_result['target_collection']
                     inferred_filters = routing_result.get('inferred_filters', {})
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
                     logger.info(f"✅ HIGH CONFIDENCE routing to: {target_collection}")
                     
+                elif confidence_level in ['low-medium', 'override_medium']:
+                    # MEDIUM CONFIDENCE (including overridden) - Route với caution
+                    target_collection = routing_result['target_collection']
+                    inferred_filters = routing_result.get('inferred_filters', {})
+                    best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
+                    logger.info(f"⚠️ MEDIUM CONFIDENCE routing to: {target_collection}")
+                    
                 else:
-                    # TẤT CẢ CONFIDENCE < HIGH THRESHOLD - Hỏi lại user, không route
+                    # TẤT CẢ CONFIDENCE < THRESHOLD - Hỏi lại user, không route
                     logger.info(f"🤔 CONFIDENCE KHÔNG ĐỦ CAO ({confidence_level}) - hỏi lại user thay vì route")
                     return self._generate_smart_clarification(routing_result, query, session_id, start_time)
             
             else:
                 # Fallback routing logic (giữ nguyên logic cũ)
                 routing_result = self.smart_router.route_query(query)
+                confidence_level = 'fallback'  # Set default confidence level for fallback
                 if routing_result.get('status') == 'routed' and routing_result.get('target_collection'):
                     target_collection = routing_result['target_collection']
                     inferred_filters = routing_result.get('inferred_filters', {})
@@ -210,16 +263,28 @@ class OptimizedEnhancedRAGService:
                 else:
                     best_collections = [settings.chroma_collection_name]
                     inferred_filters = {}
+                    confidence_level = 'fallback'  # Ensure confidence_level is set
             
-            # Step 2: Focused Search trong target collection với smart filters
+            # Step 2: Focused Search với ĐỘNG BROAD_SEARCH_K dựa trên router confidence
+            # 🚀 PERFORMANCE OPTIMIZATION: Giảm số documents cần rerank
+            dynamic_k = settings.broad_search_k  # default 12
+            if confidence_level == 'high':
+                dynamic_k = max(8, settings.broad_search_k - 4)  # Router tự tin → ít docs hơn
+                logger.info(f"🎯 HIGH CONFIDENCE: Giảm broad_search_k xuống {dynamic_k}")
+            elif confidence_level in ['low-medium', 'override_medium']:
+                dynamic_k = min(15, settings.broad_search_k + 3)  # Router không chắc → nhiều docs hơn
+                logger.info(f"🔍 MEDIUM CONFIDENCE: Tăng broad_search_k lên {dynamic_k}")
+            else:
+                logger.info(f"📊 DEFAULT/FALLBACK: Sử dụng broad_search_k={dynamic_k}")
+            
             broad_search_results = []
             for collection_name in best_collections[:2]:  # Limit to top 2 collections
                 try:
-                    # ✅ CRITICAL FIX: Pass smart filters to vector search
+                    # ✅ CRITICAL FIX: Pass smart filters to vector search với dynamic K
                     results = self.vectordb_service.search_in_collection(
                         collection_name=collection_name,
                         query=query,
-                        top_k=settings.broad_search_k,
+                        top_k=dynamic_k,
                         similarity_threshold=settings.similarity_threshold,
                         where_filter=inferred_filters if inferred_filters else None
                     )
@@ -231,6 +296,8 @@ class OptimizedEnhancedRAGService:
                     
                 except Exception as e:
                     logger.warning(f"Error searching in collection {collection_name}: {e}")
+            
+            logger.info(f"📊 Dynamic search: {len(broad_search_results)} docs (k={dynamic_k}, confidence={confidence_level})")
             
             if not broad_search_results:
                 return {
@@ -268,14 +335,20 @@ class OptimizedEnhancedRAGService:
             else:
                 nucleus_chunks = broad_search_results[:1]  # Fallback: lấy chunk tốt nhất theo vector similarity
                 
-            # Step 5: ALWAYS use FULL DOCUMENT expansion - No conservative strategy
+            # Step 5: INTELLIGENT Context Expansion - Ưu tiên nucleus chunk + context liên quan
             expanded_context = None
-            logger.info("📈 ALWAYS using FULL DOCUMENT expansion strategy (Conservative mode disabled)")
+            logger.info("🎯 INTELLIGENT CONTEXT EXPANSION - Ưu tiên nucleus chunk từ reranker")
             self.metrics["context_expansions"] += 1
+            
+            # 🧠 SMART OPTIMIZATION: Ưu tiên nucleus chunk + context liên quan thay vì cắt ngẫu nhiên
+            # Logic: Luôn giữ nguyên nucleus chunk + thêm context xung quanh nếu còn chỗ
+            # Step 5: Context Expansion - THIẾT KẾ GỐC: FULL DOCUMENT
+            logger.info("Context expansion: Loading TOÀN BỘ DOCUMENT để đảm bảo ngữ cảnh pháp luật đầy đủ")
+            
             expanded_context = self.context_expansion_service.expand_context_with_nucleus(
                 nucleus_chunks=nucleus_chunks,
                 max_context_length=max_context_length,
-                include_full_document=True  # Always full document expansion
+                include_full_document=use_full_document_expansion
             )
             
             context_text = self._build_context_from_expanded(expanded_context)
@@ -305,9 +378,27 @@ class OptimizedEnhancedRAGService:
                 "context_length": len(context_text)
             })
             
-            # Keep only last 10 queries in session
-            if len(session.query_history) > 10:
-                session.query_history = session.query_history[-10:]
+            # Keep only last 5 queries in session (giảm từ 10 để tiết kiệm memory)
+            if len(session.query_history) > 5:
+                session.query_history = session.query_history[-5:]
+            
+            # 🔥 Update session state for Stateful Router
+            # Chỉ update state khi routing thành công với confidence cao
+            if routing_result and routing_result.get('confidence', 0) >= 0.85:
+                target_collection = routing_result.get('target_collection')
+                if target_collection:
+                    rag_content = {
+                        "context_text": context_text,
+                        "nucleus_chunks": nucleus_chunks,
+                        "expanded_context": expanded_context,
+                        "collections": best_collections
+                    }
+                    session.update_successful_routing(
+                        collection=target_collection, 
+                        confidence=routing_result.get('confidence', 0),
+                        rag_content=rag_content
+                    )
+                    logger.info(f"🔥 Updated session state: {target_collection} (confidence: {routing_result.get('confidence', 0):.3f})")
                 
             processing_time = time.time() - start_time
             self.metrics["avg_response_time"] = (
@@ -323,6 +414,12 @@ class OptimizedEnhancedRAGService:
                     "context_length": len(context_text),
                     "source_collections": list(set(chunk.get("collection", "") for chunk in nucleus_chunks)),
                     "source_documents": list(expanded_context.get("source_documents", [])) if expanded_context else []
+                },
+                "context_details": {
+                    "total_length": expanded_context.get("total_length", len(context_text)) if expanded_context else len(context_text),
+                    "expansion_strategy": expanded_context.get("expansion_strategy", "unknown") if expanded_context else "no_expansion",
+                    "source_documents": expanded_context.get("source_documents", []) if expanded_context else [],
+                    "nucleus_chunks_count": len(nucleus_chunks)
                 },
                 "session_id": session_id,
                 "processing_time": processing_time,
@@ -383,9 +480,11 @@ class OptimizedEnhancedRAGService:
         # Build conversation context if needed
         conversation_context = ""
         if len(session.query_history) > 0:
-            recent_queries = session.query_history[-3:]  # Last 3 queries
+            # 🚀 PERFORMANCE OPTIMIZATION: Chỉ lấy 1 lượt hỏi-đáp gần nhất để giảm prompt length
+            recent_queries = session.query_history[-1:]  # Only last 1 query thay vì 3
+            logger.info(f"⚡ Chat history: {len(recent_queries)} entries (optimized for speed)")
             conversation_context = "Lịch sử hội thoại gần đây:\n" + "\n".join([
-                f"Q: {item['query']}\nA: {item['answer'][:200]}..." 
+                f"Q: {item['query']}\nA: {item['answer'][:100]}..."  # Giảm từ 200 xuống 100 chars
                 for item in recent_queries
             ]) + "\n\n"
             
@@ -410,6 +509,32 @@ TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các qu
         
         # Build enhanced context với conversation history
         enhanced_context = conversation_context + context
+        
+        # 🔥 TOKEN MANAGEMENT - Kiểm soát độ dài để tránh context overflow
+        from app.core.config import settings
+        
+        # Ước tính token đơn giản (1 token ≈ 3-4 ký tự tiếng Việt)
+        estimated_tokens = len(system_prompt + enhanced_context + query + "Trả lời: ") // 3
+        max_context_tokens = settings.n_ctx - 500  # Để lại 500 token cho response
+        
+        if estimated_tokens > max_context_tokens:
+            # Cắt bớt context để fit trong giới hạn
+            logger.warning(f"🚨 Context overflow detected: {estimated_tokens} tokens > {max_context_tokens} max")
+            
+            # Tính toán space còn lại cho context
+            fixed_parts_length = len(system_prompt + conversation_context + query + "Trả lời: ")
+            remaining_space = (max_context_tokens * 3) - fixed_parts_length
+            
+            if remaining_space > 500:  # Đảm bảo có ít nhất 500 ký tự cho context
+                truncated_context = context[:remaining_space] + "\n\n[...THÔNG TIN ĐÃ ĐƯỢC RÚT GỌN ĐỂ TRÁNH QUÁ TẢI...]"
+                enhanced_context = conversation_context + truncated_context
+                logger.info(f"✂️ Context truncated from {len(context)} to {len(truncated_context)} chars")
+            else:
+                # Nếu không đủ chỗ, bỏ conversation history
+                enhanced_context = context[:max_context_tokens * 3 // 2] + "\n\n[...RÚT GỌN...]"
+                logger.warning("⚠️ Removed conversation history due to extreme context overflow")
+        
+        logger.info(f"📝 Final context length: {len(enhanced_context)} chars (~{len(enhanced_context)//3} tokens)")
 
         try:
             response_data = self.llm_service.generate_response(

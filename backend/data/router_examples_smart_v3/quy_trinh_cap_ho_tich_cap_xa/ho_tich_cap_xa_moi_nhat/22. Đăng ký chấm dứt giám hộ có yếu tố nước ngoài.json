@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "title": "Đăng ký chấm dứt giám hộ có yếu tố nước ngoài",
+    "code": "QT 22/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\22. Đăng ký chấm dứt giám hộ có yếu tố nước ngoài.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:20"
+  },
+  "main_question": "Thủ tục 'Đăng ký chấm dứt giám hộ có yếu tố nước ngoài' là gì?",
+  "question_variants": [
+    "Làm Đăng ký chấm dứt giám hộ có yếu tố nước ngoài cần giấy tờ gì?",
+    "Chi phí Đăng ký chấm dứt giám hộ có yếu tố nước ngoài bao nhiêu?",
+    "Thời gian xử lý Đăng ký chấm dứt giám hộ có yếu tố nước ngoài là bao lâu?",
+    "Làm Đăng ký chấm dứt giám hộ có yếu tố nước ngoài ở đâu?",
+    "Hồ sơ Đăng ký chấm dứt giám hộ có yếu tố nước ngoài gồm những giấy tờ nào?",
+    "Điều kiện để được Đăng ký chấm dứt giám hộ có yếu tố nước ngoài?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký chấm dứt giám hộ có yếu tố nước ngoài"
+    ],
+    "title_keywords": [
+      "chấm",
+      "dứt",
+      "giám",
+      "yếu",
+      "nước"
+    ],
+    "procedure_code": [
+      "QT 22/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã"
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân",
+      "Pháp nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân",
+      "Pháp nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

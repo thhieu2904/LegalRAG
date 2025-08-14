@@ -66,16 +66,16 @@ class EnhancedContextExpansionService:
         """
         Mở rộng ngữ cảnh dựa trên nucleus chunks - STRATEGY: 1 CHUNK → TOÀN BỘ DOCUMENT
         
-        Flow tối ưu:
+        TRIẾT LÝ THIẾT KẾ CHÍNH:
         1. Lấy 1 nucleus chunk với rerank score cao nhất
         2. Tìm source file JSON chứa chunk đó  
-        3. Load toàn bộ nội dung document từ file JSON gốc
-        4. Return full document content thay vì chỉ 1 chunk
+        3. Load TOÀN BỘ nội dung document từ file JSON gốc
+        4. Return FULL document content để đảm bảo ngữ cảnh pháp luật đầy đủ
         
         Args:
             nucleus_chunks: List chunks đã rerank (thường chỉ 1 chunk cao nhất)
-            max_context_length: Độ dài context tối đa (ký tự)
-            include_full_document: True = lấy toàn bộ document, False = chỉ chunks liền kề
+            max_context_length: Độ dài context tối đa (ký tự) - CHỈ để truncate nếu QUÁ dài
+            include_full_document: LUÔN True cho văn bản pháp luật
             
         Returns:
             Expanded context với toàn bộ document content và metadata
@@ -111,29 +111,33 @@ class EnhancedContextExpansionService:
                 return expanded_context
                 
             logger.info(f"Found source file: {source_file}")
-            logger.info("Loading FULL DOCUMENT content (not just chunks)")
+            logger.info("Loading FULL DOCUMENT content để đảm bảo ngữ cảnh pháp luật đầy đủ")
             
-            # QUAN TRỌNG: Load toàn bộ document gốc từ file JSON thay vì chỉ lấy chunks
-            full_document_content = self._load_full_document(source_file)
+            # TRIẾT LÝ THIẾT KẾ: Load toàn bộ document gốc từ file JSON
+            # Không cắt ghép, không smart expansion - chỉ FULL DOCUMENT
+            final_content = self._load_full_document(source_file)
+            expansion_strategy = "full_document_legal_context"
             
-            if full_document_content:
-                # Giới hạn context length
-                if len(full_document_content) > max_context_length:
-                    # Truncate nhưng giữ phần đầu và thông tin quan trọng
-                    full_document_content = full_document_content[:max_context_length] + "..."
-                
+            # Truncate CHỈ KHI document quá dài (giữ tối đa thông tin)
+            if len(final_content) > max_context_length:
+                logger.warning(f"Document dài {len(final_content)} chars > max {max_context_length}, truncating...")
+                final_content = final_content[:max_context_length] + "..."
+            
+            # Build final result
+            if final_content:
                 expanded_context["expanded_content"] = [{
-                    "text": full_document_content,
+                    "text": final_content,
                     "source": source_file,
                     "document_title": nucleus_chunk.get("source", {}).get("document_title", ""),
-                    "type": "full_document"
+                    "type": expansion_strategy
                 }]
                 expanded_context["source_documents"] = [source_file]
-                expanded_context["total_length"] = len(full_document_content)
+                expanded_context["total_length"] = len(final_content)
+                expanded_context["expansion_strategy"] = expansion_strategy
                 
-                logger.info(f"Expanded context: {len(full_document_content)} chars from 1 document")
+                logger.info(f"Final context: {len(final_content)} chars, strategy: {expansion_strategy}")
             else:
-                logger.warning("Could not load full document content")
+                logger.warning("Could not generate final content")
             
             return expanded_context
             
@@ -198,53 +202,6 @@ class EnhancedContextExpansionService:
             
             logger.info(f"Loaded COMPLETE document: {len(complete_content)} characters (NO filtering, NO truncation)")
             return complete_content
-            
-        except Exception as e:
-            logger.error(f"Error loading document: {e}")
-            return ""
-            essential_parts.append("=" * 60)
-            
-            # CONTENT CHUNKS - Chỉ lấy những phần CỐT LÕI, bỏ qua chi tiết không cần thiết
-            priority_keywords = ['phí', 'lệ phí', 'miễn', 'tiền', 'giấy tờ', 'hồ sơ', 'thủ tục']
-            
-            for chunk in content_chunks:
-                section_title = chunk.get('section_title', '')
-                content = chunk.get('content', '')
-                
-                # Ưu tiên các section về phí, giấy tờ cần thiết
-                if any(keyword in section_title.lower() for keyword in priority_keywords) or \
-                   any(keyword in content.lower() for keyword in priority_keywords):
-                    
-                    essential_parts.append(f"\n📄 {section_title}:")
-                    essential_parts.append("-" * 40)
-                    
-                    # Rút gọn content, chỉ giữ thông tin quan trọng
-                    if len(content) > 500:
-                        # Tách thành câu và chỉ giữ những câu có từ khóa quan trọng
-                        sentences = content.split('.')
-                        important_sentences = []
-                        
-                        for sentence in sentences:
-                            if any(keyword in sentence.lower() for keyword in priority_keywords):
-                                important_sentences.append(sentence.strip())
-                                
-                        if important_sentences:
-                            essential_parts.append('\n'.join(important_sentences[:3]))  # Top 3 sentences
-                        else:
-                            essential_parts.append(content[:500] + "...")
-                    else:
-                        essential_parts.append(content.strip())
-            
-            # Tạo final content - NGẮN GỌN và TRỌNG TÂM
-            final_content = "\n".join(essential_parts)
-            
-            # Giới hạn độ dài tối đa 2000 chars để LLM không bị overwhelmed
-            if len(final_content) > 2000:
-                final_content = final_content[:2000] + "\n\n[...Nội dung được rút gọn để tập trung vào thông tin quan trọng...]"
-            
-            logger.info(f"Loaded selective document: {len(final_content)} characters (optimized for LLM focus)")
-            
-            return final_content
             
         except Exception as e:
             logger.error(f"Error loading document: {e}")

@@ -18,6 +18,7 @@ const ChatInterface: React.FC = () => {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null); // 🔥 THÊM SESSION STATE
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -60,10 +61,17 @@ const ChatInterface: React.FC = () => {
     try {
       const response = await chatApi.sendMessage({
         query: inputValue,
+        session_id: sessionId || undefined, // 🔥 GỬI SESSION_ID NẾU CÓ
         max_tokens: 2048,
         temperature: 0.1,
         top_k: 5,
       });
+
+      // 🔥 LƯU SESSION_ID TỪ RESPONSE ĐẦU TIÊN
+      if (!sessionId && response.session_id) {
+        setSessionId(response.session_id);
+        console.log(`🔥 Session created: ${response.session_id}`);
+      }
 
       if (response.type === "clarification_needed") {
         // Handle clarification response - fix nested structure access

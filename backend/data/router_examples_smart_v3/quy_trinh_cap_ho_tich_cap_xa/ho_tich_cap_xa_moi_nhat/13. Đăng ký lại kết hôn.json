@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "title": "Đăng ký lại kết hôn",
+    "code": "QT 13/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\13. Đăng ký lại kết hôn.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:14"
+  },
+  "main_question": "Thủ tục 'Đăng ký lại kết hôn' là gì?",
+  "question_variants": [
+    "Làm Đăng ký lại kết hôn cần giấy tờ gì?",
+    "Chi phí Đăng ký lại kết hôn bao nhiêu?",
+    "Thời gian xử lý Đăng ký lại kết hôn là bao lâu?",
+    "Làm Đăng ký lại kết hôn ở đâu?",
+    "Điều kiện để được Đăng ký lại kết hôn?",
+    "Quy trình Đăng ký lại kết hôn ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký lại kết hôn"
+    ],
+    "title_keywords": [
+      "lại",
+      "kết",
+      "hôn"
+    ],
+    "procedure_code": [
+      "QT 13/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi đã đăng ký kết hôn trước đây hoặc Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

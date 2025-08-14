@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "title": "Đăng ký kết hôn lưu động",
+    "code": "QT 31/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\31. Đăng ký kết hôn lưu động.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:28"
+  },
+  "main_question": "Thủ tục 'Đăng ký kết hôn lưu động' là gì?",
+  "question_variants": [
+    "Làm Đăng ký kết hôn lưu động cần giấy tờ gì?",
+    "Chi phí Đăng ký kết hôn lưu động bao nhiêu?",
+    "Thời gian xử lý Đăng ký kết hôn lưu động là bao lâu?",
+    "Làm Đăng ký kết hôn lưu động ở đâu?",
+    "Điều kiện để được Đăng ký kết hôn lưu động?",
+    "Quy trình Đăng ký kết hôn lưu động ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký kết hôn lưu động"
+    ],
+    "title_keywords": [
+      "kết",
+      "hôn",
+      "lưu",
+      "động"
+    ],
+    "procedure_code": [
+      "QT 31/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi cư trú của hai bên nam, nữ."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "multiple_days"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

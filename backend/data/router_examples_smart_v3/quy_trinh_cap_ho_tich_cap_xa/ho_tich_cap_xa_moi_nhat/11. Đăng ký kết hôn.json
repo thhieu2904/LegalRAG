@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "title": "Đăng ký kết hôn",
+    "code": "QT 11/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\11. Đăng ký kết hôn.json",
+    "generated_by": "llm_powered_generator_v3.0_hybrid",
+    "generated_at": "2025-08-14 18:34:13"
+  },
+  "main_question": "Thủ tục 'Đăng ký kết hôn' là gì?",
+  "question_variants": [
+    "Làm Đăng ký kết hôn cần giấy tờ gì?",
+    "Chi phí Đăng ký kết hôn bao nhiêu?",
+    "Thời gian xử lý Đăng ký kết hôn là bao lâu?",
+    "Làm Đăng ký kết hôn ở đâu?",
+    "Điều kiện để được Đăng ký kết hôn?",
+    "Quy trình Đăng ký kết hôn ra sao?"
+  ],
+  "smart_filters": {
+    "exact_title": [
+      "Đăng ký kết hôn"
+    ],
+    "title_keywords": [
+      "kết",
+      "hôn"
+    ],
+    "procedure_code": [
+      "QT 11/CX-HCTP"
+    ],
+    "agency": [
+      "Ủy ban nhân dân cấp xã nơi cư trú của bên nam hoặc bên nữ."
+    ],
+    "agency_level": [
+      "commune"
+    ],
+    "cost_type": [
+      "paid"
+    ],
+    "processing_speed": [
+      "immediate"
+    ],
+    "applicant_type": [
+      "Cá nhân"
+    ]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": [
+      "Cá nhân"
+    ]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.75,
+  "priority_score": 1.0
+}

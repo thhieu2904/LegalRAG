@@ -52,22 +52,22 @@ class EnhancedSmartQueryRouter:
         logger.info(f"✅ Enhanced Smart Query Router initialized with {len(self.collection_mappings)} collections")
     
     def _load_config(self) -> Dict[str, Any]:
-        """Load configuration from router_examples_smart directory"""
+        """Load configuration from router_examples_smart_v3 directory"""
         try:
-            # New approach: Load from individual router files
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart"))
+            # New approach: Load from individual router files - Updated to V3
+            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
             
             if not os.path.exists(router_smart_path):
                 logger.warning(f"Router examples directory not found: {router_smart_path}")
                 return {}
             
-            # Check for summary file
-            summary_file = os.path.join(router_smart_path, "router_generation_summary.json")
+            # Check for V3 summary file
+            summary_file = os.path.join(router_smart_path, "llm_generation_summary_v3.json")
             if os.path.exists(summary_file):
                 with open(summary_file, 'r', encoding='utf-8') as f:
                     summary = json.load(f)
                 
-                logger.info(f"📋 Loaded router summary: {summary.get('total_files_processed', 0)} files, {summary.get('total_examples', 0)} examples")
+                logger.info(f"📋 Loaded router summary V3: {summary.get('statistics', {}).get('total_files_processed', 0)} files, {summary.get('statistics', {}).get('total_examples_generated', 0)} examples")
                 
                 # Build config from summary
                 config = {
@@ -91,7 +91,7 @@ class EnhancedSmartQueryRouter:
             
             # Fallback: scan directory structure
             else:
-                logger.info("📁 Scanning router_examples_smart directory structure...")
+                logger.info("📁 Scanning router_examples_smart_v3 directory structure...")
                 return self._scan_individual_files(router_smart_path)
             
         except Exception as e:
@@ -163,7 +163,7 @@ class EnhancedSmartQueryRouter:
             
             # Check cache freshness - với tolerance 10 seconds để tránh race condition
             cache_time = os.path.getmtime(self.cache_file)
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart"))
+            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
             
             if os.path.exists(router_smart_path):
                 from pathlib import Path
@@ -256,8 +256,8 @@ class EnhancedSmartQueryRouter:
     def _load_example_questions(self):
         """Load all example questions from individual router JSON files"""
         try:
-            # Get router_examples_smart path
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart"))
+            # Get router_examples_smart_v3 path
+            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
             
             if not os.path.exists(router_smart_path):
                 logger.warning(f"Router examples directory not found: {router_smart_path}")
@@ -386,7 +386,7 @@ class EnhancedSmartQueryRouter:
             logger.error(f"❌ Error initializing question vectors: {e}")
             raise
     
-    def route_query(self, query: str) -> Dict[str, Any]:
+    def route_query(self, query: str, session: Optional[Any] = None) -> Dict[str, Any]:
         """
         Định tuyến câu hỏi đến collection phù hợp nhất dựa trên example questions
         
@@ -449,20 +449,51 @@ class EnhancedSmartQueryRouter:
             if best_example:
                 logger.info(f"📝 Matched example: '{best_example[:80]}...'")
             
-            # 🐛 DEBUG: Final validation before returning
+            # � STATEFUL ROUTER LOGIC - Confidence Override
+            original_confidence = best_score
+            should_override = False
+            override_collection = None
+            
+            if session and hasattr(session, 'should_override_confidence'):
+                if session.should_override_confidence(best_score):
+                    override_collection = session.last_successful_collection
+                    should_override = True
+                    # Boost confidence to medium level khi override
+                    best_score = max(best_score, 0.75)
+                    best_collection = override_collection
+                    logger.info(f"🔥 CONFIDENCE OVERRIDE: {original_confidence:.3f} -> {best_score:.3f}")
+                    logger.info(f"🔥 Override to collection: {override_collection} (from session state)")
+                    
+                    # Update display info for overridden case
+                    if override_collection in self.collection_mappings:
+                        display_name = self.collection_mappings[override_collection].get('display_name')
+                    else:
+                        display_name = override_collection
+                elif original_confidence < self.min_confidence_threshold:
+                    # Track consecutive low confidence
+                    session.increment_low_confidence()
+                    if session.consecutive_low_confidence_count >= 3:
+                        # Too many failed attempts - clear state
+                        logger.info("🧹 Clearing session state due to consecutive low confidence queries")
+                        session.clear_routing_state()
+            
+            # �🐛 DEBUG: Final validation before returning
             if best_filters:
                 final_title = best_filters.get('exact_title', ['Unknown'])
                 logger.info(f"🔍 FINAL FILTERS CHECK - Exact title: {final_title}")
             
-            # Determine routing decision - LOGIC MỚI với 3 mức tin cậy
+            # Determine routing decision - LOGIC MỚI với 3 mức tin cậy + Override
             if best_score >= self.high_confidence_threshold:
                 # High confidence - route immediately với tin cậy cao
+                confidence_level = 'high' if not should_override else 'override_high'
                 logger.info(f"✅ HIGH CONFIDENCE routing: {best_score:.3f} >= {self.high_confidence_threshold}")
                 return {
                     'status': 'routed',
-                    'confidence_level': 'high',
+                    'confidence_level': confidence_level,
                     'target_collection': best_collection,
                     'confidence': best_score,
+                    'original_confidence': original_confidence if should_override else best_score,
+                    'was_overridden': should_override,
                     'all_scores': collection_scores,
                     'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
                     'clarification_needed': False,
@@ -473,19 +504,22 @@ class EnhancedSmartQueryRouter:
             
             elif best_score >= self.min_confidence_threshold:
                 # Khả năng match có thể đúng nhưng chưa chắc chắn - ROUTE NHƯNG CAUTION
+                confidence_level = 'low-medium' if not should_override else 'override_medium'
                 logger.info(f"⚠️ LOW-MEDIUM CONFIDENCE routing: {best_score:.3f} >= {self.min_confidence_threshold}")
                 return {
                     'status': 'routed',
-                    'confidence_level': 'low-medium', 
+                    'confidence_level': confidence_level, 
                     'target_collection': best_collection,
                     'confidence': best_score,
+                    'original_confidence': original_confidence if should_override else best_score,
+                    'was_overridden': should_override,
                     'all_scores': collection_scores,
                     'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
                     'clarification_needed': False,  # Route nhưng sẽ có extra validation
                     'matched_example': best_example,
                     'source_procedure': best_source,
                     'inferred_filters': best_filters,
-                    'warning': 'low_medium_confidence'
+                    'warning': 'low_medium_confidence' if not should_override else 'overridden_routing'
                 }
             
             else:
