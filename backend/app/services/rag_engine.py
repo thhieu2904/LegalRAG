@@ -350,11 +350,7 @@ class OptimizedEnhancedRAGService:
                 if combined_confidence < CLARIFICATION_THRESHOLD:
                     logger.warning(f"🚨 COMBINED CONFIDENCE QUÁ THẤP ({combined_confidence:.4f} < {CLARIFICATION_THRESHOLD}) - Kích hoạt Smart Clarification")
                     
-                    return self.clarification_service.generate_clarification(
-                        confidence=combined_confidence,
-                        routing_result=routing_result,
-                        query=query
-                    )
+                    return self._generate_smart_clarification(routing_result, query, session_id, start_time)
                 
                 if nucleus_chunks and len(nucleus_chunks) > 0:
                     logger.info(f"Best rerank score: {best_score:.4f}")
