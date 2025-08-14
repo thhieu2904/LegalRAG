@@ -495,39 +495,90 @@ class OptimizedEnhancedRAGService:
             logger.info(f"🎯 Clarification Step 2→3: User selected collection '{collection}'. Generating question suggestions.")
             
             try:
-                # Lấy example questions từ SmartRouter cho collection này
-                example_questions = self.smart_router.get_example_questions_for_collection(collection)
+                # 🔧 NEW APPROACH: Use embedding similarity instead of all collection questions
+                # Get original routing context to find similar procedures
+                original_routing = session.metadata.get('original_routing_context', {})
+                original_query = session.metadata.get('original_query', '')
+                similar_procedures = []  # Initialize to avoid unbound variable
+                similarity_used = False
                 
-                if not example_questions:
-                    # Fallback nếu không có example questions
-                    logger.warning(f"No example questions found for collection '{collection}'. Proceeding with original query.")
-                    return self.enhanced_query(
-                        query=original_query,
-                        session_id=session_id,
-                        forced_collection=collection
+                if original_routing and original_query:
+                    # Use the originally matched query/procedure as reference for similarity
+                    best_match = original_routing.get('best_match', {})
+                    reference_query = original_query  # Use original user query as reference
+                    
+                    # If we have the actual matched procedure, use that as reference
+                    if isinstance(best_match, dict) and best_match.get('text'):
+                        reference_query = best_match['text']
+                        logger.info(f"🎯 Using matched procedure as reference: {reference_query[:60]}...")
+                    else:
+                        logger.info(f"🎯 Using original query as reference: {reference_query[:60]}...")
+                    
+                    # Find similar procedures in the selected collection using embeddings
+                    similar_procedures = self.smart_router.get_similar_procedures_for_collection(
+                        collection_name=collection,
+                        reference_query=reference_query,
+                        top_k=5
                     )
+                    
+                    if similar_procedures:
+                        similarity_used = True
+                        logger.info(f"✅ Found {len(similar_procedures)} similar procedures using embedding similarity")
+                        # Create suggestions from similar procedures
+                        suggestions = []
+                        for i, proc in enumerate(similar_procedures):
+                            suggestions.append({
+                                "id": str(i + 1),
+                                "title": proc['text'],
+                                "description": f"Thủ tục: {proc['source']} (độ tương đồng: {proc['similarity']:.1%})",
+                                "action": "proceed_with_question",
+                                "collection": collection,
+                                "question_text": proc['text'],
+                                "category": proc.get('category', 'general'),
+                                "similarity": proc['similarity']  # Include similarity for debugging
+                            })
+                    else:
+                        logger.warning(f"⚠️ No similar procedures found, falling back to collection default")
+                        # Fallback to original approach if similarity search fails
+                        example_questions = self.smart_router.get_example_questions_for_collection(collection)
+                        suggestions = []
+                        for i, q in enumerate(example_questions[:5]):
+                            suggestions.append({
+                                "id": str(i + 1),
+                                "title": q.get('text', q) if isinstance(q, dict) else q,
+                                "description": f"Thủ tục: {q.get('source', 'Không rõ') if isinstance(q, dict) else 'Không rõ'}",
+                                "action": "proceed_with_question",
+                                "collection": collection,
+                                "question_text": q.get('text', q) if isinstance(q, dict) else q,
+                                "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                            })
+                            
+                else:
+                    # Fallback: No routing context available, use original approach
+                    logger.warning(f"⚠️ No original routing context found, falling back to collection questions")
+                    example_questions = self.smart_router.get_example_questions_for_collection(collection)
+                    
+                    suggestions = []
+                    for i, q in enumerate(example_questions[:5]):
+                        suggestions.append({
+                            "id": str(i + 1),
+                            "title": q.get('text', q) if isinstance(q, dict) else q,
+                            "description": f"Thủ tục: {q.get('source', 'Không rõ') if isinstance(q, dict) else 'Không rõ'}",
+                            "action": "proceed_with_question",
+                            "collection": collection,
+                            "question_text": q.get('text', q) if isinstance(q, dict) else q,
+                            "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                        })
                 
-                # Tạo question suggestions cho user
-                suggestions = []
-                for i, q in enumerate(example_questions[:5]):  # Giới hạn 5 suggestions
+                # Add the "Other" option
+                if suggestions:  # Only add if we have other suggestions
                     suggestions.append({
-                        "id": str(i + 1),
-                        "title": q.get('text', q),  # Handle both dict and string formats
-                        "description": f"Thủ tục: {q.get('source', 'Không rõ') if isinstance(q, dict) else 'Không rõ'}",
-                        "action": "proceed_with_question",  # ACTION CHO GIAI ĐOẠN 3
-                        "collection": collection,
-                        "question_text": q.get('text', q) if isinstance(q, dict) else q,  # Câu hỏi đầy đủ để gọi RAG
-                        "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                        "id": str(len(suggestions) + 1),
+                        "title": "Câu hỏi khác...",
+                        "description": "Tôi muốn hỏi về vấn đề khác trong lĩnh vực này",
+                        "action": "manual_input",
+                        "collection": collection
                     })
-                
-                # Thêm option "Other" để user có thể input manual
-                suggestions.append({
-                    "id": str(len(suggestions) + 1),
-                    "title": "Câu hỏi khác...",
-                    "description": "Tôi muốn hỏi về vấn đề khác trong lĩnh vực này",
-                    "action": "manual_input",
-                    "collection": collection
-                })
                 
                 collection_display = self.smart_router.collection_mappings.get(collection, {}).get('display_name', collection.replace('_', ' ').title())
                 
@@ -538,10 +589,11 @@ class OptimizedEnhancedRAGService:
                     "clarification": {
                         "message": f"Cảm ơn bạn đã chọn lĩnh vực '{collection_display}'. Bạn có muốn hỏi về một trong các vấn đề sau không?",
                         "options": suggestions,
-                        "style": "question_suggestion",  # Style mới để frontend nhận diện
-                        "stage": 3,  # Giai đoạn 3 của cuộc hội thoại
+                        "style": "question_suggestion",
+                        "stage": 3,
                         "collection": collection,
-                        "original_query": original_query
+                        "original_query": original_query,
+                        "similarity_used": similarity_used  # Debug info
                     }
                 }
                 
@@ -862,6 +914,13 @@ TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các qu
                     "status": "smart_clarification"
                 }
             })
+            
+            # 🔧 STORE ROUTING CONTEXT: Save original routing info to session for Step 2→3 similarity matching
+            session = self.get_session(session_id)
+            if session:
+                session.metadata['original_routing_context'] = routing_result
+                session.metadata['original_query'] = query
+                logger.info(f"💾 Stored original routing context for session {session_id}")
             
             return convert_numpy_types(response)
             

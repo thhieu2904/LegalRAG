@@ -61,10 +61,7 @@ const ChatInterface: React.FC = () => {
     try {
       const response = await chatApi.sendMessage({
         query: inputValue,
-        session_id: sessionId || undefined, // 🔥 GỬI SESSION_ID NẾU CÓ
-        max_tokens: 2048,
-        temperature: 0.1,
-        top_k: 5,
+        session_id: sessionId || null, // 🔥 GỬI SESSION_ID NẾU CÓ
       });
 
       // 🔥 LƯU SESSION_ID TỪ RESPONSE ĐẦU TIÊN
@@ -152,9 +149,6 @@ const ChatInterface: React.FC = () => {
       const response = await chatApi.sendMessage({
         query: followUpQuery,
         session_id: sessionId,
-        max_tokens: 2048,
-        temperature: 0.1,
-        top_k: 5,
       });
 
       if (response.type === "answer") {

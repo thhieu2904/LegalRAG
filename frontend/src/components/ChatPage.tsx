@@ -395,67 +395,70 @@ const ChatPage: React.FC = () => {
 
   return (
     <div className="chat-page">
-      <div className="chat-header">
-        <div className="header-content">
-          <div className="header-title">
-            <BotIcon />
-            <h1>Trợ lý Pháp luật AI</h1>
-          </div>
-          <div className="header-subtitle">
-            Hệ thống hỗ trợ thông tin thủ tục hành chính
+      {/* Main Card Container wrapping everything */}
+      <div className="main-card">
+        <div className="chat-header">
+          <div className="header-content">
+            <div className="header-title">
+              <BotIcon />
+              <h1>Trợ lý Pháp luật AI</h1>
+            </div>
+            <div className="header-subtitle">
+              Hệ thống hỗ trợ thông tin thủ tục hành chính
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="chat-container">
-        <div className="messages-container">
-          {messages.map(renderMessage)}
+        <div className="chat-container">
+          <div className="messages-container">
+            {messages.map(renderMessage)}
 
-          {isLoading && (
-            <div className="message assistant">
-              <div className="message-avatar">
-                <BotIcon />
-              </div>
-              <div className="message-content">
-                <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+            {isLoading && (
+              <div className="message assistant">
+                <div className="message-avatar">
+                  <BotIcon />
+                </div>
+                <div className="message-content">
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
                 </div>
               </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          <form onSubmit={handleSubmit} className="input-container">
+            <div className="input-wrapper">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Nhập câu hỏi của bạn..."
+                disabled={isLoading}
+                className="message-input"
+              />
+              <button
+                type="submit"
+                disabled={isLoading || inputValue.trim() === ""}
+                className="send-button"
+              >
+                <SendIcon />
+              </button>
             </div>
-          )}
 
-          <div ref={messagesEndRef} />
+            <div className="input-help">
+              <HelpIcon />
+              <span>
+                Ví dụ: "thủ tục khai sinh cần gì", "làm chứng thực bản sao"
+              </span>
+            </div>
+          </form>
         </div>
-
-        <form onSubmit={handleSubmit} className="input-container">
-          <div className="input-wrapper">
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Nhập câu hỏi của bạn..."
-              disabled={isLoading}
-              className="message-input"
-            />
-            <button
-              type="submit"
-              disabled={isLoading || inputValue.trim() === ""}
-              className="send-button"
-            >
-              <SendIcon />
-            </button>
-          </div>
-
-          <div className="input-help">
-            <HelpIcon />
-            <span>
-              Ví dụ: "thủ tục khai sinh cần gì", "làm chứng thực bản sao"
-            </span>
-          </div>
-        </form>
       </div>
     </div>
   );

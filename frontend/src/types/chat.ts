@@ -21,10 +21,11 @@ export interface Message {
 
 export interface ChatRequest {
   query: string;
-  session_id?: string;
-  max_tokens?: number;
-  temperature?: number;
-  top_k?: number;
+  session_id?: string | null;
+  max_context_length?: number;
+  use_ambiguous_detection?: boolean;
+  use_full_document_expansion?: boolean;
+  forced_collection?: string | null;
 }
 
 export interface ClarificationResponse {

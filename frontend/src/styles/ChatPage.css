@@ -1,10 +1,23 @@
-/* Chat Page Styles - Modern White Design */
+/* Chat Page Styles - Modern Full Width Design */
 .chat-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background: #f8fafc;
+  min-height: 100vh;
+  background: #f1f5f9; /* Lighter background to differentiate from card */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main Card Container - Full Width with minimal margins */
+.main-card {
+  flex: 1;
+  background: #ffffff;
+  margin: 16px; /* Smaller margin for more content space */
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: calc(100vh - 32px); /* Ensure full height minus margins */
 }
 
 /* Icons */
@@ -18,11 +31,11 @@
   background: #ffffff;
   border-bottom: 1px solid #e2e8f0;
   padding: 20px 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .header-content {
-  max-width: 1200px;
+  max-width: 100%; /* Full width instead of constrained */
   margin: 0 auto;
   width: 100%;
 }
@@ -47,16 +60,17 @@
   margin-left: 36px;
 }
 
-/* Chat Container */
+/* Chat Container - Full Width */
 .chat-container {
   display: flex;
   flex-direction: column;
   flex: 1;
-  max-width: 1200px;
+  max-width: 100%; /* Full width */
   margin: 0 auto;
   width: 100%;
-  height: calc(100vh - 100px);
+  height: 100%; /* Use available height */
   padding: 0 24px;
+  overflow: hidden; /* Prevent container from growing */
 }
 
 /* Messages Container */
@@ -552,15 +566,19 @@
   }
 }
 
-/* Large Screens - Better for 2K displays */
+/* Large Screens - Full Width Design */
 @media (min-width: 1440px) {
+  .main-card {
+    margin: 16px 32px; /* Minimal margins for maximum content area */
+  }
+  
   .chat-container {
-    max-width: 1400px;
+    max-width: 100%; /* Full width */
     padding: 0 40px;
   }
 
   .header-content {
-    max-width: 1400px;
+    max-width: 100%; /* Full width header */
   }
 
   .message {
@@ -572,19 +590,73 @@
   }
 }
 
-/* Extra Large Screens - 2K and above */
+/* Extra Large Screens - 2K and above - Full Width */
 @media (min-width: 1920px) {
+  .main-card {
+    margin: 16px 48px; /* Slightly larger margins for very wide screens */
+  }
+  
   .chat-container {
-    max-width: 1600px;
+    max-width: 100%; /* Full width */
     padding: 0 60px;
   }
 
   .header-content {
-    max-width: 1600px;
+    max-width: 100%; /* Full width header */
   }
 
   .message-text {
     font-size: 16px;
+  }
+  
+  .message {
+    max-width: 65%; /* Slightly smaller max width for readability on very wide screens */
+  }
+}
+
+/* Ultra Wide Screens - 4K support */
+@media (min-width: 2560px) {
+  .main-card {
+    margin: 20px 100px; /* More margin on ultra-wide screens */
+  }
+  
+  .chat-container {
+    padding: 0 80px;
+  }
+  
+  .message {
+    max-width: 60%; /* Even smaller for better readability */
+  }
+}
+
+/* Mobile and Tablet Responsive for Main Card */
+@media (max-width: 768px) {
+  .main-card {
+    margin: 8px; /* Smaller margin on mobile for more space */
+    border-radius: 12px; /* Slightly smaller border radius */
+    min-height: calc(100vh - 16px); /* Adjust for smaller margins */
+  }
+  
+  .chat-container {
+    padding: 0 16px;
+  }
+  
+  .header-content {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-card {
+    margin: 4px; /* Minimal margin on very small screens */
+    border-radius: 10px;
+    min-height: calc(100vh - 8px);
+  }
+  
+  .chat-container {
+    padding: 0 12px;
+  }
+}
     line-height: 1.7;
   }
 

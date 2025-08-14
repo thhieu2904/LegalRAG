@@ -616,6 +616,172 @@ class EnhancedSmartQueryRouter:
     def get_example_questions_for_collection(self, collection_name: str) -> List[Dict[str, Any]]:
         """Trả về tất cả example questions cho một collection"""
         return self.example_questions.get(collection_name, [])
+    
+    def get_similar_procedures_for_collection(
+        self, 
+        collection_name: str, 
+        reference_query: str, 
+        top_k: int = 5
+    ) -> List[Dict[str, Any]]:
+        """
+        Tìm các thủ tục tương đồng trong collection dựa trên reference query
+        Sử dụng embedding similarity để tìm procedures có liên quan cao nhất
+        
+        Args:
+            collection_name: Tên collection cần tìm
+            reference_query: Câu hỏi/procedure gốc để làm reference  
+            top_k: Số lượng procedures trả về tối đa
+            
+        Returns:
+            List các procedures tương đồng cao nhất, có thể ít hơn top_k nếu collection nhỏ
+        """
+        try:
+            # Get all example questions for this collection
+            collection_questions = self.example_questions.get(collection_name, [])
+            
+            if not collection_questions:
+                logger.warning(f"No example questions found for collection: {collection_name}")
+                return []
+            
+            # 🚀 OPTIMIZED: Get embedding for reference query with caching
+            reference_cache_key = f"reference:{reference_query}"
+            if reference_cache_key in self.question_vectors:
+                reference_embedding = np.array(self.question_vectors[reference_cache_key]).reshape(1, -1)
+                logger.info(f"📦 Using cached embedding for reference query")
+            else:
+                reference_embedding = self.embedding_model.encode([reference_query])
+                # Cache the reference embedding for future use
+                self.question_vectors[reference_cache_key] = reference_embedding[0].tolist()
+                logger.info(f"🔄 Generated and cached embedding for reference query")
+            
+            # Calculate similarities with all questions in collection
+            similarities = []
+            
+            # 🚀 DEBUG: Log cache structure để hiểu format
+            if collection_name in self.question_vectors:
+                cache_format = self.question_vectors[collection_name]
+                if isinstance(cache_format, list):
+                    logger.info(f"🔍 DEBUG: Cache format for {collection_name} is list with {len(cache_format)} items")
+                elif isinstance(cache_format, dict):
+                    logger.info(f"🔍 DEBUG: Cache format for {collection_name} is dict with keys: {list(cache_format.keys())[:3]}...")
+                else:
+                    logger.info(f"🔍 DEBUG: Cache format for {collection_name} is {type(cache_format)}")
+                    
+            for i, question in enumerate(collection_questions):
+                question_text = question.get('text', question) if isinstance(question, dict) else question
+                
+                # 🚀 OPTIMIZED: Use pre-computed embedding from cache with correct format
+                question_embedding = None
+                
+                # Try cache format: collection_name -> embeddings (numpy array or list)
+                if collection_name in self.question_vectors:
+                    collection_embeddings = self.question_vectors[collection_name]
+                    
+                    # Handle numpy array format (from cache)
+                    if isinstance(collection_embeddings, np.ndarray):
+                        if len(collection_embeddings.shape) == 2 and i < collection_embeddings.shape[0]:
+                            question_embedding = collection_embeddings[i:i+1]  # Keep 2D shape
+                            if i == 0:  # Log first match only to avoid spam
+                                logger.info(f"📦 Using cached embedding (numpy format) for {collection_name}[{i}]")
+                    
+                    # Handle list format (fallback)
+                    elif isinstance(collection_embeddings, list) and i < len(collection_embeddings):
+                        embedding_data = collection_embeddings[i]
+                        if embedding_data is not None:
+                            question_embedding = np.array(embedding_data).reshape(1, -1)
+                            if i == 0:  # Log first match only to avoid spam
+                                logger.info(f"📦 Using cached embedding (list format) for {collection_name}[{i}]")
+                
+                # Try alternative cache format: "collection:question" key
+                if question_embedding is None:
+                    question_key = f"{collection_name}:{question_text}"
+                    if question_key in self.question_vectors:
+                        question_embedding = np.array(self.question_vectors[question_key]).reshape(1, -1)
+                        if i == 0:  # Log first match only
+                            logger.info(f"📦 Using cached embedding (key format) for {question_key[:50]}...")
+                
+                # Try embedded format: question dict with embedding
+                if question_embedding is None and isinstance(question, dict) and 'embedding' in question:
+                    question_embedding = np.array(question['embedding']).reshape(1, -1)
+                    if i == 0:  # Log first match only
+                        logger.info(f"📦 Using embedded embedding for {question_text[:50]}...")
+                
+                # Last resort: compute new embedding
+                if question_embedding is None:
+                    logger.warning(f"⚠️ Computing new embedding for: {question_text[:50]}...")
+                    question_embedding = self.embedding_model.encode([question_text])
+                    # Cache it for future use with both formats
+                    question_key = f"{collection_name}:{question_text}"
+                    self.question_vectors[question_key] = question_embedding[0].tolist()
+                    
+                    # Also update collection format if it exists
+                    if collection_name not in self.question_vectors:
+                        self.question_vectors[collection_name] = []
+                    if isinstance(self.question_vectors[collection_name], list):
+                        while len(self.question_vectors[collection_name]) <= i:
+                            self.question_vectors[collection_name].append(None)
+                        self.question_vectors[collection_name][i] = question_embedding[0].tolist()
+                
+                # Calculate cosine similarity
+                similarity = cosine_similarity(reference_embedding, question_embedding)[0][0]
+                
+                similarities.append({
+                    'question': question,
+                    'similarity': float(similarity),
+                    'text': question_text
+                })
+            
+            # Sort by similarity and return top_k
+            similarities.sort(key=lambda x: x['similarity'], reverse=True)
+            
+            # Return top results, ensuring we have diverse procedures
+            results = []
+            seen_sources = set()  # Track sources to avoid duplicate procedures from same document
+            
+            for item in similarities[:top_k * 2]:  # Get more to filter
+                question = item['question']
+                
+                # Extract source info to avoid duplicates
+                source = None
+                if isinstance(question, dict):
+                    source = question.get('source', question.get('file', ''))
+                
+                # Add if we haven't seen this source or if no source info available
+                if not source or source not in seen_sources:
+                    results.append({
+                        'text': item['text'],
+                        'similarity': item['similarity'],
+                        'source': source or 'Unknown',
+                        'category': question.get('category', 'general') if isinstance(question, dict) else 'general',
+                        'collection': collection_name
+                    })
+                    
+                    if source:
+                        seen_sources.add(source)
+                    
+                    if len(results) >= top_k:
+                        break
+            
+            logger.info(f"🎯 Found {len(results)} similar procedures in {collection_name} for reference: {reference_query[:50]}...")
+            if results:
+                logger.info(f"   Top similarity: {results[0]['similarity']:.3f} - {results[0]['text'][:60]}...")
+            
+            return results
+            
+        except Exception as e:
+            logger.error(f"❌ Error finding similar procedures for collection {collection_name}: {e}")
+            # Fallback to first few questions from collection
+            fallback_questions = self.get_example_questions_for_collection(collection_name)[:top_k]
+            return [
+                {
+                    'text': q.get('text', q) if isinstance(q, dict) else q,
+                    'similarity': 0.0,  # No similarity calculated
+                    'source': q.get('source', 'Unknown') if isinstance(q, dict) else 'Unknown',
+                    'category': q.get('category', 'general') if isinstance(q, dict) else 'general',
+                    'collection': collection_name
+                }
+                for q in fallback_questions
+            ]
 
 class RouterBasedAmbiguousQueryService:
     """Service xử lý câu hỏi mơ hồ dựa trên router results"""

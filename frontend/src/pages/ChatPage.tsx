@@ -457,81 +457,84 @@ const ChatPage: React.FC = () => {
 
   return (
     <div className="chat-page">
-      <div className="chat-header">
-        <div className="header-content">
-          <div className="header-title">
-            <h1>Trợ lý Pháp luật AI</h1>
-          </div>
-          <div className="header-subtitle">
-            Hệ thống hỗ trợ thông tin thủ tục hành chính
+      {/* Main Card Container wrapping everything */}
+      <div className="main-card">
+        <div className="chat-header">
+          <div className="header-content">
+            <div className="header-title">
+              <h1>Trợ lý Pháp luật AI</h1>
+            </div>
+            <div className="header-subtitle">
+              Hệ thống hỗ trợ thông tin thủ tục hành chính
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="chat-container">
-        <div className="messages-container">
-          {messages.map(renderMessage)}
+        <div className="chat-container">
+          <div className="messages-container">
+            {messages.map(renderMessage)}
 
-          {isLoading && (
-            <div className="message assistant">
-              <div className="message-avatar">
-                <BotIcon />
-              </div>
-              <div className="message-content">
-                <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+            {isLoading && (
+              <div className="message assistant">
+                <div className="message-avatar">
+                  <BotIcon />
+                </div>
+                <div className="message-content">
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-
-        <form onSubmit={handleSubmit} className="input-container">
-          <div className="input-wrapper">
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Nhập câu hỏi của bạn hoặc nhấn mic để nói..."
-              disabled={isLoading || isListening}
-              className="message-input"
-            />
-
-            {/* Voice Input Button */}
-            {recognition && (
-              <button
-                type="button"
-                onClick={isListening ? stopListening : startListening}
-                disabled={isLoading}
-                className={`voice-button ${isListening ? "listening" : ""}`}
-                title={isListening ? "Nhấn để dừng ghi âm" : "Nhấn để nói"}
-              >
-                {isListening ? <MicOffIcon /> : <MicIcon />}
-              </button>
             )}
 
-            <button
-              type="submit"
-              disabled={isLoading || inputValue.trim() === "" || isListening}
-              className="send-button"
-            >
-              <SendIcon />
-            </button>
+            <div ref={messagesEndRef} />
           </div>
 
-          <div className="input-help">
-            💡{" "}
-            <span>
-              Ví dụ: "thủ tục khai sinh cần gì", "làm chứng thực bản sao"
-              {recognition && " | Nhấn mic để nhập bằng giọng nói"}
-            </span>
-          </div>
-        </form>
+          <form onSubmit={handleSubmit} className="input-container">
+            <div className="input-wrapper">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Nhập câu hỏi của bạn hoặc nhấn mic để nói..."
+                disabled={isLoading || isListening}
+                className="message-input"
+              />
+
+              {/* Voice Input Button */}
+              {recognition && (
+                <button
+                  type="button"
+                  onClick={isListening ? stopListening : startListening}
+                  disabled={isLoading}
+                  className={`voice-button ${isListening ? "listening" : ""}`}
+                  title={isListening ? "Nhấn để dừng ghi âm" : "Nhấn để nói"}
+                >
+                  {isListening ? <MicOffIcon /> : <MicIcon />}
+                </button>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading || inputValue.trim() === "" || isListening}
+                className="send-button"
+              >
+                <SendIcon />
+              </button>
+            </div>
+
+            <div className="input-help">
+              💡{" "}
+              <span>
+                Ví dụ: "thủ tục khai sinh cần gì", "làm chứng thực bản sao"
+                {recognition && " | Nhấn mic để nhập bằng giọng nói"}
+              </span>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
