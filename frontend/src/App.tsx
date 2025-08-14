@@ -1,6 +1,6 @@
-import ChatPage from "./components/ChatPage";
+import ChatPage from "./pages/ChatPage";
 import "./App.css";
-import "./styles/chat.css";
+import "./styles/ChatPage.css";
 
 function App() {
   return (

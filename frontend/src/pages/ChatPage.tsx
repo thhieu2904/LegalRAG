@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../styles/ChatPage.css";
+import { apiService } from "../services/api";
 
-// Simple icon components to replace lucide-react
-const SendIcon = () => <span className="icon">➤</span>;
+// Professional minimal icons
+const SendIcon = () => <span className="icon">→</span>;
 const BotIcon = () => <span className="icon">🤖</span>;
 const UserIcon = () => <span className="icon">👤</span>;
-const ClockIcon = () => <span className="icon">⏰</span>;
-const AlertIcon = () => <span className="icon">⚠️</span>;
-const HelpIcon = () => <span className="icon">💡</span>;
 
 interface Message {
   id: string;
@@ -58,6 +56,11 @@ interface ApiResponse {
   error?: string;
 }
 
+interface CurrentClarification {
+  clarification: ClarificationData;
+  originalQuery: string;
+}
+
 const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -70,166 +73,68 @@ const ChatPage: React.FC = () => {
   ]);
 
   const [inputValue, setInputValue] = useState("");
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [currentClarification, setCurrentClarification] = useState<{
-    clarification: ClarificationData;
-    originalQuery: string;
-  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [currentClarification, setCurrentClarification] =
+    useState<CurrentClarification | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 🔧 CORE FIX: Proper API integration with multi-turn clarification
-  const sendQuery = async (query: string, isInitial: boolean = true) => {
-    if (query.trim() === "" && isInitial) return;
+  useEffect(() => {
+    if (!isLoading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isLoading]);
+
+  const sendQuery = async (userQuery: string) => {
+    if (userQuery.trim() === "" || isLoading) return;
 
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
-      content: query,
+      content: userQuery,
       timestamp: new Date(),
     };
-
     setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
     setIsLoading(true);
+    setCurrentClarification(null);
 
     try {
-      const payload = {
-        query: query.trim(),
-        session_id: sessionId,
-      };
-
-      const response = await fetch("/api/v2/optimized-query", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result: ApiResponse = await response.json();
-
-      if (!sessionId && result.session_id) {
-        setSessionId(result.session_id);
-      }
-
-      handleApiResponse(result, query);
+      const result = await apiService.sendQuery(userQuery, sessionId);
+      setSessionId(result.session_id);
+      handleApiResponse(result, userQuery);
     } catch (error) {
-      console.error("Error:", error);
-      addAssistantMessage(
-        "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.",
-        true
-      );
-    } finally {
-      setIsLoading(false);
-      if (isInitial) {
-        setInputValue("");
-      }
-    }
-  };
-
-  // 🎯 GIAI ĐOẠN 2→3: Handle collection selection → Get question suggestions
-  const handleCollectionSelection = async (
-    selectedOption: ClarificationOption,
-    originalQuery: string
-  ) => {
-    if (!sessionId || !currentClarification) return;
-
-    setIsLoading(true);
-
-    try {
-      // ✅ CORRECT FORMAT: Send to clarification endpoint
-      const payload = {
-        session_id: sessionId,
-        original_query: originalQuery,
-        selected_option: selectedOption,
-      };
-
-      const response = await fetch("/api/v2/clarify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result: ApiResponse = await response.json();
-      handleApiResponse(result, `Đã chọn: ${selectedOption.title}`);
-    } catch (error) {
-      console.error("Collection selection error:", error);
-      addAssistantMessage("Có lỗi xảy ra khi xử lý lựa chọn của bạn.", true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 🎯 GIAI ĐOẠN 3→4: Handle question selection → Get final answer
-  const handleQuestionSelection = async (
-    selectedOption: ClarificationOption,
-    originalQuery: string
-  ) => {
-    if (!sessionId) return;
-
-    setIsLoading(true);
-
-    try {
-      // ✅ CORRECT FORMAT: Send to clarification endpoint with question_text
-      const payload = {
-        session_id: sessionId,
-        original_query: originalQuery,
-        selected_option: selectedOption,
-      };
-
-      const response = await fetch("/api/v2/clarify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result: ApiResponse = await response.json();
-      handleApiResponse(result, `Đã chọn: ${selectedOption.title}`);
-    } catch (error) {
-      console.error("Question selection error:", error);
-      addAssistantMessage("Có lỗi xảy ra khi xử lý câu hỏi của bạn.", true);
+      console.error("Error sending query:", error);
+      addAssistantMessage("Xin lỗi, có lỗi xảy ra. Vui lòng thử lại.", true);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleApiResponse = (result: ApiResponse, userQuery: string) => {
-    if (result.type === "answer") {
-      // Final answer received
+    if (result.type === "answer" && result.answer) {
       addAssistantMessage(
-        result.answer || "",
+        result.answer,
         false,
         result.processing_time,
         result.context_info?.source_documents
       );
       setCurrentClarification(null);
     } else if (result.type === "clarification_needed" && result.clarification) {
-      // Clarification needed - could be collection selection or question suggestions
       setCurrentClarification({
         clarification: result.clarification,
         originalQuery: result.clarification.original_query || userQuery,
       });
 
-      let clarificationMessage = result.clarification.message;
-      if (result.clarification.style === "question_suggestion") {
-        clarificationMessage +=
-          "\n\n💡 Chọn một câu hỏi cụ thể để tôi có thể trả lời chính xác nhất:";
-      }
+      const clarificationMessage =
+        result.clarification.message || "Vui lòng chọn một tùy chọn:";
 
       addAssistantMessage(
         clarificationMessage,
@@ -272,6 +177,52 @@ const ChatPage: React.FC = () => {
     setMessages((prev) => [...prev, assistantMessage]);
   };
 
+  const handleCollectionSelection = async (
+    selectedOption: ClarificationOption,
+    originalQuery: string
+  ) => {
+    if (!sessionId) return;
+
+    setIsLoading(true);
+
+    try {
+      const result = await apiService.sendClarificationResponse(
+        sessionId,
+        originalQuery,
+        selectedOption
+      );
+      handleApiResponse(result, `Đã chọn: ${selectedOption.title}`);
+    } catch (error) {
+      console.error("Collection selection error:", error);
+      addAssistantMessage("Có lỗi xảy ra khi xử lý lựa chọn của bạn.", true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleQuestionSelection = async (
+    selectedOption: ClarificationOption,
+    originalQuery: string
+  ) => {
+    if (!sessionId) return;
+
+    setIsLoading(true);
+
+    try {
+      const result = await apiService.sendClarificationResponse(
+        sessionId,
+        originalQuery,
+        selectedOption
+      );
+      handleApiResponse(result, `Đã chọn: ${selectedOption.title}`);
+    } catch (error) {
+      console.error("Question selection error:", error);
+      addAssistantMessage("Có lỗi xảy ra khi xử lý câu hỏi của bạn.", true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     sendQuery(inputValue);
@@ -292,51 +243,56 @@ const ChatPage: React.FC = () => {
     setMessages((prev) => [...prev, userMessage]);
 
     if (option.action === "proceed_with_collection") {
-      // GIAI ĐOẠN 2→3: Collection selected, get question suggestions
       handleCollectionSelection(option, originalQuery);
     } else if (option.action === "proceed_with_question") {
-      // GIAI ĐOẠN 3→4: Question selected, get final answer
       handleQuestionSelection(option, originalQuery);
     } else if (option.action === "manual_input") {
-      // Manual input requested
       setCurrentClarification(null);
       addAssistantMessage("Vui lòng nhập câu hỏi cụ thể của bạn:");
     }
   };
 
   const renderClarificationOptions = (clarification: ClarificationData) => {
+    if (!clarification?.options || clarification.options.length === 0) {
+      return null;
+    }
+
     return (
       <div className="clarification-options">
         {clarification.options.map((option) => (
           <div
             key={option.id}
             className={`option-card ${
-              clarification.style === "question_suggestion"
-                ? "question-option"
-                : "collection-option"
+              option.action === "proceed_with_collection"
+                ? "collection-option"
+                : "question-option"
             }`}
             onClick={() => handleOptionClick(option)}
           >
             <div className="option-header">
               <h4>{option.title}</h4>
               {option.confidence && (
-                <span className="confidence-badge">
-                  Độ tin cậy: {option.confidence}
-                </span>
+                <span className="confidence-badge">{option.confidence}</span>
               )}
             </div>
-
-            <p className="option-description">{option.description}</p>
-
+            {option.description && (
+              <p className="option-description">{option.description}</p>
+            )}
             {option.examples && option.examples.length > 0 && (
               <div className="option-examples">
-                <small>Ví dụ: {option.examples.join(", ")}</small>
+                Ví dụ: {option.examples.join(", ")}
               </div>
             )}
           </div>
         ))}
       </div>
     );
+  };
+
+  const formatFileName = (filePath: string): string => {
+    const fileName =
+      filePath.split("\\").pop()?.replace(".json", "") || filePath;
+    return fileName;
   };
 
   const renderMessage = (message: Message) => {
@@ -348,7 +304,7 @@ const ChatPage: React.FC = () => {
           ) : message.type === "assistant" ? (
             <BotIcon />
           ) : (
-            <AlertIcon />
+            <span className="system-icon">i</span>
           )}
         </div>
 
@@ -365,12 +321,12 @@ const ChatPage: React.FC = () => {
           {message.sourceDocuments && message.sourceDocuments.length > 0 && (
             <div className="source-documents">
               <div className="source-documents-header">
-                📁 Nguồn tài liệu tham khảo:
+                📄 Nguồn tài liệu tham khảo:
               </div>
               <div className="source-documents-list">
                 {message.sourceDocuments.map((doc, index) => (
                   <div key={index} className="source-document">
-                    {doc.split("\\").pop()?.replace(".json", "") || doc}
+                    {formatFileName(doc)}
                   </div>
                 ))}
               </div>
@@ -379,12 +335,14 @@ const ChatPage: React.FC = () => {
 
           <div className="message-meta">
             <span className="message-time">
-              <ClockIcon />
-              {message.timestamp.toLocaleTimeString()}
+              {message.timestamp.toLocaleTimeString("vi-VN", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </span>
             {message.processingTime && message.processingTime > 0 && (
               <span className="processing-time">
-                ⚡ {message.processingTime.toFixed(2)}s
+                {message.processingTime.toFixed(2)}s
               </span>
             )}
           </div>
@@ -398,7 +356,6 @@ const ChatPage: React.FC = () => {
       <div className="chat-header">
         <div className="header-content">
           <div className="header-title">
-            <BotIcon />
             <h1>Trợ lý Pháp luật AI</h1>
           </div>
           <div className="header-subtitle">
@@ -450,7 +407,7 @@ const ChatPage: React.FC = () => {
           </div>
 
           <div className="input-help">
-            <HelpIcon />
+            💡{" "}
             <span>
               Ví dụ: "thủ tục khai sinh cần gì", "làm chứng thực bản sao"
             </span>

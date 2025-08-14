@@ -123,7 +123,7 @@
 }
 
 .message.system .message-avatar {
-  background: #f59e0b;
+  background: #6366f1;
   color: white;
   width: 32px;
   height: 32px;
@@ -166,9 +166,9 @@
 }
 
 .message.system .message-text {
-  background: #fef3c7;
-  border: 1px solid #fbbf24;
-  color: #92400e;
+  background: #f0f9ff;
+  border: 1px solid #0ea5e9;
+  color: #0c4a6e;
   font-size: 14px;
   padding: 12px 16px;
 }
@@ -391,9 +391,6 @@
   color: #6b7280;
   padding: 0 4px;
 }
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 13px;
-  margin-left: 20px;
 }
 
 /* Typing Indicator */
