@@ -2,10 +2,62 @@ import React, { useState, useRef, useEffect } from "react";
 import "../styles/ChatPage.css";
 import { apiService } from "../services/api";
 
+// Speech Recognition interface
+interface SpeechRecognitionEvent {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionResultList {
+  [index: number]: SpeechRecognitionResult;
+  length: number;
+}
+
+interface SpeechRecognitionResult {
+  [index: number]: SpeechRecognitionAlternative;
+  length: number;
+  isFinal: boolean;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: any) => void;
+  onend: () => void;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
+// Enhanced ID generation system
+let messageIdCounter = 0;
+const generateUniqueId = (): string => {
+  messageIdCounter += 1;
+  return `msg_${Date.now()}_${messageIdCounter}_${Math.random()
+    .toString(36)
+    .substr(2, 9)}`;
+};
+
 // Professional minimal icons
 const SendIcon = () => <span className="icon">→</span>;
 const BotIcon = () => <span className="icon">🤖</span>;
 const UserIcon = () => <span className="icon">👤</span>;
+const MicIcon = () => <span className="icon">🎤</span>;
+const MicOffIcon = () => <span className="icon">⏹</span>;
 
 interface Message {
   id: string;
@@ -64,7 +116,7 @@ interface CurrentClarification {
 const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: "1",
+      id: generateUniqueId(),
       type: "system",
       content:
         "Xin chào! Tôi là trợ lý pháp luật AI. Tôi có thể giúp bạn tìm hiểu về các thủ tục hành chính như hộ tịch, chứng thực, và nuôi con nuôi. Bạn có câu hỏi gì không?",
@@ -77,6 +129,12 @@ const ChatPage: React.FC = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [currentClarification, setCurrentClarification] =
     useState<CurrentClarification | null>(null);
+
+  // Voice recognition state
+  const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+    null
+  );
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -91,12 +149,58 @@ const ChatPage: React.FC = () => {
     }
   }, [isLoading]);
 
+  // Initialize speech recognition
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      (window.SpeechRecognition || window.webkitSpeechRecognition)
+    ) {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+      recognitionInstance.lang = "vi-VN"; // Vietnamese language
+
+      recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
+        const transcript = event.results[0][0].transcript;
+        setInputValue(transcript);
+        setIsListening(false);
+      };
+
+      recognitionInstance.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognitionInstance.onend = () => {
+        setIsListening(false);
+      };
+
+      setRecognition(recognitionInstance);
+    }
+  }, []);
+
+  const startListening = () => {
+    if (recognition && !isListening) {
+      setIsListening(true);
+      recognition.start();
+    }
+  };
+
+  const stopListening = () => {
+    if (recognition && isListening) {
+      setIsListening(false);
+      recognition.stop();
+    }
+  };
+
   const sendQuery = async (userQuery: string) => {
     if (userQuery.trim() === "" || isLoading) return;
 
-    // Add user message
+    // Add user message with unique ID
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: generateUniqueId(),
       type: "user",
       content: userQuery,
       timestamp: new Date(),
@@ -165,7 +269,7 @@ const ChatPage: React.FC = () => {
     clarification?: ClarificationData
   ) => {
     const assistantMessage: Message = {
-      id: Date.now().toString(),
+      id: generateUniqueId(),
       type: isError ? "system" : "assistant",
       content: content,
       timestamp: new Date(),
@@ -233,9 +337,9 @@ const ChatPage: React.FC = () => {
 
     const { originalQuery } = currentClarification;
 
-    // Add user selection message
+    // Add user selection message with unique ID
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: generateUniqueId(),
       type: "user",
       content: `Đã chọn: ${option.title}`,
       timestamp: new Date(),
@@ -393,13 +497,27 @@ const ChatPage: React.FC = () => {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Nhập câu hỏi của bạn..."
-              disabled={isLoading}
+              placeholder="Nhập câu hỏi của bạn hoặc nhấn mic để nói..."
+              disabled={isLoading || isListening}
               className="message-input"
             />
+
+            {/* Voice Input Button */}
+            {recognition && (
+              <button
+                type="button"
+                onClick={isListening ? stopListening : startListening}
+                disabled={isLoading}
+                className={`voice-button ${isListening ? "listening" : ""}`}
+                title={isListening ? "Nhấn để dừng ghi âm" : "Nhấn để nói"}
+              >
+                {isListening ? <MicOffIcon /> : <MicIcon />}
+              </button>
+            )}
+
             <button
               type="submit"
-              disabled={isLoading || inputValue.trim() === ""}
+              disabled={isLoading || inputValue.trim() === "" || isListening}
               className="send-button"
             >
               <SendIcon />
@@ -410,6 +528,7 @@ const ChatPage: React.FC = () => {
             💡{" "}
             <span>
               Ví dụ: "thủ tục khai sinh cần gì", "làm chứng thực bản sao"
+              {recognition && " | Nhấn mic để nhập bằng giọng nói"}
             </span>
           </div>
         </form>
