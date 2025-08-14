@@ -144,7 +144,7 @@ class SmartClarificationService:
                 'id': 'yes',
                 'title': f"Đúng, tôi muốn hỏi về {source_procedure}",
                 'description': f"Tiến hành tìm kiếm thông tin về {source_procedure}",
-                'action': 'proceed_with_routing',
+                'action': 'proceed_with_collection',  # 🔧 CHANGE: Unified action name
                 'collection': routing_result.get('target_collection'),
                 'procedure': source_procedure
             },
@@ -152,14 +152,14 @@ class SmartClarificationService:
                 'id': 'similar',
                 'title': "Tương tự, nhưng không hoàn toàn chính xác",
                 'description': f"Câu hỏi gốc: {best_match[:80]}..." if best_match else "Hãy giúp tôi tìm thủ tục phù hợp hơn",
-                'action': 'show_related_options',
+                'action': 'proceed_with_collection',  # 🔧 CHANGE: Use same action, let collection decide
                 'collection': routing_result.get('target_collection')
             },
             {
                 'id': 'no',
                 'title': "Không, tôi muốn hỏi về thủ tục khác",
                 'description': "Hãy cho tôi thêm lựa chọn khác",
-                'action': 'show_category_options',
+                'action': 'manual_input',  # 🔧 CHANGE: Ask for manual input
                 'collection': None
             }
         ]
@@ -250,7 +250,7 @@ class SmartClarificationService:
                 'title': category_info['title'],
                 'description': category_info['description'],
                 'examples': category_info['examples'],
-                'action': 'explore_category',
+                'action': 'proceed_with_collection',  # 🔧 CHANGE: Match handler expectation
                 'collection': collection_id
             }
             options.append(option)

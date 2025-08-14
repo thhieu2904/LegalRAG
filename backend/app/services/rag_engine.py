@@ -191,9 +191,10 @@ class OptimizedEnhancedRAGService:
         self,
         query: str,
         session_id: Optional[str] = None,
-        max_context_length: int = 8000,  # INCREASED: Tăng từ 3000 lên 8000 để đảm bảo full document context
-        use_ambiguous_detection: bool = True,
-        use_full_document_expansion: bool = True
+        reranker_k: int = 10,
+        llm_k: int = 5,
+        threshold: float = 0.7,
+        forced_collection: Optional[str] = None  # ⚡ THÊM THAM SỐ ANTI-LOOP
     ) -> Dict[str, Any]:
         """
         Query chính với tất cả tối ưu hóa - THIẾT KẾ GỐC: FULL DOCUMENT EXPANSION
@@ -224,7 +225,25 @@ class OptimizedEnhancedRAGService:
             logger.info(f"Processing query in session {session_id}: {query[:50]}...")
             
             # Step 1: Enhanced Smart Query Routing với MULTI-LEVEL Confidence Processing + Stateful Router
-            if use_ambiguous_detection:
+            if forced_collection:
+                # 🔧 FORCED ROUTING: Từ clarification response, bỏ qua router
+                logger.info(f"⚡ Forced routing to collection: {forced_collection} (from clarification)")
+                routing_result = {
+                    'status': 'routed_by_clarification',
+                    'confidence_level': 'forced_high',  # Coi như confidence cao vì user đã xác nhận
+                    'confidence': 0.95,  # Fake high confidence
+                    'target_collection': forced_collection,
+                    'inferred_filters': {},
+                    'was_overridden': True,
+                    'source': 'user_clarification'
+                }
+                # Get confidence level from routing result for further processing
+                confidence_level = routing_result.get('confidence_level', 'forced_high')
+                best_collections = [forced_collection]
+                inferred_filters = {}
+                
+            else:
+                # 🧠 SMART ROUTING: Sử dụng router bình thường
                 routing_result = self.smart_router.route_query(query, session)
                 confidence_level = routing_result.get('confidence_level', 'low')
                 was_overridden = routing_result.get('was_overridden', False)
@@ -251,20 +270,6 @@ class OptimizedEnhancedRAGService:
                     # TẤT CẢ CONFIDENCE < THRESHOLD - Hỏi lại user, không route
                     logger.info(f"🤔 CONFIDENCE KHÔNG ĐỦ CAO ({confidence_level}) - hỏi lại user thay vì route")
                     return self._generate_smart_clarification(routing_result, query, session_id, start_time)
-            
-            else:
-                # Fallback routing logic (giữ nguyên logic cũ)
-                routing_result = self.smart_router.route_query(query)
-                confidence_level = 'fallback'  # Set default confidence level for fallback
-                if routing_result.get('status') == 'routed' and routing_result.get('target_collection'):
-                    target_collection = routing_result['target_collection']
-                    inferred_filters = routing_result.get('inferred_filters', {})
-                    best_collections = [target_collection]
-                    logger.info(f"Fallback routed to collection: {target_collection}")
-                else:
-                    best_collections = [settings.chroma_collection_name]
-                    inferred_filters = {}
-                    confidence_level = 'fallback'  # Ensure confidence_level is set
             
             # Step 2: Focused Search với ĐỘNG BROAD_SEARCH_K dựa trên router confidence
             # 🚀 PERFORMANCE OPTIMIZATION: Giảm số documents cần rerank
@@ -371,9 +376,7 @@ class OptimizedEnhancedRAGService:
             logger.info("Context expansion: Loading TOÀN BỘ DOCUMENT để đảm bảo ngữ cảnh pháp luật đầy đủ")
             
             expanded_context = self.context_expansion_service.expand_context_with_nucleus(
-                nucleus_chunks=nucleus_chunks,
-                max_context_length=max_context_length,
-                include_full_document=use_full_document_expansion
+                nucleus_chunks=nucleus_chunks
             )
             
             context_text = self._build_context_from_expanded(expanded_context)
@@ -466,23 +469,128 @@ class OptimizedEnhancedRAGService:
     def handle_clarification(
         self,
         session_id: str,
-        selected_option: str,
+        selected_option: Dict[str, Any],  # 🔧 CHANGE: Nhận full option object thay vì string
         original_query: str
     ) -> Dict[str, Any]:
-        """Xử lý phản hồi clarification"""
+        """
+        MULTI-TURN CONVERSATION: Xử lý phản hồi clarification với nhiều giai đoạn
+        - Giai đoạn 2: proceed_with_collection → Generate question suggestions
+        - Giai đoạn 3: proceed_with_question → Run RAG with clarified query
+        """
+        start_time = time.time()  # 🔧 ADD: Track processing time
         session = self.get_session(session_id)
         if not session:
-            return {"error": f"Session {session_id} not found"}
+            return {
+                "type": "error", 
+                "error": f"Session {session_id} not found",
+                "session_id": session_id,
+                "processing_time": 0.0
+            }
             
-        # Tạo refined query
-        refined_query = f"{original_query} - {selected_option}"
+        action = selected_option.get('action')
+        collection = selected_option.get('collection')
         
-        # Process refined query (sẽ không ambiguous nữa)
-        return self.enhanced_query(
-            query=refined_query,
-            session_id=session_id,
-            use_ambiguous_detection=False  # Skip ambiguous detection for refined query
-        )
+        if action == 'proceed_with_collection' and collection:
+            # � GIAI ĐOẠN 2 → 3: User chọn collection, generate question suggestions
+            logger.info(f"🎯 Clarification Step 2→3: User selected collection '{collection}'. Generating question suggestions.")
+            
+            try:
+                # Lấy example questions từ SmartRouter cho collection này
+                example_questions = self.smart_router.get_example_questions_for_collection(collection)
+                
+                if not example_questions:
+                    # Fallback nếu không có example questions
+                    logger.warning(f"No example questions found for collection '{collection}'. Proceeding with original query.")
+                    return self.enhanced_query(
+                        query=original_query,
+                        session_id=session_id,
+                        forced_collection=collection
+                    )
+                
+                # Tạo question suggestions cho user
+                suggestions = []
+                for i, q in enumerate(example_questions[:5]):  # Giới hạn 5 suggestions
+                    suggestions.append({
+                        "id": str(i + 1),
+                        "title": q.get('text', q),  # Handle both dict and string formats
+                        "description": f"Thủ tục: {q.get('source', 'Không rõ') if isinstance(q, dict) else 'Không rõ'}",
+                        "action": "proceed_with_question",  # ACTION CHO GIAI ĐOẠN 3
+                        "collection": collection,
+                        "question_text": q.get('text', q) if isinstance(q, dict) else q,  # Câu hỏi đầy đủ để gọi RAG
+                        "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                    })
+                
+                # Thêm option "Other" để user có thể input manual
+                suggestions.append({
+                    "id": str(len(suggestions) + 1),
+                    "title": "Câu hỏi khác...",
+                    "description": "Tôi muốn hỏi về vấn đề khác trong lĩnh vực này",
+                    "action": "manual_input",
+                    "collection": collection
+                })
+                
+                collection_display = self.smart_router.collection_mappings.get(collection, {}).get('display_name', collection.replace('_', ' ').title())
+                
+                return {
+                    "type": "clarification_needed",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time,
+                    "clarification": {
+                        "message": f"Cảm ơn bạn đã chọn lĩnh vực '{collection_display}'. Bạn có muốn hỏi về một trong các vấn đề sau không?",
+                        "options": suggestions,
+                        "style": "question_suggestion",  # Style mới để frontend nhận diện
+                        "stage": 3,  # Giai đoạn 3 của cuộc hội thoại
+                        "collection": collection,
+                        "original_query": original_query
+                    }
+                }
+                
+            except Exception as e:
+                logger.error(f"❌ Error generating question suggestions for collection '{collection}': {e}")
+                # Fallback to direct RAG
+                return self.enhanced_query(
+                    query=original_query,
+                    session_id=session_id,
+                    forced_collection=collection
+                )
+                
+        elif action == 'proceed_with_question':
+            # 🎯 GIAI ĐOẠN 3 → 4: User chọn câu hỏi cụ thể, chạy RAG
+            question_text = selected_option.get('question_text')
+            if question_text and collection:
+                logger.info(f"🚀 Clarification Step 3→4: User selected question '{question_text}' in collection '{collection}'.")
+                
+                # Chạy RAG với câu hỏi ĐÃ ĐƯỢC LÀM RÕ và collection ĐÃ CHỈ ĐỊNH
+                return self.enhanced_query(
+                    query=question_text,  # 🔥 Dùng câu hỏi cụ thể, không phải original query mơ hồ
+                    session_id=session_id,
+                    forced_collection=collection  # 🔥 Force routing to selected collection
+                )
+            else:
+                return {
+                    "type": "error",
+                    "error": "Missing question_text or collection for proceed_with_question action",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+            
+        elif action == 'manual_input':
+            # User muốn nhập lại câu hỏi
+            return {
+                "type": "manual_input_request",
+                "message": "Vui lòng nhập lại câu hỏi cụ thể hơn",
+                "session_id": session_id,
+                "processing_time": 0.1
+            }
+            
+        else:
+            # Invalid action
+            return {
+                "type": "error",
+                "error": f"Invalid clarification action: {action}",
+                "session_id": session_id, 
+                "processing_time": 0.0
+            }
         
     def _build_context_from_expanded(self, expanded_context: Dict[str, Any]) -> str:
         """Build context string từ expanded context"""

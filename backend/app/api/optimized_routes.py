@@ -23,11 +23,12 @@ class OptimizedQueryRequest(BaseModel):
     max_context_length: int = Field(8000, ge=500, le=12000, description="Độ dài context tối đa")  # INCREASED: 3000 → 8000
     use_ambiguous_detection: bool = Field(True, description="Có sử dụng phát hiện câu hỏi mơ hồ")
     use_full_document_expansion: bool = Field(True, description="Có mở rộng toàn bộ document")
+    forced_collection: Optional[str] = Field(None, description="Force routing to specific collection (từ clarification)")  # 🔧 NEW
 
 class ClarificationRequest(BaseModel):
-    """Request model cho clarification response"""
+    """Request model cho clarification response - FIXED STRUCTURE"""
     session_id: str = Field(..., description="Session ID")
-    selected_option: str = Field(..., description="Tùy chọn được chọn")
+    selected_option: Dict[str, Any] = Field(..., description="Full option object được chọn")  # 🔧 CHANGE: Dict thay vì str
     original_query: str = Field(..., description="Câu hỏi gốc")
 
 class SessionCreateRequest(BaseModel):
@@ -82,9 +83,7 @@ async def optimized_enhanced_query(
         result = service.enhanced_query(
             query=request.query,
             session_id=request.session_id,
-            max_context_length=request.max_context_length,
-            use_ambiguous_detection=request.use_ambiguous_detection,
-            use_full_document_expansion=request.use_full_document_expansion
+            forced_collection=request.forced_collection  # 🔧 NEW: Pass forced collection
         )
         
         return QueryResponse(**result)
