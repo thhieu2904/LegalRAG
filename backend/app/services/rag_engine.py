@@ -18,6 +18,7 @@ from pathlib import Path
 from .vector_database import VectorDBService
 from .language_model import LLMService
 from .result_reranker import RerankerService
+from .smart_clarification import SmartClarificationService
 from .smart_router import EnhancedSmartQueryRouter, RouterBasedAmbiguousQueryService
 from .smart_clarification import SmartClarificationService
 from .context_expander import EnhancedContextExpansionService
@@ -190,7 +191,7 @@ class OptimizedEnhancedRAGService:
         self,
         query: str,
         session_id: Optional[str] = None,
-        max_context_length: int = 3000,
+        max_context_length: int = 8000,  # INCREASED: Tăng từ 3000 lên 8000 để đảm bảo full document context
         use_ambiguous_detection: bool = True,
         use_full_document_expansion: bool = True
     ) -> Dict[str, Any]:
@@ -309,7 +310,14 @@ class OptimizedEnhancedRAGService:
                 
             logger.info(f"Found {len(broad_search_results)} candidate chunks")
             
-            # Step 4: Reranking (GPU - high precision) - LẤY 1 CHUNK CAO NHẤT SAU RERANK
+            # Step 4: SEQUENTIAL PROCESSING để tối ưu VRAM (6GB limit)
+            # Phase 1: Reranking - Load Reranker, Unload LLM nếu cần
+            logger.info("🔄 PHASE 1: Reranking (GPU) - Optimizing VRAM usage...")
+            
+            # Temporarily unload LLM để đảm bảo VRAM cho reranker
+            if hasattr(self.llm_service, 'unload_model'):
+                self.llm_service.unload_model()
+            
             if settings.use_reranker and len(broad_search_results) > 1:
                 # ✅ FIX CRITICAL BUG: Rerank TẤT CẢ documents thay vì chỉ top 10
                 # Đây là lỗi logic nghiêm trọng - không được vứt bỏ documents tiềm năng!
@@ -324,13 +332,34 @@ class OptimizedEnhancedRAGService:
                     router_confidence_level=routing_result.get('confidence_level', 'low')
                 )
                 
-                # ✅ RERANKER ONLY - NO CONSERVATIVE STRATEGY
-                # User requested: "tắt lớp bảo vệ, chỉ làm nhiệm vụ rerank thôi"
+                # Unload reranker sau khi hoàn thành để giải phóng VRAM
+                if hasattr(self.reranker_service, 'unload_model'):
+                    self.reranker_service.unload_model()
+                
+                # 🚨 INTELLIGENT CONFIDENCE CHECK - Kiểm tra COMBINED confidence trước khi gọi LLM
+                router_confidence = routing_result.get('confidence', 0.0)
+                best_score = nucleus_chunks[0].get('rerank_score', 0) if nucleus_chunks and len(nucleus_chunks) > 0 else 0.0
+                
+                # Calculate combined confidence score
+                combined_confidence = (router_confidence * 0.4 + best_score * 0.6)  # Reranker có trọng số cao hơn
+                logger.info(f"🎯 Combined Confidence: {combined_confidence:.4f} (Router: {router_confidence:.4f}, Rerank: {best_score:.4f})")
+                
+                # SMART CLARIFICATION THRESHOLD - Tránh câu trả lời sai lệch
+                CLARIFICATION_THRESHOLD = 0.3  # Điều chỉnh threshold này theo cần thiết
+                
+                if combined_confidence < CLARIFICATION_THRESHOLD:
+                    logger.warning(f"🚨 COMBINED CONFIDENCE QUÁ THẤP ({combined_confidence:.4f} < {CLARIFICATION_THRESHOLD}) - Kích hoạt Smart Clarification")
+                    
+                    return self.clarification_service.generate_clarification(
+                        confidence=combined_confidence,
+                        routing_result=routing_result,
+                        query=query
+                    )
+                
                 if nucleus_chunks and len(nucleus_chunks) > 0:
-                    best_score = nucleus_chunks[0].get('rerank_score', 0)
                     logger.info(f"Best rerank score: {best_score:.4f}")
                     logger.info("🎯 PURE RERANKER MODE - No protective logic, full expansion strategy")
-                
+            
                 logger.info(f"Selected {len(nucleus_chunks)} nucleus chunk with rerank-based strategy")
             else:
                 nucleus_chunks = broad_search_results[:1]  # Fallback: lấy chunk tốt nhất theo vector similarity
@@ -353,6 +382,9 @@ class OptimizedEnhancedRAGService:
             
             context_text = self._build_context_from_expanded(expanded_context)
             logger.info(f"Context expanded: {expanded_context['total_length']} chars from {len(expanded_context.get('source_documents', []))} documents")
+            
+            # Phase 2: LLM Generation - Load LLM cho generation phase
+            logger.info("🔄 PHASE 2: LLM Generation (GPU) - Loading LLM for final answer...")
             
             # Step 6: Generate Answer (GPU LLM)
             if not session:
@@ -710,36 +742,52 @@ TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các qu
                 routing_result=routing_result
             )
             
-            # Return with proper structure and processing time - convert numpy types
-            response = {
-                "type": "clarification_needed",
-                "status": "smart_clarification", 
-                "confidence": routing_result.get('confidence', 0.0),
-                "clarification": clarification_response,
+            # Merge clarification response with required fields
+            processing_time = time.time() - start_time
+            
+            # Get the main response from clarification service
+            response = clarification_response.copy()
+            
+            # Add required fields that API expects
+            response.update({
                 "session_id": session_id,
-                "processing_time": time.time() - start_time,
-                "strategy": clarification_response.get("level", "unknown")
-            }
+                "processing_time": processing_time,
+                "routing_info": {
+                    "target_collection": routing_result.get('target_collection'),
+                    "router_confidence": routing_result.get('confidence', 0.0),
+                    "status": "smart_clarification"
+                }
+            })
+            
             return convert_numpy_types(response)
             
         except Exception as e:
             logger.error(f"Error generating smart clarification: {e}")
+            processing_time = time.time() - start_time
+            
             fallback_response = {
                 "type": "clarification_needed",
-                "status": "smart_clarification",
                 "confidence": routing_result.get('confidence', 0.0),
                 "clarification": {
                     "message": "Xin lỗi, tôi không rõ ý định của câu hỏi. Bạn có thể diễn đạt rõ hơn không?",
-                    "options": [],
-                    "suggestions": [
-                        "Bạn có thể nói rõ hơn về thủ tục nào bạn muốn thực hiện?",
-                        "Ví dụ: đăng ký khai sinh, kết hôn, chứng thực, hay thủ tục khác?"
+                    "options": [
+                        {
+                            'id': 'retry',
+                            'title': "Hãy diễn đạt lại câu hỏi",
+                            'description': "Tôi sẽ cố gắng hiểu rõ hơn",
+                            'action': 'manual_input'
+                        }
                     ],
-                    "level": "fallback"
+                    "style": "fallback"
                 },
                 "session_id": session_id,
-                "processing_time": time.time() - start_time,
-                "strategy": "generic_clarification"
+                "processing_time": processing_time,
+                "routing_info": {
+                    "target_collection": routing_result.get('target_collection'),
+                    "router_confidence": routing_result.get('confidence', 0.0),
+                    "status": "smart_clarification_error",
+                    "error": str(e)
+                }
             }
             return convert_numpy_types(fallback_response)
     

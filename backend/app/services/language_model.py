@@ -10,12 +10,13 @@ from ..core.config import settings
 logger = logging.getLogger(__name__)
 
 class LLMService:
-    """Service quản lý PhoGPT model từ HuggingFace"""
+    """Service quản lý PhoGPT model từ HuggingFace với VRAM Optimization"""
     
     def __init__(self, model_path: Optional[str] = None, model_url: Optional[str] = None, **kwargs):
         self.model_path = Path(model_path or settings.llm_model_path)
         self.model_url = model_url or settings.llm_model_url
         self.model = None
+        self.model_loaded = False
         
         # Cấu hình GPU + CPU hybrid cho tối ưu performance
         self.model_kwargs = {
@@ -34,8 +35,8 @@ class LLMService:
         if not self.model_path.exists():
             self._download_model()
         
-        # Load model
-        self._load_model()
+        # VRAM Optimization: Load model khi cần thiết
+        # self._load_model()  # Comment out để load on-demand
     
     def _download_model(self):
         """Tải model từ HuggingFace"""
@@ -72,14 +73,41 @@ class LLMService:
     
     def _load_model(self):
         """Load model vào memory"""
+        if self.model_loaded:
+            return
+            
         try:
-            logger.info(f"Loading model from {self.model_path}")
+            logger.info(f"Loading LLM model from {self.model_path}")
             self.model = Llama(model_path=str(self.model_path), **self.model_kwargs)
-            logger.info("Model loaded successfully")
+            self.model_loaded = True
+            logger.info("✅ LLM model loaded successfully")
         except Exception as e:
-            logger.error(f"Failed to load model: {e}")
+            logger.error(f"Failed to load LLM model: {e}")
             self.model = None
+            self.model_loaded = False
             raise
+    
+    def unload_model(self):
+        """Unload model để giải phóng VRAM"""
+        if self.model is not None:
+            logger.info("🔄 Unloading LLM model to free VRAM...")
+            del self.model
+            self.model = None
+            self.model_loaded = False
+            
+            # Force garbage collection
+            import gc
+            gc.collect()
+            logger.info("✅ LLM model unloaded, VRAM freed")
+    
+    def ensure_loaded(self):
+        """Ensure model is loaded - load nếu chưa có"""
+        if not self.model_loaded or self.model is None:
+            self._load_model()
+    
+    def is_model_loaded(self) -> bool:
+        """Check if model is currently loaded"""
+        return self.model_loaded and self.model is not None
     
     def _format_prompt(self, system_prompt: str, user_query: str, context: str = "") -> str:
         """Format prompt theo template tối ưu để tránh confusion"""
@@ -110,7 +138,10 @@ TRẢ LỜI:"""
         temperature: Optional[float] = None,
         system_prompt: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Sinh response từ model - tối ưu để tránh lặp"""
+        """Sinh response từ model - VRAM optimized với on-demand loading"""
+        
+        # VRAM Optimization: Ensure model is loaded
+        self.ensure_loaded()
         
         if not self.model:
             raise Exception("Model not loaded")

@@ -60,7 +60,7 @@ class EnhancedContextExpansionService:
     def expand_context_with_nucleus(
         self,
         nucleus_chunks: List[Dict[str, Any]], 
-        max_context_length: int = 3000,
+        max_context_length: int = 8000,  # INCREASED: Tăng từ 3000 lên 8000 để đủ context
         include_full_document: bool = True
     ) -> Dict[str, Any]:
         """

@@ -10,17 +10,21 @@ from ..core.config import settings
 logger = logging.getLogger(__name__)
 
 class RerankerService:
-    """Service quản lý Vietnamese Reranker model để chấm lại độ liên quan"""
+    """Service quản lý Vietnamese Reranker model - VRAM optimized với on-demand loading"""
     
     def __init__(self, model_name: Optional[str] = None):
         self.model_name = model_name or settings.reranker_model_name
         self.model = None
+        self.model_loaded = False
         
-        # Config đã setup environment rồi, không cần _setup_cache nữa
-        self._load_model()
+        # VRAM Optimization: Load model khi cần thiết
+        # self._load_model()  # Comment out để load on-demand
     
     def _load_model(self):
         """Load model từ cache local hoặc download nếu cần - GPU for optimal performance"""
+        if self.model_loaded:
+            return
+            
         try:
             logger.info(f"Loading reranker model: {self.model_name}")
             
@@ -31,7 +35,8 @@ class RerankerService:
                 try:
                     # 🚀 PERFORMANCE OPTIMIZATION: Giới hạn max_length=512 để tăng tốc
                     self.model = CrossEncoder(str(local_model_path), device='cuda:0', max_length=512)
-                    logger.info("Reranker model loaded successfully from local cache on GPU (max_length=512)")
+                    self.model_loaded = True
+                    logger.info("✅ Reranker model loaded from local cache on GPU (max_length=512)")
                     return
                 except Exception as e:
                     logger.warning(f"Failed to load from local cache on GPU: {e}")
@@ -39,12 +44,45 @@ class RerankerService:
             # Fallback: load từ HuggingFace với max_length=512
             logger.info("Loading from HuggingFace (may download) on GPU with optimized settings")
             self.model = CrossEncoder(self.model_name, device='cuda:0', max_length=512)
-            logger.info("Reranker model loaded successfully from HuggingFace on GPU (max_length=512)")
+            self.model_loaded = True
+            logger.info("✅ Reranker model loaded from HuggingFace on GPU (max_length=512)")
             
         except Exception as e:
             logger.error(f"Failed to load reranker model: {e}")
             self.model = None
+            self.model_loaded = False
             raise
+    
+    def unload_model(self):
+        """Unload reranker model để giải phóng VRAM"""
+        if self.model is not None:
+            logger.info("🔄 Unloading Reranker model to free VRAM...")
+            del self.model
+            self.model = None
+            self.model_loaded = False
+            
+            # Force garbage collection và CUDA cache clear
+            import gc
+            gc.collect()
+            
+            try:
+                import torch
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                    logger.info("✅ CUDA cache cleared")
+            except ImportError:
+                pass
+                
+            logger.info("✅ Reranker model unloaded, VRAM freed")
+    
+    def ensure_loaded(self):
+        """Ensure reranker model is loaded"""
+        if not self.model_loaded or self.model is None:
+            self._load_model()
+    
+    def is_model_loaded(self) -> bool:
+        """Check if reranker model is loaded"""
+        return self.model_loaded and self.model is not None
     
     def _get_local_model_path(self):
         """Tìm đường dẫn local model nếu có"""
@@ -90,6 +128,9 @@ class RerankerService:
         Returns:
             Danh sách documents đã được sắp xếp lại theo độ liên quan
         """
+        # VRAM Optimization: Ensure model is loaded
+        self.ensure_loaded()
+        
         if not self.model:
             logger.warning("Reranker model not loaded, returning original order")
             return documents[:top_k] if top_k else documents

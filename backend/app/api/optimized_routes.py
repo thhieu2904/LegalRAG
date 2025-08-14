@@ -20,7 +20,7 @@ class OptimizedQueryRequest(BaseModel):
     """Request model cho optimized query"""
     query: str = Field(..., min_length=1, description="Câu hỏi của người dùng")
     session_id: Optional[str] = Field(None, description="ID session chat (tùy chọn)")
-    max_context_length: int = Field(3000, ge=500, le=8000, description="Độ dài context tối đa")
+    max_context_length: int = Field(8000, ge=500, le=12000, description="Độ dài context tối đa")  # INCREASED: 3000 → 8000
     use_ambiguous_detection: bool = Field(True, description="Có sử dụng phát hiện câu hỏi mơ hồ")
     use_full_document_expansion: bool = Field(True, description="Có mở rộng toàn bộ document")
 
