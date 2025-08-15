@@ -3,58 +3,55 @@
     "title": "Đăng ký lại khai tử có yếu tố nước ngoài",
     "code": "QT 18/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\18. Đăng ký lại khai tử có yếu tố nước ngoài.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:18"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/18. Đăng ký lại khai tử có yếu tố nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:24:25+07:00"
   },
-  "main_question": "Thủ tục 'Đăng ký lại khai tử có yếu tố nước ngoài' là gì?",
+  "main_question": "Thủ tục đăng ký lại khai tử có yếu tố nước ngoài được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Đăng ký lại khai tử có yếu tố nước ngoài cần giấy tờ gì?",
-    "Chi phí Đăng ký lại khai tử có yếu tố nước ngoài bao nhiêu?",
-    "Thời gian xử lý Đăng ký lại khai tử có yếu tố nước ngoài là bao lâu?",
-    "Làm Đăng ký lại khai tử có yếu tố nước ngoài ở đâu?",
-    "Hồ sơ Đăng ký lại khai tử có yếu tố nước ngoài gồm những giấy tờ nào?",
-    "Điều kiện để được Đăng ký lại khai tử có yếu tố nước ngoài?"
+    "Tôi muốn làm lại giấy chứng tử cho người thân là Việt Kiều thì cần hồ sơ gì?",
+    "Hồ sơ đăng ký lại khai tử cho người nước ngoài gồm những giấy tờ nào?",
+    "Nếu không còn bản sao giấy chứng tử cũ, tôi có thể dùng giấy tờ cá nhân khác để thay thế không?",
+    "Tôi ở nước ngoài thì làm sao để ủy quyền cho người thân ở Việt Nam đi làm thủ tục này hộ?",
+    "Ủy quyền cho người thân đi làm lại giấy chứng tử có cần phải công chứng không?",
+    "Giấy tờ do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự không?",
+    "Thời gian làm lại giấy chứng tử có yếu tố nước ngoài mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thêm thì tối đa phải chờ bao nhiêu ngày?",
+    "Điều kiện để được đăng ký lại khai tử là gì?",
+    "Người thân tôi là Việt Kiều, mất năm 2018 và bị mất giấy tờ, vậy có thuộc đối tượng được đăng ký lại không?",
+    "Tôi phải đến đâu để nộp hồ sơ đăng ký lại khai tử?",
+    "Cơ quan nào có thẩm quyền giải quyết việc đăng ký lại khai tử có yếu tố nước ngoài?",
+    "Lệ phí đăng ký lại khai tử có yếu tố nước ngoài là bao nhiêu?",
+    "Gia đình tôi thuộc hộ nghèo thì có được miễn lệ phí không?",
+    "Quy trình xử lý hồ sơ đăng ký lại khai tử gồm mấy bước?",
+    "Bước thẩm tra và xác minh hồ sơ thường kéo dài bao lâu?",
+    "Ai là người có thẩm quyền ký trích lục khai tử?",
+    "Sau khi hoàn tất thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Có được cấp bản điện tử của trích lục khai tử không?",
+    "Tôi có thể dùng VneID để xuất trình giấy tờ tùy thân của mình khi đi làm thủ tục không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Đăng ký lại khai tử có yếu tố nước ngoài"
-    ],
-    "title_keywords": [
-      "lại",
-      "khai",
-      "yếu",
-      "nước",
-      "ngoài"
-    ],
-    "procedure_code": [
-      "QT 18/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "exact_title": "Đăng ký lại khai tử có yếu tố nước ngoài",
+    "title_keywords": ["đăng ký", "lại", "khai tử", "yếu tố nước ngoài"],
+    "procedure_code": "QT 18/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 20,
+    "generation_method": "AI-Assisted"
+  }
 }

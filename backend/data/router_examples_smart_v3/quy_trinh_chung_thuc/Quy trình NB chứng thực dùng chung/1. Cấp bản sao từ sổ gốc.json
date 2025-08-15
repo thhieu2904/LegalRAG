@@ -3,58 +3,51 @@
     "title": "Cấp bản sao từ sổ gốc",
     "code": "QT 01/CT-HCTP",
     "collection": "chung_thuc",
-    "source_document": "quy_trinh_chung_thuc\\Quy trình NB chứng thực dùng chung\\1. Cấp bản sao từ sổ gốc.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:45"
+    "source_document": "quy_trinh_chung_thuc/Quy trình NB chứng thực dùng chung/1. Cấp bản sao từ sổ gốc.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:35:45+07:00"
   },
-  "main_question": "Thủ tục 'Cấp bản sao từ sổ gốc' là gì?",
+  "main_question": "Thủ tục cấp bản sao từ sổ gốc được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Cấp bản sao từ sổ gốc cần giấy tờ gì?",
-    "Chi phí Cấp bản sao từ sổ gốc bao nhiêu?",
-    "Thời gian xử lý Cấp bản sao từ sổ gốc là bao lâu?",
-    "Làm Cấp bản sao từ sổ gốc ở đâu?",
-    "Điều kiện để được Cấp bản sao từ sổ gốc?",
-    "Quy trình Cấp bản sao từ sổ gốc ra sao?"
+    "Tôi muốn xin cấp lại bản sao từ sổ gốc thì cần giấy tờ gì?",
+    "Để xin bản sao từ sổ gốc có cần nộp hồ sơ không hay chỉ cần xuất trình giấy tờ?",
+    "Tôi có thể dùng Căn cước công dân để làm thủ tục này không?",
+    "Tôi đi xin bản sao cho bố tôi thì cần giấy tờ gì để chứng minh quan hệ?",
+    "Ai là người có quyền yêu cầu cấp bản sao từ sổ gốc?",
+    "Thời gian giải quyết việc cấp bản sao từ sổ gốc là bao lâu?",
+    "Nếu tôi đến yêu cầu sau 3 giờ chiều thì khi nào tôi nhận được kết quả?",
+    "Tôi phải đến đâu để xin cấp bản sao từ sổ gốc?",
+    "Cơ quan nào đang quản lý sổ gốc thì có thẩm quyền cấp bản sao phải không?",
+    "Lệ phí cấp bản sao từ sổ gốc là bao nhiêu?",
+    "Thủ tục này có được miễn phí không?",
+    "Kết quả tôi nhận được là gì sau khi làm thủ tục?",
+    "Quy trình cấp bản sao từ sổ gốc gồm những bước nào?",
+    "Ai là người có thẩm quyền ký duyệt bản sao?",
+    "Nếu cơ quan không thể trả kết quả ngay thì có phải cấp phiếu hẹn không?",
+    "Con cái có được quyền yêu cầu cấp bản sao từ sổ gốc cho cha mẹ đã mất không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Cấp bản sao từ sổ gốc"
-    ],
-    "title_keywords": [
-      "bản",
-      "sao",
-      "gốc"
-    ],
-    "procedure_code": [
-      "QT 01/CT-HCTP"
-    ],
-    "agency": [
-      "Cơ quan, tổ chức đang quản lý sổ gốc."
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "immediate"
-    ],
-    "applicant_type": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "exact_title": "Cấp bản sao từ sổ gốc",
+    "title_keywords": ["cấp", "bản sao", "từ sổ gốc"],
+    "procedure_code": "QT 01/CT-HCTP",
+    "agency": "Cơ quan, tổ chức đang quản lý sổ gốc.",
+    "agency_level": "commune",
+    "cost_type": "free",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân", "Tổ chức"]
   },
   "key_attributes": {
     "speed": "immediate",
-    "cost": "paid",
+    "cost": "free",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "applicant_scope": ["Cá nhân", "Tổ chức"]
   },
   "expected_collection": "chung_thuc",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 16,
+    "generation_method": "AI-Assisted"
+  }
 }

@@ -3,60 +3,57 @@
     "title": "Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở",
     "code": "QT 01/CX-HCTP",
     "collection": "chung_thuc",
-    "source_document": "quy_trinh_chung_thuc\\1.Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:32"
+    "source_document": "quy_trinh_chung_thuc/Quy trình NB chứng thực dùng chung/1.Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:38:05+07:00"
   },
-  "main_question": "Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở cần điều kiện gì?",
+  "main_question": "Thủ tục chứng thực hợp đồng, giao dịch về tài sản, nhà đất được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở cần giấy tờ gì?",
-    "Chi phí Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở bao nhiêu?",
-    "Thời gian xử lý Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở là bao lâu?",
-    "Làm Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở ở đâu?",
-    "Điều kiện để được Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở?",
-    "Quy trình Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở ra sao?"
+    "Tôi muốn chứng thực hợp đồng mua bán nhà đất thì cần chuẩn bị hồ sơ gì?",
+    "Hồ sơ chứng thực hợp đồng giao dịch gồm những giấy tờ nào?",
+    "Có cần nộp bản chính sổ đỏ khi đi chứng thực hợp đồng không?",
+    "Tôi có cần phải soạn sẵn dự thảo hợp đồng trước khi đi chứng thực không?",
+    "Thời gian chứng thực một hợp đồng mua bán đất đai mất bao lâu?",
+    "Nếu hồ sơ phức tạp, thời gian chứng thực có thể kéo dài hơn 2 ngày không?",
+    "Cơ quan nào có thẩm quyền chứng thực hợp đồng liên quan đến quyền sử dụng đất?",
+    "Tôi có thể đến UBND xã để chứng thực hợp đồng mua bán xe ô tô không?",
+    "Lệ phí chứng thực hợp đồng là bao nhiêu?",
+    "Chi phí để chứng thực một hợp đồng cho tặng tài sản là bao nhiêu tiền?",
+    "Kết quả tôi nhận được sau khi làm thủ tục là gì?",
+    "Quy trình chứng thực hợp đồng ở xã gồm mấy bước?",
+    "Ai là người kiểm tra tính pháp lý của hợp đồng?",
+    "Lãnh đạo UBND xã có vai trò gì trong việc chứng thực hợp đồng?",
+    "Tôi nộp hồ sơ ở đâu và nhận kết quả ở đâu?",
+    "Nếu không thể trả kết quả trong 2 ngày thì có được cấp phiếu hẹn không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở"
-    ],
+    "exact_title": "Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở",
     "title_keywords": [
-      "chứng",
-      "thực",
-      "hợp",
-      "đồng",
-      "giao"
+      "chứng thực",
+      "hợp đồng",
+      "giao dịch",
+      "tài sản",
+      "nhà đất"
     ],
-    "procedure_code": [
-      "QT 01/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "procedure_code": "QT 01/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân", "Tổ chức"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "applicant_scope": ["Cá nhân", "Tổ chức"]
   },
   "expected_collection": "chung_thuc",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 16,
+    "generation_method": "AI-Assisted"
+  }
 }

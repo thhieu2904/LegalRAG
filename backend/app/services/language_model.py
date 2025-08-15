@@ -13,7 +13,13 @@ class LLMService:
     """Service quản lý PhoGPT model từ HuggingFace với VRAM Optimization"""
     
     def __init__(self, model_path: Optional[str] = None, model_url: Optional[str] = None, **kwargs):
-        self.model_path = Path(model_path or settings.llm_model_path)
+        # Use absolute path to avoid issues when running from different directories
+        if model_path:
+            self.model_path = Path(model_path)
+        else:
+            # Use the computed property from settings which gives absolute path
+            self.model_path = settings.llm_model_file_path
+            
         self.model_url = model_url or settings.llm_model_url
         self.model = None
         self.model_loaded = False
@@ -32,8 +38,14 @@ class LLMService:
         }
         
         # Tải model nếu chưa có
+        logger.info(f"Checking model path: {self.model_path}")
+        logger.info(f"Model exists: {self.model_path.exists()}")
+        
         if not self.model_path.exists():
+            logger.info("Model file not found, attempting to download...")
             self._download_model()
+        else:
+            logger.info("Model file found, skipping download")
         
         # VRAM Optimization: Load model khi cần thiết
         # self._load_model()  # Comment out để load on-demand

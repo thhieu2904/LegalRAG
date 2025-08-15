@@ -3,57 +3,52 @@
     "title": "Đăng ký khai sinh lưu động",
     "code": "QT 30/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\30. Đăng ký khai sinh lưu động.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:28"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/30. Đăng ký khai sinh lưu động.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:30:15+07:00"
   },
-  "main_question": "Thủ tục 'Đăng ký khai sinh lưu động' là gì?",
+  "main_question": "Thủ tục đăng ký khai sinh lưu động được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Đăng ký khai sinh lưu động cần giấy tờ gì?",
-    "Chi phí Đăng ký khai sinh lưu động bao nhiêu?",
-    "Thời gian xử lý Đăng ký khai sinh lưu động là bao lâu?",
-    "Làm Đăng ký khai sinh lưu động ở đâu?",
-    "Điều kiện để được Đăng ký khai sinh lưu động?",
-    "Quy trình Đăng ký khai sinh lưu động ra sao?"
+    "Đăng ký khai sinh lưu động là gì và áp dụng cho những trường hợp nào?",
+    "Cha mẹ bị khuyết tật có được yêu cầu đăng ký khai sinh lưu động cho con không?",
+    "Nếu cha mẹ đang thi hành án phạt tù thì ai có thể đi làm khai sinh lưu động cho con?",
+    "Hồ sơ đăng ký khai sinh lưu động cần chuẩn bị những giấy tờ gì?",
+    "Nếu không có giấy chứng sinh thì có làm khai sinh lưu động được không?",
+    "Tôi có cần phải xuất trình giấy chứng nhận kết hôn khi làm thủ tục này không?",
+    "Thời gian giải quyết hồ sơ khai sinh lưu động là mấy ngày?",
+    "Quy trình đăng ký khai sinh lưu động gồm những bước nào?",
+    "Cơ quan nào có thẩm quyền ký giấy khai sinh trong trường hợp đăng ký lưu động?",
+    "Làm giấy khai sinh lưu động có mất tiền không?",
+    "Trường hợp nào được miễn lệ phí khi đăng ký khai sinh lưu động?",
+    "Nếu đăng ký khai sinh muộn thì lệ phí là bao nhiêu?",
+    "Tôi muốn xin thêm bản sao giấy khai sinh thì chi phí thế nào?",
+    "Ai là người tiếp nhận hồ sơ đăng ký khai sinh lưu động?",
+    "Nếu thông tin cư trú của tôi không có trên Cơ sở dữ liệu quốc gia về dân cư thì phải làm gì?",
+    "Trường hợp sinh con do mang thai hộ có được đăng ký khai sinh lưu động không?",
+    "Sau khi hoàn tất thủ tục tôi sẽ nhận được giấy tờ gì?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Đăng ký khai sinh lưu động"
-    ],
-    "title_keywords": [
-      "khai",
-      "sinh",
-      "lưu",
-      "động"
-    ],
-    "procedure_code": [
-      "QT 30/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ."
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "exact_title": "Đăng ký khai sinh lưu động",
+    "title_keywords": ["đăng ký", "khai sinh", "lưu động"],
+    "procedure_code": "QT 30/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ.",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 4,
+    "questions_generated": 17,
+    "generation_method": "AI-Assisted"
+  }
 }

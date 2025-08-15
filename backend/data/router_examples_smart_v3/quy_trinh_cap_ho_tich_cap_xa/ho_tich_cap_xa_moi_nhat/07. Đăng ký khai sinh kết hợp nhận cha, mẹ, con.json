@@ -3,58 +3,56 @@
     "title": "Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con",
     "code": "QT 07/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\07. Đăng ký khai sinh kết hợp nhận cha, mẹ, con.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:10"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/07. Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:18:19+07:00"
   },
-  "main_question": "Thủ tục 'Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con' là gì?",
+  "main_question": "Thủ tục đăng ký khai sinh kết hợp nhận cha, mẹ, con được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con cần giấy tờ gì?",
-    "Chi phí Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con bao nhiêu?",
-    "Thời gian xử lý Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con là bao lâu?",
-    "Làm Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con ở đâu?",
-    "Điều kiện để được Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con?",
-    "Quy trình Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con ra sao?"
+    "Tôi muốn làm giấy khai sinh cho con và đăng ký nhận cha cho con cùng lúc thì cần hồ sơ gì?",
+    "Hồ sơ để vừa làm khai sinh vừa làm thủ tục nhận cha con gồm những giấy tờ gì?",
+    "Cần mấy bộ hồ sơ để làm thủ tục 2 trong 1 này?",
+    "Nếu tôi không có văn bản giám định ADN, tôi có thể dùng văn bản cam đoan và người làm chứng để nhận con được không?",
+    "Khi đi làm thủ tục này có cần mang theo giấy tờ tùy thân bản gốc không?",
+    "Thủ tục kết hợp này giải quyết trong bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thêm thì tổng thời gian chờ là bao nhiêu ngày?",
+    "Tôi chưa đăng ký kết hôn, giờ muốn làm khai sinh cho con và đứng tên bố trong giấy thì cần điều kiện gì?",
+    "Nếu mẹ của đứa bé đã bỏ đi, tôi có tự làm thủ tục nhận con được không?",
+    "Bắt buộc cả cha, mẹ, con đều phải còn sống tại thời điểm làm thủ tục phải không?",
+    "Nộp hồ sơ cho thủ tục kết hợp này ở đâu?",
+    "Tôi có thể nộp hồ sơ ở UBND xã nơi tôi đang tạm trú được không?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được những giấy tờ gì?",
+    "Tôi có nhận được cả Giấy khai sinh và Trích lục nhận cha mẹ con không?",
+    "Lệ phí cho thủ tục kết hợp này được tính như thế nào?",
+    "Gia đình tôi thuộc hộ nghèo thì có được miễn giảm lệ phí không?",
+    "Quy trình làm thủ tục này có phức tạp không, gồm mấy bước?",
+    "Bước thẩm tra hồ sơ và xác minh thông tin thường mất bao lâu?",
+    "Tôi có thể nộp hồ sơ bằng bản chụp qua mạng trước rồi bổ sung bản chính sau không?",
+    "Cần chuẩn bị mấy tờ khai cho thủ tục này?",
+    "Giấy tờ trên VneID có được chấp nhận khi đi làm thủ tục này không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con"
-    ],
-    "title_keywords": [
-      "khai",
-      "sinh",
-      "kết",
-      "hợp",
-      "nhận"
-    ],
-    "procedure_code": [
-      "QT 07/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ."
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "exact_title": "Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con",
+    "title_keywords": ["đăng ký", "khai sinh", "kết hợp", "nhận", "cha mẹ con"],
+    "procedure_code": "QT 07/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ.",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 6,
+    "questions_generated": 21,
+    "generation_method": "AI-Assisted"
+  }
 }

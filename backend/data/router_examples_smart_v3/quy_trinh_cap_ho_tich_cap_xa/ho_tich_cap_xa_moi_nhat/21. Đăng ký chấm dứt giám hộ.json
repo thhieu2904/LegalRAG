@@ -3,58 +3,53 @@
     "title": "Đăng ký chấm dứt giám hộ",
     "code": "QT 21/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\21. Đăng ký chấm dứt giám hộ.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:20"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/21. Đăng ký chấm dứt giám hộ.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:25:55+07:00"
   },
-  "main_question": "Thủ tục 'Đăng ký chấm dứt giám hộ' là gì?",
+  "main_question": "Thủ tục đăng ký chấm dứt giám hộ được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Đăng ký chấm dứt giám hộ cần giấy tờ gì?",
-    "Chi phí Đăng ký chấm dứt giám hộ bao nhiêu?",
-    "Thời gian xử lý Đăng ký chấm dứt giám hộ là bao lâu?",
-    "Làm Đăng ký chấm dứt giám hộ ở đâu?",
-    "Điều kiện để được Đăng ký chấm dứt giám hộ?",
-    "Quy trình Đăng ký chấm dứt giám hộ ra sao?"
+    "Tôi muốn làm thủ tục chấm dứt giám hộ thì cần chuẩn bị hồ sơ gì?",
+    "Hồ sơ đăng ký chấm dứt giám hộ bao gồm những giấy tờ nào?",
+    "Giấy tờ làm căn cứ để chấm dứt giám hộ là những loại giấy tờ gì?",
+    "Tôi có thể ủy quyền cho người khác đi làm thủ tục này được không?",
+    "Ủy quyền cho anh chị em ruột đi làm thủ tục chấm dứt giám hộ có cần công chứng không?",
+    "Thời gian giải quyết thủ tục chấm dứt giám hộ mất bao lâu?",
+    "Thủ tục này có được giải quyết trong ngày không?",
+    "Tôi phải đến đâu để làm thủ tục chấm dứt giám hộ?",
+    "Bắt buộc phải về đúng UBND xã nơi đã đăng ký giám hộ trước đây để làm thủ tục phải không?",
+    "Một công ty trước đây làm người giám hộ, giờ muốn chấm dứt thì có được không?",
+    "Đăng ký chấm dứt giám hộ có mất lệ phí không?",
+    "Chi phí để xin cấp bản sao trích lục đăng ký chấm dứt giám hộ là bao nhiêu?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Có được cấp bản điện tử của trích lục chấm dứt giám hộ không?",
+    "Quy trình đăng ký chấm dứt giám hộ ở xã gồm mấy bước?",
+    "Ai là người có thẩm quyền ký trích lục chấm dứt giám hộ?",
+    "Nếu nộp hồ sơ trực tuyến thì khi đến nhận kết quả có cần mang theo giấy tờ gốc không?",
+    "Giấy tờ làm căn cứ chấm dứt giám hộ do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Đăng ký chấm dứt giám hộ"
-    ],
-    "title_keywords": [
-      "chấm",
-      "dứt",
-      "giám"
-    ],
-    "procedure_code": [
-      "QT 21/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã nơi đã đăng ký giám hộ trước đây."
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân",
-      "Pháp nhân"
-    ]
+    "exact_title": "Đăng ký chấm dứt giám hộ",
+    "title_keywords": ["đăng ký", "chấm dứt", "giám hộ"],
+    "procedure_code": "QT 21/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký giám hộ trước đây.",
+    "agency_level": "commune",
+    "cost_type": "free",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân", "Pháp nhân"]
   },
   "key_attributes": {
     "speed": "multi_day",
-    "cost": "paid",
+    "cost": "free",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân",
-      "Pháp nhân"
-    ]
+    "applicant_scope": ["Cá nhân", "Pháp nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 18,
+    "generation_method": "AI-Assisted"
+  }
 }

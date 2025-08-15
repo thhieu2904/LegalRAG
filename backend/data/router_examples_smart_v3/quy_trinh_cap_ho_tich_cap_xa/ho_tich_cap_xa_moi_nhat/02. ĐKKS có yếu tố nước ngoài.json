@@ -3,58 +3,60 @@
     "title": "Đăng ký khai sinh có yếu tố nước ngoài",
     "code": "QT 02/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\02. ĐKKS có yếu tố nước ngoài.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:06"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/02. Đăng ký khai sinh có yếu tố nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:15:19+07:00"
   },
-  "main_question": "Thủ tục 'Đăng ký khai sinh có yếu tố nước ngoài' là gì?",
+  "main_question": "Thủ tục đăng ký khai sinh có yếu tố nước ngoài được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Đăng ký khai sinh có yếu tố nước ngoài cần giấy tờ gì?",
-    "Chi phí Đăng ký khai sinh có yếu tố nước ngoài bao nhiêu?",
-    "Thời gian xử lý Đăng ký khai sinh có yếu tố nước ngoài là bao lâu?",
-    "Làm Đăng ký khai sinh có yếu tố nước ngoài ở đâu?",
-    "Hồ sơ Đăng ký khai sinh có yếu tố nước ngoài gồm những giấy tờ nào?",
-    "Điều kiện để được Đăng ký khai sinh có yếu tố nước ngoài?"
+    "Tôi muốn làm giấy khai sinh cho con có yếu tố nước ngoài cần những giấy tờ gì?",
+    "Hồ sơ làm khai sinh cho con lai gồm những gì?",
+    "Nếu bố mẹ là người nước ngoài thì cần giấy tờ gì để chọn quốc tịch Việt Nam cho con?",
+    "Con tôi sinh ra ở nước ngoài, giờ về Việt Nam làm giấy khai sinh thì cần giấy tờ gì thay thế giấy chứng sinh?",
+    "Giấy tờ do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự để sử dụng tại Việt Nam không?",
+    "Tôi có thể ủy quyền cho người thân đi đăng ký khai sinh cho con có yếu tố nước ngoài được không?",
+    "Tôi cần xuất trình những loại giấy tờ gốc nào khi đi làm thủ tục này?",
+    "Làm giấy khai sinh cho con có yếu tố nước ngoài mất bao lâu?",
+    "Nộp hồ sơ buổi sáng thì trong ngày có lấy được giấy khai sinh không?",
+    "Nếu nộp hồ sơ sau 15 giờ thì khi nào tôi nhận được kết quả?",
+    "Ai là người có thẩm quyền ký giấy khai sinh cho con tôi?",
+    "Tôi có thể nộp hồ sơ ở đâu?",
+    "Kết quả nhận được sau khi hoàn tất thủ tục là gì?",
+    "Tôi có nhận được giấy khai sinh bản điện tử không?",
+    "Lệ phí đăng ký khai sinh có yếu tố nước ngoài là bao nhiêu?",
+    "Chi phí làm khai sinh cho con có cha là người nước ngoài hết bao nhiêu tiền?",
+    "Nộp hồ sơ trực tuyến có rẻ hơn nộp trực tiếp không?",
+    "Trường hợp nào được miễn lệ phí khi làm thủ tục này?",
+    "Quy trình đăng ký khai sinh cho trẻ có yếu tố nước ngoài gồm mấy bước?",
+    "Các bước làm giấy khai sinh cho con có quốc tịch nước ngoài là gì?",
+    "Nếu con tôi sinh ra ở nước ngoài và đã có quốc tịch Việt Nam, tôi cần làm gì để đăng ký khai sinh tại Việt Nam?",
+    "Việc lựa chọn họ và tên cho con có yếu tố nước ngoài cần tuân thủ những quy định gì?",
+    "Cơ quan nào chịu trách nhiệm tra cứu tình trạng hôn nhân của cha mẹ đứa trẻ?",
+    "Tôi có thể dùng VneID để chứng minh thông tin cư trú không?",
+    "Ngoài giấy tờ tùy thân, tôi có cần xuất trình thêm giấy tờ gì để chứng minh con tôi đang ở Việt Nam hợp pháp không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Đăng ký khai sinh có yếu tố nước ngoài"
-    ],
-    "title_keywords": [
-      "khai",
-      "sinh",
-      "yếu",
-      "nước",
-      "ngoài"
-    ],
-    "procedure_code": [
-      "QT 02/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "immediate"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "exact_title": "Đăng ký khai sinh có yếu tố nước ngoài",
+    "title_keywords": ["đăng ký", "khai sinh", "yếu tố", "nước ngoài"],
+    "procedure_code": "QT 02/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "immediate",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 7,
+    "questions_generated": 25,
+    "generation_method": "AI-Assisted"
+  }
 }

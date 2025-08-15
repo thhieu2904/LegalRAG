@@ -3,56 +3,57 @@
     "title": "Đăng ký khai tử",
     "code": "QT 15/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\15. Đăng ký khai tử.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:16"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/15. Đăng ký khai tử.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:22:29+07:00"
   },
-  "main_question": "Thủ tục 'Đăng ký khai tử' là gì?",
+  "main_question": "Thủ tục đăng ký khai tử được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Đăng ký khai tử cần giấy tờ gì?",
-    "Chi phí Đăng ký khai tử bao nhiêu?",
-    "Thời gian xử lý Đăng ký khai tử là bao lâu?",
-    "Làm Đăng ký khai tử ở đâu?",
-    "Điều kiện để được Đăng ký khai tử?",
-    "Quy trình Đăng ký khai tử ra sao?"
+    "Tôi muốn làm giấy báo tử cho người thân thì cần chuẩn bị hồ sơ gì?",
+    "Hồ sơ đăng ký khai tử gồm những giấy tờ nào?",
+    "Nếu người thân tôi mất đã lâu mà chưa làm giấy báo tử thì cần giấy tờ gì để chứng minh?",
+    "Người đi làm thủ tục khai tử có cần mang theo giấy tờ tùy thân không?",
+    "Tôi có thể ủy quyền cho người khác đi đăng ký khai tử được không?",
+    "Trong bao lâu thì phải đi đăng ký khai tử cho người đã mất?",
+    "Thời gian giải quyết thủ tục đăng ký khai tử mất bao lâu?",
+    "Nếu tôi nộp hồ sơ sau 3 giờ chiều thì có lấy được trích lục khai tử trong ngày không?",
+    "Tôi phải đến đâu để làm thủ tục khai tử?",
+    "Nếu không xác định được nơi ở cuối cùng của người chết thì đăng ký khai tử ở đâu?",
+    "Cơ quan nào có thẩm quyền cấp trích lục khai tử?",
+    "Đăng ký khai tử có mất lệ phí không?",
+    "Trường hợp nào thì được miễn lệ phí đăng ký khai tử?",
+    "Nếu đăng ký khai tử muộn thì lệ phí là bao nhiêu?",
+    "Tôi muốn xin thêm bản sao trích lục khai tử thì chi phí thế nào?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Có được cấp bản điện tử của trích lục khai tử không?",
+    "Quy trình đăng ký khai tử ở xã gồm mấy bước?",
+    "Tôi cần nộp hồ sơ cho ai ở ủy ban?",
+    "Giấy báo tử do cơ quan nào cấp?",
+    "Tôi có thể dùng VneID để xuất trình giấy tờ chứng minh nơi cư trú của người chết không?",
+    "Ai là người có trách nhiệm phải đi đăng ký khai tử?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Đăng ký khai tử"
-    ],
-    "title_keywords": [
-      "khai"
-    ],
-    "procedure_code": [
-      "QT 15/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết, hoặc nơi người đó chết/phát hiện thi thể."
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "immediate"
-    ],
-    "applicant_type": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "exact_title": "Đăng ký khai tử",
+    "title_keywords": ["đăng ký", "khai tử"],
+    "procedure_code": "QT 15/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết, hoặc nơi người đó chết/phát hiện thi thể.",
+    "agency_level": "commune",
+    "cost_type": "free",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân", "Tổ chức"]
   },
   "key_attributes": {
     "speed": "immediate",
-    "cost": "paid",
+    "cost": "free",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "applicant_scope": ["Cá nhân", "Tổ chức"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 22,
+    "generation_method": "AI-Assisted"
+  }
 }

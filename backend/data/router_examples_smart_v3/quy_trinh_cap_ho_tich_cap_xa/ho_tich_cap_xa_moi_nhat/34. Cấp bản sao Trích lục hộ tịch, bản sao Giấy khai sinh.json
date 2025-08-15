@@ -3,60 +3,58 @@
     "title": "Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh",
     "code": "QT 34/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\34. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:30"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/34. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:33:04+07:00"
   },
-  "main_question": "Thủ tục 'Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh' là gì?",
+  "main_question": "Thủ tục cấp bản sao Trích lục hộ tịch được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh cần giấy tờ gì?",
-    "Chi phí Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh bao nhiêu?",
-    "Thời gian xử lý Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh là bao lâu?",
-    "Làm Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh ở đâu?",
-    "Điều kiện để được Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh?",
-    "Quy trình Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh ra sao?"
+    "Tôi muốn xin bản sao giấy khai sinh thì cần hồ sơ gì?",
+    "Hồ sơ xin cấp bản sao trích lục hộ tịch bao gồm những giấy tờ nào?",
+    "Một công ty muốn xin trích lục hộ tịch cho nhân viên thì cần văn bản gì?",
+    "Tôi có thể ủy quyền cho người khác đi làm thủ tục này hộ được không?",
+    "Ủy quyền cho anh chị em ruột đi xin bản sao giấy khai sinh có cần công chứng không?",
+    "Thời gian giải quyết thủ tục cấp bản sao mất bao lâu?",
+    "Nộp hồ sơ sau 3 giờ chiều thì khi nào tôi nhận được kết quả?",
+    "Tôi phải đến đâu để xin cấp bản sao trích lục hộ tịch?",
+    "Cơ quan nào có thẩm quyền cấp bản sao giấy khai sinh?",
+    "Lệ phí xin cấp bản sao trích lục hộ tịch là bao nhiêu?",
+    "Tại sao lại có mức phí 8.000 đồng và 5.000 đồng?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Quy trình xin cấp bản sao trích lục hộ tịch ở xã gồm mấy bước?",
+    "Ai là người có thẩm quyền ký duyệt hồ sơ của tôi?",
+    "Trường hợp nào thì yêu cầu cấp bản sao của tôi sẽ bị từ chối?",
+    "Tôi có thể nộp hồ sơ bằng bản chụp qua mạng được không?",
+    "Khi đi làm thủ tục có cần mang theo giấy tờ tùy thân bản gốc không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh"
-    ],
+    "exact_title": "Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh",
     "title_keywords": [
-      "bản",
-      "sao",
-      "trích",
-      "lục",
-      "tịch"
+      "cấp",
+      "bản sao",
+      "trích lục",
+      "hộ tịch",
+      "giấy khai sinh"
     ],
-    "procedure_code": [
-      "QT 34/CX-HCTP"
-    ],
-    "agency": [
-      "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã)."
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "immediate"
-    ],
-    "applicant_type": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "procedure_code": "QT 34/CX-HCTP",
+    "agency": "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã).",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân", "Tổ chức"]
   },
   "key_attributes": {
     "speed": "immediate",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "applicant_scope": ["Cá nhân", "Tổ chức"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 17,
+    "generation_method": "AI-Assisted"
+  }
 }

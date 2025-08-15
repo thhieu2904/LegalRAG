@@ -9,50 +9,54 @@
   },
   "main_question": "Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) cần điều kiện gì?",
   "question_variants": [
-    "Làm Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) cần giấy tờ gì?",
-    "Chi phí Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) bao nhiêu?",
-    "Thời gian xử lý Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) là bao lâu?",
-    "Làm Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) ở đâu?",
-    "Điều kiện để được Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được)?",
-    "Quy trình Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được) ra sao?"
+    "Chứng thực chữ ký là gì?",
+    "Tôi muốn đi chứng thực chữ ký thì cần mang theo giấy tờ gì?",
+    "Hồ sơ để chứng thực chữ ký gồm những gì?",
+    "Làm thủ tục chứng thực chữ ký ở đâu?",
+    "Chi phí chứng thực chữ ký là bao nhiêu tiền?",
+    "Chứng thực chữ ký có lấy ngay được không?",
+    "Chứng thực chữ ký mất bao lâu?",
+    "Quy trình chứng thực chữ ký ở xã gồm những bước nào?",
+    "Thủ tục chứng thực điểm chỉ (lăn tay) có giống chứng thực chữ ký không?",
+    "Nếu tôi đến UBND xã sau 3 giờ chiều thì khi nào nhận được kết quả?",
+    "Tôi có cần phải ký trước vào văn bản ở nhà để tiết kiệm thời gian không?",
+    "Những loại giấy tờ tùy thân nào được chấp nhận để làm thủ tục này?",
+    "Căn cước công dân hết hạn có dùng để chứng thực chữ ký được không?",
+    "Tôi có bắt buộc phải ký trước mặt người có thẩm quyền không?",
+    "Văn bản bằng tiếng nước ngoài có cần dịch thuật trước khi đi chứng thực chữ ký không?",
+    "Ai chịu trách nhiệm về nội dung bản dịch khi chứng thực chữ ký trên văn bản tiếng nước ngoài?",
+    "Những nội dung văn bản như thế nào thì sẽ bị từ chối chứng thực chữ ký?",
+    "Tại sao chữ ký trên hợp đồng mua bán đất lại không được chứng thực tại UBND xã?",
+    "Loại giấy ủy quyền nào thì được phép chứng thực chữ ký?",
+    "Lệ phí 10.000 đồng là cho một chữ ký hay cho cả văn bản?",
+    "Người nhà tôi bị bệnh không thể tự ký hay điểm chỉ thì làm thế nào để chứng thực?",
+    "Trong những trường hợp nào thì yêu cầu chứng thực chữ ký sẽ bị từ chối?",
+    "Nếu tôi không có Căn cước công dân hay hộ chiếu thì có thể dùng giấy tờ khác thay thế không?",
+    "Cán bộ tư pháp có quyền từ chối chứng thực nếu không hiểu nội dung văn bản của tôi không?",
+    "Tôi muốn làm giấy ủy quyền cho con đi nhận lương hưu giúp, có cần chứng thực chữ ký không?",
+    "Người không biết chữ muốn xác nhận một văn bản thì phải làm thủ tục gì?",
+    "Tôi có thể dùng tài khoản VneID để xuất trình thay cho CCCD bản cứng được không?",
+    "Nếu có nhiều người cùng ký vào một văn bản thì lệ phí tính thế nào?",
+    "Văn bản có nội dung xuyên tạc lịch sử có được chứng thực chữ ký không?",
+    "Tôi có thể yêu cầu chứng thực chữ ký cho một giao dịch dân sự không?"
   ],
   "smart_filters": {
     "exact_title": [
       "Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản (áp dụng cho cả trường hợp chứng thực điểm chỉ và trường hợp người yêu cầu chứng thực không thể ký, không thể điểm chỉ được)"
     ],
-    "title_keywords": [
-      "chứng",
-      "thực",
-      "chữ",
-      "các",
-      "giấy"
-    ],
-    "procedure_code": [
-      "QT 12/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "immediate"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "title_keywords": ["chứng", "thực", "chữ", "các", "giấy"],
+    "procedure_code": ["QT 12/CX-HCTP"],
+    "agency": ["Ủy ban nhân dân cấp xã"],
+    "agency_level": ["commune"],
+    "cost_type": ["paid"],
+    "processing_speed": ["immediate"],
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "immediate",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "chung_thuc",
   "confidence_threshold": 0.75,

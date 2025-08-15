@@ -3,58 +3,52 @@
     "title": "Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã",
     "code": "QT 09/CX-HCTP",
     "collection": "chung_thuc",
-    "source_document": "quy_trinh_chung_thuc\\9. Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:45"
+    "source_document": "quy_trinh_chung_thuc/9. Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:43:03+07:00"
   },
-  "main_question": "Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã cần điều kiện gì?",
+  "main_question": "Thủ tục chứng thực chữ ký người dịch là cộng tác viên của UBND xã được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã cần giấy tờ gì?",
-    "Chi phí Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã bao nhiêu?",
-    "Thời gian xử lý Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã là bao lâu?",
-    "Làm Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã ở đâu?",
-    "Điều kiện để được Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã?",
-    "Quy trình Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã ra sao?"
+    "Tôi muốn chứng thực chữ ký trên bản dịch thì cần nộp những giấy tờ gì?",
+    "Hồ sơ để chứng thực chữ ký người dịch gồm những gì?",
+    "Có cần phải nộp cả bản gốc của văn bản cần dịch không?",
+    "Thời gian chứng thực chữ ký người dịch mất bao lâu?",
+    "Nếu tôi nộp hồ sơ sau 3 giờ chiều thì khi nào có kết quả?",
+    "Điều kiện để được chứng thực chữ ký người dịch là gì?",
+    "Có phải người dịch bắt buộc phải là cộng tác viên của Phòng Tư pháp không?",
+    "Người dịch có cần phải đăng ký chữ ký mẫu trước không?",
+    "Những loại giấy tờ nào không được phép dịch để chứng thực?",
+    "Văn bản có dấu 'Mật' có được dịch và chứng thực không?",
+    "Bằng đại học do trường nước ngoài cấp chưa hợp pháp hóa lãnh sự có được dịch để chứng thực không?",
+    "Quy trình chứng thực chữ ký người dịch ở xã gồm mấy bước?",
+    "Ai là người có thẩm quyền ký chứng thực chữ ký của người dịch?",
+    "Lệ phí chứng thực chữ ký người dịch là bao nhiêu?",
+    "Chi phí cho một lần chứng thực chữ ký trên bản dịch là bao nhiêu tiền?",
+    "Kết quả tôi nhận được sau khi làm thủ tục là gì?",
+    "Tôi nộp hồ sơ ở đâu và nhận kết quả ở đâu?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã"
-    ],
-    "title_keywords": [
-      "chứng",
-      "thực",
-      "chữ",
-      "người",
-      "dịch"
-    ],
-    "procedure_code": [
-      "QT 09/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "immediate"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "exact_title": "Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã",
+    "title_keywords": ["chứng thực", "chữ ký", "người dịch", "cộng tác viên"],
+    "procedure_code": "QT 09/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "immediate",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "chung_thuc",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 4,
+    "questions_generated": 17,
+    "generation_method": "AI-Assisted"
+  }
 }

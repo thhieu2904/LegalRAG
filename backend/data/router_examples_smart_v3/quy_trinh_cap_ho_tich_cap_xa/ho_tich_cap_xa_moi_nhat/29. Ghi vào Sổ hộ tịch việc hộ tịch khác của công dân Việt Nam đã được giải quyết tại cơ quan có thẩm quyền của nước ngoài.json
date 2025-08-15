@@ -1,60 +1,61 @@
 {
   "metadata": {
-    "title": "Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch)",
+    "title": "Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài",
     "code": "QT 29/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\29. Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:27"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/29. Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:29:15+07:00"
   },
-  "main_question": "Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch) cần điều kiện gì?",
+  "main_question": "Thủ tục ghi chú các việc hộ tịch đã giải quyết ở nước ngoài vào sổ hộ tịch Việt Nam được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch) cần giấy tờ gì?",
-    "Chi phí Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch) bao nhiêu?",
-    "Thời gian xử lý Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch) là bao lâu?",
-    "Làm Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch) ở đâu?",
-    "Hồ sơ Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch) gồm những giấy tờ nào?",
-    "Điều kiện để được Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch)?"
+    "Tôi đã làm giấy khai sinh cho con ở nước ngoài, giờ muốn ghi chú vào sổ hộ tịch ở Việt Nam thì cần hồ sơ gì?",
+    "Hồ sơ để ghi chú việc nuôi con nuôi ở nước ngoài gồm những giấy tờ nào?",
+    "Giấy tờ chứng tử do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự để ghi chú tại Việt Nam không?",
+    "Tôi có thể ủy quyền cho người thân ở Việt Nam đi làm thủ tục ghi chú hộ tịch giúp được không?",
+    "Tờ khai để ghi chú việc nhận cha mẹ con ở nước ngoài có khác với tờ khai ghi chú việc khai tử không?",
+    "Thời gian làm thủ tục ghi chú hộ tịch này mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thêm thì tối đa phải chờ bao nhiêu ngày?",
+    "Nộp hồ sơ sau 3 giờ chiều thì khi nào tôi nhận được kết quả?",
+    "Tôi phải đến đâu để làm thủ tục ghi chú các việc hộ tịch đã đăng ký ở nước ngoài?",
+    "Cơ quan nào có thẩm quyền thực hiện việc ghi chú hộ tịch?",
+    "Lệ phí cho thủ tục này là bao nhiêu?",
+    "Gia đình tôi thuộc hộ nghèo thì có được miễn lệ phí không?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Kết quả nhận được có phải là một giấy tờ hộ tịch mới không?",
+    "Có được cấp bản điện tử của trích lục ghi chú không?",
+    "Quy trình xử lý hồ sơ ghi chú hộ tịch gồm mấy bước?",
+    "Bước nào trong quy trình mất nhiều thời gian nhất?",
+    "Tôi có thể nộp hồ sơ bằng bản chụp qua mạng được không?",
+    "Khi đi làm thủ tục có cần mang theo giấy tờ tùy thân bản gốc không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch)"
-    ],
+    "exact_title": "Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài (khai sinh; giám hộ; nhận cha, mẹ, con; xác định cha, mẹ, con; nuôi con nuôi; khai tử; thay đổi hộ tịch)",
     "title_keywords": [
-      "ghi",
-      "vào",
-      "tịch",
-      "tịch",
-      "khác"
+      "ghi chú",
+      "sổ hộ tịch",
+      "việc hộ tịch khác",
+      "nước ngoài"
     ],
-    "procedure_code": [
-      "QT 29/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "immediate"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "procedure_code": "QT 29/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "immediate",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 19,
+    "generation_method": "AI-Assisted"
+  }
 }

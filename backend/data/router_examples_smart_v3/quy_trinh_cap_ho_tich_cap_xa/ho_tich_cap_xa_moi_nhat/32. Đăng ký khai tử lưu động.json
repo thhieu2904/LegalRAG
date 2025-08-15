@@ -3,56 +3,51 @@
     "title": "Đăng ký khai tử lưu động",
     "code": "QT 32/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\32. Đăng ký khai tử lưu động.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:29"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/32. Đăng ký khai tử lưu động.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:32:45+07:00"
   },
-  "main_question": "Thủ tục 'Đăng ký khai tử lưu động' là gì?",
+  "main_question": "Thủ tục đăng ký khai tử lưu động được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Đăng ký khai tử lưu động cần giấy tờ gì?",
-    "Chi phí Đăng ký khai tử lưu động bao nhiêu?",
-    "Thời gian xử lý Đăng ký khai tử lưu động là bao lâu?",
-    "Làm Đăng ký khai tử lưu động ở đâu?",
-    "Điều kiện để được Đăng ký khai tử lưu động?",
-    "Quy trình Đăng ký khai tử lưu động ra sao?"
+    "Đăng ký khai tử lưu động là gì?",
+    "Trường hợp nào thì được yêu cầu đăng ký khai tử lưu động?",
+    "Nếu người chết không có giấy tờ tùy thân thì có được đăng ký khai tử lưu động không?",
+    "Hồ sơ đăng ký khai tử lưu động cần những giấy tờ gì?",
+    "Ngoài tờ khai, chúng tôi có cần nộp thêm giấy tờ gì khác không?",
+    "Khi cán bộ đến làm thủ tục, chúng tôi cần xuất trình giấy tờ gốc nào?",
+    "Thời gian giải quyết hồ sơ khai tử lưu động là bao lâu?",
+    "Sau bao nhiêu ngày thì chúng tôi nhận được giấy chứng nhận khai tử?",
+    "Điều kiện để được đăng ký khai tử lưu động là gì?",
+    "Nếu hai chúng tôi không cùng thường trú tại một xã thì có được đăng ký khai tử lưu động không?",
+    "Ngoài điều kiện về sức khỏe, chúng tôi có cần đáp ứng các điều kiện về độ tuổi như khai tử thông thường không?",
+    "Quy trình đăng ký khai tử lưu động gồm những bước nào?",
+    "Cán bộ tư pháp có đến tận nhà để làm thủ tục không?",
+    "Đăng ký khai tử lưu động có mất lệ phí không?",
+    "Ai là người có thẩm quyền ký giấy chứng nhận khai tử của chúng tôi?",
+    "Sau khi hoàn tất thủ tục tôi sẽ nhận được giấy tờ gì?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Đăng ký khai tử lưu động"
-    ],
-    "title_keywords": [
-      "khai",
-      "lưu",
-      "động"
-    ],
-    "procedure_code": [
-      "QT 32/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết, hoặc nơi người đó chết/phát hiện thi thể."
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "exact_title": "Đăng ký khai tử lưu động",
+    "title_keywords": ["đăng ký", "khai tử", "lưu động"],
+    "procedure_code": "QT 32/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi cư trú của người chết.",
+    "agency_level": "commune",
+    "cost_type": "free",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "multi_day",
-    "cost": "paid",
+    "cost": "free",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 4,
+    "questions_generated": 17,
+    "generation_method": "AI-Assisted"
+  }
 }

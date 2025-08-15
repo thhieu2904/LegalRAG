@@ -3,62 +3,54 @@
     "title": "Xác nhận thông tin hộ tịch",
     "code": "QT 35/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\35. Xác nhận hộ tịch.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:31"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/35. Xác nhận hộ tịch.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:35:15+07:00"
   },
-  "main_question": "Thủ tục 'Xác nhận thông tin hộ tịch' là gì?",
+  "main_question": "Thủ tục xác nhận thông tin hộ tịch được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Xác nhận thông tin hộ tịch cần giấy tờ gì?",
-    "Chi phí Xác nhận thông tin hộ tịch bao nhiêu?",
-    "Thời gian xử lý Xác nhận thông tin hộ tịch là bao lâu?",
-    "Làm Xác nhận thông tin hộ tịch ở đâu?",
-    "Điều kiện để được Xác nhận thông tin hộ tịch?",
-    "Quy trình Xác nhận thông tin hộ tịch ra sao?"
+    "Tôi muốn xin văn bản xác nhận thông tin hộ tịch thì cần hồ sơ gì?",
+    "Hồ sơ xin xác nhận thông tin hộ tịch bao gồm những giấy tờ nào?",
+    "Giấy tờ liên quan đến nội dung đề nghị xác nhận là những loại nào?",
+    "Một công ty muốn xin xác nhận thông tin hộ tịch cho nhân viên thì cần văn bản gì?",
+    "Tôi có thể ủy quyền cho người khác đi làm thủ tục này hộ được không?",
+    "Thời gian giải quyết thủ tục xác nhận thông tin hộ tịch mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thì tối đa phải chờ bao nhiêu ngày?",
+    "Tôi phải đến đâu để xin xác nhận thông tin hộ tịch?",
+    "Cơ quan nào có thẩm quyền cấp văn bản xác nhận thông tin hộ tịch?",
+    "Lệ phí xin xác nhận thông tin hộ tịch là bao nhiêu?",
+    "Trường hợp nào thì được miễn lệ phí?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Có được cấp bản điện tử của văn bản xác nhận không?",
+    "Quy trình xin xác nhận thông tin hộ tịch ở xã gồm mấy bước?",
+    "Bước nào trong quy trình mất nhiều thời gian nhất?",
+    "Trường hợp nào thì yêu cầu xác nhận thông tin hộ tịch của tôi sẽ bị từ chối?",
+    "Tôi có thể nộp hồ sơ bằng bản chụp qua mạng được không?",
+    "Khi đi làm thủ tục có cần mang theo giấy tờ tùy thân bản gốc không?",
+    "Giấy tờ do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Xác nhận thông tin hộ tịch"
-    ],
-    "title_keywords": [
-      "xác",
-      "nhận",
-      "thông",
-      "tin",
-      "tịch"
-    ],
-    "procedure_code": [
-      "QT 35/CX-HCTP"
-    ],
-    "agency": [
-      "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã)."
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân",
-      "Cơ quan",
-      "Tổ chức"
-    ]
+    "exact_title": "Xác nhận thông tin hộ tịch",
+    "title_keywords": ["xác nhận", "thông tin", "hộ tịch"],
+    "procedure_code": "QT 35/CX-HCTP",
+    "agency": "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã).",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân", "Cơ quan", "Tổ chức"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân",
-      "Cơ quan",
-      "Tổ chức"
-    ]
+    "applicant_scope": ["Cá nhân", "Cơ quan", "Tổ chức"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 19,
+    "generation_method": "AI-Assisted"
+  }
 }

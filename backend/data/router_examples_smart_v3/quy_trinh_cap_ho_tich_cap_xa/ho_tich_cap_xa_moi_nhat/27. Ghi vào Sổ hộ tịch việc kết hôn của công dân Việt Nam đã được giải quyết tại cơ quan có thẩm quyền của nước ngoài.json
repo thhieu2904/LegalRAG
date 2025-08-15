@@ -3,58 +3,55 @@
     "title": "Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài",
     "code": "QT 27/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\27. Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:24"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/27. Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:28:27+07:00"
   },
-  "main_question": "Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài cần điều kiện gì?",
+  "main_question": "Thủ tục ghi chú kết hôn ở nước ngoài vào sổ hộ tịch Việt Nam được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài cần giấy tờ gì?",
-    "Chi phí Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài bao nhiêu?",
-    "Thời gian xử lý Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài là bao lâu?",
-    "Làm Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài ở đâu?",
-    "Hồ sơ Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài gồm những giấy tờ nào?",
-    "Điều kiện để được Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài?"
+    "Tôi kết hôn ở nước ngoài, giờ muốn hợp pháp hóa ở Việt Nam thì cần hồ sơ gì?",
+    "Hồ sơ ghi chú kết hôn ở nước ngoài gồm những giấy tờ gì?",
+    "Giấy chứng nhận kết hôn do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự không?",
+    "Tôi đã ly hôn ở nước ngoài, có cần nộp trích lục ghi chú ly hôn khi làm thủ tục này không?",
+    "Tôi có thể ủy quyền cho người thân ở Việt Nam đi làm thủ tục ghi chú kết hôn giúp được không?",
+    "Thời gian làm thủ tục ghi chú kết hôn mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thêm thì tối đa phải chờ bao nhiêu ngày?",
+    "Điều kiện để được ghi chú kết hôn ở nước ngoài là gì?",
+    "Trường hợp nào thì việc kết hôn ở nước ngoài không được công nhận tại Việt Nam?",
+    "Nếu tôi kết hôn với người nước ngoài tại đại sứ quán của họ ở Việt Nam thì có được ghi chú không?",
+    "Nếu tại thời điểm kết hôn tôi chưa đủ tuổi nhưng giờ đã đủ tuổi thì có được ghi chú kết hôn không?",
+    "Tôi phải đến đâu để làm thủ tục ghi chú kết hôn?",
+    "Quy trình xử lý hồ sơ ghi chú kết hôn gồm mấy bước?",
+    "Bước nào trong quy trình mất nhiều thời gian nhất?",
+    "Lệ phí cho thủ tục này là bao nhiêu?",
+    "Nếu tôi thuộc hộ nghèo thì có được miễn lệ phí không?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Có được cấp bản điện tử của trích lục ghi chú kết hôn không?",
+    "Tôi có thể nộp hồ sơ bằng bản chụp qua mạng được không?",
+    "Khi đi làm thủ tục có cần mang theo giấy tờ tùy thân bản gốc không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài"
-    ],
-    "title_keywords": [
-      "ghi",
-      "vào",
-      "tịch",
-      "kết",
-      "hôn"
-    ],
-    "procedure_code": [
-      "QT 27/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "exact_title": "Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài",
+    "title_keywords": ["ghi chú", "sổ hộ tịch", "kết hôn", "nước ngoài"],
+    "procedure_code": "QT 27/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 4,
+    "questions_generated": 20,
+    "generation_method": "AI-Assisted"
+  }
 }

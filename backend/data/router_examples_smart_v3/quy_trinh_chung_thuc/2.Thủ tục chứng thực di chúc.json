@@ -3,58 +3,53 @@
     "title": "Thủ tục chứng thực di chúc",
     "code": "QT 02/CX-HCTP",
     "collection": "chung_thuc",
-    "source_document": "quy_trinh_chung_thuc\\2.Thủ tục chứng thực di chúc.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:37"
+    "source_document": "quy_trinh_chung_thuc/2.Thủ tục chứng thực di chúc.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:38:29+07:00"
   },
-  "main_question": "Thủ tục chứng thực di chúc là gì?",
+  "main_question": "Thủ tục chứng thực di chúc được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Thủ tục chứng thực di chúc cần giấy tờ gì?",
-    "Chi phí Thủ tục chứng thực di chúc bao nhiêu?",
-    "Thời gian xử lý Thủ tục chứng thực di chúc là bao lâu?",
-    "Làm Thủ tục chứng thực di chúc ở đâu?",
-    "Điều kiện để được Thủ tục chứng thực di chúc?",
-    "Quy trình Thủ tục chứng thực di chúc ra sao?"
+    "Tôi muốn chứng thực di chúc thì cần chuẩn bị hồ sơ gì?",
+    "Hồ sơ để chứng thực di chúc gồm những giấy tờ nào?",
+    "Có cần phải soạn sẵn bản dự thảo di chúc trước khi đi chứng thực không?",
+    "Nếu di chúc có liên quan đến nhà đất, tôi có cần nộp sổ đỏ không?",
+    "Có bắt buộc phải xuất trình bản chính giấy tờ nhà đất để đối chiếu không?",
+    "Trường hợp nào thì được miễn xuất trình giấy tờ về tài sản khi lập di chúc?",
+    "Thời gian chứng thực một bản di chúc mất bao lâu?",
+    "Nếu hồ sơ phức tạp, thời gian chứng thực có thể kéo dài hơn 2 ngày không?",
+    "Cơ quan nào có thẩm quyền chứng thực di chúc?",
+    "Tôi có thể đến UBND xã để chứng thực di chúc được không?",
+    "Lệ phí chứng thực di chúc là bao nhiêu?",
+    "Chi phí để chứng thực một bản di chúc là bao nhiêu tiền?",
+    "Kết quả tôi nhận được sau khi làm thủ tục là gì?",
+    "Quy trình chứng thực di chúc ở xã gồm mấy bước?",
+    "Ai là người kiểm tra tính pháp lý của bản di chúc?",
+    "Lãnh đạo UBND xã có vai trò gì trong việc chứng thực di chúc?",
+    "Tôi nộp hồ sơ ở đâu và nhận kết quả ở đâu?",
+    "Nếu không thể trả kết quả trong 2 ngày thì có được cấp phiếu hẹn không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Thủ tục chứng thực di chúc"
-    ],
-    "title_keywords": [
-      "chứng",
-      "thực",
-      "chúc"
-    ],
-    "procedure_code": [
-      "QT 02/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "exact_title": "Thủ tục chứng thực di chúc",
+    "title_keywords": ["chứng thực", "di chúc"],
+    "procedure_code": "QT 02/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân", "Tổ chức"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "applicant_scope": ["Cá nhân", "Tổ chức"]
   },
   "expected_collection": "chung_thuc",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 18,
+    "generation_method": "AI-Assisted"
+  }
 }

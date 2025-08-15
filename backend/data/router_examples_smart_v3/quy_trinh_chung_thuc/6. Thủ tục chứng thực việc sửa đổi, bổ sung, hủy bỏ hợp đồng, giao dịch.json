@@ -3,60 +3,59 @@
     "title": "Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch",
     "code": "QT 06/CX-HCTP",
     "collection": "chung_thuc",
-    "source_document": "quy_trinh_chung_thuc\\6. Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:42"
+    "source_document": "quy_trinh_chung_thuc/6. Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:41:33+07:00"
   },
-  "main_question": "Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch cần điều kiện gì?",
+  "main_question": "Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch cần giấy tờ gì?",
-    "Chi phí Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch bao nhiêu?",
-    "Thời gian xử lý Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch là bao lâu?",
-    "Làm Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch ở đâu?",
-    "Điều kiện để được Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch?",
-    "Quy trình Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch ra sao?"
+    "Tôi muốn chứng thực văn bản hủy hợp đồng mua bán nhà đã chứng thực trước đây thì cần hồ sơ gì?",
+    "Hồ sơ để chứng thực việc sửa đổi hợp đồng gồm những giấy tờ nào?",
+    "Có cần nộp lại hợp đồng gốc đã được chứng thực trước đây không?",
+    "Nếu việc sửa đổi hợp đồng có liên quan đến sổ đỏ, tôi có cần nộp lại sổ đỏ không?",
+    "Có bắt buộc phải xuất trình bản chính giấy tờ nhà đất để đối chiếu không?",
+    "Thời gian chứng thực một văn bản sửa đổi hợp đồng mất bao lâu?",
+    "Tôi nộp hồ sơ sau 3 giờ chiều thì khi nào có kết quả?",
+    "Điều kiện để được chứng thực việc hủy bỏ hợp đồng là gì?",
+    "Nếu một trong các bên không đồng ý thì có hủy hợp đồng được không?",
+    "Cơ quan nào có thẩm quyền chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng?",
+    "Tôi có thể đến UBND xã để làm thủ tục này được không?",
+    "Lệ phí chứng thực văn bản sửa đổi hợp đồng là bao nhiêu?",
+    "Chi phí để chứng thực một văn bản hủy hợp đồng là bao nhiêu tiền?",
+    "Kết quả tôi nhận được sau khi làm thủ tục là gì?",
+    "Quy trình chứng thực văn bản này ở xã gồm mấy bước?",
+    "Ai là người kiểm tra tính pháp lý của văn bản sửa đổi?",
+    "Nếu không thể trả kết quả trong ngày thì có được cấp phiếu hẹn không?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch"
-    ],
+    "exact_title": "Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch",
     "title_keywords": [
-      "chứng",
-      "thực",
-      "sửa",
-      "đổi",
-      "sung"
+      "chứng thực",
+      "sửa đổi",
+      "bổ sung",
+      "hủy bỏ",
+      "hợp đồng",
+      "giao dịch"
     ],
-    "procedure_code": [
-      "QT 06/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "immediate"
-    ],
-    "applicant_type": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "procedure_code": "QT 06/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân", "Tổ chức"]
   },
   "key_attributes": {
     "speed": "immediate",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân",
-      "Tổ chức"
-    ]
+    "applicant_scope": ["Cá nhân", "Tổ chức"]
   },
   "expected_collection": "chung_thuc",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 6,
+    "questions_generated": 17,
+    "generation_method": "AI-Assisted"
+  }
 }

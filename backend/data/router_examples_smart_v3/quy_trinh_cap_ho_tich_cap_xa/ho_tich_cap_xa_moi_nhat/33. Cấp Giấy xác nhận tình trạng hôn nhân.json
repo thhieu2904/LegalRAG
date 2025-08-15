@@ -3,58 +3,61 @@
     "title": "Cấp Giấy xác nhận tình trạng hôn nhân",
     "code": "QT 33/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\33. Cấp Giấy xác nhận tình trạng hôn nhân.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:30"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/33. Cấp Giấy xác nhận tình trạng hôn nhân.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:32:36+07:00"
   },
-  "main_question": "Thủ tục 'Cấp Giấy xác nhận tình trạng hôn nhân' là gì?",
+  "main_question": "Thủ tục cấp Giấy xác nhận tình trạng hôn nhân được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Cấp Giấy xác nhận tình trạng hôn nhân cần giấy tờ gì?",
-    "Chi phí Cấp Giấy xác nhận tình trạng hôn nhân bao nhiêu?",
-    "Thời gian xử lý Cấp Giấy xác nhận tình trạng hôn nhân là bao lâu?",
-    "Làm Cấp Giấy xác nhận tình trạng hôn nhân ở đâu?",
-    "Điều kiện để được Cấp Giấy xác nhận tình trạng hôn nhân?",
-    "Quy trình Cấp Giấy xác nhận tình trạng hôn nhân ra sao?"
+    "Tôi muốn xin giấy chứng nhận độc thân thì cần hồ sơ gì?",
+    "Hồ sơ xin giấy xác nhận tình trạng hôn nhân bao gồm những giấy tờ nào?",
+    "Tôi đã ly hôn, giờ muốn xin giấy xác nhận độc thân thì cần nộp thêm giấy tờ gì?",
+    "Tôi đã từng cư trú ở nhiều nơi khác nhau, làm sao để xin giấy xác nhận tình trạng hôn nhân?",
+    "Tôi có thể ủy quyền cho người khác đi làm thủ tục này hộ được không?",
+    "Nếu xin giấy xác nhận tình trạng hôn nhân để kết hôn thì có cần đáp ứng điều kiện về độ tuổi không?",
+    "Thời gian làm thủ tục này mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh ở nhiều nơi thì tối đa phải chờ bao nhiêu ngày?",
+    "Quy trình xin giấy xác nhận tình trạng hôn nhân gồm mấy bước?",
+    "Lệ phí xin giấy xác nhận tình trạng hôn nhân là bao nhiêu?",
+    "Trường hợp nào thì được miễn lệ phí?",
+    "Tôi phải đến đâu để làm thủ tục này?",
+    "Tôi có thể xin giấy xác nhận tình trạng hôn nhân ở nơi tạm trú được không?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Giấy xác nhận tình trạng hôn nhân có giá trị trong bao lâu?",
+    "Nếu tôi muốn xin giấy xác nhận để kết hôn với người cùng giới tính thì có được không?",
+    "Tôi có thể xin nhiều bản giấy xác nhận tình trạng hôn nhân cùng lúc không?",
+    "Nếu tôi đã ly hôn ở nước ngoài, tôi cần làm gì trước khi xin giấy xác nhận tình trạng hôn nhân?",
+    "Bước nào trong quy trình mất nhiều thời gian nhất?",
+    "Ai là người có thẩm quyền ký giấy xác nhận tình trạng hôn nhân?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Cấp Giấy xác nhận tình trạng hôn nhân"
-    ],
+    "exact_title": "Cấp Giấy xác nhận tình trạng hôn nhân",
     "title_keywords": [
-      "giấy",
-      "xác",
-      "nhận",
-      "tình",
-      "trạng"
+      "cấp giấy",
+      "xác nhận",
+      "tình trạng",
+      "hôn nhân",
+      "độc thân"
     ],
-    "procedure_code": [
-      "QT 33/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú hoặc tạm trú (nếu không có nơi thường trú)."
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "free"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "procedure_code": "QT 33/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú hoặc tạm trú (nếu không có nơi thường trú).",
+    "agency_level": "commune",
+    "cost_type": "free",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "free",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 4,
+    "questions_generated": 20,
+    "generation_method": "AI-Assisted"
+  }
 }

@@ -3,59 +3,55 @@
     "title": "Đăng ký giám hộ có yếu tố nước ngoài",
     "code": "QT 20/CX-HCTP",
     "collection": "ho_tich_cap_xa",
-    "source_document": "quy_trinh_cap_ho_tich_cap_xa\\ho_tich_cap_xa_moi_nhat\\20. Đăng ký giám hộ có yếu tố nước ngoài.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:19"
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/20. Đăng ký giám hộ có yếu tố nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:25:19+07:00"
   },
-  "main_question": "Thủ tục 'Đăng ký giám hộ có yếu tố nước ngoài' là gì?",
+  "main_question": "Thủ tục đăng ký giám hộ có yếu tố nước ngoài được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Đăng ký giám hộ có yếu tố nước ngoài cần giấy tờ gì?",
-    "Chi phí Đăng ký giám hộ có yếu tố nước ngoài bao nhiêu?",
-    "Thời gian xử lý Đăng ký giám hộ có yếu tố nước ngoài là bao lâu?",
-    "Làm Đăng ký giám hộ có yếu tố nước ngoài ở đâu?",
-    "Hồ sơ Đăng ký giám hộ có yếu tố nước ngoài gồm những giấy tờ nào?",
-    "Điều kiện để được Đăng ký giám hộ có yếu tố nước ngoài?"
+    "Tôi muốn đăng ký giám hộ cho người nước ngoài đang sống ở Việt Nam thì cần hồ sơ gì?",
+    "Hồ sơ đăng ký giám hộ có yếu tố nước ngoài bao gồm những giấy tờ nào?",
+    "Văn bản cử người giám hộ có cần công chứng không?",
+    "Giấy tờ do cơ quan nước ngoài cấp để làm thủ tục này có cần hợp pháp hóa lãnh sự không?",
+    "Thời gian giải quyết thủ tục đăng ký giám hộ cử và giám hộ đương nhiên khác nhau như thế nào?",
+    "Làm thủ tục giám hộ cử mất bao lâu?",
+    "Điều kiện để một cá nhân có thể làm người giám hộ cho người nước ngoài là gì?",
+    "Tôi có án tích về tội gây thương tích thì có được làm người giám hộ không?",
+    "Một công ty có thể làm người giám hộ được không? Nếu được thì cần điều kiện gì?",
+    "Thủ tục này có áp dụng nếu cả hai bên đều là người nước ngoài không?",
+    "Quy trình đăng ký giám hộ có yếu tố nước ngoài gồm những bước nào?",
+    "Bước nào trong quy trình mất nhiều thời gian nhất đối với giám hộ cử?",
+    "Lệ phí cho thủ tục này là bao nhiêu?",
+    "Nộp hồ sơ trực tuyến có được giảm lệ phí không?",
+    "Tôi thuộc diện gia đình có công với cách mạng thì có được miễn lệ phí không?",
+    "Kết quả tôi nhận được là giấy tờ gì?",
+    "Có được cấp bản điện tử của trích lục đăng ký giám hộ không?",
+    "Tôi phải đến đâu để làm thủ tục này?",
+    "Ai là người có thẩm quyền ký trích lục đăng ký giám hộ?",
+    "Nếu nộp hồ sơ online thì khi nào cần nộp giấy tờ bản chính?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Đăng ký giám hộ có yếu tố nước ngoài"
-    ],
-    "title_keywords": [
-      "giám",
-      "yếu",
-      "nước",
-      "ngoài"
-    ],
-    "procedure_code": [
-      "QT 20/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "multiple_days"
-    ],
-    "applicant_type": [
-      "Cá nhân",
-      "Pháp nhân"
-    ]
+    "exact_title": "Đăng ký giám hộ có yếu tố nước ngoài",
+    "title_keywords": ["đăng ký", "giám hộ", "yếu tố nước ngoài"],
+    "procedure_code": "QT 20/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân", "Pháp nhân"]
   },
   "key_attributes": {
     "speed": "multi_day",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân",
-      "Pháp nhân"
-    ]
+    "applicant_scope": ["Cá nhân", "Pháp nhân"]
   },
   "expected_collection": "ho_tich_cap_xa",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 4,
+    "questions_generated": 20,
+    "generation_method": "AI-Assisted"
+  }
 }

@@ -3,58 +3,59 @@
     "title": "Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã",
     "code": "QT 10/CX-HCTP",
     "collection": "chung_thuc",
-    "source_document": "quy_trinh_chung_thuc\\10. Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã.json",
-    "generated_by": "llm_powered_generator_v3.0_hybrid",
-    "generated_at": "2025-08-14 18:34:34"
+    "source_document": "quy_trinh_chung_thuc/10. Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:43:26+07:00"
   },
-  "main_question": "Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã cần điều kiện gì?",
+  "main_question": "Thủ tục chứng thực chữ ký cho người tự dịch thuật được thực hiện như thế nào?",
   "question_variants": [
-    "Làm Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã cần giấy tờ gì?",
-    "Chi phí Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã bao nhiêu?",
-    "Thời gian xử lý Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã là bao lâu?",
-    "Làm Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã ở đâu?",
-    "Điều kiện để được Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã?",
-    "Quy trình Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã ra sao?"
+    "Tôi muốn tự dịch giấy tờ của mình và mang đi chứng thực chữ ký thì cần những giấy tờ gì?",
+    "Hồ sơ để chứng thực chữ ký cho người tự dịch thuật gồm những gì?",
+    "Có bắt buộc phải có bằng đại học ngoại ngữ mới được tự dịch và chứng thực chữ ký không?",
+    "Nếu tôi thông thạo một ngôn ngữ hiếm nhưng không có bằng cấp thì phải làm sao?",
+    "Bản cam kết về việc thông thạo ngoại ngữ có cần công chứng không?",
+    "Tôi có cần mang theo bản gốc của văn bản cần dịch không?",
+    "Thời gian chứng thực chữ ký người dịch mất bao lâu?",
+    "Nếu tôi đến yêu cầu sau 3 giờ chiều thì khi nào tôi nhận được kết quả?",
+    "Điều kiện để được chứng thực chữ ký khi tôi tự dịch là gì?",
+    "Tôi có thể dịch hộ giấy tờ cho người thân rồi mang đi chứng thực chữ ký của tôi được không?",
+    "Những loại giấy tờ nào không được phép dịch để chứng thực?",
+    "Bằng tốt nghiệp do trường nước ngoài cấp chưa hợp pháp hóa lãnh sự có được dịch để chứng thực không?",
+    "Quy trình chứng thực chữ ký người dịch ở xã gồm mấy bước?",
+    "Ai là người có thẩm quyền ký chứng thực chữ ký của tôi?",
+    "Lệ phí chứng thực chữ ký người dịch là bao nhiêu?",
+    "Chi phí cho một lần chứng thực chữ ký trên bản dịch là bao nhiêu tiền?",
+    "Kết quả tôi nhận được sau khi làm thủ tục là gì?",
+    "Tôi nộp hồ sơ ở đâu và nhận kết quả ở đâu?"
   ],
   "smart_filters": {
-    "exact_title": [
-      "Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã"
-    ],
+    "exact_title": "Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã",
     "title_keywords": [
-      "chứng",
-      "thực",
-      "chữ",
-      "người",
-      "dịch"
+      "chứng thực",
+      "chữ ký",
+      "người dịch",
+      "không phải cộng tác viên",
+      "tự dịch"
     ],
-    "procedure_code": [
-      "QT 10/CX-HCTP"
-    ],
-    "agency": [
-      "Ủy ban nhân dân cấp xã"
-    ],
-    "agency_level": [
-      "commune"
-    ],
-    "cost_type": [
-      "paid"
-    ],
-    "processing_speed": [
-      "immediate"
-    ],
-    "applicant_type": [
-      "Cá nhân"
-    ]
+    "procedure_code": "QT 10/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân"]
   },
   "key_attributes": {
     "speed": "immediate",
     "cost": "paid",
     "level": "commune",
-    "applicant_scope": [
-      "Cá nhân"
-    ]
+    "applicant_scope": ["Cá nhân"]
   },
   "expected_collection": "chung_thuc",
-  "confidence_threshold": 0.75,
-  "priority_score": 1.0
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 4,
+    "questions_generated": 18,
+    "generation_method": "AI-Assisted"
+  }
 }
