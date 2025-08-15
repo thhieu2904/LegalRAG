@@ -481,20 +481,31 @@ class VectorDBService:
         
         ChromaDB requires $and operator for multiple conditions
         """
+        # 🔍 DEBUG: Log input filters
+        logger.info(f"🔍 _build_where_clause input: {smart_filters}")
+        
         conditions = []
         
         try:
             # 🎯 PRIORITY STRATEGY: Use exact_title ONLY if available (highest precision)
             if 'exact_title' in smart_filters and smart_filters['exact_title']:
                 exact_titles = smart_filters['exact_title']
+                logger.info(f"🔍 Found exact_title: {exact_titles}, type: {type(exact_titles)}")
                 if isinstance(exact_titles, list) and exact_titles:
-                    if len(exact_titles) == 1:
-                        conditions.append({'document_title': exact_titles[0]})
-                    else:
-                        conditions.append({'document_title': {"$in": exact_titles}})
-                    # 🔥 HIGH PRECISION: If we have exact title, use ONLY that filter
-                    logger.info(f"🎯 Using HIGH PRECISION filter: exact_title only")
-                    return {"document_title": {"$in": exact_titles}} if len(exact_titles) > 1 else {"document_title": exact_titles[0]}
+                    # Đảm bảo list không rỗng và có giá trị hợp lệ
+                    valid_titles = [title for title in exact_titles if title and title.strip()]
+                    if valid_titles:
+                        if len(valid_titles) == 1:
+                            filter_result = {"document_title": valid_titles[0]}
+                        else:
+                            filter_result = {"document_title": {"$in": valid_titles}}
+                        # 🔥 HIGH PRECISION: If we have exact title, use ONLY that filter
+                        logger.info(f"🎯 Using HIGH PRECISION filter: {filter_result}")
+                        return filter_result
+                elif isinstance(exact_titles, str) and exact_titles.strip():
+                    filter_result = {"document_title": exact_titles.strip()}
+                    logger.info(f"🎯 Using HIGH PRECISION filter (string): {filter_result}")
+                    return filter_result
             
             # 🔥 NEW: Support direct document_title filter (for forced routing)
             if 'document_title' in smart_filters and smart_filters['document_title']:
@@ -554,6 +565,7 @@ class VectorDBService:
             
             # Build final where clause
             if len(conditions) == 0:
+                logger.info(f"🔍 No conditions found, returning empty filter")
                 return {}
             elif len(conditions) == 1:
                 where_clause = conditions[0]
@@ -565,6 +577,7 @@ class VectorDBService:
             
         except Exception as e:
             logger.warning(f"⚠️ Error building where clause from {smart_filters}: {e}")
+            logger.info(f"🔍 Returning empty filter due to error")
             return {}
     
     def collection_exists(self, collection_name: str) -> bool:

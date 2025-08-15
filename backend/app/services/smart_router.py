@@ -32,8 +32,8 @@ class EnhancedSmartQueryRouter:
         self.question_vectors = {}
         self.collection_mappings = {}
         
-        # Thresholds - CỰC CAO để tránh route nhầm, chuyển logic xuống clarification
-        self.high_confidence_threshold = 0.85  # CỰC CAO - chỉ route khi RẤT RẤT chắc chắn
+        # Thresholds - Hạ thấp để linh hoạt hơn, không quá cứng nhắc
+        self.high_confidence_threshold = 0.80  # Hạ từ 0.85 -> 0.80 để linh hoạt hơn
         self.min_confidence_threshold = 0.50   # Dưới threshold này = hỏi lại user
         
         logger.info(f"🎯 Router thresholds - Min: {self.min_confidence_threshold}, High: {self.high_confidence_threshold}")
@@ -457,10 +457,14 @@ class EnhancedSmartQueryRouter:
             if session and hasattr(session, 'should_override_confidence'):
                 if session.should_override_confidence(best_score):
                     override_collection = session.last_successful_collection
+                    override_filters = getattr(session, 'last_successful_filters', None)  # 🔥 NEW: Lấy filters từ session
                     should_override = True
                     # Boost confidence to medium level khi override
                     best_score = max(best_score, 0.75)
                     best_collection = override_collection
+                    if override_filters:
+                        best_filters = override_filters  # 🔥 NEW: Override filters
+                        logger.info(f"🔥 OVERRIDE FILTERS: {override_filters}")
                     logger.info(f"🔥 CONFIDENCE OVERRIDE: {original_confidence:.3f} -> {best_score:.3f}")
                     logger.info(f"🔥 Override to collection: {override_collection} (from session state)")
                     

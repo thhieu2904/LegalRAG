@@ -57,29 +57,45 @@ class OptimizedChatSession:
     last_successful_collection: Optional[str] = None
     last_successful_confidence: float = 0.0
     last_successful_timestamp: Optional[float] = None
+    last_successful_filters: Optional[Dict[str, Any]] = None  # 🔥 NEW: Lưu filters từ session thành công
     cached_rag_content: Optional[Dict[str, Any]] = None
     consecutive_low_confidence_count: int = 0
     
-    def update_successful_routing(self, collection: str, confidence: float, rag_content: Optional[Dict[str, Any]] = None):
+    def update_successful_routing(self, collection: str, confidence: float, filters: Optional[Dict[str, Any]] = None, rag_content: Optional[Dict[str, Any]] = None):
         """Cập nhật state khi routing thành công với confidence cao"""
         self.last_successful_collection = collection
         self.last_successful_confidence = confidence
         self.last_successful_timestamp = time.time()
+        self.last_successful_filters = filters  # 🔥 NEW: Lưu filters
         if rag_content:
             self.cached_rag_content = rag_content
         self.consecutive_low_confidence_count = 0  # Reset counter
         
-    def should_override_confidence(self, current_confidence: float, confidence_threshold: float = 0.50) -> bool:
-        """Kiểm tra có nên override confidence thấp không"""
+    def should_override_confidence(self, current_confidence: float) -> bool:
+        """
+        Kiểm tra có nên ghi đè kết quả định tuyến hiện tại bằng ngữ cảnh đã lưu không.
+        Ghi đè khi:
+        1. Đang có ngữ cảnh tốt được lưu từ trước.
+        2. Kết quả định tuyến mới không phải là "rất chắc chắn".
+        """
         if not self.last_successful_collection:
             return False
-            
-        # Check time window - chỉ override trong vòng 10 phút
+
+        # Chỉ ghi đè trong vòng 10 phút
         if self.last_successful_timestamp and (time.time() - self.last_successful_timestamp > 600):
             return False
-            
-        # Override nếu confidence hiện tại thấp nhưng có successful context
-        return current_confidence < confidence_threshold and self.last_successful_confidence > 0.85
+
+        # Ngưỡng tin cậy "rất cao" mà chúng ta sẽ không can thiệp
+        VERY_HIGH_CONFIDENCE_GATE = 0.82 
+        # Ngưỡng tối thiểu của ngữ cảnh đã lưu để được coi là "tốt"
+        MIN_CONTEXT_CONFIDENCE = 0.78
+
+        # Nếu độ tin cậy hiện tại không đủ cao VÀ ngữ cảnh trước đó đủ tốt -> Ghi đè
+        if current_confidence < VERY_HIGH_CONFIDENCE_GATE and self.last_successful_confidence >= MIN_CONTEXT_CONFIDENCE:
+            logger.info(f"🔥 STATEFUL ROUTER: Ghi đè vì current_confidence ({current_confidence:.3f}) < {VERY_HIGH_CONFIDENCE_GATE} và context_confidence ({self.last_successful_confidence:.3f}) >= {MIN_CONTEXT_CONFIDENCE}")
+            return True
+
+        return False
         
     def increment_low_confidence(self):
         """Tăng counter khi gặp confidence thấp"""
@@ -90,6 +106,7 @@ class OptimizedChatSession:
         self.last_successful_collection = None
         self.last_successful_confidence = 0.0
         self.last_successful_timestamp = None
+        self.last_successful_filters = None  # 🔥 NEW: Clear filters cũ
         self.cached_rag_content = None
         self.consecutive_low_confidence_count = 0
 
@@ -289,11 +306,22 @@ class OptimizedEnhancedRAGService:
             for collection_name in best_collections[:2]:  # Limit to top 2 collections
                 try:
                     # ✅ CRITICAL FIX: Pass smart filters to vector search với dynamic K
+                    # 🔍 DEBUG: Log filter trước khi tìm kiếm để debug vấn đề filter bị "đánh rơi"
+                    logger.info(f"🔍 Chuẩn bị tìm kiếm với filter: {inferred_filters}")
+                    
+                    # 🔥 ADAPTIVE THRESHOLD: Hạ threshold khi có filter vì filter đã đảm bảo relevance
+                    adaptive_threshold = settings.similarity_threshold
+                    if inferred_filters:
+                        adaptive_threshold = max(0.2, settings.similarity_threshold * 0.5)  # Hạ threshold khi có filter
+                        logger.info(f"🎯 ADAPTIVE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (có filter)")
+                    else:
+                        logger.info(f"📊 STANDARD THRESHOLD: {adaptive_threshold} (không có filter)")
+                    
                     results = self.vectordb_service.search_in_collection(
                         collection_name=collection_name,
                         query=query,
                         top_k=dynamic_k,
-                        similarity_threshold=settings.similarity_threshold,
+                        similarity_threshold=adaptive_threshold,
                         where_filter=inferred_filters if inferred_filters else None
                     )
                     
@@ -416,8 +444,8 @@ class OptimizedEnhancedRAGService:
                 session.query_history = session.query_history[-5:]
             
             # 🔥 Update session state for Stateful Router
-            # Chỉ update state khi routing thành công với confidence cao
-            if routing_result and routing_result.get('confidence', 0) >= 0.85:
+            # Chỉ update state khi routing thành công với confidence cao (hạ từ 0.85 -> 0.78)
+            if routing_result and routing_result.get('confidence', 0) >= 0.78:
                 target_collection = routing_result.get('target_collection')
                 if target_collection:
                     rag_content = {
@@ -429,6 +457,7 @@ class OptimizedEnhancedRAGService:
                     session.update_successful_routing(
                         collection=target_collection, 
                         confidence=routing_result.get('confidence', 0),
+                        filters=routing_result.get('inferred_filters', {}),  # 🔥 NEW: Lưu filters
                         rag_content=rag_content
                     )
                     logger.info(f"🔥 Updated session state: {target_collection} (confidence: {routing_result.get('confidence', 0):.3f})")
@@ -456,7 +485,16 @@ class OptimizedEnhancedRAGService:
                 },
                 "session_id": session_id,
                 "processing_time": processing_time,
-                "routing_info": {"best_collections": best_collections}
+                "routing_info": {
+                    "best_collections": best_collections,
+                    "target_collection": routing_result.get('target_collection'),
+                    "confidence": float(routing_result.get('confidence', 0.0)),
+                    "original_confidence": float(routing_result.get('original_confidence', 0.0)) if routing_result.get('original_confidence') is not None else None,
+                    "was_overridden": routing_result.get('was_overridden', False),
+                    "inferred_filters": routing_result.get('inferred_filters', {}),
+                    "confidence_level": routing_result.get('confidence_level', 'unknown'),
+                    "status": routing_result.get('status', 'routed')
+                }
             }
             
         except Exception as e:
