@@ -1,23 +1,27 @@
-/* Chat Page Styles - Modern Full Width Design */
+/* Chat Page Styles - Full Screen Design */
 .chat-page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background: #f1f5f9; /* Lighter background to differentiate from card */
+  height: 100vh;
+  width: 100vw;
+  background: #f1f5f9;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
 }
 
-/* Main Card Container - Full Width with minimal margins */
+/* Add smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Main Card Container - Full Screen */
 .main-card {
   flex: 1;
   background: #ffffff;
-  margin: 16px; /* Smaller margin for more content space */
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
+  height: 100vh;
   overflow: hidden;
-  min-height: calc(100vh - 32px); /* Ensure full height minus margins */
 }
 
 /* Icons */
@@ -47,9 +51,9 @@
   margin-bottom: 8px;
 }
 
-.header-title h1 {
+.header-title h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 18pxpx;
   font-weight: 600;
   color: #1a202c;
 }
@@ -60,26 +64,26 @@
   margin-left: 36px;
 }
 
-/* Chat Container - Full Width */
+/* Chat Container - Full Height with Proper Scrolling */
 .chat-container {
   display: flex;
   flex-direction: column;
   flex: 1;
-  max-width: 100%; /* Full width */
-  margin: 0 auto;
   width: 100%;
-  height: 100%; /* Use available height */
+  height: calc(100vh - 120px); /* Full height minus header and some padding */
   padding: 0 24px;
-  overflow: hidden; /* Prevent container from growing */
+  overflow: hidden; /* Container doesn't scroll, only messages area does */
 }
 
-/* Messages Container */
+/* Messages Container - Scrollable Area */
 .messages-container {
   flex: 1;
   padding: 24px 0;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e0 transparent;
+  max-height: 100%;
 }
 
 .messages-container::-webkit-scrollbar {
@@ -93,6 +97,10 @@
 .messages-container::-webkit-scrollbar-thumb {
   background: #cbd5e0;
   border-radius: 3px;
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
 }
 
 /* Message Styles */
@@ -328,11 +336,12 @@
   font-style: italic;
 }
 
-/* Input Container */
+/* Input Container - Fixed at Bottom */
 .input-container {
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
   padding: 20px 0;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .input-wrapper {
@@ -507,11 +516,9 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .chat-header {
-/* Responsive Design */
-@media (max-width: 768px) {
   .chat-container {
     padding: 0 16px;
+    height: calc(100vh - 100px); /* Adjust for mobile header */
   }
 
   .header-content {
@@ -567,13 +574,8 @@
 }
 
 /* Large Screens - Full Width Design */
-@media (min-width: 1440px) {
-  .main-card {
-    margin: 16px 32px; /* Minimal margins for maximum content area */
-  }
-  
+@media (min-width: 1440px) {  
   .chat-container {
-    max-width: 100%; /* Full width */
     padding: 0 40px;
   }
 
@@ -591,13 +593,8 @@
 }
 
 /* Extra Large Screens - 2K and above - Full Width */
-@media (min-width: 1920px) {
-  .main-card {
-    margin: 16px 48px; /* Slightly larger margins for very wide screens */
-  }
-  
+@media (min-width: 1920px) {  
   .chat-container {
-    max-width: 100%; /* Full width */
     padding: 0 60px;
   }
 
@@ -615,11 +612,7 @@
 }
 
 /* Ultra Wide Screens - 4K support */
-@media (min-width: 2560px) {
-  .main-card {
-    margin: 20px 100px; /* More margin on ultra-wide screens */
-  }
-  
+@media (min-width: 2560px) {  
   .chat-container {
     padding: 0 80px;
   }
@@ -629,42 +622,10 @@
   }
 }
 
-/* Mobile and Tablet Responsive for Main Card */
-@media (max-width: 768px) {
-  .main-card {
-    margin: 8px; /* Smaller margin on mobile for more space */
-    border-radius: 12px; /* Slightly smaller border radius */
-    min-height: calc(100vh - 16px); /* Adjust for smaller margins */
-  }
-  
-  .chat-container {
-    padding: 0 16px;
-  }
-  
-  .header-content {
-    max-width: 100%;
-  }
-}
-
+/* Mobile and Tablet Responsive */
 @media (max-width: 480px) {
-  .main-card {
-    margin: 4px; /* Minimal margin on very small screens */
-    border-radius: 10px;
-    min-height: calc(100vh - 8px);
-  }
-  
   .chat-container {
     padding: 0 12px;
-  }
-}
-    line-height: 1.7;
-  }
-
-  .header-title h1 {
-    font-size: 26px;
-  }
-
-  .messages-container {
-    padding: 40px 0;
+    height: calc(100vh - 90px); /* Adjust for very small screens */
   }
 }

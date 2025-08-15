@@ -194,7 +194,8 @@ class OptimizedEnhancedRAGService:
         reranker_k: int = 10,
         llm_k: int = 5,
         threshold: float = 0.7,
-        forced_collection: Optional[str] = None  # ⚡ THÊM THAM SỐ ANTI-LOOP
+        forced_collection: Optional[str] = None,  # ⚡ THÊM THAM SỐ ANTI-LOOP
+        forced_document_title: Optional[str] = None  # 🔥 NEW: Force exact document filtering
     ) -> Dict[str, Any]:
         """
         Query chính với tất cả tối ưu hóa - THIẾT KẾ GỐC: FULL DOCUMENT EXPANSION
@@ -226,21 +227,22 @@ class OptimizedEnhancedRAGService:
             
             # Step 1: Enhanced Smart Query Routing với MULTI-LEVEL Confidence Processing + Stateful Router
             if forced_collection:
-                # 🔧 FORCED ROUTING: Từ clarification response, bỏ qua router
+                # � FORCED ROUTING: Dành cho clarification hoặc debug
                 logger.info(f"⚡ Forced routing to collection: {forced_collection} (from clarification)")
                 routing_result = {
-                    'status': 'routed_by_clarification',
-                    'confidence_level': 'forced_high',  # Coi như confidence cao vì user đã xác nhận
-                    'confidence': 0.95,  # Fake high confidence
-                    'target_collection': forced_collection,
-                    'inferred_filters': {},
-                    'was_overridden': True,
-                    'source': 'user_clarification'
+                    "target_collection": forced_collection,
+                    "confidence": 0.95,  # High confidence cho forced routing
+                    "inferred_filters": {}
                 }
                 # Get confidence level from routing result for further processing
                 confidence_level = routing_result.get('confidence_level', 'forced_high')
                 best_collections = [forced_collection]
                 inferred_filters = {}
+                
+                # 🔥 NEW: Add document title filter if specified
+                if forced_document_title:
+                    inferred_filters = {"document_title": forced_document_title}
+                    logger.info(f"🎯 Forced document filter: {forced_document_title}")
                 
             else:
                 # 🧠 SMART ROUTING: Sử dụng router bình thường
@@ -527,6 +529,13 @@ class OptimizedEnhancedRAGService:
                         # Create suggestions from similar procedures
                         suggestions = []
                         for i, proc in enumerate(similar_procedures):
+                            # 🔧 Extract document title from source filename
+                            source_file = proc['source']
+                            document_title = source_file.replace('.json', '').split('/')[-1]  # Remove .json and get filename only
+                            # Clean up document title (remove numbering if exists)
+                            if '. ' in document_title:
+                                document_title = document_title.split('. ', 1)[1]  # Remove "01. " prefix
+                            
                             suggestions.append({
                                 "id": str(i + 1),
                                 "title": proc['text'],
@@ -534,6 +543,8 @@ class OptimizedEnhancedRAGService:
                                 "action": "proceed_with_question",
                                 "collection": collection,
                                 "question_text": proc['text'],
+                                "document_title": document_title,  # 🔥 ADD: Exact document title for filtering
+                                "source_file": proc['source'],  # 🔥 ADD: Full source path for debugging
                                 "category": proc.get('category', 'general'),
                                 "similarity": proc['similarity']  # Include similarity for debugging
                             })
@@ -609,14 +620,20 @@ class OptimizedEnhancedRAGService:
         elif action == 'proceed_with_question':
             # 🎯 GIAI ĐOẠN 3 → 4: User chọn câu hỏi cụ thể, chạy RAG
             question_text = selected_option.get('question_text')
+            document_title = selected_option.get('document_title')  # 🔥 NEW: Get exact document title
+            source_file = selected_option.get('source_file')  # 🔥 NEW: For debugging
+            
             if question_text and collection:
                 logger.info(f"🚀 Clarification Step 3→4: User selected question '{question_text}' in collection '{collection}'.")
+                if document_title:
+                    logger.info(f"🎯 Target document: '{document_title}' (source: {source_file})")
                 
                 # Chạy RAG với câu hỏi ĐÃ ĐƯỢC LÀM RÕ và collection ĐÃ CHỈ ĐỊNH
                 return self.enhanced_query(
                     query=question_text,  # 🔥 Dùng câu hỏi cụ thể, không phải original query mơ hồ
                     session_id=session_id,
-                    forced_collection=collection  # 🔥 Force routing to selected collection
+                    forced_collection=collection,  # 🔥 Force routing to selected collection
+                    forced_document_title=document_title  # 🔥 NEW: Force exact document filtering
                 )
             else:
                 return {

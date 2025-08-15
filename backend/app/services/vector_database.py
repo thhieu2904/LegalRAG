@@ -496,7 +496,17 @@ class VectorDBService:
                     logger.info(f"🎯 Using HIGH PRECISION filter: exact_title only")
                     return {"document_title": {"$in": exact_titles}} if len(exact_titles) > 1 else {"document_title": exact_titles[0]}
             
-            # 🎯 FALLBACK: If no exact_title, use other filters
+            # 🔥 NEW: Support direct document_title filter (for forced routing)
+            if 'document_title' in smart_filters and smart_filters['document_title']:
+                doc_title = smart_filters['document_title']
+                if isinstance(doc_title, str) and doc_title.strip():
+                    logger.info(f"🎯 Using FORCED document filter: {doc_title}")
+                    return {"document_title": doc_title.strip()}
+                elif isinstance(doc_title, list) and doc_title:
+                    logger.info(f"🎯 Using FORCED document filter: {doc_title}")
+                    return {"document_title": {"$in": [t.strip() for t in doc_title if t.strip()]}}
+            
+            # 🎯 FALLBACK: If no exact_title or document_title, use other filters
             # Procedure code matching
             if 'procedure_code' in smart_filters and smart_filters['procedure_code']:
                 codes = smart_filters['procedure_code']

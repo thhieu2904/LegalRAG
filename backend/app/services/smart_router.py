@@ -734,6 +734,47 @@ class EnhancedSmartQueryRouter:
             # Sort by similarity and return top_k
             similarities.sort(key=lambda x: x['similarity'], reverse=True)
             
+            # 🎯 ENHANCED: Boost exact/partial title matches to prioritize core procedures
+            for item in similarities:
+                question = item['question']
+                question_text = item['text']
+                
+                # Extract document title if available
+                if isinstance(question, dict):
+                    doc_title = question.get('title', '')
+                    source_file = question.get('source', '')
+                    
+                    # Extract title from source filename if no explicit title
+                    if not doc_title and source_file:
+                        filename = source_file.split('/')[-1].replace('.json', '').replace('.doc', '')
+                        if '. ' in filename:
+                            doc_title = filename.split('. ', 1)[1]  # Remove numbering like "01. "
+                    
+                    # 🔥 EXACT TITLE MATCH: Boost if reference query contains the exact document title
+                    if doc_title:
+                        # Clean both strings for comparison
+                        clean_reference = reference_query.lower().strip()
+                        clean_doc_title = doc_title.lower().strip()
+                        
+                        # Check for exact match or reference contains the document title
+                        if clean_doc_title in clean_reference or clean_reference in clean_doc_title:
+                            # 🚀 Special boost for core procedures (without "lưu động", "có yếu tố nước ngoài", etc.)
+                            is_core_procedure = not any(special in clean_doc_title for special in [
+                                'lưu động', 'có yếu tố nước ngoài', 'lại', 'kết hợp', 'chấm dứt'
+                            ])
+                            
+                            if is_core_procedure:
+                                # Major boost for core procedures with exact title match
+                                item['similarity'] = min(1.0, item['similarity'] + 0.3)
+                                logger.info(f"🎯 CORE TITLE MATCH: Boosted '{doc_title}' similarity to {item['similarity']:.3f}")
+                            else:
+                                # Minor boost for specialized procedures
+                                item['similarity'] = min(1.0, item['similarity'] + 0.1)
+                                logger.info(f"🎯 SPECIALIZED TITLE MATCH: Boosted '{doc_title}' similarity to {item['similarity']:.3f}")
+            
+            # Re-sort after boosting
+            similarities.sort(key=lambda x: x['similarity'], reverse=True)
+            
             # Return top results, ensuring we have diverse procedures
             results = []
             seen_sources = set()  # Track sources to avoid duplicate procedures from same document

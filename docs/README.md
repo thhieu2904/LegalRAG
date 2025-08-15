@@ -1,23 +1,56 @@
-# Documentation
+# 📚 LegalRAG Documentation
 
-Thư mục này chứa tất cả tài liệu hướng dẫn và documentation của dự án LegalRAG.
+> **Centralized documentation for LegalRAG system**
 
-## Tài liệu có sẵn
+## 📋 **Documentation Index**
 
-### Quick Start Guides
+### 🚀 **Getting Started**
 
-- `QUICKSTART.md` - Hướng dẫn khởi động nhanh phiên bản cũ
-- `QUICKSTART_NEW.md` - Hướng dẫn khởi động nhanh phiên bản mới
+- **[COMPREHENSIVE_GUIDE.md](COMPREHENSIVE_GUIDE.md)** - Complete system guide
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick setup instructions
 
-### Development Notes
+### 🔧 **Technical Docs**
 
-- `IMPROVEMENTS_SUMMARY.md` - Tóm tắt các cải tiến và thay đổi
+- **[CONFIG_SYSTEM.md](CONFIG_SYSTEM.md)** - Configuration details
+- **[ENHANCED_RAG_SYSTEM.md](ENHANCED_RAG_SYSTEM.md)** - RAG architecture
+- **[ROUTER_CACHE_SYSTEM.md](ROUTER_CACHE_SYSTEM.md)** - Smart routing system
 
-## Tài liệu chính
+### 🐳 **Deployment**
 
-Tài liệu chính của dự án nằm ở file `README.md` trong thư mục gốc.
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment
+- **[FRESH_INSTALL_GUIDE.md](FRESH_INSTALL_GUIDE.md)** - Clean installation
 
-## Cấu trúc hướng dẫn
+---
+
+## 📖 **Quick Reference**
+
+### **Start Development**
+
+```bash
+# Backend
+cd backend && python main.py
+
+# Frontend
+cd frontend && npm run dev
+```
+
+### **Key URLs**
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+
+### **Main Features**
+
+- 🤖 PhoGPT-4B Vietnamese LLM
+- 🔍 ChromaDB Vector Search
+- 🎯 Smart Query Router
+- 💬 Multi-turn Clarification
+- 🌐 Modern React Interface
+
+---
+
+For detailed information, see **[COMPREHENSIVE_GUIDE.md](COMPREHENSIVE_GUIDE.md)**
 
 1. **Setup**: Xem `../README.md` cho hướng dẫn cài đặt chi tiết
 2. **Quick Start**: Sử dụng `QUICKSTART_NEW.md` cho bản mới nhất
