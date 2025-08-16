@@ -129,40 +129,45 @@ class LLMService:
         chat_history: Optional[List[Dict[str, str]]] = None
     ) -> str:
         """
-        Format prompt theo chuẩn ChatML template mà PhoGPT-Chat mong đợi.
-        Template: <|im_start|>role\ncontent<|im_end|>
+        Format prompt theo TEMPLATE CHÍNH THỨC của PhoGPT-4B-Chat
+        PROMPT_TEMPLATE = "### Câu hỏi: {instruction}\n### Trả lời:"
         
-        Đây là cách ĐÚNG để sử dụng PhoGPT-Chat, thay vì format ### Câu hỏi: ### Trả lời:
+        Đây là format ĐÚNG theo tài liệu chính thức, không phải prompt bleeding!
         """
-        messages = []
         
-        # 1. System Prompt - chỉ dẫn vai trò và quy tắc
+        # Build instruction từ context và user query
+        instruction_parts = []
+        
+        # 1. System prompt (nếu có)
         if system_prompt:
-            messages.append(f"<|im_start|>system\n{system_prompt}<|im_end|>")
+            instruction_parts.append(system_prompt)
         
-        # 2. Chat History (nếu có) - lịch sử hội thoại có cấu trúc
+        # 2. Chat history (nếu có) 
         if chat_history:
             for turn in chat_history:
                 role = turn.get("role")
                 content = turn.get("content")
                 if role and content:
-                    messages.append(f"<|im_start|>{role}\n{content}<|im_end|>")
-
-        # 3. User Query hiện tại (kèm context nếu có)
-        user_content = ""
+                    if role == "user":
+                        instruction_parts.append(f"Người dùng hỏi: {content}")
+                    elif role == "assistant":
+                        instruction_parts.append(f"Trợ lý đã trả lời: {content}")
+        
+        # 3. Context (nếu có)
         if context:
-            user_content += f"Dựa vào thông tin tài liệu sau đây:\n--- BẮT ĐẦU TÀI LIỆU ---\n{context}\n--- KẾT THÚC TÀI LIỆU ---\n\n"
-        user_content += f"Hãy trả lời câu hỏi sau: {user_query}"
+            instruction_parts.append(f"Thông tin tham khảo:\n{context}")
         
-        messages.append(f"<|im_start|>user\n{user_content}<|im_end|>")
+        # 4. Query hiện tại
+        instruction_parts.append(f"Câu hỏi cần trả lời: {user_query}")
         
-        # 4. Thêm dấu hiệu để model bắt đầu trả lời
-        messages.append("<|im_start|>assistant")
-
-        formatted_prompt = "\n".join(messages)
+        # Combine instruction
+        full_instruction = "\n\n".join(instruction_parts)
         
-        # Log để debug (chỉ hiển thị các token đặc biệt)
-        logger.debug(f"ChatML template structure: {len([m for m in messages if 'im_start' in m])} messages")
+        # Apply OFFICIAL PhoGPT template
+        formatted_prompt = f"### Câu hỏi: {full_instruction}\n### Trả lời:"
+        
+        # Log để debug
+        logger.debug(f"Official PhoGPT format applied")
         
         return formatted_prompt
     
@@ -194,10 +199,15 @@ class LLMService:
             system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam. 
 
 QUY TẮC BẮT BUỘC:
-1. CHỈ trả lời dựa trên thông tin trong tài liệu
-2. Trả lời NGẮN GỌN và TRỰC TIẾP 
-3. KHÔNG tự sáng tạo thông tin
-4. Nếu hỏi về phí/tiền - tìm chính xác thông tin "LỆ PHÍ"
+1. CHỈ trả lời dựa trên thông tin trong tài liệu có sẵn
+2. Trả lời NGẮN GỌN, CHÍNH XÁC và TRỰC TIẾP
+3. KHÔNG tự sáng tạo thông tin không có trong tài liệu
+4. KHÔNG đặt thêm câu hỏi
+5. Nếu hỏi về phí/lệ phí - trả lời dựa trên thông tin "LỆ PHÍ" trong tài liệu
+
+ĐỊNH DẠNG TRẢ LỜI:
+- Câu trả lời ngắn gọn
+- Dẫn chứng từ tài liệu nếu có
 
 Trả lời chính xác, ngắn gọn."""
         
@@ -223,13 +233,41 @@ Trả lời chính xác, ngắn gọn."""
         safety_buffer = 256  # Buffer an toàn để tránh edge cases
         available_space_for_response = total_context_window - prompt_tokens_estimated - safety_buffer
         
+        # 🔥 NGƯỠNG TỐI THIỂU ĐỂ SINH CÂU TRẢ LỜI CÓ Ý NGHĨA
+        MINIMUM_RESPONSE_TOKENS = 64  # Tối thiểu 64 tokens = ~200 chars tiếng Việt
+        
         if available_space_for_response <= 0:
             logger.error(f"🚨 Context window overflow! Prompt ({prompt_tokens_estimated} tokens) đã vượt quá giới hạn ({total_context_window}).")
             raise ValueError(f"Prompt đầu vào quá lớn ({prompt_tokens_estimated} tokens), không còn không gian để sinh câu trả lời. Giới hạn: {total_context_window} tokens.")
             
+        if available_space_for_response <= MINIMUM_RESPONSE_TOKENS:
+            logger.error(f"🚨 Không đủ không gian để sinh câu trả lời có ý nghĩa. Cần tối thiểu {MINIMUM_RESPONSE_TOKENS} tokens, chỉ còn {available_space_for_response} tokens.")
+            # Trả về một response thông báo thay vì crash
+            return {
+                'response': f"Xin lỗi, ngữ cảnh quá phức tạp để tạo câu trả lời trong giới hạn hiện tại. (Cần {MINIMUM_RESPONSE_TOKENS} tokens, chỉ còn {available_space_for_response} tokens)",
+                'processing_time': 0.0,
+                'prompt_tokens': prompt_tokens_estimated,
+                'completion_tokens': 0,
+                'total_tokens': prompt_tokens_estimated,
+                'context_info': {
+                    'total_context_window': total_context_window,
+                    'prompt_tokens_estimated': prompt_tokens_estimated,
+                    'available_space': available_space_for_response,
+                    'max_tokens_requested': max_tokens,
+                    'max_tokens_used': 0,
+                    'was_adjusted': True,
+                    'error_reason': 'insufficient_space'
+                }
+            }
+            
         # 4. Điều chỉnh động `max_tokens` để không vượt quá không gian còn lại
         original_max_tokens = max_tokens
         dynamic_max_tokens = min(max_tokens, available_space_for_response)
+        
+        # 🔥 ĐẢM BẢO DYNAMIC_MAX_TOKENS KHÔNG QUÁ NHỎ
+        if dynamic_max_tokens < MINIMUM_RESPONSE_TOKENS:
+            logger.warning(f"⚠️ Dynamic max_tokens ({dynamic_max_tokens}) quá nhỏ, đặt về minimum {MINIMUM_RESPONSE_TOKENS}")
+            dynamic_max_tokens = MINIMUM_RESPONSE_TOKENS
         
         logger.info(f"📏 Context Info: Total={total_context_window}, Prompt≈{prompt_tokens_estimated}, Available={available_space_for_response}")
         if dynamic_max_tokens != original_max_tokens:
@@ -250,7 +288,7 @@ Trả lời chính xác, ngắn gọn."""
                 top_p=0.9,  # Nucleus sampling để tăng đa dạng
                 top_k=40,   # Top-K sampling
                 repeat_penalty=1.1,  # Penalty cho từ lặp
-                stop=["<|im_end|>", "<|im_start|>", "\n<|im_start|>"],  # ChatML stop tokens
+                stop=["### Câu hỏi:", "\n### Câu hỏi:", "### Trả lời:", "\n### Trả lời:"],  # 🔥 STOP TOKENS CHO FORMAT CHÍNH THỨC
                 echo=False,
                 stream=False  # Ensure non-streaming response
             )
@@ -300,22 +338,22 @@ Trả lời chính xác, ngắn gọn."""
             raise
     
     def _clean_repetitive_response(self, text: str) -> str:
-        """Dọn dẹp response để loại bỏ patterns lặp lại và ChatML tokens rò rỉ"""
+        """Dọn dẹp response để loại bỏ patterns lặp lại và official format artifacts"""
         import re
         
-        # 🔥 QUAN TRỌNG: Loại bỏ ChatML tokens có thể rò rỉ
-        text = re.sub(r'<\|im_start\|>', '', text)
-        text = re.sub(r'<\|im_end\|>', '', text) 
-        text = re.sub(r'<\|.*?\|>', '', text)  # Loại bỏ bất kỳ special token nào khác
-        
-        # 🔥 CRITICAL: Loại bỏ các pattern format cũ có thể rò rỉ từ context
+        # 🔥 Loại bỏ official format patterns có thể rò rỉ
         text = re.sub(r'###\s*Câu hỏi\s*:', '', text, flags=re.IGNORECASE)
         text = re.sub(r'###\s*Trả lời\s*:', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'CÂUHỎI\s*:', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'TRẢ\s*LỜI\s*:', '', text, flags=re.IGNORECASE)
+        
+        # 🔥 QUAN TRỌNG: Loại bỏ câu hỏi thừa do model tự tạo
+        text = re.sub(r'Câu hỏi cần trả lời thêm:.*$', '', text, flags=re.MULTILINE | re.IGNORECASE)
+        text = re.sub(r'Câu hỏi tiếp theo:.*$', '', text, flags=re.MULTILINE | re.IGNORECASE)
+        text = re.sub(r'Câu hỏi khác:.*$', '', text, flags=re.MULTILINE | re.IGNORECASE)
+        text = re.sub(r'Thắc mắc khác:.*$', '', text, flags=re.MULTILINE | re.IGNORECASE)
         
         # Loại bỏ role indicators có thể rò rỉ
         text = re.sub(r'^\s*(user|assistant|system)\s*[:]\s*', '', text, flags=re.MULTILINE)
+        text = re.sub(r'^\s*(Người dùng|Trợ lý|Hệ thống)\s*[:]\s*', '', text, flags=re.MULTILINE)
         
         # Loại bỏ patterns lặp kiểu A. B. C. XI. XI. XI.
         text = re.sub(r'([A-Z]\.)\s*THỦ\s*TỤC\s*NUÔI\s*CON\s*NUÔI\s*TRONG\s*NƯỚC\s*\n*', '', text, flags=re.IGNORECASE)
