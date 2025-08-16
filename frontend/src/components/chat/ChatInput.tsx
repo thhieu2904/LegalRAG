@@ -39,29 +39,21 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
     setIsListening(false);
   };
 
+  const getVoiceStatusText = () => {
+    if (!isListening) return "Nhập câu hỏi của bạn hoặc sử dụng microphone...";
+    return "🎤 Đang lắng nghe... Hãy nói gì đó...";
+  };
+
   return (
     <div className="p-6">
       <div className="max-w-6xl mx-auto space-y-4">
         <form onSubmit={handleSubmit} className="flex gap-4 items-end">
-          {/* Voice Input Button */}
-          <VoiceInput
-            onTranscriptChange={handleTranscriptChange}
-            onFinalTranscript={handleFinalTranscript}
-            onStart={handleVoiceStart}
-            onStop={handleVoiceStop}
-            disabled={disabled}
-          />
-
           {/* Input Area */}
           <div className="flex-1 relative">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder={
-                isListening
-                  ? "🎤 Đang lắng nghe... Hãy nói gì đó..."
-                  : "Nhập câu hỏi của bạn hoặc sử dụng microphone..."
-              }
+              placeholder={getVoiceStatusText()}
               disabled={disabled}
               className={`h-14 text-base border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl px-4 ${
                 isListening ? "bg-green-50 border-green-300" : ""
@@ -76,6 +68,14 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
               </div>
             )}
           </div>
+          {/* Voice Input Button */}
+          <VoiceInput
+            onTranscriptChange={handleTranscriptChange}
+            onFinalTranscript={handleFinalTranscript}
+            onStart={handleVoiceStart}
+            onStop={handleVoiceStop}
+            disabled={disabled}
+          />
 
           {/* Send Button */}
           <Button

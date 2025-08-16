@@ -328,22 +328,7 @@ export function VoiceInput({
         </div>
       </Button>
 
-      {/* Hiển thị trạng thái */}
-      {recordingState !== "idle" && (
-        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs font-medium whitespace-nowrap">
-          {recordingState === "listening" && (
-            <span className="text-green-600">🎤 Đang lắng nghe...</span>
-          )}
-          {recordingState === "speaking" && (
-            <span className="text-blue-600">🔵 Đang ghi âm...</span>
-          )}
-          {recordingState === "processing" && (
-            <span className="text-yellow-600">⚡ Đang xử lý...</span>
-          )}
-        </div>
-      )}
-
-      {/* Hiển thị lỗi */}
+      {/* Chỉ hiển thị lỗi - trạng thái đã được hiển thị ở ChatInput */}
       {error && (
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 whitespace-nowrap">
           {error}
