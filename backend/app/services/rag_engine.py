@@ -354,18 +354,43 @@ class OptimizedEnhancedRAGService:
                 self.llm_service.unload_model()
             
             if settings.use_reranker and len(broad_search_results) > 1:
-                # ✅ FIX CRITICAL BUG: Rerank TẤT CẢ documents thay vì chỉ top 10
-                # Đây là lỗi logic nghiêm trọng - không được vứt bỏ documents tiềm năng!
+                # ✅ ENHANCED RERANKING: Consensus-based document selection for better accuracy
                 docs_to_rerank = broad_search_results  # RERANK ALL DOCUMENTS
-                logger.info(f"Reranking ALL {len(broad_search_results)} candidate documents (FIXED BUG)")
+                logger.info(f"🎯 ENHANCED RERANKING - Analyzing {len(broad_search_results)} candidates for consensus")
                 
-                nucleus_chunks = self.reranker_service.rerank_documents(
-                    query=query,
-                    documents=docs_to_rerank,
-                    top_k=1,  # CHỈ 1 nucleus chunk cao nhất - sẽ expand toàn bộ document chứa chunk này
-                    router_confidence=routing_result.get('confidence', 0.0),
-                    router_confidence_level=routing_result.get('confidence_level', 'low')
-                )
+                if len(broad_search_results) >= 5:
+                    # ✅ NEW METHOD: Consensus-based document selection (more robust)
+                    consensus_document = self.reranker_service.get_consensus_document(
+                        query=query,
+                        documents=docs_to_rerank,
+                        top_k=5,  # Analyze top 5 candidates
+                        consensus_threshold=0.6,  # 3/5 = 60%
+                        min_rerank_score=-0.5  # Adjusted for legal documents
+                    )
+                    
+                    if consensus_document:
+                        nucleus_chunks = [consensus_document]
+                        logger.info(f"✅ CONSENSUS FOUND: Selected document based on chunk agreement")
+                    else:
+                        # Fallback to traditional single best document
+                        logger.warning("❌ NO CONSENSUS: Falling back to traditional single best document")
+                        nucleus_chunks = self.reranker_service.rerank_documents(
+                            query=query,
+                            documents=docs_to_rerank,
+                            top_k=1,
+                            router_confidence=routing_result.get('confidence', 0.0),
+                            router_confidence_level=routing_result.get('confidence_level', 'low')
+                        )
+                else:
+                    # Not enough candidates for consensus analysis
+                    logger.info(f"INSUFFICIENT CANDIDATES ({len(broad_search_results)}) - Using traditional reranking")
+                    nucleus_chunks = self.reranker_service.rerank_documents(
+                        query=query,
+                        documents=docs_to_rerank,
+                        top_k=1,  # CHỈ 1 nucleus chunk cao nhất - sẽ expand toàn bộ document chứa chunk này
+                        router_confidence=routing_result.get('confidence', 0.0),
+                        router_confidence_level=routing_result.get('confidence_level', 'low')
+                    )
                 
                 # Unload reranker sau khi hoàn thành để giải phóng VRAM
                 if hasattr(self.reranker_service, 'unload_model'):

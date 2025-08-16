@@ -210,9 +210,197 @@ class RerankerService:
     # _extract_query_keywords() và _extract_relevant_content() đã được loại bỏ
     # để tối ưu hóa performance và để GPU CrossEncoder tự xử lý
     
+    def get_consensus_document(
+        self, 
+        query: str, 
+        documents: List[Dict[str, Any]], 
+        top_k: int = 5,
+        consensus_threshold: float = 0.6,  # 3/5 = 0.6
+        min_rerank_score: float = -0.5  # LOWER for legal documents (cross-encoder can give negative scores)
+    ) -> Optional[Dict[str, Any]]:
+        """
+        🎯 ENHANCED RERANKING: Tìm document dựa trên consensus của top-k chunks
+        
+        Thay vì chỉ lấy 1 chunk cao nhất (dễ sai lệch), method này:
+        1. Lấy top-k chunks sau rerank (default: 5)
+        2. Phân tích xem chunks nào thuộc document nào
+        3. Tìm document có >= consensus_threshold chunks trong top-k
+        4. Trả về document có consensus cao nhất
+        5. Xử lý trường hợp "scattered chunks" (chunks từ các documents hoàn toàn khác nhau)
+        
+        Args:
+            query: Câu hỏi cần tìm
+            documents: Danh sách documents cần đánh giá
+            top_k: Số chunks hàng đầu để phân tích consensus (default: 5)
+            consensus_threshold: Tỷ lệ minimum chunks cùng document (default: 0.6 = 3/5)
+            min_rerank_score: Score minimum để xem xét (đã điều chỉnh cho văn bản pháp luật)
+        
+        Returns:
+            Document có consensus cao nhất hoặc None nếu không có consensus
+        """
+        if not documents:
+            return None
+            
+        # Bước 1: Rerank tất cả documents và lấy top-k
+        reranked = self.rerank_documents(query, documents, top_k=top_k)
+        
+        if not reranked:
+            return None
+            
+        # Bước 2: Lọc ra những chunks có score đủ cao (điều chỉnh cho văn bản pháp luật)
+        qualified_chunks = [
+            doc for doc in reranked 
+            if doc.get('rerank_score', -999) >= min_rerank_score
+        ]
+        
+        if not qualified_chunks:
+            logger.warning(f"No chunks meet minimum rerank score {min_rerank_score}")
+            return reranked[0] if reranked else None  # Fallback to best chunk
+            
+        logger.info(f"🔍 CONSENSUS ANALYSIS: Analyzing {len(qualified_chunks)} qualified chunks (top_k={top_k})")
+        
+        # Bước 3: Phân tích document consensus
+        document_analysis = self._analyze_document_consensus(qualified_chunks)
+        
+        # Bước 4: Tìm document có consensus cao nhất
+        best_consensus = self._find_best_consensus(
+            document_analysis, 
+            consensus_threshold, 
+            len(qualified_chunks)
+        )
+        
+        if best_consensus:
+            logger.info(f"✅ CONSENSUS FOUND: Document '{best_consensus['document_id']}' "
+                       f"has {best_consensus['chunk_count']}/{len(qualified_chunks)} chunks "
+                       f"(ratio: {best_consensus['consensus_ratio']:.2f})")
+            return best_consensus['best_chunk']
+        else:
+            # 🔥 NEW LOGIC: Kiểm tra nếu các chunks thuộc các documents hoàn toàn khác nhau
+            unique_documents = set(self._extract_document_id(chunk) for chunk in qualified_chunks)
+            
+            if len(unique_documents) == len(qualified_chunks):
+                logger.warning(f"🚨 SCATTERED CHUNKS: {len(qualified_chunks)} chunks from {len(unique_documents)} different documents")
+                logger.info("📋 Falling back to SINGLE BEST CHUNK strategy (traditional reranking)")
+                return qualified_chunks[0]  # Return highest scored chunk
+            else:
+                logger.warning(f"❌ NO STRONG CONSENSUS: Falling back to traditional single best document "
+                              f"(threshold: {consensus_threshold})")
+                return qualified_chunks[0]  # Fallback to highest scored chunk
+
+    def _analyze_document_consensus(self, chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Phân tích xem chunks thuộc documents nào và với tần suất ra sao
+        
+        Returns:
+            Dict mapping document_id -> {chunks: [...], scores: [...], best_chunk: chunk}
+        """
+        document_groups = {}
+        
+        for chunk in chunks:
+            # Tìm document identifier từ chunk metadata
+            doc_id = self._extract_document_id(chunk)
+            
+            if doc_id not in document_groups:
+                document_groups[doc_id] = {
+                    'chunks': [],
+                    'scores': [],
+                    'best_chunk': None,
+                    'best_score': -1
+                }
+            
+            # Thêm chunk vào group
+            rerank_score = chunk.get('rerank_score', 0)
+            document_groups[doc_id]['chunks'].append(chunk)
+            document_groups[doc_id]['scores'].append(rerank_score)
+            
+            # Cập nhật best chunk cho document này
+            if rerank_score > document_groups[doc_id]['best_score']:
+                document_groups[doc_id]['best_score'] = rerank_score
+                document_groups[doc_id]['best_chunk'] = chunk
+                
+        return document_groups
+
+    def _extract_document_id(self, chunk: Dict[str, Any]) -> str:
+        """
+        Trích xuất document identifier từ chunk metadata
+        Thử nhiều cách để tìm unique document ID
+        """
+        # Thử cách 1: source.file_path
+        if 'source' in chunk and isinstance(chunk['source'], dict):
+            if 'file_path' in chunk['source']:
+                return chunk['source']['file_path']
+            if 'document_title' in chunk['source']:
+                return chunk['source']['document_title']
+        
+        # Thử cách 2: metadata.source
+        if 'metadata' in chunk and isinstance(chunk['metadata'], dict):
+            if 'source' in chunk['metadata']:
+                source = chunk['metadata']['source']
+                if isinstance(source, dict):
+                    if 'file_path' in source:
+                        return source['file_path']
+                    if 'document_title' in source:
+                        return source['document_title']
+                elif isinstance(source, str):
+                    return source
+        
+        # Thử cách 3: document_title trực tiếp
+        if 'document_title' in chunk:
+            return chunk['document_title']
+            
+        # Fallback: dùng id hoặc content hash
+        if 'id' in chunk:
+            return f"doc_from_chunk_{chunk['id']}"
+            
+        # Last resort: hash content
+        content = chunk.get('content', '')
+        import hashlib
+        return f"doc_hash_{hashlib.md5(content.encode()).hexdigest()[:8]}"
+
+    def _find_best_consensus(
+        self, 
+        document_analysis: Dict[str, Any], 
+        consensus_threshold: float,
+        total_chunks: int
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Tìm document có consensus ratio cao nhất và đạt threshold
+        
+        Returns:
+            Best consensus info hoặc None nếu không có document nào đạt threshold
+        """
+        best_consensus = None
+        
+        for doc_id, info in document_analysis.items():
+            chunk_count = len(info['chunks'])
+            consensus_ratio = chunk_count / total_chunks
+            
+            logger.info(f"📊 Document '{doc_id}': {chunk_count}/{total_chunks} chunks "
+                       f"(ratio: {consensus_ratio:.2f}, threshold: {consensus_threshold})")
+            
+            # Kiểm tra xem có đạt threshold không
+            if consensus_ratio >= consensus_threshold:
+                if (best_consensus is None or 
+                    consensus_ratio > best_consensus['consensus_ratio'] or
+                    (consensus_ratio == best_consensus['consensus_ratio'] and 
+                     info['best_score'] > best_consensus['best_score'])):
+                    
+                    best_consensus = {
+                        'document_id': doc_id,
+                        'chunk_count': chunk_count,
+                        'consensus_ratio': consensus_ratio,
+                        'best_chunk': info['best_chunk'],
+                        'best_score': info['best_score'],
+                        'all_chunks': info['chunks']
+                    }
+        
+        return best_consensus
+    
     def get_best_document(self, query: str, documents: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """
-        Tìm document có độ liên quan cao nhất với query
+        Tìm document có độ liên quan cao nhất với query (Legacy method)
+        
+        ⚠️  DEPRECATED: Khuyến khích dùng get_consensus_document() để có kết quả chính xác hơn
         
         Args:
             query: Câu hỏi cần tìm
