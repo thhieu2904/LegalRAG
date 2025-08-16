@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Send, Mic } from "lucide-react";
+import { Send } from "lucide-react";
+import { VoiceInput } from "./VoiceInput";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -10,6 +11,7 @@ interface ChatInputProps {
 
 export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
   const [message, setMessage] = useState("");
+  const [isListening, setIsListening] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,30 +21,62 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
     }
   };
 
+  const handleTranscriptChange = (transcript: string) => {
+    setMessage(transcript);
+  };
+
+  const handleFinalTranscript = (transcript: string) => {
+    setMessage(transcript);
+    setIsListening(false);
+  };
+
+  const handleVoiceStart = () => {
+    setIsListening(true);
+    setMessage(""); // Xóa nội dung cũ khi bắt đầu ghi âm
+  };
+
+  const handleVoiceStop = () => {
+    setIsListening(false);
+  };
+
   return (
     <div className="p-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto space-y-4">
         <form onSubmit={handleSubmit} className="flex gap-4 items-end">
-          {/* Mic Button - Standalone và nổi bật */}
+          {/* Voice Input Button */}
+          <VoiceInput
+            onTranscriptChange={handleTranscriptChange}
+            onFinalTranscript={handleFinalTranscript}
+            onStart={handleVoiceStart}
+            onStop={handleVoiceStop}
+            disabled={disabled}
+          />
 
           {/* Input Area */}
-          <div className="flex-1">
+          <div className="flex-1 relative">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Nhập câu hỏi của bạn..."
+              placeholder={
+                isListening
+                  ? "🎤 Đang lắng nghe... Hãy nói gì đó..."
+                  : "Nhập câu hỏi của bạn hoặc sử dụng microphone..."
+              }
               disabled={disabled}
-              className="h-14 text-base border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl px-4"
+              className={`h-14 text-base border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl px-4 ${
+                isListening ? "bg-green-50 border-green-300" : ""
+              }`}
             />
+            {isListening && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="flex items-center gap-2 text-green-600">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium">Đang ghi âm</span>
+                </div>
+              </div>
+            )}
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={disabled}
-            className="h-14 w-14 p-0 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg"
-          >
-            <Mic className="w-7 h-7 text-blue-600" />
-          </Button>
+
           {/* Send Button */}
           <Button
             type="submit"
