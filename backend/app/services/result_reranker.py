@@ -28,24 +28,52 @@ class RerankerService:
         try:
             logger.info(f"Loading reranker model: {self.model_name}")
             
-            # Thử load từ local cache trước - sử dụng GPU với max_length=512
+            # Thử load từ local cache trước - sử dụng GPU với max_length=2304 theo documentation
             local_model_path = self._get_local_model_path()
             if local_model_path and local_model_path.exists():
                 logger.info(f"Found local model at: {local_model_path}")
                 try:
-                    # 🚀 PERFORMANCE OPTIMIZATION: Giới hạn max_length=512 để tăng tốc
-                    self.model = CrossEncoder(str(local_model_path), device='cuda:0', max_length=512)
+                    # 🚀 CORRECT CONFIG: max_length=2304 theo Vietnamese_Reranker documentation
+                    # (256 for query + 2048 for passages = 2304 total)
+                    # Model config có max_position_embeddings=8194 nhưng trained với 2304
+                    # Tokenizer có model_max_length=8192 nhưng optimal performance ở 2304
+                    
+                    # Sử dụng model_kwargs để optimize memory và performance
+                    model_kwargs = {
+                        'torch_dtype': 'auto'  # Sử dụng dtype từ model config (float32)
+                    }
+                    
+                    self.model = CrossEncoder(
+                        str(local_model_path), 
+                        device='cuda:0', 
+                        max_length=2304,
+                        trust_remote_code=False,  # Security best practice  
+                        model_kwargs=model_kwargs
+                    )
                     self.model_loaded = True
-                    logger.info("✅ Reranker model loaded from local cache on GPU (max_length=512)")
+                    logger.info("✅ Reranker model loaded from local cache on GPU (max_length=2304, trained optimal)")
                     return
                 except Exception as e:
                     logger.warning(f"Failed to load from local cache on GPU: {e}")
             
-            # Fallback: load từ HuggingFace với max_length=512
-            logger.info("Loading from HuggingFace (may download) on GPU with optimized settings")
-            self.model = CrossEncoder(self.model_name, device='cuda:0', max_length=512)
+            # Fallback: load từ HuggingFace với max_length=2304 theo documentation
+            logger.info("Loading from HuggingFace (may download) on GPU with correct max_length=2304 (trained optimal)")
+            # Model hỗ trợ max 8192 tokens nhưng trained với 2304 để đảm bảo quality
+            
+            # Sử dụng model_kwargs để optimize memory và performance
+            model_kwargs = {
+                'torch_dtype': 'auto'  # Sử dụng dtype từ model config (float32)
+            }
+            
+            self.model = CrossEncoder(
+                self.model_name, 
+                device='cuda:0', 
+                max_length=2304,
+                trust_remote_code=False,  # Security best practice
+                model_kwargs=model_kwargs
+            )
             self.model_loaded = True
-            logger.info("✅ Reranker model loaded from HuggingFace on GPU (max_length=512)")
+            logger.info("✅ Reranker model loaded from HuggingFace on GPU (max_length=2304, trained optimal)")
             
         except Exception as e:
             logger.error(f"Failed to load reranker model: {e}")
@@ -155,14 +183,14 @@ class RerankerService:
             for i, doc in enumerate(documents):
                 content = doc['content']
                 
-                # 🚀 MINIMAL PROCESSING: Chỉ truncate và clean cơ bản
-                # Để CrossEncoder tự xử lý với max_length=512 đã được set
+                # 🚀 CORRECT PROCESSING: Phù hợp với max_length=2304 (256 query + 2048 passage)
+                # CrossEncoder sẽ tự xử lý với max_length=2304 đã được set
                 cleaned_content = content.replace("**", "").replace("*", "").replace("#", "")
                 cleaned_content = " ".join(cleaned_content.split())  # Normalize whitespace
                 
-                # Truncate nếu quá dài (backup cho max_length limit)
-                if len(cleaned_content) > 1000:  # Soft limit trước khi tokenization
-                    cleaned_content = cleaned_content[:1000] + "..."
+                # Truncate theo documentation: max ~2048 tokens cho passage (≈ 6000 chars Vietnamese)
+                if len(cleaned_content) > 6000:  # Soft limit trước khi tokenization
+                    cleaned_content = cleaned_content[:6000] + "..."
                 
                 logger.info(f"🔍 RERANK DOC[{i}]: {len(cleaned_content)} chars")
                 pairs.append((query, cleaned_content))

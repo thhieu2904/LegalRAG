@@ -51,6 +51,28 @@ class EnhancedSmartQueryRouter:
         
         logger.info(f"✅ Enhanced Smart Query Router initialized with {len(self.collection_mappings)} collections")
     
+    def _is_followup_question(self, query: str) -> bool:
+        """Simple follow-up detection"""
+        followup_words = ["ủa", "vậy", "thế", "còn", "khi nào", "bao nhiêu", "phí", "tiền", "chi phí", "lệ phí"]
+        query_lower = query.lower()
+        return any(word in query_lower for word in followup_words) or len(query.split()) <= 6
+    
+    def _route_followup(self, query: str, session) -> Dict[str, Any]:
+        """Route follow-up questions to same collection"""
+        return {
+            'status': 'routed',
+            'confidence_level': 'high_followup',
+            'target_collection': session.last_successful_collection,
+            'confidence': 0.85,
+            'all_scores': {session.last_successful_collection: 0.85},
+            'display_name': self.collection_mappings.get(session.last_successful_collection, {}).get('display_name'),
+            'clarification_needed': False,
+            'matched_example': f"Follow-up question in {session.last_successful_collection}",
+            'source_procedure': "Context-aware routing",
+            'inferred_filters': getattr(session, 'last_successful_filters', {}),
+            'is_followup': True
+        }
+    
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from router_examples_smart_v3 directory"""
         try:
@@ -449,7 +471,7 @@ class EnhancedSmartQueryRouter:
             if best_example:
                 logger.info(f"📝 Matched example: '{best_example[:80]}...'")
             
-            # � STATEFUL ROUTER LOGIC - Confidence Override
+            # 🔥 STATEFUL ROUTER LOGIC - Confidence Override (ƯU TIÊN CAO NHẤT)
             original_confidence = best_score
             should_override = False
             override_collection = None
@@ -480,6 +502,17 @@ class EnhancedSmartQueryRouter:
                         # Too many failed attempts - clear state
                         logger.info("🧹 Clearing session state due to consecutive low confidence queries")
                         session.clear_routing_state()
+            
+            # 🔗 FOLLOW-UP DETECTION (chỉ khi KHÔNG có override)
+            if not should_override and session and hasattr(session, 'last_successful_collection') and session.last_successful_collection:
+                logger.info(f"🔗 Session has previous context: {session.last_successful_collection}")
+                is_followup = self._is_followup_question(query)
+                logger.info(f"🔗 Follow-up check: query='{query}' -> is_followup={is_followup}")
+                if is_followup:
+                    logger.info(f"🔗 FOLLOW-UP DETECTED: '{query[:50]}...' -> maintaining {session.last_successful_collection}")
+                    return self._route_followup(query, session)
+            elif not should_override:
+                logger.info(f"🔗 No session context available: session={session is not None}, has_attr={hasattr(session, 'last_successful_collection') if session else False}, value={getattr(session, 'last_successful_collection', None) if session else None}")
             
             # �🐛 DEBUG: Final validation before returning
             if best_filters:

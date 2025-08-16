@@ -469,7 +469,7 @@ class OptimizedEnhancedRAGService:
                 session.query_history = session.query_history[-5:]
             
             # 🔥 Update session state for Stateful Router
-            # Chỉ update state khi routing thành công với confidence cao (hạ từ 0.85 -> 0.78)
+            # Chỉ update state khi routing thành công với confidence đủ tốt (0.78+)
             if routing_result and routing_result.get('confidence', 0) >= 0.78:
                 target_collection = routing_result.get('target_collection')
                 if target_collection:
@@ -763,17 +763,22 @@ class OptimizedEnhancedRAGService:
 
 🚨 QUY TẮC BẮT BUỘC - KHÔNG ĐƯỢC VI PHẠM:
 1. CHỈ trả lời dựa CHÍNH XÁC trên thông tin CÓ TRONG tài liệu
-2. Nếu hỏi về PHÍ/TIỀN - tìm thông tin "💰 THÔNG TIN PHÍ/LỆ PHÍ" trong tài liệu
-3. Nếu có thông tin "Miễn lệ phí" - phải ưu tiên nêu rõ điều này
-4. KHÔNG tự sáng tạo thông tin không có trong tài liệu
-5. Trả lời NGẮN GỌN (tối đa 3-4 câu)
-6. Nếu không chắc chắn - nói "Theo thông tin trong tài liệu..."
+2. Trả lời NGẮN GỌN (tối đa 9-10 câu)
+3. KHÔNG tự sáng tạo thông tin không có trong tài liệu
+4. Nếu thông tin không có trong tài liệu, hãy trả lời: "Tài liệu không đề cập đến vấn đề này."
 
-Ví dụ trả lời tốt:
-- "Theo thông tin trong tài liệu, đăng ký khai sinh đúng hạn được MIỄN LỆ PHÍ."
-- "Tài liệu nêu rõ lệ phí là X đồng cho trường hợp Y."
+🎯 CÁC LOẠI THÔNG TIN QUAN TRỌNG CẦN CHÚ Ý:
+- PHÍ/LỆ PHÍ: Tìm "fee_text", "fee_vnd" - nêu rõ miễn phí hoặc số tiền cụ thể
+- THỜI GIAN: Tìm "processing_time_text" - nêu rõ thời gian xử lý
+- CƠ QUAN: Tìm "executing_agency" - nêu rõ nơi thực hiện thủ tục  
+- FORM MẪU: Tìm "has_form" - nêu có/không có form mẫu
+- ĐIỀU KIỆN: Tìm "requirements_conditions" - nêu điều kiện cần đáp ứng
+- MÃ THỦ TỤC: Tìm "code" - mã quy trình
 
-TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các quy định không có trong tài liệu."""
+ĐỊNH DẠNG TRẢ LỜI:
+- Câu trả lời ngắn gọn, chính xác
+- Ưu tiên thông tin user hỏi nhưng có thể bổ sung thông tin liên quan
+- Dẫn chứng từ tài liệu nếu có"""
         
         logger.info(f"📝 Using ChatML format with structured chat history: {len(chat_history_structured)} messages")
         
