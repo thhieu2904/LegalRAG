@@ -743,18 +743,20 @@ class OptimizedEnhancedRAGService:
         context: str,
         session: OptimizedChatSession
     ) -> str:
-        """Generate answer với context và session history"""
+        """Generate answer với context và session history sử dụng ChatML format"""
         
-        # Build conversation context if needed
-        conversation_context = ""
+        # CHUẨN BỊ CHAT HISTORY CÓ CẤU TRÚC cho ChatML template
+        chat_history_structured = []
         if len(session.query_history) > 0:
             # 🚀 PERFORMANCE OPTIMIZATION: Chỉ lấy 1 lượt hỏi-đáp gần nhất để giảm prompt length
             recent_queries = session.query_history[-1:]  # Only last 1 query thay vì 3
             logger.info(f"⚡ Chat history: {len(recent_queries)} entries (optimized for speed)")
-            conversation_context = "Lịch sử hội thoại gần đây:\n" + "\n".join([
-                f"Q: {item['query']}\nA: {item['answer'][:100]}..."  # Giảm từ 200 xuống 100 chars
-                for item in recent_queries
-            ]) + "\n\n"
+            
+            for item in recent_queries:
+                chat_history_structured.append({"role": "user", "content": item['query']})
+                # Rút gọn answer để tránh context overflow
+                answer_preview = item['answer'][:100] + "..." if len(item['answer']) > 100 else item['answer']
+                chat_history_structured.append({"role": "assistant", "content": answer_preview})
             
         # ALWAYS use FULL system prompt - No conservative strategy
         system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
@@ -773,16 +775,15 @@ Ví dụ trả lời tốt:
 
 TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các quy định không có trong tài liệu."""
         
-        logger.info(f"📝 ALWAYS using FULL system prompt (Conservative mode disabled), context length: {len(context)}")
-        
-        # Build enhanced context với conversation history
-        enhanced_context = conversation_context + context
+        logger.info(f"📝 Using ChatML format with structured chat history: {len(chat_history_structured)} messages")
         
         # 🔥 TOKEN MANAGEMENT - Kiểm soát độ dài để tránh context overflow
         from app.core.config import settings
         
         # Ước tính token đơn giản (1 token ≈ 3-4 ký tự tiếng Việt)
-        estimated_tokens = len(system_prompt + enhanced_context + query + "Trả lời: ") // 3
+        # Tính toán cho ChatML format với các token đặc biệt
+        chat_history_text = "\n".join([f"{item['role']}: {item['content']}" for item in chat_history_structured])
+        estimated_tokens = len(system_prompt + context + query + chat_history_text + "<|im_start|><|im_end|>") // 3
         max_context_tokens = settings.n_ctx - 500  # Để lại 500 token cho response
         
         if estimated_tokens > max_context_tokens:
@@ -790,27 +791,28 @@ TUYỆT ĐỐI KHÔNG được tự tạo ra thông tin về phí hoặc các qu
             logger.warning(f"🚨 Context overflow detected: {estimated_tokens} tokens > {max_context_tokens} max")
             
             # Tính toán space còn lại cho context
-            fixed_parts_length = len(system_prompt + conversation_context + query + "Trả lời: ")
+            fixed_parts_length = len(system_prompt + chat_history_text + query + "<|im_start|><|im_end|>")
             remaining_space = (max_context_tokens * 3) - fixed_parts_length
             
             if remaining_space > 500:  # Đảm bảo có ít nhất 500 ký tự cho context
-                truncated_context = context[:remaining_space] + "\n\n[...THÔNG TIN ĐÃ ĐƯỢC RÚT GỌN ĐỂ TRÁNH QUÁ TẢI...]"
-                enhanced_context = conversation_context + truncated_context
-                logger.info(f"✂️ Context truncated from {len(context)} to {len(truncated_context)} chars")
+                context = context[:remaining_space] + "\n\n[...THÔNG TIN ĐÃ ĐƯỢC RÚT GỌN ĐỂ TRÁNH QUÁ TẢI...]"
+                logger.info(f"✂️ Context truncated to {len(context)} chars")
             else:
-                # Nếu không đủ chỗ, bỏ conversation history
-                enhanced_context = context[:max_context_tokens * 3 // 2] + "\n\n[...RÚT GỌN...]"
-                logger.warning("⚠️ Removed conversation history due to extreme context overflow")
+                # Nếu không đủ chỗ, bỏ chat history
+                chat_history_structured = []
+                context = context[:max_context_tokens * 3 // 2] + "\n\n[...RÚT GỌN...]"
+                logger.warning("⚠️ Removed chat history due to extreme context overflow")
         
-        logger.info(f"📝 Final context length: {len(enhanced_context)} chars (~{len(enhanced_context)//3} tokens)")
+        logger.info(f"📝 Final context length: {len(context)} chars (~{len(context)//3} tokens)")
 
         try:
             response_data = self.llm_service.generate_response(
                 user_query=query,
-                context=enhanced_context,
+                context=context,
                 max_tokens=settings.max_tokens,
                 temperature=settings.temperature,
-                system_prompt=system_prompt
+                system_prompt=system_prompt,
+                chat_history=chat_history_structured  # 🔥 THAM SỐ MỚI cho ChatML
             )
             
             # Extract response text from dict
