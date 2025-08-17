@@ -40,6 +40,30 @@ export interface ContextInfo {
   source_documents: string[];
 }
 
+// 🔥 NEW: Context Summary interface
+export interface ContextSummary {
+  session_id: string;
+  has_active_context: boolean;
+  current_collection: string | null;
+  current_collection_display: string | null;
+  preserved_document: string | null;
+  active_filters: Record<string, unknown>;
+  confidence_level: number;
+  context_age_minutes: number;
+  query_count: number;
+  last_activity: number;
+}
+
+// 🔥 NEW: Session info interface
+export interface SessionInfo {
+  session_id: string;
+  created_at: number;
+  last_accessed: number;
+  query_count: number;
+  metadata: Record<string, unknown>;
+  context_summary: ContextSummary;
+}
+
 export interface ApiResponse {
   type: string;
   answer?: string;
@@ -181,6 +205,54 @@ export class ChatService {
   }
 
   static getSessionId(): string | null {
+    return this.sessionId;
+  }
+
+  // 🔥 NEW: Get session context summary
+  static async getSessionContext(
+    sessionId: string
+  ): Promise<ContextSummary | null> {
+    try {
+      const response = await axios.get<SessionInfo>(
+        `${BASE_URL}/api/v2/session/${sessionId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          timeout: 10000,
+        }
+      );
+
+      return response.data.context_summary;
+    } catch (error) {
+      console.error("Error getting session context:", error);
+      return null;
+    }
+  }
+
+  // 🔥 NEW: Reset session context
+  static async resetSessionContext(sessionId: string): Promise<boolean> {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/v2/session/${sessionId}/reset`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          timeout: 10000,
+        }
+      );
+
+      return response.status === 200;
+    } catch (error) {
+      console.error("Error resetting session context:", error);
+      return false;
+    }
+  }
+
+  // 🔥 NEW: Get current session ID
+  static getCurrentSessionId(): string | null {
     return this.sessionId;
   }
 }

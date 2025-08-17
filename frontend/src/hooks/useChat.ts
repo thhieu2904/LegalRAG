@@ -1,9 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   ChatService,
   type ClarificationData,
   type ClarificationOption,
   type ApiResponse,
+  type ContextSummary,
 } from "../services/chatService";
 
 interface Message {
@@ -55,6 +56,12 @@ export function useChat(options: UseChatOptions = {}) {
     originalQuery: string;
   } | null>(null);
 
+  // 🔥 NEW: Context management state
+  const [contextSummary, setContextSummary] = useState<ContextSummary | null>(
+    null
+  );
+  const [isContextLoading, setIsContextLoading] = useState(false);
+
   const addMessage = useCallback(
     (
       content: string,
@@ -83,6 +90,58 @@ export function useChat(options: UseChatOptions = {}) {
     },
     []
   );
+
+  // 🔥 NEW: Function to update context summary
+  const updateContextSummary = useCallback(async () => {
+    const sessionId = ChatService.getCurrentSessionId();
+    if (!sessionId) return;
+
+    setIsContextLoading(true);
+    try {
+      const context = await ChatService.getSessionContext(sessionId);
+      setContextSummary(context);
+    } catch (error) {
+      console.error("Error updating context summary:", error);
+    } finally {
+      setIsContextLoading(false);
+    }
+  }, []);
+
+  // 🔥 NEW: Function to reset context
+  const resetContext = useCallback(async () => {
+    const sessionId = ChatService.getCurrentSessionId();
+    if (!sessionId) return;
+
+    setIsContextLoading(true);
+    try {
+      const success = await ChatService.resetSessionContext(sessionId);
+      if (success) {
+        // Clear messages on frontend as well
+        setMessages([]);
+        setCurrentClarification(null);
+        setContextSummary(null);
+
+        // Optionally add a system message
+        addMessage(
+          "Đã xóa ngữ cảnh cuộc trò chuyện. Bạn có thể bắt đầu một chủ đề mới.",
+          true
+        );
+      }
+    } catch (error) {
+      console.error("Error resetting context:", error);
+      addMessage("Có lỗi khi xóa ngữ cảnh. Vui lòng thử lại.", true);
+    } finally {
+      setIsContextLoading(false);
+    }
+  }, [addMessage]);
+
+  // 🔥 NEW: Auto update context summary when session exists
+  useEffect(() => {
+    const sessionId = ChatService.getCurrentSessionId();
+    if (sessionId) {
+      updateContextSummary();
+    }
+  }, [updateContextSummary]);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -164,9 +223,11 @@ export function useChat(options: UseChatOptions = {}) {
         }
       } finally {
         setIsLoading(false);
+        // 🔥 NEW: Update context summary after each interaction
+        updateContextSummary();
       }
     },
-    [addMessage, options]
+    [addMessage, options, updateContextSummary]
   );
 
   const handleClarificationOption = useCallback(
@@ -286,9 +347,11 @@ export function useChat(options: UseChatOptions = {}) {
         console.error("Clarification error:", error);
       } finally {
         setIsLoading(false);
+        // 🔥 NEW: Update context summary after clarification
+        updateContextSummary();
       }
     },
-    [currentClarification, addMessage]
+    [currentClarification, addMessage, updateContextSummary]
   );
 
   const clearMessages = useCallback(() => {
@@ -304,5 +367,10 @@ export function useChat(options: UseChatOptions = {}) {
     clearMessages,
     currentClarification,
     handleClarificationOption,
+    // 🔥 NEW: Context management exports
+    contextSummary,
+    isContextLoading,
+    resetContext,
+    updateContextSummary,
   };
 }

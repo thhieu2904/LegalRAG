@@ -109,6 +109,80 @@ class OptimizedChatSession:
         self.last_successful_filters = None  # 🔥 NEW: Clear filters cũ
         self.cached_rag_content = None
         self.consecutive_low_confidence_count = 0
+    
+    def get_context_summary(self) -> Dict[str, Any]:
+        """
+        Tạo context summary để hiển thị trên frontend
+        """
+        context_summary = {
+            "session_id": self.session_id,
+            "has_active_context": False,
+            "current_collection": None,
+            "current_collection_display": None,
+            "preserved_document": None,
+            "active_filters": {},
+            "confidence_level": 0.0,
+            "context_age_minutes": 0,
+            "query_count": len(self.query_history),
+            "last_activity": self.last_accessed
+        }
+        
+        # Collection mappings cho display names
+        collection_display_map = {
+            "luat_doanh_nghiep_2020": "Luật Doanh nghiệp 2020",
+            "luat_dat_dai_2013": "Luật Đất đai 2013", 
+            "luat_lao_dong_2019": "Luật Lao động 2019",
+            "luat_hon_nhan_gia_dinh_2014": "Luật Hôn nhân và Gia đình 2014",
+            "luat_dan_su_2015": "Luật Dân sự 2015",
+            "luat_hinh_su_2015": "Luật Hình sự 2015",
+            "luat_thue_thu_nhap_ca_nhan_2007": "Luật Thuế Thu nhập cá nhân 2007",
+            "luat_bao_hiem_xa_hoi_2014": "Luật Bảo hiểm xã hội 2014"
+        }
+        
+        # Kiểm tra có active context không
+        if self.last_successful_collection and self.last_successful_timestamp:
+            # Tính tuổi của context (phút)
+            context_age_seconds = time.time() - self.last_successful_timestamp
+            context_age_minutes = int(context_age_seconds / 60)
+            
+            # Context vẫn valid trong 10 phút
+            if context_age_minutes <= 10:
+                context_summary.update({
+                    "has_active_context": True,
+                    "current_collection": self.last_successful_collection,
+                    "current_collection_display": collection_display_map.get(
+                        self.last_successful_collection, 
+                        self.last_successful_collection
+                    ),
+                    "confidence_level": self.last_successful_confidence,
+                    "context_age_minutes": context_age_minutes,
+                    "active_filters": self.last_successful_filters or {}
+                })
+                
+                # Kiểm tra có document được preserve không
+                # 🔧 FIX: Check multiple sources for document info
+                preserved_document = None
+                
+                # Priority 1: Check session metadata for preserved document (from clarification flow)
+                if self.metadata and 'preserved_document' in self.metadata:
+                    preserved_doc = self.metadata['preserved_document']
+                    if isinstance(preserved_doc, dict) and 'title' in preserved_doc:
+                        preserved_document = preserved_doc['title']
+                    elif isinstance(preserved_doc, str):
+                        preserved_document = preserved_doc
+                
+                # Priority 2: Check current document from recent queries
+                if not preserved_document and self.metadata and 'current_document' in self.metadata:
+                    preserved_document = self.metadata['current_document']
+                
+                # Priority 3: Check successful filters
+                if not preserved_document and self.last_successful_filters and "source_file" in self.last_successful_filters:
+                    preserved_document = self.last_successful_filters["source_file"]
+                
+                if preserved_document:
+                    context_summary["preserved_document"] = preserved_document
+        
+        return context_summary
 
 class OptimizedEnhancedRAGService:
     """
@@ -203,6 +277,32 @@ class OptimizedEnhancedRAGService:
         if session:
             session.last_accessed = time.time()
         return session
+    
+    def get_session_context_summary(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Lấy context summary của session để hiển thị trên frontend
+        """
+        session = self.get_session(session_id)
+        if not session:
+            return None
+        return session.get_context_summary()
+    
+    def reset_session_context(self, session_id: str) -> bool:
+        """
+        Reset ngữ cảnh của session về trạng thái mặc định
+        """
+        session = self.get_session(session_id)
+        if not session:
+            return False
+            
+        # Clear routing state but keep session alive
+        session.clear_routing_state()
+        
+        # Optionally clear query history (comment out if want to keep chat history)
+        # session.query_history = []
+        
+        logger.info(f"🧹 Reset context for session: {session_id}")
+        return True
         
     def enhanced_query(
         self,
@@ -495,10 +595,25 @@ class OptimizedEnhancedRAGService:
                         "expanded_context": expanded_context,
                         "collections": best_collections
                     }
+                    
+                    # 🔧 FIX: Also preserve document information from successful queries
+                    enhanced_filters = routing_result.get('inferred_filters', {}).copy()
+                    if expanded_context and expanded_context.get('source_documents'):
+                        # Get the first/main document name
+                        source_docs = expanded_context['source_documents']
+                        if source_docs:
+                            main_doc = source_docs[0] if isinstance(source_docs, list) else str(source_docs)
+                            # Extract document title from path
+                            if isinstance(main_doc, str) and main_doc:
+                                doc_name = main_doc.split('\\')[-1].replace('.json', '') if '\\' in main_doc else main_doc
+                                enhanced_filters["source_file"] = doc_name
+                                # Also store in session metadata for persistence
+                                session.metadata["current_document"] = doc_name
+                    
                     session.update_successful_routing(
                         collection=target_collection, 
                         confidence=routing_result.get('confidence', 0),
-                        filters=routing_result.get('inferred_filters', {}),  # 🔥 NEW: Lưu filters
+                        filters=enhanced_filters,  # � Enhanced filters with document info
                         rag_content=rag_content
                     )
                     logger.info(f"🔥 Updated session state: {target_collection} (confidence: {routing_result.get('confidence', 0):.3f})")

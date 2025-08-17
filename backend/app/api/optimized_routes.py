@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
 import logging
+from ..services.rag_engine import convert_numpy_types
 
 # This will be set by main.py
 optimized_rag_service = None
@@ -139,25 +140,59 @@ async def get_session_info(
     session_id: str,
     service = Depends(get_optimized_rag_service)
 ):
-    """Lấy thông tin session"""
+    """Lấy thông tin session với context summary"""
     try:
         session = service.get_session(session_id)
         
         if not session:
             raise HTTPException(status_code=404, detail="Session not found")
         
-        return {
+        # Lấy context summary
+        context_summary = service.get_session_context_summary(session_id)
+        
+        # 🔧 FIX: Convert numpy types để tránh lỗi JSON serialization
+        response_data = {
             "session_id": session.session_id,
             "created_at": session.created_at,
             "last_accessed": session.last_accessed,
             "query_count": len(session.query_history),
-            "metadata": session.metadata
+            "metadata": session.metadata,
+            "context_summary": context_summary  # 🔥 NEW: Context summary for frontend
         }
+        
+        return convert_numpy_types(response_data)
         
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error getting session info: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/session/{session_id}/reset")
+async def reset_session_context(
+    session_id: str,
+    service = Depends(get_optimized_rag_service)
+):
+    """Reset ngữ cảnh của session về trạng thái mặc định"""
+    try:
+        success = service.reset_session_context(session_id)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        # 🔧 FIX: Convert numpy types để tránh lỗi JSON serialization
+        response_data = {
+            "session_id": session_id,
+            "message": "Session context reset successfully",
+            "context_summary": service.get_session_context_summary(session_id)
+        }
+        
+        return convert_numpy_types(response_data)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resetting session context: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/session/{session_id}")
