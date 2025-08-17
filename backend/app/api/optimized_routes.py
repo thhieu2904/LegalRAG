@@ -55,6 +55,9 @@ class QueryResponse(BaseModel):
     session_id: str = Field(..., description="Session ID")
     processing_time: float = Field(..., description="Thời gian xử lý (seconds)")
     routing_info: Optional[Dict[str, Any]] = Field(None, description="Thông tin routing")
+    session_cleared: Optional[bool] = Field(None, description="Session đã được clear hay chưa")  # 🔧 OLD: Manual input fix
+    context_preserved: Optional[bool] = Field(None, description="Context có được preserve hay không")  # 🔧 NEW: Context preservation  
+    preserved_collection: Optional[str] = Field(None, description="Collection được preserve")  # 🔧 NEW: Preserved collection info
 
 # Dependency để kiểm tra service
 def get_optimized_rag_service():

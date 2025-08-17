@@ -235,12 +235,28 @@ class OptimizedEnhancedRAGService:
             if session_id:
                 session = self.get_session(session_id)
                 if not session:
-                    return {"error": f"Session {session_id} not found"}
+                    # Create new session with provided ID
+                    session = OptimizedChatSession(
+                        session_id=session_id,
+                        created_at=time.time(),
+                        last_accessed=time.time(),
+                        metadata={}
+                    )
+                    self.chat_sessions[session_id] = session
+                    logger.info(f"🆕 Created new session with provided ID: {session_id}")
             else:
                 session_id = self.create_session()
                 session = self.get_session(session_id)
                 
             logger.info(f"Processing query in session {session_id}: {query[:50]}...")
+            
+            # Check for preserved document context from manual input
+            if not forced_document_title and not forced_collection and session:
+                preserved_document = session.metadata.get('preserved_document')
+                if preserved_document:
+                    logger.info(f"🔄 Found preserved document context: {preserved_document['title']}")
+                    forced_collection = preserved_document['collection']
+                    forced_document_title = preserved_document['title']
             
             # Step 1: Enhanced Smart Query Routing với MULTI-LEVEL Confidence Processing + Stateful Router
             if forced_collection:
@@ -539,7 +555,8 @@ class OptimizedEnhancedRAGService:
     ) -> Dict[str, Any]:
         """
         MULTI-TURN CONVERSATION: Xử lý phản hồi clarification với nhiều giai đoạn
-        - Giai đoạn 2: proceed_with_collection → Generate question suggestions
+        - Giai đoạn 2: proceed_with_collection → Generate document suggestions  
+        - Giai đoạn 2.5: proceed_with_document → Generate question suggestions within document
         - Giai đoạn 3: proceed_with_question → Run RAG with clarified query
         """
         start_time = time.time()  # 🔧 ADD: Track processing time
@@ -556,129 +573,192 @@ class OptimizedEnhancedRAGService:
         collection = selected_option.get('collection')
         
         if action == 'proceed_with_collection' and collection:
-            # � GIAI ĐOẠN 2 → 3: User chọn collection, generate question suggestions
-            logger.info(f"🎯 Clarification Step 2→3: User selected collection '{collection}'. Generating question suggestions.")
+            # 🎯 GIAI ĐOẠN 2: User chọn collection, hiển thị documents để chọn
+            logger.info(f"🎯 Clarification Step 2: User selected collection '{collection}'. Showing documents.")
             
             try:
-                # 🔧 NEW APPROACH: Use embedding similarity instead of all collection questions
-                # Get original routing context to find similar procedures
-                original_routing = session.metadata.get('original_routing_context', {})
-                original_query = session.metadata.get('original_query', '')
-                similar_procedures = []  # Initialize to avoid unbound variable
-                similarity_used = False
+                # Lấy danh sách documents trong collection này từ smart_router
+                collection_questions = self.smart_router.get_example_questions_for_collection(collection)
                 
-                if original_routing and original_query:
-                    # Use the originally matched query/procedure as reference for similarity
-                    best_match = original_routing.get('best_match', {})
-                    reference_query = original_query  # Use original user query as reference
-                    
-                    # If we have the actual matched procedure, use that as reference
-                    if isinstance(best_match, dict) and best_match.get('text'):
-                        reference_query = best_match['text']
-                        logger.info(f"🎯 Using matched procedure as reference: {reference_query[:60]}...")
-                    else:
-                        logger.info(f"🎯 Using original query as reference: {reference_query[:60]}...")
-                    
-                    # Find similar procedures in the selected collection using embeddings
-                    similar_procedures = self.smart_router.get_similar_procedures_for_collection(
-                        collection_name=collection,
-                        reference_query=reference_query,
-                        top_k=5
-                    )
-                    
-                    if similar_procedures:
-                        similarity_used = True
-                        logger.info(f"✅ Found {len(similar_procedures)} similar procedures using embedding similarity")
-                        # Create suggestions from similar procedures
-                        suggestions = []
-                        for i, proc in enumerate(similar_procedures):
-                            # 🔧 Extract document title from source filename
-                            source_file = proc['source']
-                            document_title = source_file.replace('.json', '').split('/')[-1]  # Remove .json and get filename only
-                            # Clean up document title (remove numbering if exists)
-                            if '. ' in document_title:
-                                document_title = document_title.split('. ', 1)[1]  # Remove "01. " prefix
-                            
-                            suggestions.append({
-                                "id": str(i + 1),
-                                "title": proc['text'],
-                                "description": f"Thủ tục: {proc['source']} (độ tương đồng: {proc['similarity']:.1%})",
-                                "action": "proceed_with_question",
-                                "collection": collection,
-                                "question_text": proc['text'],
-                                "document_title": document_title,  # 🔥 ADD: Exact document title for filtering
-                                "source_file": proc['source'],  # 🔥 ADD: Full source path for debugging
-                                "category": proc.get('category', 'general'),
-                                "similarity": proc['similarity']  # Include similarity for debugging
-                            })
-                    else:
-                        logger.warning(f"⚠️ No similar procedures found, falling back to collection default")
-                        # Fallback to original approach if similarity search fails
-                        example_questions = self.smart_router.get_example_questions_for_collection(collection)
-                        suggestions = []
-                        for i, q in enumerate(example_questions[:5]):
-                            suggestions.append({
-                                "id": str(i + 1),
-                                "title": q.get('text', q) if isinstance(q, dict) else q,
-                                "description": f"Thủ tục: {q.get('source', 'Không rõ') if isinstance(q, dict) else 'Không rõ'}",
-                                "action": "proceed_with_question",
-                                "collection": collection,
-                                "question_text": q.get('text', q) if isinstance(q, dict) else q,
-                                "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
-                            })
-                            
-                else:
-                    # Fallback: No routing context available, use original approach
-                    logger.warning(f"⚠️ No original routing context found, falling back to collection questions")
-                    example_questions = self.smart_router.get_example_questions_for_collection(collection)
-                    
-                    suggestions = []
-                    for i, q in enumerate(example_questions[:5]):
-                        suggestions.append({
-                            "id": str(i + 1),
-                            "title": q.get('text', q) if isinstance(q, dict) else q,
-                            "description": f"Thủ tục: {q.get('source', 'Không rõ') if isinstance(q, dict) else 'Không rõ'}",
-                            "action": "proceed_with_question",
-                            "collection": collection,
-                            "question_text": q.get('text', q) if isinstance(q, dict) else q,
-                            "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
-                        })
+                # Extract unique documents from questions
+                collection_documents = {}
+                for question in collection_questions:
+                    source = question.get('source', '')
+                    if source:
+                        # Clean up source path to get document name
+                        doc_name = source.replace('.json', '').split('/')[-1]
+                        if '. ' in doc_name:
+                            doc_name = doc_name.split('. ', 1)[1]  # Remove numbering
+                        
+                        if doc_name not in collection_documents:
+                            collection_documents[doc_name] = {
+                                "filename": source,
+                                "title": doc_name,
+                                "description": f"Tài liệu về {doc_name}",
+                                "question_count": 0
+                            }
+                        collection_documents[doc_name]["question_count"] += 1
                 
-                # Add the "Other" option
-                if suggestions:  # Only add if we have other suggestions
-                    suggestions.append({
-                        "id": str(len(suggestions) + 1),
-                        "title": "Câu hỏi khác...",
-                        "description": "Tôi muốn hỏi về vấn đề khác trong lĩnh vực này",
-                        "action": "manual_input",
-                        "collection": collection
+                if not collection_documents:
+                    logger.warning(f"⚠️ No documents found in collection '{collection}'")
+                    return {
+                        "answer": f"Không tìm thấy tài liệu nào trong '{collection}'. Vui lòng thử lại.",
+                        "type": "error",
+                        "session_id": session_id,
+                        "processing_time": time.time() - start_time
+                    }
+                
+                # Convert to list and limit to top 8 documents
+                document_list = list(collection_documents.values())
+                document_list = sorted(document_list, key=lambda x: x["question_count"], reverse=True)[:8]
+                
+                # Tạo suggestions cho document selection
+                document_suggestions = []
+                for i, doc in enumerate(document_list):
+                    document_suggestions.append({
+                        "id": str(i + 1),
+                        "title": doc['title'],
+                        "description": f"Tài liệu: {doc['title']} ({doc['question_count']} câu hỏi)",
+                        "action": "proceed_with_document",
+                        "collection": collection,
+                        "document_filename": doc['filename'],
+                        "document_title": doc['title']
                     })
                 
-                collection_display = self.smart_router.collection_mappings.get(collection, {}).get('display_name', collection.replace('_', ' ').title())
-                
-                return {
-                    "type": "clarification_needed",
-                    "session_id": session_id,
-                    "processing_time": time.time() - start_time,
-                    "clarification": {
-                        "message": f"Cảm ơn bạn đã chọn lĩnh vực '{collection_display}'. Bạn có muốn hỏi về một trong các vấn đề sau không?",
-                        "options": suggestions,
-                        "style": "question_suggestion",
-                        "stage": 3,
+                # Tạo clarification response cho document selection
+                clarification_response = {
+                    "message": f"Bạn đã chọn '{collection}'. Hãy chọn tài liệu cụ thể:",
+                    "options": document_suggestions,
+                    "show_manual_input": True,
+                    "manual_input_placeholder": "Hoặc nhập câu hỏi cụ thể của bạn...",
+                    "context": "document_selection",
+                    "metadata": {
                         "collection": collection,
-                        "original_query": original_query,
-                        "similarity_used": similarity_used  # Debug info
+                        "available_documents": document_list,
+                        "stage": "document_selection"
                     }
                 }
                 
+                # Update session state
+                session.metadata["routing_state"] = {
+                    "collection": collection,
+                    "available_documents": document_list,
+                    "stage": "document_selection"
+                }
+                self.chat_sessions[session_id] = session
+                
+                return {
+                    "answer": clarification_response["message"],
+                    "clarification": clarification_response,
+                    "collection": collection,
+                    "documents": document_list,
+                    "type": "clarification_needed",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+                
             except Exception as e:
-                logger.error(f"❌ Error generating question suggestions for collection '{collection}': {e}")
-                # Fallback to direct RAG
-                return self.enhanced_query(
-                    query=original_query,
-                    session_id=session_id,
-                    forced_collection=collection
-                )
+                logger.error(f"❌ Error in document selection: {e}")
+                return {
+                    "answer": f"Có lỗi khi tải danh sách tài liệu trong '{collection}'. Vui lòng thử lại.",
+                    "type": "error",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+        
+        if action == 'proceed_with_document' and collection:
+            # 🎯 GIAI ĐOẠN 2.5: User chọn document, generate question suggestions trong document đó
+            document_filename = selected_option.get('document_filename')
+            document_title = selected_option.get('document_title')
+            
+            logger.info(f"🎯 Clarification Step 2.5: User selected document '{document_title}' in collection '{collection}'. Generating question suggestions.")
+            
+            try:
+                # Lấy tất cả questions trong collection và filter theo document
+                collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                
+                # Filter questions by document source
+                document_questions = []
+                for question in collection_questions:
+                    if question.get('source') and document_filename in question.get('source', ''):
+                        document_questions.append(question)
+                
+                if not document_questions:
+                    logger.warning(f"⚠️ No questions found for document {document_title}")
+                    # Fallback: Use all collection questions
+                    document_questions = collection_questions[:5]
+                
+                # Create suggestions from document questions
+                suggestions = []
+                for i, q in enumerate(document_questions[:5]):
+                    question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
+                    suggestions.append({
+                        "id": str(i + 1),
+                        "title": question_text,
+                        "description": f"Câu hỏi về {document_title}",
+                        "action": "proceed_with_question",
+                        "collection": collection,
+                        "document_filename": document_filename,
+                        "document_title": document_title,
+                        "question_text": question_text,
+                        "source_file": q.get('source', '') if isinstance(q, dict) else '',
+                        "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                    })
+                
+                # Add manual input option
+                suggestions.append({
+                    "id": str(len(suggestions) + 1),
+                    "title": "Câu hỏi khác...",
+                    "description": f"Tôi muốn hỏi về vấn đề khác trong {document_title}",
+                    "action": "manual_input",
+                    "collection": collection,
+                    "document_filename": document_filename,
+                    "document_title": document_title
+                })
+                
+                collection_display = self.smart_router.collection_mappings.get(collection, {}).get('display_name', collection.replace('_', ' ').title())
+                
+                clarification_response = {
+                    "message": f"Bạn đã chọn tài liệu '{document_title}'. Hãy chọn câu hỏi phù hợp:",
+                    "options": suggestions,
+                    "show_manual_input": True,
+                    "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {document_title}...",
+                    "context": "question_selection",
+                    "metadata": {
+                        "collection": collection,
+                        "document_filename": document_filename,
+                        "document_title": document_title,
+                        "stage": "question_selection"
+                    }
+                }
+                
+                # Update session state
+                session.metadata["routing_state"] = {
+                    "collection": collection,
+                    "document_filename": document_filename,
+                    "document_title": document_title,
+                    "stage": "question_selection"
+                }
+                self.chat_sessions[session_id] = session
+                
+                return {
+                    "answer": clarification_response["message"],
+                    "clarification": clarification_response,
+                    "collection": collection,
+                    "document_title": document_title,
+                    "type": "clarification_needed",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+                
+            except Exception as e:
+                logger.error(f"❌ Error in document question generation: {e}")
+                return {
+                    "answer": f"Có lỗi khi tải câu hỏi cho '{document_title}'. Vui lòng thử lại.",
+                    "type": "error",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
                 
         elif action == 'proceed_with_question':
             # 🎯 GIAI ĐOẠN 3 → 4: User chọn câu hỏi cụ thể, chạy RAG
@@ -707,13 +787,81 @@ class OptimizedEnhancedRAGService:
                 }
             
         elif action == 'manual_input':
-            # User muốn nhập lại câu hỏi
-            return {
-                "type": "manual_input_request",
-                "message": "Vui lòng nhập lại câu hỏi cụ thể hơn",
-                "session_id": session_id,
-                "processing_time": 0.1
-            }
+            # 🔧 IMPROVED: Manual input với context preservation
+            logger.info(f"🔄 Manual input requested by user. Preserving valuable context.")
+            
+            # ✅ SMART CONTEXT PRESERVATION: Giữ context có giá trị thay vì clear all
+            original_routing = session.metadata.get('original_routing_context', {})
+            selected_collection = selected_option.get('collection')  # Collection user đã chọn
+            selected_document = selected_option.get('document_filename')  # Document user đã chọn (if any)
+            document_title = selected_option.get('document_title')  # Document title (if any)
+            
+            # Determine context to preserve based on conversation stage
+            if selected_document and selected_collection:
+                # Case 2: User đã chọn document → Preserve document-level context
+                logger.info(f"🔄 CASE 2: Preserving document context: {document_title} in {selected_collection}")
+                session.last_successful_collection = selected_collection
+                session.last_successful_confidence = original_routing.get('confidence', 0.7)
+                session.last_successful_timestamp = time.time()
+                session.last_successful_filters = original_routing.get('inferred_filters', {})
+                
+                # Also preserve document-specific context
+                session.metadata['preserved_document'] = {
+                    'filename': selected_document,
+                    'title': document_title,
+                    'collection': selected_collection
+                }
+                
+                # Clear only metadata về clarification process
+                session.metadata.pop('original_routing_context', None)
+                session.metadata.pop('original_query', None)
+                
+                return {
+                    "type": "manual_input_request",
+                    "message": f"Vui lòng nhập câu hỏi cụ thể về '{document_title}'. Tôi sẽ tìm kiếm trong tài liệu này.",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time,
+                    "context_preserved": True,
+                    "preserved_collection": selected_collection,
+                    "preserved_document": document_title
+                }
+                
+            elif selected_collection:
+                # Case 1: User đã chọn collection → Preserve collection context
+                logger.info(f"🔄 CASE 1: Preserving collection context: {selected_collection}")
+                session.last_successful_collection = selected_collection
+                session.last_successful_confidence = original_routing.get('confidence', 0.7)
+                session.last_successful_timestamp = time.time()
+                session.last_successful_filters = original_routing.get('inferred_filters', {})
+                
+                # Clear only metadata về clarification process
+                session.metadata.pop('original_routing_context', None)
+                session.metadata.pop('original_query', None)
+                
+                return {
+                    "type": "manual_input_request",
+                    "message": f"Vui lòng nhập lại câu hỏi cụ thể hơn về '{selected_collection}'. Tôi sẽ tìm kiếm trong lĩnh vực này.",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time,
+                    "context_preserved": True,
+                    "preserved_collection": selected_collection
+                }
+            else:
+                # Không có collection context → Clear session (fallback)
+                logger.info(f"🔄 No collection context to preserve, clearing session state.")
+                session.clear_routing_state()
+                session.metadata.clear()
+                
+                return {
+                    "type": "manual_input_request",
+                    "message": "Vui lòng nhập lại câu hỏi cụ thể hơn. Tôi sẽ tìm kiếm trong ngữ cảnh phù hợp.",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time,
+                    "context_preserved": False
+                }
+            
+            # ✅ Update session access time  
+            session.last_accessed = time.time()
             
         else:
             # Invalid action
