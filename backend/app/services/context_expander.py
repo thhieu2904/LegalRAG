@@ -5,7 +5,7 @@ Sử dụng "Nucleus Chunk" strategy để mở rộng ngữ cảnh hiệu quả
 
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Set
+from typing import List, Dict, Any, Optional, Set, Tuple
 import json
 
 logger = logging.getLogger(__name__)
@@ -115,7 +115,7 @@ class EnhancedContextExpansionService:
             
             # TRIẾT LÝ THIẾT KẾ: Load toàn bộ document gốc từ file JSON
             # Không cắt ghép, không smart expansion - chỉ FULL DOCUMENT
-            final_content = self._load_full_document(source_file)
+            final_content, structured_metadata = self._load_full_document_and_metadata(source_file)
             expansion_strategy = "full_document_legal_context"
             
             # Truncate CHỈ KHI document quá dài (giữ tối đa thông tin)
@@ -134,8 +134,10 @@ class EnhancedContextExpansionService:
                 expanded_context["source_documents"] = [source_file]
                 expanded_context["total_length"] = len(final_content)
                 expanded_context["expansion_strategy"] = expansion_strategy
+                expanded_context["structured_metadata"] = structured_metadata  # ✅ THÊM: Structured metadata
                 
                 logger.info(f"Final context: {len(final_content)} chars, strategy: {expansion_strategy}")
+                logger.info(f"Extracted metadata fields: {list(structured_metadata.keys()) if structured_metadata else 'None'}")
             else:
                 logger.warning("Could not generate final content")
             
@@ -149,9 +151,62 @@ class EnhancedContextExpansionService:
                 "expanded_content": [{"text": chunk.get("content", ""), "source": "fallback", "type": "chunk_fallback"} for chunk in nucleus_chunks],
                 "source_documents": [],
                 "total_length": sum(len(chunk.get("content", "")) for chunk in nucleus_chunks),
-                "expansion_strategy": "fallback"
+                "expansion_strategy": "fallback",
+                "structured_metadata": {}  # ✅ THÊM: Empty metadata for fallback
             }
     
+    def _load_full_document_and_metadata(self, file_path: str) -> Tuple[str, Dict[str, Any]]:
+        """
+        Load TOÀN BỘ nội dung document + metadata có cấu trúc
+        Returns: (content, structured_metadata)
+        """
+        try:
+            if not Path(file_path).exists():
+                logger.warning(f"Source file not found: {file_path}")
+                return "", {}
+                
+            logger.info(f"Loading COMPLETE document content and metadata from: {file_path}")
+            
+            with open(file_path, 'r', encoding='utf-8') as f:
+                json_data = json.load(f)
+            
+            # Extract metadata and content
+            metadata = json_data.get('metadata', {})
+            content_chunks = json_data.get('content_chunks', [])
+            
+            # Build complete content (same as _load_full_document)
+            complete_parts = []
+            
+            # METADATA SECTION - Đầy đủ thông tin
+            if metadata:
+                complete_parts.append("=== THÔNG TIN THỦ TỤC ===")
+                for key, value in metadata.items():
+                    if value:  # Chỉ loại bỏ empty values
+                        complete_parts.append(f"{key.upper()}: {value}")
+                complete_parts.append("")  # Empty line separator
+            
+            # CONTENT SECTIONS - Toàn bộ content chunks
+            if content_chunks:
+                complete_parts.append("=== NỘI DUNG CHI TIẾT ===")
+                for chunk in content_chunks:
+                    if chunk.get('content'):
+                        complete_parts.append(chunk['content'])
+                    if chunk.get('subcontent'):
+                        for sub in chunk['subcontent']:
+                            if sub.get('content'):
+                                complete_parts.append(sub['content'])
+                complete_parts.append("")
+            
+            # Join tất cả content
+            complete_content = "\n".join(complete_parts)
+            
+            logger.info(f"Loaded COMPLETE document: {len(complete_content)} characters + structured metadata")
+            return complete_content, metadata
+            
+        except Exception as e:
+            logger.error(f"Error loading document and metadata: {e}")
+            return "", {}
+
     def _load_full_document(self, file_path: str) -> str:
         """
         Load TOÀN BỘ nội dung document - không filtering, không truncation

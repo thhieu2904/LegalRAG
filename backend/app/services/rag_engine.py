@@ -387,15 +387,15 @@ class OptimizedEnhancedRAGService:
                 if was_overridden:
                     logger.info(f"🔥 Session-based confidence override applied!")
                 
-                if confidence_level in ['high', 'override_high']:
-                    # HIGH CONFIDENCE (including overridden) - Route trực tiếp
+                if confidence_level in ['high', 'override_high', 'high_followup']:
+                    # HIGH CONFIDENCE (including overridden & follow-up) - Route trực tiếp
                     target_collection = routing_result['target_collection']
                     inferred_filters = routing_result.get('inferred_filters', {})
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
                     logger.info(f"✅ HIGH CONFIDENCE routing to: {target_collection}")
                     
-                elif confidence_level in ['low-medium', 'override_medium']:
-                    # MEDIUM CONFIDENCE (including overridden) - Route với caution
+                elif confidence_level in ['low-medium', 'override_medium', 'medium_followup']:
+                    # MEDIUM CONFIDENCE (including overridden & follow-up) - Route với caution
                     target_collection = routing_result['target_collection']
                     inferred_filters = routing_result.get('inferred_filters', {})
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
@@ -409,10 +409,10 @@ class OptimizedEnhancedRAGService:
             # Step 2: Focused Search với ĐỘNG BROAD_SEARCH_K dựa trên router confidence
             # 🚀 PERFORMANCE OPTIMIZATION: Giảm số documents cần rerank
             dynamic_k = settings.broad_search_k  # default 12
-            if confidence_level == 'high':
+            if confidence_level in ['high', 'high_followup']:
                 dynamic_k = max(8, settings.broad_search_k - 4)  # Router tự tin → ít docs hơn
                 logger.info(f"🎯 HIGH CONFIDENCE: Giảm broad_search_k xuống {dynamic_k}")
-            elif confidence_level in ['low-medium', 'override_medium']:
+            elif confidence_level in ['low-medium', 'override_medium', 'medium_followup']:
                 dynamic_k = min(15, settings.broad_search_k + 3)  # Router không chắc → nhiều docs hơn
                 logger.info(f"🔍 MEDIUM CONFIDENCE: Tăng broad_search_k lên {dynamic_k}")
             else:
@@ -551,7 +551,19 @@ class OptimizedEnhancedRAGService:
             )
             
             context_text = self._build_context_from_expanded(expanded_context)
+            
+            # ✅ ENHANCED: Smart context building với intent detection
+            detected_intent = self._detect_specific_intent(query)
+            if detected_intent and expanded_context.get('structured_metadata'):
+                context_text = self._build_smart_context(
+                    intent=detected_intent,
+                    metadata=expanded_context['structured_metadata'],
+                    full_text=context_text
+                )
+            
             logger.info(f"Context expanded: {expanded_context['total_length']} chars from {len(expanded_context.get('source_documents', []))} documents")
+            if detected_intent:
+                logger.info(f"🎯 Detected intent: {detected_intent} - Applied smart context building")
             
             # Phase 2: LLM Generation - Load LLM cho generation phase
             logger.info("🔄 PHASE 2: LLM Generation (GPU) - Loading LLM for final answer...")
@@ -999,6 +1011,74 @@ class OptimizedEnhancedRAGService:
             context_parts.append(f"=== Tài liệu: {source} ({chunk_count} đoạn) ===\n{text}")
             
         return "\n\n".join(context_parts)
+    
+    def _detect_specific_intent(self, query: str) -> Optional[str]:
+        """
+        Phát hiện các ý định cụ thể từ câu hỏi của người dùng
+        Đây là version đơn giản tập trung vào metadata fields phổ biến
+        """
+        query_lower = query.lower()
+        
+        # Intent patterns cho từng loại thông tin
+        fee_keywords = ['phí', 'lệ phí', 'bao nhiêu tiền', 'tốn tiền', 'giá', 'chi phí', 'miễn phí']
+        time_keywords = ['thời gian', 'bao lâu', 'mất bao lâu', 'khi nào xong', 'mấy ngày', 'thời hạn']
+        form_keywords = ['mẫu', 'biểu mẫu', 'tờ khai', 'form', 'đơn', 'giấy tờ cần']
+        agency_keywords = ['cơ quan', 'nơi làm', 'đâu', 'ở đâu', 'địa điểm', 'nộp ở đâu']
+        requirements_keywords = ['điều kiện', 'yêu cầu', 'cần gì', 'hồ sơ', 'giấy tờ']
+
+        if any(keyword in query_lower for keyword in fee_keywords):
+            return 'query_fee'
+        if any(keyword in query_lower for keyword in time_keywords):
+            return 'query_time'
+        if any(keyword in query_lower for keyword in form_keywords):
+            return 'query_form'
+        if any(keyword in query_lower for keyword in agency_keywords):
+            return 'query_agency'
+        if any(keyword in query_lower for keyword in requirements_keywords):
+            return 'query_requirements'
+        
+        return None
+    
+    def _build_smart_context(self, intent: Optional[str], metadata: Dict[str, Any], full_text: str) -> str:
+        """
+        Xây dựng context thông minh dựa trên intent và metadata
+        Ưu tiên thông tin cụ thể lên đầu thay vì đánh dấu phức tạp
+        """
+        priority_info = ""
+        
+        if intent == 'query_fee':
+            fee_text = metadata.get('fee_text', '')
+            fee_vnd = metadata.get('fee_vnd', '')
+            if fee_text or fee_vnd:
+                fee_info = f"{fee_text} {fee_vnd}".strip()
+                priority_info = f"🎯 LỆ PHÍ: {fee_info}\n\n"
+        
+        elif intent == 'query_time':
+            time_text = metadata.get('processing_time_text', '')
+            if time_text:
+                priority_info = f"🎯 THỜI GIAN XỬ LÝ: {time_text}\n\n"
+
+        elif intent == 'query_form':
+            has_form = metadata.get('has_form', False)
+            form_text = "Có biểu mẫu/tờ khai cần điền" if has_form else "Không có biểu mẫu cụ thể"
+            priority_info = f"🎯 BIỂU MẪU: {form_text}\n\n"
+            
+        elif intent == 'query_agency':
+            agency = metadata.get('executing_agency', '')
+            if agency:
+                priority_info = f"🎯 CƠ QUAN THỰC HIỆN: {agency}\n\n"
+                
+        elif intent == 'query_requirements':
+            requirements = metadata.get('requirements_conditions', '')
+            if requirements:
+                priority_info = f"🎯 ĐIỀU KIỆN/YÊU CẦU: {requirements}\n\n"
+
+        # Kết hợp thông tin ưu tiên với full context
+        if priority_info:
+            return f"{priority_info}===== THÔNG TIN CHI TIẾT =====\n{full_text}"
+        else:
+            # Không có intent cụ thể - giữ nguyên context
+            return full_text
         
     def _generate_answer_with_context(
         self,
