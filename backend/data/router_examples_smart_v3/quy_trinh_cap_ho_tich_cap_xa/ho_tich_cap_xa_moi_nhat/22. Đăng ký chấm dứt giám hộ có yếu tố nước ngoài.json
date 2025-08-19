@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "title": "Đăng ký chấm dứt giám hộ có yếu tố nước ngoài",
+    "code": "QT 22/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/22. Đăng ký chấm dứt giám hộ có yếu tố nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:26:15+07:00"
+  },
+  "main_question": "Thủ tục đăng ký chấm dứt giám hộ có yếu tố nước ngoài được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn làm thủ tục chấm dứt giám hộ với người nước ngoài thì cần hồ sơ gì?",
+    "Hồ sơ đăng ký chấm dứt giám hộ có yếu tố nước ngoài bao gồm những giấy tờ nào?",
+    "Giấy tờ làm căn cứ để chấm dứt giám hộ là những loại giấy tờ gì?",
+    "Giấy tờ làm căn cứ chấm dứt giám hộ do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự không?",
+    "Tôi có thể ủy quyền cho người khác đi làm thủ tục này được không?",
+    "Thời gian giải quyết thủ tục chấm dứt giám hộ mất bao lâu?",
+    "Tôi phải đến đâu để làm thủ tục chấm dứt giám hộ?",
+    "Cơ quan nào có thẩm quyền giải quyết việc chấm dứt giám hộ có yếu tố nước ngoài?",
+    "Một công ty nước ngoài trước đây làm người giám hộ, giờ muốn chấm dứt thì có được không?",
+    "Lệ phí đăng ký chấm dứt giám hộ có yếu tố nước ngoài là bao nhiêu?",
+    "Nếu tôi thuộc hộ nghèo thì có được miễn lệ phí không?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Có được cấp bản điện tử của trích lục chấm dứt giám hộ không?",
+    "Quy trình đăng ký chấm dứt giám hộ ở xã gồm mấy bước?",
+    "Ai là người có thẩm quyền ký trích lục chấm dứt giám hộ?",
+    "Nếu nộp hồ sơ trực tuyến thì khi đến nhận kết quả có cần mang theo giấy tờ gốc không?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký chấm dứt giám hộ có yếu tố nước ngoài",
+    "title_keywords": ["đăng ký", "chấm dứt", "giám hộ", "yếu tố nước ngoài"],
+    "procedure_code": "QT 22/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân", "Pháp nhân"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân", "Pháp nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 16,
+    "generation_method": "AI-Assisted"
+  }
+}

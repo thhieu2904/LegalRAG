@@ -5,7 +5,7 @@ Sử dụng "Nucleus Chunk" strategy để mở rộng ngữ cảnh hiệu quả
 
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Set
+from typing import List, Dict, Any, Optional, Set, Tuple
 import json
 
 logger = logging.getLogger(__name__)
@@ -60,22 +60,22 @@ class EnhancedContextExpansionService:
     def expand_context_with_nucleus(
         self,
         nucleus_chunks: List[Dict[str, Any]], 
-        max_context_length: int = 3000,
+        max_context_length: int = 8000,  # INCREASED: Tăng từ 3000 lên 8000 để đủ context
         include_full_document: bool = True
     ) -> Dict[str, Any]:
         """
         Mở rộng ngữ cảnh dựa trên nucleus chunks - STRATEGY: 1 CHUNK → TOÀN BỘ DOCUMENT
         
-        Flow tối ưu:
+        TRIẾT LÝ THIẾT KẾ CHÍNH:
         1. Lấy 1 nucleus chunk với rerank score cao nhất
         2. Tìm source file JSON chứa chunk đó  
-        3. Load toàn bộ nội dung document từ file JSON gốc
-        4. Return full document content thay vì chỉ 1 chunk
+        3. Load TOÀN BỘ nội dung document từ file JSON gốc
+        4. Return FULL document content để đảm bảo ngữ cảnh pháp luật đầy đủ
         
         Args:
             nucleus_chunks: List chunks đã rerank (thường chỉ 1 chunk cao nhất)
-            max_context_length: Độ dài context tối đa (ký tự)
-            include_full_document: True = lấy toàn bộ document, False = chỉ chunks liền kề
+            max_context_length: Độ dài context tối đa (ký tự) - CHỈ để truncate nếu QUÁ dài
+            include_full_document: LUÔN True cho văn bản pháp luật
             
         Returns:
             Expanded context với toàn bộ document content và metadata
@@ -111,29 +111,35 @@ class EnhancedContextExpansionService:
                 return expanded_context
                 
             logger.info(f"Found source file: {source_file}")
-            logger.info("Loading FULL DOCUMENT content (not just chunks)")
+            logger.info("Loading FULL DOCUMENT content để đảm bảo ngữ cảnh pháp luật đầy đủ")
             
-            # QUAN TRỌNG: Load toàn bộ document gốc từ file JSON thay vì chỉ lấy chunks
-            full_document_content = self._load_full_document(source_file)
+            # TRIẾT LÝ THIẾT KẾ: Load toàn bộ document gốc từ file JSON
+            # Không cắt ghép, không smart expansion - chỉ FULL DOCUMENT
+            final_content, structured_metadata = self._load_full_document_and_metadata(source_file)
+            expansion_strategy = "full_document_legal_context"
             
-            if full_document_content:
-                # Giới hạn context length
-                if len(full_document_content) > max_context_length:
-                    # Truncate nhưng giữ phần đầu và thông tin quan trọng
-                    full_document_content = full_document_content[:max_context_length] + "..."
-                
+            # Truncate CHỈ KHI document quá dài (giữ tối đa thông tin)
+            if len(final_content) > max_context_length:
+                logger.warning(f"Document dài {len(final_content)} chars > max {max_context_length}, truncating...")
+                final_content = final_content[:max_context_length] + "..."
+            
+            # Build final result
+            if final_content:
                 expanded_context["expanded_content"] = [{
-                    "text": full_document_content,
+                    "text": final_content,
                     "source": source_file,
                     "document_title": nucleus_chunk.get("source", {}).get("document_title", ""),
-                    "type": "full_document"
+                    "type": expansion_strategy
                 }]
                 expanded_context["source_documents"] = [source_file]
-                expanded_context["total_length"] = len(full_document_content)
+                expanded_context["total_length"] = len(final_content)
+                expanded_context["expansion_strategy"] = expansion_strategy
+                expanded_context["structured_metadata"] = structured_metadata  # ✅ THÊM: Structured metadata
                 
-                logger.info(f"Expanded context: {len(full_document_content)} chars from 1 document")
+                logger.info(f"Final context: {len(final_content)} chars, strategy: {expansion_strategy}")
+                logger.info(f"Extracted metadata fields: {list(structured_metadata.keys()) if structured_metadata else 'None'}")
             else:
-                logger.warning("Could not load full document content")
+                logger.warning("Could not generate final content")
             
             return expanded_context
             
@@ -145,14 +151,66 @@ class EnhancedContextExpansionService:
                 "expanded_content": [{"text": chunk.get("content", ""), "source": "fallback", "type": "chunk_fallback"} for chunk in nucleus_chunks],
                 "source_documents": [],
                 "total_length": sum(len(chunk.get("content", "")) for chunk in nucleus_chunks),
-                "expansion_strategy": "fallback"
+                "expansion_strategy": "fallback",
+                "structured_metadata": {}  # ✅ THÊM: Empty metadata for fallback
             }
     
+    def _load_full_document_and_metadata(self, file_path: str) -> Tuple[str, Dict[str, Any]]:
+        """
+        Load TOÀN BỘ nội dung document + metadata có cấu trúc
+        Returns: (content, structured_metadata)
+        """
+        try:
+            if not Path(file_path).exists():
+                logger.warning(f"Source file not found: {file_path}")
+                return "", {}
+                
+            logger.info(f"Loading COMPLETE document content and metadata from: {file_path}")
+            
+            with open(file_path, 'r', encoding='utf-8') as f:
+                json_data = json.load(f)
+            
+            # Extract metadata and content
+            metadata = json_data.get('metadata', {})
+            content_chunks = json_data.get('content_chunks', [])
+            
+            # Build complete content (same as _load_full_document)
+            complete_parts = []
+            
+            # METADATA SECTION - Đầy đủ thông tin
+            if metadata:
+                complete_parts.append("=== THÔNG TIN THỦ TỤC ===")
+                for key, value in metadata.items():
+                    if value:  # Chỉ loại bỏ empty values
+                        complete_parts.append(f"{key.upper()}: {value}")
+                complete_parts.append("")  # Empty line separator
+            
+            # CONTENT SECTIONS - Toàn bộ content chunks
+            if content_chunks:
+                complete_parts.append("=== NỘI DUNG CHI TIẾT ===")
+                for chunk in content_chunks:
+                    if chunk.get('content'):
+                        complete_parts.append(chunk['content'])
+                    if chunk.get('subcontent'):
+                        for sub in chunk['subcontent']:
+                            if sub.get('content'):
+                                complete_parts.append(sub['content'])
+                complete_parts.append("")
+            
+            # Join tất cả content
+            complete_content = "\n".join(complete_parts)
+            
+            logger.info(f"Loaded COMPLETE document: {len(complete_content)} characters + structured metadata")
+            return complete_content, metadata
+            
+        except Exception as e:
+            logger.error(f"Error loading document and metadata: {e}")
+            return "", {}
+
     def _load_full_document(self, file_path: str) -> str:
         """
-        Load toàn bộ nội dung document từ file JSON gốc
-        QUAN TRỌNG: Đây là thay đổi chính - thay vì lấy chỉ 1 chunk, 
-        ta lấy toàn bộ document để cung cấp context đầy đủ cho LLM
+        Load TOÀN BỘ nội dung document - không filtering, không truncation
+        Đây là fix cho vấn đề user không nhận được đầy đủ thông tin
         """
         try:
             import json
@@ -162,61 +220,46 @@ class EnhancedContextExpansionService:
                 logger.warning(f"Source file not found: {file_path}")
                 return ""
                 
-            logger.info(f"Loading full document from: {file_path}")
+            logger.info(f"Loading COMPLETE document content from: {file_path}")
             
             with open(file_path, 'r', encoding='utf-8') as f:
                 json_data = json.load(f)
             
-            # Build full document content với cấu trúc hoàn chỉnh
+            # LOAD TOÀN BỘ DOCUMENT - TẤT CẢ thông tin
             metadata = json_data.get('metadata', {})
             content_chunks = json_data.get('content_chunks', [])
             
-            # Tạo full document content với metadata đầy đủ và cấu trúc rõ ràng
-            full_parts = []
+            # Build COMPLETE document content
+            complete_parts = []
             
-            # HEADER - Thông tin quan trọng nhất
-            if metadata.get('title'):
-                full_parts.append(f"📋 TIÊU ĐỀ: {metadata['title']}")
+            # METADATA SECTION - Đầy đủ thông tin
+            if metadata:
+                complete_parts.append("=== THÔNG TIN THỦ TỤC ===")
+                for key, value in metadata.items():
+                    if value:  # Chỉ loại bỏ empty values
+                        complete_parts.append(f"{key.upper()}: {value}")
+                complete_parts.append("")  # Empty line separator
             
-            if metadata.get('executing_agency'):
-                full_parts.append(f"🏢 CƠ QUAN THỰC HIỆN: {metadata['executing_agency']}")
-                
-            if metadata.get('applicant_type'):
-                applicant_text = ', '.join(metadata['applicant_type']) if isinstance(metadata['applicant_type'], list) else metadata['applicant_type']
-                full_parts.append(f"👥 ĐỐI TƯỢNG: {applicant_text}")
+            # CONTENT SECTIONS - Toàn bộ content chunks
+            if content_chunks:
+                complete_parts.append("=== NỘI DUNG CHI TIẾT ===")
+                for chunk in content_chunks:
+                    if chunk.get('content'):
+                        complete_parts.append(chunk['content'])
+                    if chunk.get('subcontent'):
+                        for sub in chunk['subcontent']:
+                            if sub.get('content'):
+                                complete_parts.append(sub['content'])
+                complete_parts.append("")
             
-            if metadata.get('processing_time_text'):
-                full_parts.append(f"⏰ THỜI GIAN XỬ LÝ: {metadata['processing_time_text']}")
-                
-            if metadata.get('fee_text'):
-                full_parts.append(f"💰 LỆ PHÍ: {metadata['fee_text']}")
-                
-            if metadata.get('legal_basis'):
-                full_parts.append(f"📜 CĂN CỨ PHÁP LÝ: {metadata['legal_basis']}")
+            # Join tất cả content
+            complete_content = "\n".join(complete_parts)
             
-            full_parts.append("=" * 80)  # Separator rõ ràng
-            
-            # BODY - Nội dung chính từng phần với cấu trúc rõ ràng  
-            for i, chunk in enumerate(content_chunks, 1):
-                # Section header nếu có
-                if chunk.get('section_title'):
-                    full_parts.append(f"\n📖 PHẦN {i}: {chunk['section_title']}")
-                    full_parts.append("-" * 60)
-                else:
-                    full_parts.append(f"\n📄 NỘI DUNG {i}:")
-                    full_parts.append("-" * 40)
-                    
-                # Nội dung chính
-                if chunk.get('content'):
-                    full_parts.append(chunk['content'].strip())
-            
-            full_content = "\n".join(full_parts)
-            logger.info(f"Loaded full document: {len(full_content)} characters, {len(content_chunks)} sections")
-            
-            return full_content
+            logger.info(f"Loaded COMPLETE document: {len(complete_content)} characters (NO filtering, NO truncation)")
+            return complete_content
             
         except Exception as e:
-            logger.error(f"Error loading full document {file_path}: {e}")
+            logger.error(f"Error loading document: {e}")
             return ""
     
     def _get_all_chunks_from_document(self, source_file: str) -> List[Dict[str, Any]]:

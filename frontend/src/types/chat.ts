@@ -6,27 +6,63 @@ export interface Message {
   sources?: string[];
   source_files?: string[];
   processing_time?: number;
-  clarificationOptions?: string[];
+  clarificationOptions?: Array<{
+    id: string;
+    title: string;
+    description: string;
+    confidence?: string;
+    examples?: string[];
+    action: string;
+    collection?: string;
+  }>;
+  clarificationStyle?: string;
   session_id?: string;
 }
 
 export interface ChatRequest {
   query: string;
-  session_id?: string;
-  max_tokens?: number;
-  temperature?: number;
-  top_k?: number;
+  session_id?: string | null;
+  max_context_length?: number;
+  use_ambiguous_detection?: boolean;
+  use_full_document_expansion?: boolean;
+  forced_collection?: string | null;
 }
 
 export interface ClarificationResponse {
   type: "clarification_needed";
-  category: string;
+  confidence_level?: string;
   confidence: number;
   clarification: {
-    template: string;
-    options: string[];
+    message?: string;
+    options?: Array<{
+      id: string;
+      title: string;
+      description: string;
+      confidence?: string;
+      examples?: string[];
+      action: string;
+      collection?: string;
+    }>;
+    style?: string;
+    additional_help?: string;
+    // Support nested structure from backend
+    clarification?: {
+      message: string;
+      options: Array<{
+        id: string;
+        title: string;
+        description: string;
+        confidence?: string;
+        examples?: string[];
+        action: string;
+        collection?: string;
+      }>;
+      style: string;
+      additional_help?: string;
+    };
   };
-  generated_questions: string[];
+  routing_context: Record<string, unknown>;
+  strategy: string;
   session_id: string;
   processing_time: number;
 }

@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
 import logging
+from ..services.rag_engine import convert_numpy_types
 
 # This will be set by main.py
 optimized_rag_service = None
@@ -20,14 +21,15 @@ class OptimizedQueryRequest(BaseModel):
     """Request model cho optimized query"""
     query: str = Field(..., min_length=1, description="Câu hỏi của người dùng")
     session_id: Optional[str] = Field(None, description="ID session chat (tùy chọn)")
-    max_context_length: int = Field(3000, ge=500, le=8000, description="Độ dài context tối đa")
+    max_context_length: int = Field(8000, ge=500, le=12000, description="Độ dài context tối đa")  # INCREASED: 3000 → 8000
     use_ambiguous_detection: bool = Field(True, description="Có sử dụng phát hiện câu hỏi mơ hồ")
     use_full_document_expansion: bool = Field(True, description="Có mở rộng toàn bộ document")
+    forced_collection: Optional[str] = Field(None, description="Force routing to specific collection (từ clarification)")  # 🔧 NEW
 
 class ClarificationRequest(BaseModel):
-    """Request model cho clarification response"""
+    """Request model cho clarification response - FIXED STRUCTURE"""
     session_id: str = Field(..., description="Session ID")
-    selected_option: str = Field(..., description="Tùy chọn được chọn")
+    selected_option: Dict[str, Any] = Field(..., description="Full option object được chọn")  # 🔧 CHANGE: Dict thay vì str
     original_query: str = Field(..., description="Câu hỏi gốc")
 
 class SessionCreateRequest(BaseModel):
@@ -54,6 +56,9 @@ class QueryResponse(BaseModel):
     session_id: str = Field(..., description="Session ID")
     processing_time: float = Field(..., description="Thời gian xử lý (seconds)")
     routing_info: Optional[Dict[str, Any]] = Field(None, description="Thông tin routing")
+    session_cleared: Optional[bool] = Field(None, description="Session đã được clear hay chưa")  # 🔧 OLD: Manual input fix
+    context_preserved: Optional[bool] = Field(None, description="Context có được preserve hay không")  # 🔧 NEW: Context preservation  
+    preserved_collection: Optional[str] = Field(None, description="Collection được preserve")  # 🔧 NEW: Preserved collection info
 
 # Dependency để kiểm tra service
 def get_optimized_rag_service():
@@ -82,9 +87,7 @@ async def optimized_enhanced_query(
         result = service.enhanced_query(
             query=request.query,
             session_id=request.session_id,
-            max_context_length=request.max_context_length,
-            use_ambiguous_detection=request.use_ambiguous_detection,
-            use_full_document_expansion=request.use_full_document_expansion
+            forced_collection=request.forced_collection  # 🔧 NEW: Pass forced collection
         )
         
         return QueryResponse(**result)
@@ -137,25 +140,59 @@ async def get_session_info(
     session_id: str,
     service = Depends(get_optimized_rag_service)
 ):
-    """Lấy thông tin session"""
+    """Lấy thông tin session với context summary"""
     try:
         session = service.get_session(session_id)
         
         if not session:
             raise HTTPException(status_code=404, detail="Session not found")
         
-        return {
+        # Lấy context summary
+        context_summary = service.get_session_context_summary(session_id)
+        
+        # 🔧 FIX: Convert numpy types để tránh lỗi JSON serialization
+        response_data = {
             "session_id": session.session_id,
             "created_at": session.created_at,
             "last_accessed": session.last_accessed,
             "query_count": len(session.query_history),
-            "metadata": session.metadata
+            "metadata": session.metadata,
+            "context_summary": context_summary  # 🔥 NEW: Context summary for frontend
         }
+        
+        return convert_numpy_types(response_data)
         
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error getting session info: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/session/{session_id}/reset")
+async def reset_session_context(
+    session_id: str,
+    service = Depends(get_optimized_rag_service)
+):
+    """Reset ngữ cảnh của session về trạng thái mặc định"""
+    try:
+        success = service.reset_session_context(session_id)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        # 🔧 FIX: Convert numpy types để tránh lỗi JSON serialization
+        response_data = {
+            "session_id": session_id,
+            "message": "Session context reset successfully",
+            "context_summary": service.get_session_context_summary(session_id)
+        }
+        
+        return convert_numpy_types(response_data)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resetting session context: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/session/{session_id}")

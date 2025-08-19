@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "title": "Đăng ký lại khai sinh",
+    "code": "QT 03/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/03. Đăng ký lại khai sinh.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:16:16+07:00"
+  },
+  "main_question": "Thủ tục đăng ký lại khai sinh được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn đăng ký lại giấy khai sinh thì cần chuẩn bị hồ sơ gồm những gì?",
+    "Hồ sơ làm lại giấy khai sinh cần giấy tờ gì?",
+    "Tôi bị mất cả sổ hộ tịch và bản chính giấy khai sinh, vậy tôi cần giấy tờ gì để đăng ký lại?",
+    "Nếu không có bản sao giấy khai sinh cũ, tôi có thể dùng bằng tốt nghiệp hoặc CCCD để thay thế không?",
+    "Tôi là công chức nhà nước đi làm lại giấy khai sinh thì có cần thêm giấy tờ gì đặc biệt không?",
+    "Khi đi làm lại giấy khai sinh, tôi có phải mang theo giấy tờ gốc để đối chiếu không?",
+    "Cam đoan về việc đã nộp đủ giấy tờ hiện có trong tờ khai có ý nghĩa gì?",
+    "Tôi có thể nhờ người thân đi làm thủ tục đăng ký lại khai sinh hộ được không?",
+    "Ủy quyền cho anh chị em ruột đi làm lại giấy khai sinh có cần phải công chứng không?",
+    "Thời gian làm lại giấy khai sinh mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thêm thì tối đa phải chờ bao nhiêu ngày?",
+    "Tại sao trường hợp cần xác minh lại mất nhiều thời gian hơn?",
+    "Tôi phải đến đâu để nộp hồ sơ đăng ký lại khai sinh?",
+    "Tôi có thể làm thủ tục tại nơi tôi đang ở hay bắt buộc phải về nơi đăng ký khai sinh cũ?",
+    "Lệ phí đăng ký lại giấy khai sinh là bao nhiêu tiền?",
+    "Nộp hồ sơ trực tuyến có rẻ hơn nộp trực tiếp không?",
+    "Gia đình tôi thuộc diện hộ nghèo thì có được miễn phí làm lại giấy khai sinh không?",
+    "Tôi muốn xin thêm bản sao giấy khai sinh sau khi đăng ký lại thì chi phí thế nào?",
+    "Quy trình đăng ký lại giấy khai sinh có mấy bước?",
+    "Bước nào trong quy trình làm lại giấy khai sinh tốn nhiều thời gian nhất?",
+    "Ai là người có thẩm quyền ký duyệt hồ sơ đăng ký lại khai sinh của tôi?",
+    "Điều kiện bắt buộc để được đăng ký lại khai sinh là gì?",
+    "Tôi sinh năm 2017 bị mất giấy khai sinh thì có được áp dụng thủ tục này không?",
+    "Kết quả tôi nhận được sau khi hoàn tất thủ tục là gì?",
+    "Có được cấp bản điện tử của giấy khai sinh được đăng ký lại không?",
+    "Nếu tôi cam đoan không đúng sự thật về các giấy tờ mình có thì sẽ bị xử lý như thế nào?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký lại khai sinh",
+    "title_keywords": ["đăng ký", "lại", "khai sinh"],
+    "procedure_code": "QT 03/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký khai sinh trước đây hoặc Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú.",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 6,
+    "questions_generated": 26,
+    "generation_method": "AI-Assisted"
+  }
+}

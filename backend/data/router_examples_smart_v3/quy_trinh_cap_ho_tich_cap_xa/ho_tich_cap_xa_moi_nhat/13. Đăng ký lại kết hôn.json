@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "title": "Đăng ký lại kết hôn",
+    "code": "QT 13/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/13. Đăng ký lại kết hôn.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:21:19+07:00"
+  },
+  "main_question": "Thủ tục đăng ký lại kết hôn được thực hiện như thế nào?",
+  "question_variants": [
+    "Vợ chồng tôi bị mất giấy đăng ký kết hôn, giờ muốn làm lại thì cần hồ sơ gì?",
+    "Hồ sơ đăng ký lại kết hôn gồm những giấy tờ nào?",
+    "Nếu không còn bản sao giấy kết hôn cũ, tôi có thể dùng giấy tờ cá nhân khác để thay thế không?",
+    "Cả hai vợ chồng có bắt buộc phải cùng có mặt khi đi làm thủ tục không?",
+    "Khi đi đăng ký lại kết hôn có cần mang theo CCCD bản gốc không?",
+    "Thời gian làm lại giấy đăng ký kết hôn mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thì tối đa phải chờ bao nhiêu ngày?",
+    "Điều kiện để được đăng ký lại kết hôn là gì?",
+    "Chúng tôi kết hôn năm 2018 và bị mất giấy, vậy có thuộc đối tượng được đăng ký lại không?",
+    "Nếu một trong hai vợ chồng đã mất thì người còn lại có thể đi đăng ký lại kết hôn được không?",
+    "Tôi phải đến đâu để nộp hồ sơ đăng ký lại kết hôn?",
+    "Tôi có thể làm thủ tục tại nơi tôi đang thường trú hay bắt buộc phải về nơi đăng ký kết hôn cũ?",
+    "Lệ phí đăng ký lại kết hôn là bao nhiêu?",
+    "Gia đình tôi thuộc hộ nghèo thì có được miễn lệ phí làm lại giấy kết hôn không?",
+    "Quy trình xử lý hồ sơ đăng ký lại kết hôn gồm những bước nào?",
+    "Bước nào trong quy trình mất nhiều thời gian nhất?",
+    "Khi nhận kết quả có cần cả hai vợ chồng cùng ký không?",
+    "Sau khi hoàn tất thủ tục tôi sẽ nhận được mấy bản giấy chứng nhận kết hôn?",
+    "Có được cấp bản điện tử của giấy chứng nhận kết hôn được đăng ký lại không?",
+    "Nếu nộp hồ sơ trực tuyến thì khi nào cần phải có mặt cả hai vợ chồng?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký lại kết hôn",
+    "title_keywords": ["đăng ký", "lại", "kết hôn"],
+    "procedure_code": "QT 13/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký kết hôn trước đây hoặc Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú.",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 6,
+    "questions_generated": 20,
+    "generation_method": "AI-Assisted"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "title": "Đăng ký lại khai sinh có yếu tố nước ngoài",
+    "code": "QT 04/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/04. Đăng ký lại khai sinh có yếu tố nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:16:55+07:00"
+  },
+  "main_question": "Thủ tục đăng ký lại khai sinh có yếu tố nước ngoài được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi là người nước ngoài muốn đăng ký lại khai sinh ở Việt Nam thì cần hồ sơ gì?",
+    "Hồ sơ đăng ký lại khai sinh cho người Việt Nam định cư ở nước ngoài gồm những giấy tờ nào?",
+    "Tôi bị mất hết giấy tờ khai sinh cũ, vậy tôi có thể dùng hộ chiếu để làm lại không?",
+    "Giấy tờ do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự không?",
+    "Tôi có thể ủy quyền cho người thân ở Việt Nam làm thủ tục đăng ký lại khai sinh giúp tôi được không?",
+    "Làm lại giấy khai sinh có yếu tố nước ngoài thì mất bao lâu?",
+    "Nếu hồ sơ của tôi phức tạp cần xác minh thì thời gian chờ tối đa là bao nhiêu ngày?",
+    "Điều kiện để được đăng ký lại khai sinh có yếu tố nước ngoài là gì?",
+    "Tôi là người nước ngoài nhưng sinh sau năm 2016 và bị mất giấy khai sinh, tôi có thuộc đối tượng được đăng ký lại không?",
+    "Bắt buộc người yêu cầu phải còn sống tại thời điểm đăng ký lại phải không?",
+    "Ai là người có thẩm quyền tiếp nhận và xử lý hồ sơ của tôi?",
+    "Tôi cần đến UBND cấp xã hay Sở Tư pháp để nộp hồ sơ?",
+    "Quy trình xử lý hồ sơ đăng ký lại khai sinh có yếu tố nước ngoài gồm mấy bước?",
+    "Bước nào trong quy trình tốn nhiều thời gian nhất?",
+    "Lệ phí cho thủ tục này là bao nhiêu?",
+    "Nếu tôi là người Việt Nam định cư ở nước ngoài và thuộc hộ nghèo thì có được miễn lệ phí không?",
+    "Nộp hồ sơ trực tuyến có được giảm lệ phí không?",
+    "Tôi phải nộp bản sao hay bản chính của các giấy tờ hiện có?",
+    "Sử dụng giấy tờ trên VneID để xuất trình có được chấp nhận không?",
+    "Nếu tôi khai không đúng sự thật trong tờ cam đoan thì hậu quả là gì?",
+    "Sau khi hoàn tất thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Có cấp bản điện tử của giấy khai sinh được đăng ký lại không?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký lại khai sinh có yếu tố nước ngoài",
+    "title_keywords": ["đăng ký", "lại", "khai sinh", "yếu tố", "nước ngoài"],
+    "procedure_code": "QT 04/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 22,
+    "generation_method": "AI-Assisted"
+  }
+}

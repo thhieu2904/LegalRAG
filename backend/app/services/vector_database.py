@@ -247,7 +247,7 @@ class VectorDBService:
         logger.info(f"Total {total_chunks} chunks added to collection {collection_name}")
         return total_chunks
 
-    def search_in_collection(self, collection_name: str, query: str, top_k: Optional[int] = None, similarity_threshold: Optional[float] = None) -> List[Dict[str, Any]]:
+    def search_in_collection(self, collection_name: str, query: str, top_k: Optional[int] = None, similarity_threshold: Optional[float] = None, where_filter: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """Tìm kiếm trong collection cụ thể - sử dụng config defaults"""
         # Sử dụng values từ config nếu không được truyền vào
         if top_k is None:
@@ -260,27 +260,54 @@ class VectorDBService:
             # Tạo embedding cho query
             query_embedding = self.embed_text([query])[0]
             
-            # Tìm kiếm
-            results = collection.query(
-                query_embeddings=[query_embedding],
-                n_results=top_k,
-                include=['documents', 'metadatas', 'distances']
-            )
+            # Convert smart_filters to ChromaDB where clause
+            where_clause = self._build_where_clause(where_filter) if where_filter else None
+            
+            # Base query parameters
+            query_params = {
+                'query_embeddings': [query_embedding],
+                'n_results': top_k,
+                'include': ['documents', 'metadatas', 'distances']
+            }
+            
+            # 🔧 DEBUG: Test different approaches  
+            if where_clause:
+                query_params['where'] = where_clause
+                logger.info(f"🔍 Searching WITH filters: {where_clause}")
+                
+                # DEBUG: Test a simple search first to see if collection has data
+                try:
+                    simple_results = collection.query(
+                        query_embeddings=[query_embedding],
+                        n_results=min(3, top_k),
+                        include=['documents', 'metadatas']
+                    )
+                    simple_count = 0
+                    if simple_results and simple_results.get('documents') and simple_results['documents']:
+                        simple_count = len(simple_results['documents'][0])
+                    logger.info(f"🔍 Simple search (no filters): {simple_count} results")
+                except Exception as e:
+                    logger.warning(f"🔍 Simple search failed: {e}")
+                
+            else:
+                logger.info(f"🔍 Search WITHOUT filters")
+            
+            # Execute the main search
+            results = collection.query(**query_params)
             
             # Xử lý kết quả
             formatted_results = []
-            if results['documents'] and len(results['documents']) > 0:
-                for i, doc in enumerate(results['documents'][0]):
-                    distance = results['distances'][0][i] if results['distances'] else 1.0
+            if results and results.get('documents') and results['documents']:
+                documents = results['documents'][0]
+                distances = results.get('distances', [[]])[0]
+                metadatas = results.get('metadatas', [[]])[0]
+                
+                for i, doc in enumerate(documents):
+                    distance = distances[i] if i < len(distances) else 1.0
                     similarity = 1 - distance  # Chuyển distance thành similarity
                     
                     if similarity >= similarity_threshold:
-                        metadata = {}
-                        metadatas = results.get('metadatas')
-                        if metadatas and len(metadatas) > 0 and len(metadatas[0]) > i:
-                            metadata = metadatas[0][i] or {}
-                        
-                        # Parse keywords và legal_basis từ JSON strings
+                        metadata = metadatas[i] if i < len(metadatas) else {}                        # Parse keywords và legal_basis từ JSON strings
                         keywords = []
                         legal_basis = []
                         try:
@@ -447,6 +474,111 @@ class VectorDBService:
                 'total_chunks': 0,
                 'embedding_model': self.embedding_model_name
             }
+    
+    def _build_where_clause(self, smart_filters: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Convert smart_filters from router to ChromaDB where clause
+        
+        ChromaDB requires $and operator for multiple conditions
+        """
+        # 🔍 DEBUG: Log input filters
+        logger.info(f"🔍 _build_where_clause input: {smart_filters}")
+        
+        conditions = []
+        
+        try:
+            # 🎯 PRIORITY STRATEGY: Use exact_title ONLY if available (highest precision)
+            if 'exact_title' in smart_filters and smart_filters['exact_title']:
+                exact_titles = smart_filters['exact_title']
+                logger.info(f"🔍 Found exact_title: {exact_titles}, type: {type(exact_titles)}")
+                if isinstance(exact_titles, list) and exact_titles:
+                    # Đảm bảo list không rỗng và có giá trị hợp lệ
+                    valid_titles = [title for title in exact_titles if title and title.strip()]
+                    if valid_titles:
+                        if len(valid_titles) == 1:
+                            filter_result = {"document_title": valid_titles[0]}
+                        else:
+                            filter_result = {"document_title": {"$in": valid_titles}}
+                        # 🔥 HIGH PRECISION: If we have exact title, use ONLY that filter
+                        logger.info(f"🎯 Using HIGH PRECISION filter: {filter_result}")
+                        return filter_result
+                elif isinstance(exact_titles, str) and exact_titles.strip():
+                    filter_result = {"document_title": exact_titles.strip()}
+                    logger.info(f"🎯 Using HIGH PRECISION filter (string): {filter_result}")
+                    return filter_result
+            
+            # 🔥 NEW: Support direct document_title filter (for forced routing)
+            if 'document_title' in smart_filters and smart_filters['document_title']:
+                doc_title = smart_filters['document_title']
+                if isinstance(doc_title, str) and doc_title.strip():
+                    logger.info(f"🎯 Using FORCED document filter: {doc_title}")
+                    return {"document_title": doc_title.strip()}
+                elif isinstance(doc_title, list) and doc_title:
+                    logger.info(f"🎯 Using FORCED document filter: {doc_title}")
+                    return {"document_title": {"$in": [t.strip() for t in doc_title if t.strip()]}}
+            
+            # 🎯 FALLBACK: If no exact_title or document_title, use other filters
+            # Procedure code matching
+            if 'procedure_code' in smart_filters and smart_filters['procedure_code']:
+                codes = smart_filters['procedure_code']
+                if isinstance(codes, list) and codes:
+                    if len(codes) == 1:
+                        conditions.append({'document_code': codes[0]})
+                    else:
+                        conditions.append({'document_code': {"$in": codes}})
+            
+            # Agency matching
+            if 'agency' in smart_filters and smart_filters['agency']:
+                agencies = smart_filters['agency']
+                if isinstance(agencies, list) and agencies:
+                    if len(agencies) == 1:
+                        conditions.append({'executing_agency': agencies[0]})
+                    else:
+                        conditions.append({'executing_agency': {"$in": agencies}})
+            
+            # Cost type filtering - không có trong metadata, bỏ qua
+            # if 'cost_type' in smart_filters and smart_filters['cost_type']:
+            #     cost_types = smart_filters['cost_type']
+            #     if isinstance(cost_types, list) and cost_types:
+            #         if len(cost_types) == 1:
+            #             conditions.append({'cost_type': cost_types[0]})
+            #         else:
+            #             conditions.append({'cost_type': {"$in": cost_types}})
+            
+            # Processing speed filtering - không có trong metadata, bỏ qua
+            # if 'processing_speed' in smart_filters and smart_filters['processing_speed']:
+            #     speeds = smart_filters['processing_speed']
+            #     if isinstance(speeds, list) and speeds:
+            #         if len(speeds) == 1:
+            #             conditions.append({'processing_speed': speeds[0]})
+            #         else:
+            #             conditions.append({'processing_speed': {"$in": speeds}})
+            
+            # Agency level filtering - không có trong metadata, bỏ qua
+            # if 'agency_level' in smart_filters and smart_filters['agency_level']:
+            #     levels = smart_filters['agency_level']
+            #     if isinstance(levels, list) and levels:
+            #         if len(levels) == 1:
+            #             conditions.append({'agency_level': levels[0]})
+            #         else:
+            #             conditions.append({'agency_level': {"$in": levels}})
+            
+            # Build final where clause
+            if len(conditions) == 0:
+                logger.info(f"🔍 No conditions found, returning empty filter")
+                return {}
+            elif len(conditions) == 1:
+                where_clause = conditions[0]
+            else:
+                where_clause = {"$and": conditions}
+                        
+            logger.info(f"🔧 Built where clause with {len(conditions)} conditions: {where_clause}")
+            return where_clause
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Error building where clause from {smart_filters}: {e}")
+            logger.info(f"🔍 Returning empty filter due to error")
+            return {}
     
     def collection_exists(self, collection_name: str) -> bool:
         """Kiểm tra collection có tồn tại không"""

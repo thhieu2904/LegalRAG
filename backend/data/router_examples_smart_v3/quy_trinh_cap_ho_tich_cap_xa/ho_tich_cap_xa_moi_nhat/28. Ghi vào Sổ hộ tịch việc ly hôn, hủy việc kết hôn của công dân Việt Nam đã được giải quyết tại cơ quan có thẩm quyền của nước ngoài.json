@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "title": "Ghi vào Sổ hộ tịch việc ly hôn, hủy việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài",
+    "code": "QT 28/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/28. Ghi vào Sổ hộ tịch việc ly hôn, hủy việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:28:50+07:00"
+  },
+  "main_question": "Thủ tục ghi chú ly hôn ở nước ngoài vào sổ hộ tịch Việt Nam được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi đã ly hôn ở nước ngoài, giờ muốn ghi chú vào sổ hộ tịch ở Việt Nam thì cần hồ sơ gì?",
+    "Hồ sơ ghi chú việc ly hôn ở nước ngoài gồm những giấy tờ nào?",
+    "Bản án ly hôn của tòa án nước ngoài có cần hợp pháp hóa lãnh sự không?",
+    "Tôi đã ly hôn nhiều lần ở nước ngoài, có phải ghi chú tất cả các lần không?",
+    "Tôi có thể ủy quyền cho người thân ở Việt Nam đi làm thủ tục ghi chú ly hôn giúp được không?",
+    "Thời gian làm thủ tục ghi chú ly hôn mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thêm thì tối đa phải chờ bao nhiêu ngày?",
+    "Điều kiện để được ghi chú việc ly hôn ở nước ngoài là gì?",
+    "Trường hợp nào thì việc ly hôn ở nước ngoài không được công nhận tại Việt Nam?",
+    "Tại sao tôi phải làm thủ tục ghi chú ly hôn trước khi đăng ký kết hôn mới tại Việt Nam?",
+    "Tôi phải đến đâu để làm thủ tục ghi chú ly hôn?",
+    "Quy trình xử lý hồ sơ ghi chú ly hôn gồm mấy bước?",
+    "Bước nào trong quy trình mất nhiều thời gian nhất?",
+    "Lệ phí cho thủ tục này là bao nhiêu?",
+    "Nếu tôi thuộc hộ nghèo thì có được miễn lệ phí không?",
+    "Sau khi làm xong thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Có được cấp bản điện tử của trích lục ghi chú ly hôn không?",
+    "Tôi có thể nộp hồ sơ bằng bản chụp qua mạng được không?",
+    "Khi đi làm thủ tục có cần mang theo giấy tờ tùy thân bản gốc không?"
+  ],
+  "smart_filters": {
+    "exact_title": "Ghi vào Sổ hộ tịch việc ly hôn, hủy việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài",
+    "title_keywords": [
+      "ghi chú",
+      "sổ hộ tịch",
+      "ly hôn",
+      "hủy kết hôn",
+      "nước ngoài"
+    ],
+    "procedure_code": "QT 28/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 4,
+    "questions_generated": 19,
+    "generation_method": "AI-Assisted"
+  }
+}

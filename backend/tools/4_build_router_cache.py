@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 class RouterCacheBuilder:
     def __init__(self):
         self.data_dir = backend_dir / "data"
-        self.router_dir = self.data_dir / "router_examples_smart"
+        self.router_dir = self.data_dir / "router_examples_smart_v3"  # Updated to V3
         self.cache_dir = self.data_dir / "cache"
         self.cache_file = self.cache_dir / "router_embeddings.pkl"
         

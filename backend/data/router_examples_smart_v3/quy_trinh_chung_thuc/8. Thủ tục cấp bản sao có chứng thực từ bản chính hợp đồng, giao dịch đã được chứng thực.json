@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "title": "Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực",
+    "code": "QT 08/CX-HCTP",
+    "collection": "chung_thuc",
+    "source_document": "quy_trinh_chung_thuc/8. Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:42:41+07:00"
+  },
+  "main_question": "Thủ tục cấp bản sao có chứng thực từ hợp đồng đã được chứng thực được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn xin bản sao của hợp đồng mua bán nhà đã chứng thực trước đây thì cần giấy tờ gì?",
+    "Hồ sơ xin cấp bản sao hợp đồng đã chứng thực gồm những gì?",
+    "Để xin bản sao hợp đồng đã công chứng, tôi có cần nộp hồ sơ gì không?",
+    "Tôi có thể dùng Căn cước công dân để làm thủ tục này không?",
+    "Tôi có cần phải là người trong hợp đồng mới được xin bản sao không?",
+    "Thời gian giải quyết việc cấp bản sao hợp đồng là bao lâu?",
+    "Nếu tôi đến yêu cầu sau 3 giờ chiều thì khi nào tôi nhận được kết quả?",
+    "Tôi phải đến đâu để xin cấp bản sao hợp đồng đã chứng thực?",
+    "Bắt buộc phải về đúng UBND xã nơi đã chứng thực hợp đồng trước đây phải không?",
+    "Lệ phí cấp bản sao hợp đồng là bao nhiêu?",
+    "Chi phí để xin 1 bản sao của hợp đồng 10 trang là bao nhiêu tiền?",
+    "Mức phí tối đa cho một bản sao là bao nhiêu?",
+    "Kết quả tôi nhận được là gì sau khi làm thủ tục?",
+    "Quy trình cấp bản sao hợp đồng ở xã gồm những bước nào?",
+    "Ai là người có thẩm quyền ký duyệt bản sao hợp đồng?",
+    "Nếu cơ quan không thể trả kết quả ngay thì có phải cấp phiếu hẹn không?"
+  ],
+  "smart_filters": {
+    "exact_title": "Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực",
+    "title_keywords": ["cấp", "bản sao", "chứng thực", "hợp đồng", "giao dịch"],
+    "procedure_code": "QT 08/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi lưu trữ hợp đồng, giao dịch.",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân", "Tổ chức"]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân", "Tổ chức"]
+  },
+  "expected_collection": "chung_thuc",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 16,
+    "generation_method": "AI-Assisted"
+  }
+}

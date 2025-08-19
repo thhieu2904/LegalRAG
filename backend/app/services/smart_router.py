@@ -22,22 +22,6 @@ class EnhancedSmartQueryRouter:
     def __init__(self, embedding_model: SentenceTransformer):
         self.embedding_model = embedding_model
         self.base_path = "data/router_examples"
-        
-        # Load configuration
-        self.config = self._load_config()
-        
-        # Example questions database
-        self.example_questions = {}
-        self.question_vectors = {}
-        self.collection_mappings = {}
-        
-        # Thresholds
-        self.similarity_threshold = 0.3
-        self.high_confidence_threshold = 0.5
-        
-    def __init__(self, embedding_model: SentenceTransformer):
-        self.embedding_model = embedding_model
-        self.base_path = "data/router_examples"
         self.cache_file = "data/cache/router_embeddings.pkl"
         
         # Load configuration
@@ -48,9 +32,12 @@ class EnhancedSmartQueryRouter:
         self.question_vectors = {}
         self.collection_mappings = {}
         
-        # Thresholds
-        self.similarity_threshold = 0.3
-        self.high_confidence_threshold = 0.5
+        # Thresholds - Hạ thấp để linh hoạt hơn, không quá cứng nhắc
+        self.high_confidence_threshold = 0.80  # Hạ từ 0.85 -> 0.80 để linh hoạt hơn
+        self.min_confidence_threshold = 0.50   # Dưới threshold này = hỏi lại user
+        
+        logger.info(f"🎯 Router thresholds - Min: {self.min_confidence_threshold}, High: {self.high_confidence_threshold}")
+        logger.info("💡 STRATEGY: Threshold CỰC CAO, nếu không chắc chắn thì hỏi lại user")
         
         # Initialize database - cache first, fallback to live loading
         if self._load_from_cache():
@@ -59,26 +46,50 @@ class EnhancedSmartQueryRouter:
             logger.info("🔄 Cache not available, loading from files (slow startup)...")
             self._load_example_questions()
             self._initialize_question_vectors()
+            # Save cache for next time
+            self._save_to_cache()
         
         logger.info(f"✅ Enhanced Smart Query Router initialized with {len(self.collection_mappings)} collections")
     
+    def _is_followup_question(self, query: str) -> bool:
+        """Simple follow-up detection"""
+        followup_words = ["ủa", "vậy", "thế", "còn", "khi nào", "bao nhiêu", "phí", "tiền", "chi phí", "lệ phí"]
+        query_lower = query.lower()
+        return any(word in query_lower for word in followup_words) or len(query.split()) <= 6
+    
+    def _route_followup(self, query: str, session) -> Dict[str, Any]:
+        """Route follow-up questions to same collection"""
+        return {
+            'status': 'routed',
+            'confidence_level': 'high_followup',
+            'target_collection': session.last_successful_collection,
+            'confidence': 0.85,
+            'all_scores': {session.last_successful_collection: 0.85},
+            'display_name': self.collection_mappings.get(session.last_successful_collection, {}).get('display_name'),
+            'clarification_needed': False,
+            'matched_example': f"Follow-up question in {session.last_successful_collection}",
+            'source_procedure': "Context-aware routing",
+            'inferred_filters': getattr(session, 'last_successful_filters', {}),
+            'is_followup': True
+        }
+    
     def _load_config(self) -> Dict[str, Any]:
-        """Load configuration from router_examples_smart directory"""
+        """Load configuration from router_examples_smart_v3 directory"""
         try:
-            # New approach: Load from individual router files
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart"))
+            # New approach: Load from individual router files - Updated to V3
+            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
             
             if not os.path.exists(router_smart_path):
                 logger.warning(f"Router examples directory not found: {router_smart_path}")
                 return {}
             
-            # Check for summary file
-            summary_file = os.path.join(router_smart_path, "router_generation_summary.json")
+            # Check for V3 summary file
+            summary_file = os.path.join(router_smart_path, "llm_generation_summary_v3.json")
             if os.path.exists(summary_file):
                 with open(summary_file, 'r', encoding='utf-8') as f:
                     summary = json.load(f)
                 
-                logger.info(f"📋 Loaded router summary: {summary.get('total_files_processed', 0)} files, {summary.get('total_examples', 0)} examples")
+                logger.info(f"📋 Loaded router summary V3: {summary.get('statistics', {}).get('total_files_processed', 0)} files, {summary.get('statistics', {}).get('total_examples_generated', 0)} examples")
                 
                 # Build config from summary
                 config = {
@@ -102,7 +113,7 @@ class EnhancedSmartQueryRouter:
             
             # Fallback: scan directory structure
             else:
-                logger.info("📁 Scanning router_examples_smart directory structure...")
+                logger.info("📁 Scanning router_examples_smart_v3 directory structure...")
                 return self._scan_individual_files(router_smart_path)
             
         except Exception as e:
@@ -172,9 +183,9 @@ class EnhancedSmartQueryRouter:
                 logger.info("📦 No router cache found")
                 return False
             
-            # Check cache freshness
+            # Check cache freshness - với tolerance 10 seconds để tránh race condition
             cache_time = os.path.getmtime(self.cache_file)
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart"))
+            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
             
             if os.path.exists(router_smart_path):
                 from pathlib import Path
@@ -182,9 +193,14 @@ class EnhancedSmartQueryRouter:
                 
                 if router_files:
                     newest_router = max(f.stat().st_mtime for f in router_files)
-                    if cache_time < newest_router:
-                        logger.info("🔄 Cache is older than router files")
+                    # Thêm tolerance 10 giây để tránh cache bị invalidate không cần thiết
+                    if cache_time < (newest_router - 10):
+                        logger.info(f"🔄 Cache is older than router files (cache: {cache_time}, newest: {newest_router})")
                         return False
+                    else:
+                        logger.info(f"📦 Cache is fresh enough (tolerance: 10s)")
+                else:
+                    logger.info("📦 No router files found, using cache")
             
             # Load cache
             logger.info("📦 Loading router from cache...")
@@ -220,12 +236,50 @@ class EnhancedSmartQueryRouter:
         except Exception as e:
             logger.error(f"❌ Error loading cache: {e}")
             return False
+
+    def _save_to_cache(self):
+        """Save router data to cache for faster startup next time"""
+        try:
+            # Ensure cache directory exists
+            cache_dir = os.path.dirname(self.cache_file)
+            os.makedirs(cache_dir, exist_ok=True)
+            
+            logger.info("💾 Saving router cache...")
+            start_time = time.time()
+            
+            # Prepare cache data
+            cache_data = {
+                'metadata': {
+                    'version': '1.0',
+                    'created': time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'total_questions': sum(len(questions) for questions in self.example_questions.values()),
+                    'collections': {name: len(questions) for name, questions in self.example_questions.items()}
+                },
+                'questions': self.example_questions,
+                'embeddings': self.question_vectors
+            }
+            
+            # Save cache
+            import pickle
+            with open(self.cache_file, 'wb') as f:
+                pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+            
+            save_time = time.time() - start_time
+            total_questions = cache_data['metadata']['total_questions']
+            file_size = os.path.getsize(self.cache_file) / (1024 * 1024)  # MB
+            
+            logger.info(f"💾 Cache saved: {total_questions} questions, {file_size:.1f}MB in {save_time:.1f}s")
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to save cache: {e}")
+            # Don't fail initialization just because of cache save failure
+            pass
     
     def _load_example_questions(self):
         """Load all example questions from individual router JSON files"""
         try:
-            # Get router_examples_smart path
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart"))
+            # Get router_examples_smart_v3 path
+            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
             
             if not os.path.exists(router_smart_path):
                 logger.warning(f"Router examples directory not found: {router_smart_path}")
@@ -354,7 +408,7 @@ class EnhancedSmartQueryRouter:
             logger.error(f"❌ Error initializing question vectors: {e}")
             raise
     
-    def route_query(self, query: str) -> Dict[str, Any]:
+    def route_query(self, query: str, session: Optional[Any] = None) -> Dict[str, Any]:
         """
         Định tuyến câu hỏi đến collection phù hợp nhất dựa trên example questions
         
@@ -379,6 +433,7 @@ class EnhancedSmartQueryRouter:
             best_score = 0.0
             best_example = None
             best_source = None
+            best_filters = {}
             collection_scores = {}
             
             for collection_name, questions in self.example_questions.items():
@@ -403,51 +458,141 @@ class EnhancedSmartQueryRouter:
                     best_collection = collection_name
                     best_example = questions[max_idx]['text']
                     best_source = questions[max_idx]['source']
+                    best_filters = questions[max_idx].get('filters', {})
+                    
+                    # 🐛 DEBUG: Log the exact match info
+                    logger.info(f"🔍 NEW BEST MATCH: score={max_similarity:.3f}, collection={collection_name}")
+                    logger.info(f"🔍 Question text: '{best_example[:100]}...'")
+                    logger.info(f"🔍 Source procedure: {best_source}")
+                    if 'exact_title' in best_filters:
+                        logger.info(f"🔍 Exact title from filters: {best_filters['exact_title']}")
             
             logger.info(f"🎯 Query: '{query[:50]}...' -> Best match: {best_collection} ({best_score:.3f})")
             if best_example:
                 logger.info(f"📝 Matched example: '{best_example[:80]}...'")
             
-            # Determine routing decision
+            # 🔥 STATEFUL ROUTER LOGIC - Confidence Override (ƯU TIÊN CAO NHẤT)
+            original_confidence = best_score
+            should_override = False
+            override_collection = None
+            
+            if session and hasattr(session, 'should_override_confidence'):
+                if session.should_override_confidence(best_score):
+                    override_collection = session.last_successful_collection
+                    override_filters = getattr(session, 'last_successful_filters', None)  # 🔥 NEW: Lấy filters từ session
+                    should_override = True
+                    # Boost confidence to medium level khi override
+                    best_score = max(best_score, 0.75)
+                    best_collection = override_collection
+                    if override_filters:
+                        best_filters = override_filters  # 🔥 NEW: Override filters
+                        logger.info(f"🔥 OVERRIDE FILTERS: {override_filters}")
+                    logger.info(f"🔥 CONFIDENCE OVERRIDE: {original_confidence:.3f} -> {best_score:.3f}")
+                    logger.info(f"🔥 Override to collection: {override_collection} (from session state)")
+                    
+                    # Update display info for overridden case
+                    if override_collection in self.collection_mappings:
+                        display_name = self.collection_mappings[override_collection].get('display_name')
+                    else:
+                        display_name = override_collection
+                elif original_confidence < self.min_confidence_threshold:
+                    # Track consecutive low confidence
+                    session.increment_low_confidence()
+                    if session.consecutive_low_confidence_count >= 3:
+                        # Too many failed attempts - clear state
+                        logger.info("🧹 Clearing session state due to consecutive low confidence queries")
+                        session.clear_routing_state()
+            
+            # 🔗 FOLLOW-UP DETECTION (chỉ khi KHÔNG có override)
+            if not should_override and session and hasattr(session, 'last_successful_collection') and session.last_successful_collection:
+                logger.info(f"🔗 Session has previous context: {session.last_successful_collection}")
+                is_followup = self._is_followup_question(query)
+                logger.info(f"🔗 Follow-up check: query='{query}' -> is_followup={is_followup}")
+                if is_followup:
+                    logger.info(f"🔗 FOLLOW-UP DETECTED: '{query[:50]}...' -> maintaining {session.last_successful_collection}")
+                    return self._route_followup(query, session)
+            elif not should_override:
+                logger.info(f"🔗 No session context available: session={session is not None}, has_attr={hasattr(session, 'last_successful_collection') if session else False}, value={getattr(session, 'last_successful_collection', None) if session else None}")
+            
+            # �🐛 DEBUG: Final validation before returning
+            if best_filters:
+                final_title = best_filters.get('exact_title', ['Unknown'])
+                logger.info(f"🔍 FINAL FILTERS CHECK - Exact title: {final_title}")
+            
+            # Determine routing decision - LOGIC MỚI với 3 mức tin cậy + Override
             if best_score >= self.high_confidence_threshold:
-                # High confidence - route immediately
+                # High confidence - route immediately với tin cậy cao
+                confidence_level = 'high' if not should_override else 'override_high'
+                logger.info(f"✅ HIGH CONFIDENCE routing: {best_score:.3f} >= {self.high_confidence_threshold}")
                 return {
                     'status': 'routed',
+                    'confidence_level': confidence_level,
                     'target_collection': best_collection,
                     'confidence': best_score,
+                    'original_confidence': original_confidence if should_override else best_score,
+                    'was_overridden': should_override,
                     'all_scores': collection_scores,
                     'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
                     'clarification_needed': False,
                     'matched_example': best_example,
-                    'source_procedure': best_source
+                    'source_procedure': best_source,
+                    'inferred_filters': best_filters
                 }
             
-            elif best_score >= self.similarity_threshold:
-                # Medium confidence - route but note
+            elif best_score >= self.min_confidence_threshold:
+                # Khả năng match có thể đúng nhưng chưa chắc chắn - ROUTE NHƯNG CAUTION
+                confidence_level = 'low-medium' if not should_override else 'override_medium'
+                logger.info(f"⚠️ LOW-MEDIUM CONFIDENCE routing: {best_score:.3f} >= {self.min_confidence_threshold}")
                 return {
                     'status': 'routed',
+                    'confidence_level': confidence_level, 
                     'target_collection': best_collection,
                     'confidence': best_score,
+                    'original_confidence': original_confidence if should_override else best_score,
+                    'was_overridden': should_override,
                     'all_scores': collection_scores,
                     'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
-                    'clarification_needed': False,
+                    'clarification_needed': False,  # Route nhưng sẽ có extra validation
                     'matched_example': best_example,
-                    'source_procedure': best_source
+                    'source_procedure': best_source,
+                    'inferred_filters': best_filters,
+                    'warning': 'low_medium_confidence' if not should_override else 'overridden_routing'
                 }
             
             else:
-                # Low similarity - needs clarification
+                # Below min threshold - cần clarification vì quá mơ hồ
+                logger.warning(f"🤔 TOO AMBIGUOUS - cần clarification: {best_score:.3f} < {self.min_confidence_threshold}")
                 return {
-                    'status': 'ambiguous',
-                    'target_collection': None,
+                    'status': 'clarification_needed',
+                    'confidence_level': 'low',
+                    'target_collection': best_collection,
                     'confidence': best_score,
                     'all_scores': collection_scores,
-                    'display_name': None,
+                    'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
                     'clarification_needed': True,
                     'matched_example': best_example,
-                    'source_procedure': best_source
+                    'source_procedure': best_source,
+                    'inferred_filters': best_filters,
+                    'suggested_topics': []
                 }
-                
+            
+            # Below min threshold - backup strategy hoặc clarification
+            logger.warning(f"🚨 VERY LOW CONFIDENCE - kích hoạt backup strategy: {best_score:.3f} < {self.min_confidence_threshold}")
+            return {
+                'status': 'no_match',
+                'confidence_level': 'very_low',
+                'target_collection': None,
+                'confidence': best_score,
+                'all_scores': collection_scores,
+                'display_name': None,
+                'clarification_needed': True,
+                'matched_example': best_example,
+                'source_procedure': best_source,
+                'inferred_filters': best_filters,
+                'suggested_topics': [],
+                'needs_vector_backup': True
+            }
+            
         except Exception as e:
             logger.error(f"❌ Error in enhanced query routing: {e}")
             return {
@@ -458,8 +603,44 @@ class EnhancedSmartQueryRouter:
                 'display_name': None,
                 'clarification_needed': True,
                 'matched_example': None,
-                'source_procedure': None
+                'source_procedure': None,
+                'inferred_filters': {}
             }
+    
+    def _get_top_suggestions(self, collection_scores: Dict[str, float], top_k: int = 3) -> List[Dict[str, Any]]:
+        """Lấy top suggestions từ collection scores để hiển thị cho user"""
+        try:
+            # Sort collections by score
+            sorted_collections = sorted(collection_scores.items(), key=lambda x: x[1], reverse=True)
+            
+            suggestions = []
+            for collection_name, score in sorted_collections[:top_k]:
+                if score > 0.2:  # Chỉ suggest nếu có ít nhất một chút liên quan
+                    display_name = self.collection_mappings.get(collection_name, {}).get('display_name', collection_name)
+                    
+                    # Lấy example question từ collection này để làm gợi ý
+                    example_questions = self.example_questions.get(collection_name, [])
+                    sample_question = None
+                    if example_questions:
+                        # Lấy main question hoặc question có priority cao
+                        main_questions = [q for q in example_questions if q.get('type') == 'main']
+                        if main_questions:
+                            sample_question = main_questions[0]['text']
+                        else:
+                            sample_question = example_questions[0]['text']
+                    
+                    suggestions.append({
+                        'collection': collection_name,
+                        'display_name': display_name,
+                        'score': score,
+                        'sample_question': sample_question
+                    })
+            
+            return suggestions
+            
+        except Exception as e:
+            logger.warning(f"Error getting top suggestions: {e}")
+            return []
     
     def get_collection_info(self) -> Dict[str, Any]:
         """Trả về thông tin về tất cả collections"""
@@ -472,6 +653,213 @@ class EnhancedSmartQueryRouter:
     def get_example_questions_for_collection(self, collection_name: str) -> List[Dict[str, Any]]:
         """Trả về tất cả example questions cho một collection"""
         return self.example_questions.get(collection_name, [])
+    
+    def get_similar_procedures_for_collection(
+        self, 
+        collection_name: str, 
+        reference_query: str, 
+        top_k: int = 5
+    ) -> List[Dict[str, Any]]:
+        """
+        Tìm các thủ tục tương đồng trong collection dựa trên reference query
+        Sử dụng embedding similarity để tìm procedures có liên quan cao nhất
+        
+        Args:
+            collection_name: Tên collection cần tìm
+            reference_query: Câu hỏi/procedure gốc để làm reference  
+            top_k: Số lượng procedures trả về tối đa
+            
+        Returns:
+            List các procedures tương đồng cao nhất, có thể ít hơn top_k nếu collection nhỏ
+        """
+        try:
+            # Get all example questions for this collection
+            collection_questions = self.example_questions.get(collection_name, [])
+            
+            if not collection_questions:
+                logger.warning(f"No example questions found for collection: {collection_name}")
+                return []
+            
+            # 🚀 OPTIMIZED: Get embedding for reference query with caching
+            reference_cache_key = f"reference:{reference_query}"
+            if reference_cache_key in self.question_vectors:
+                reference_embedding = np.array(self.question_vectors[reference_cache_key]).reshape(1, -1)
+                logger.info(f"📦 Using cached embedding for reference query")
+            else:
+                reference_embedding = self.embedding_model.encode([reference_query])
+                # Cache the reference embedding for future use
+                self.question_vectors[reference_cache_key] = reference_embedding[0].tolist()
+                logger.info(f"🔄 Generated and cached embedding for reference query")
+            
+            # Calculate similarities with all questions in collection
+            similarities = []
+            
+            # 🚀 DEBUG: Log cache structure để hiểu format
+            if collection_name in self.question_vectors:
+                cache_format = self.question_vectors[collection_name]
+                if isinstance(cache_format, list):
+                    logger.info(f"🔍 DEBUG: Cache format for {collection_name} is list with {len(cache_format)} items")
+                elif isinstance(cache_format, dict):
+                    logger.info(f"🔍 DEBUG: Cache format for {collection_name} is dict with keys: {list(cache_format.keys())[:3]}...")
+                else:
+                    logger.info(f"🔍 DEBUG: Cache format for {collection_name} is {type(cache_format)}")
+                    
+            for i, question in enumerate(collection_questions):
+                question_text = question.get('text', question) if isinstance(question, dict) else question
+                
+                # 🚀 OPTIMIZED: Use pre-computed embedding from cache with correct format
+                question_embedding = None
+                
+                # Try cache format: collection_name -> embeddings (numpy array or list)
+                if collection_name in self.question_vectors:
+                    collection_embeddings = self.question_vectors[collection_name]
+                    
+                    # Handle numpy array format (from cache)
+                    if isinstance(collection_embeddings, np.ndarray):
+                        if len(collection_embeddings.shape) == 2 and i < collection_embeddings.shape[0]:
+                            question_embedding = collection_embeddings[i:i+1]  # Keep 2D shape
+                            if i == 0:  # Log first match only to avoid spam
+                                logger.info(f"📦 Using cached embedding (numpy format) for {collection_name}[{i}]")
+                    
+                    # Handle list format (fallback)
+                    elif isinstance(collection_embeddings, list) and i < len(collection_embeddings):
+                        embedding_data = collection_embeddings[i]
+                        if embedding_data is not None:
+                            question_embedding = np.array(embedding_data).reshape(1, -1)
+                            if i == 0:  # Log first match only to avoid spam
+                                logger.info(f"📦 Using cached embedding (list format) for {collection_name}[{i}]")
+                
+                # Try alternative cache format: "collection:question" key
+                if question_embedding is None:
+                    question_key = f"{collection_name}:{question_text}"
+                    if question_key in self.question_vectors:
+                        question_embedding = np.array(self.question_vectors[question_key]).reshape(1, -1)
+                        if i == 0:  # Log first match only
+                            logger.info(f"📦 Using cached embedding (key format) for {question_key[:50]}...")
+                
+                # Try embedded format: question dict with embedding
+                if question_embedding is None and isinstance(question, dict) and 'embedding' in question:
+                    question_embedding = np.array(question['embedding']).reshape(1, -1)
+                    if i == 0:  # Log first match only
+                        logger.info(f"📦 Using embedded embedding for {question_text[:50]}...")
+                
+                # Last resort: compute new embedding
+                if question_embedding is None:
+                    logger.warning(f"⚠️ Computing new embedding for: {question_text[:50]}...")
+                    question_embedding = self.embedding_model.encode([question_text])
+                    # Cache it for future use with both formats
+                    question_key = f"{collection_name}:{question_text}"
+                    self.question_vectors[question_key] = question_embedding[0].tolist()
+                    
+                    # Also update collection format if it exists
+                    if collection_name not in self.question_vectors:
+                        self.question_vectors[collection_name] = []
+                    if isinstance(self.question_vectors[collection_name], list):
+                        while len(self.question_vectors[collection_name]) <= i:
+                            self.question_vectors[collection_name].append(None)
+                        self.question_vectors[collection_name][i] = question_embedding[0].tolist()
+                
+                # Calculate cosine similarity
+                similarity = cosine_similarity(reference_embedding, question_embedding)[0][0]
+                
+                similarities.append({
+                    'question': question,
+                    'similarity': float(similarity),
+                    'text': question_text
+                })
+            
+            # Sort by similarity and return top_k
+            similarities.sort(key=lambda x: x['similarity'], reverse=True)
+            
+            # 🎯 ENHANCED: Boost exact/partial title matches to prioritize core procedures
+            for item in similarities:
+                question = item['question']
+                question_text = item['text']
+                
+                # Extract document title if available
+                if isinstance(question, dict):
+                    doc_title = question.get('title', '')
+                    source_file = question.get('source', '')
+                    
+                    # Extract title from source filename if no explicit title
+                    if not doc_title and source_file:
+                        filename = source_file.split('/')[-1].replace('.json', '').replace('.doc', '')
+                        if '. ' in filename:
+                            doc_title = filename.split('. ', 1)[1]  # Remove numbering like "01. "
+                    
+                    # 🔥 EXACT TITLE MATCH: Boost if reference query contains the exact document title
+                    if doc_title:
+                        # Clean both strings for comparison
+                        clean_reference = reference_query.lower().strip()
+                        clean_doc_title = doc_title.lower().strip()
+                        
+                        # Check for exact match or reference contains the document title
+                        if clean_doc_title in clean_reference or clean_reference in clean_doc_title:
+                            # 🚀 Special boost for core procedures (without "lưu động", "có yếu tố nước ngoài", etc.)
+                            is_core_procedure = not any(special in clean_doc_title for special in [
+                                'lưu động', 'có yếu tố nước ngoài', 'lại', 'kết hợp', 'chấm dứt'
+                            ])
+                            
+                            if is_core_procedure:
+                                # Major boost for core procedures with exact title match
+                                item['similarity'] = min(1.0, item['similarity'] + 0.3)
+                                logger.info(f"🎯 CORE TITLE MATCH: Boosted '{doc_title}' similarity to {item['similarity']:.3f}")
+                            else:
+                                # Minor boost for specialized procedures
+                                item['similarity'] = min(1.0, item['similarity'] + 0.1)
+                                logger.info(f"🎯 SPECIALIZED TITLE MATCH: Boosted '{doc_title}' similarity to {item['similarity']:.3f}")
+            
+            # Re-sort after boosting
+            similarities.sort(key=lambda x: x['similarity'], reverse=True)
+            
+            # Return top results, ensuring we have diverse procedures
+            results = []
+            seen_sources = set()  # Track sources to avoid duplicate procedures from same document
+            
+            for item in similarities[:top_k * 2]:  # Get more to filter
+                question = item['question']
+                
+                # Extract source info to avoid duplicates
+                source = None
+                if isinstance(question, dict):
+                    source = question.get('source', question.get('file', ''))
+                
+                # Add if we haven't seen this source or if no source info available
+                if not source or source not in seen_sources:
+                    results.append({
+                        'text': item['text'],
+                        'similarity': item['similarity'],
+                        'source': source or 'Unknown',
+                        'category': question.get('category', 'general') if isinstance(question, dict) else 'general',
+                        'collection': collection_name
+                    })
+                    
+                    if source:
+                        seen_sources.add(source)
+                    
+                    if len(results) >= top_k:
+                        break
+            
+            logger.info(f"🎯 Found {len(results)} similar procedures in {collection_name} for reference: {reference_query[:50]}...")
+            if results:
+                logger.info(f"   Top similarity: {results[0]['similarity']:.3f} - {results[0]['text'][:60]}...")
+            
+            return results
+            
+        except Exception as e:
+            logger.error(f"❌ Error finding similar procedures for collection {collection_name}: {e}")
+            # Fallback to first few questions from collection
+            fallback_questions = self.get_example_questions_for_collection(collection_name)[:top_k]
+            return [
+                {
+                    'text': q.get('text', q) if isinstance(q, dict) else q,
+                    'similarity': 0.0,  # No similarity calculated
+                    'source': q.get('source', 'Unknown') if isinstance(q, dict) else 'Unknown',
+                    'category': q.get('category', 'general') if isinstance(q, dict) else 'general',
+                    'collection': collection_name
+                }
+                for q in fallback_questions
+            ]
 
 class RouterBasedAmbiguousQueryService:
     """Service xử lý câu hỏi mơ hồ dựa trên router results"""
@@ -496,23 +884,26 @@ class RouterBasedAmbiguousQueryService:
     def is_ambiguous(self, query: str) -> Tuple[bool, Dict[str, Any]]:
         """
         Kiểm tra query có ambiguous không dựa trên router results
+        UPDATED: Sử dụng logic mới với multi-level confidence
         
         Returns:
             (is_ambiguous, routing_result)
         """
         try:
             routing_result = self.router.route_query(query)
+            confidence_level = routing_result.get('confidence_level', 'low')
             
-            is_ambiguous = routing_result['status'] in ['ambiguous', 'no_match']
+            # Ambiguous nếu confidence không phải high
+            is_ambiguous = confidence_level in ['low', 'very_low']
             
             if is_ambiguous:
-                logger.info(f"🤔 Ambiguous query detected: {query[:50]}... (confidence: {routing_result['confidence']:.3f})")
+                logger.info(f"🤔 Ambiguous query detected: confidence_level={confidence_level}, score={routing_result['confidence']:.3f}")
             
             return is_ambiguous, routing_result
             
         except Exception as e:
             logger.error(f"❌ Error checking ambiguous query: {e}")
-            return True, {'status': 'error', 'confidence': 0.0}
+            return True, {'status': 'error', 'confidence': 0.0, 'confidence_level': 'very_low'}
     
     def generate_clarification_response(self, routing_result: Dict[str, Any]) -> str:
         """Generate clarification response dựa trên routing result"""

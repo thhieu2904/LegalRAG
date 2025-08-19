@@ -10,12 +10,19 @@ from ..core.config import settings
 logger = logging.getLogger(__name__)
 
 class LLMService:
-    """Service quản lý PhoGPT model từ HuggingFace"""
+    """Service quản lý PhoGPT model từ HuggingFace với VRAM Optimization"""
     
     def __init__(self, model_path: Optional[str] = None, model_url: Optional[str] = None, **kwargs):
-        self.model_path = Path(model_path or settings.llm_model_path)
+        # Use absolute path to avoid issues when running from different directories
+        if model_path:
+            self.model_path = Path(model_path)
+        else:
+            # Use the computed property from settings which gives absolute path
+            self.model_path = settings.llm_model_file_path
+            
         self.model_url = model_url or settings.llm_model_url
         self.model = None
+        self.model_loaded = False
         
         # Cấu hình GPU + CPU hybrid cho tối ưu performance
         self.model_kwargs = {
@@ -31,11 +38,17 @@ class LLMService:
         }
         
         # Tải model nếu chưa có
-        if not self.model_path.exists():
-            self._download_model()
+        logger.info(f"Checking model path: {self.model_path}")
+        logger.info(f"Model exists: {self.model_path.exists()}")
         
-        # Load model
-        self._load_model()
+        if not self.model_path.exists():
+            logger.info("Model file not found, attempting to download...")
+            self._download_model()
+        else:
+            logger.info("Model file found, skipping download")
+        
+        # VRAM Optimization: Load model khi cần thiết
+        # self._load_model()  # Comment out để load on-demand
     
     def _download_model(self):
         """Tải model từ HuggingFace"""
@@ -72,34 +85,91 @@ class LLMService:
     
     def _load_model(self):
         """Load model vào memory"""
+        if self.model_loaded:
+            return
+            
         try:
-            logger.info(f"Loading model from {self.model_path}")
+            logger.info(f"Loading LLM model from {self.model_path}")
             self.model = Llama(model_path=str(self.model_path), **self.model_kwargs)
-            logger.info("Model loaded successfully")
+            self.model_loaded = True
+            logger.info("✅ LLM model loaded successfully")
         except Exception as e:
-            logger.error(f"Failed to load model: {e}")
+            logger.error(f"Failed to load LLM model: {e}")
             self.model = None
+            self.model_loaded = False
             raise
     
-    def _format_prompt(self, system_prompt: str, user_query: str, context: str = "") -> str:
-        """Format prompt theo template chính xác của PhoGPT"""
-        # Tạo instruction bao gồm system prompt, context và user query
+    def unload_model(self):
+        """Unload model để giải phóng VRAM"""
+        if self.model is not None:
+            logger.info("🔄 Unloading LLM model to free VRAM...")
+            del self.model
+            self.model = None
+            self.model_loaded = False
+            
+            # Force garbage collection
+            import gc
+            gc.collect()
+            logger.info("✅ LLM model unloaded, VRAM freed")
+    
+    def ensure_loaded(self):
+        """Ensure model is loaded - load nếu chưa có"""
+        if not self.model_loaded or self.model is None:
+            self._load_model()
+    
+    def is_model_loaded(self) -> bool:
+        """Check if model is currently loaded"""
+        return self.model_loaded and self.model is not None
+    
+    def _format_prompt(
+        self, 
+        system_prompt: str, 
+        user_query: str, 
+        context: str = "",
+        chat_history: Optional[List[Dict[str, str]]] = None
+    ) -> str:
+        """
+        Format prompt theo TEMPLATE CHÍNH THỨC của PhoGPT-4B-Chat
+        PROMPT_TEMPLATE = "### Câu hỏi: {instruction}\n### Trả lời:"
+        
+        Đây là format ĐÚNG theo tài liệu chính thức, không phải prompt bleeding!
+        """
+        
+        # Build instruction từ context và user query
+        instruction_parts = []
+        
+        # 1. System prompt (nếu có)
+        if system_prompt:
+            instruction_parts.append(system_prompt)
+        
+        # 2. Chat history (nếu có) 
+        if chat_history:
+            for turn in chat_history:
+                role = turn.get("role")
+                content = turn.get("content")
+                if role and content:
+                    if role == "user":
+                        instruction_parts.append(f"Người dùng hỏi: {content}")
+                    elif role == "assistant":
+                        instruction_parts.append(f"Trợ lý đã trả lời: {content}")
+        
+        # 3. Context (nếu có)
         if context:
-            instruction = f"""{system_prompt}
-
-Ngữ cảnh thông tin:
-{context}
-
-Câu hỏi của người dùng: {user_query}"""
-        else:
-            instruction = f"""{system_prompt}
-
-Câu hỏi của người dùng: {user_query}"""
+            instruction_parts.append(f"Thông tin tham khảo:\n{context}")
         
-        # Sử dụng format chính xác của PhoGPT
-        full_prompt = f"### Câu hỏi: {instruction}\n### Trả lời:"
+        # 4. Query hiện tại
+        instruction_parts.append(f"Câu hỏi cần trả lời: {user_query}")
         
-        return full_prompt
+        # Combine instruction
+        full_instruction = "\n\n".join(instruction_parts)
+        
+        # Apply OFFICIAL PhoGPT template
+        formatted_prompt = f"### Câu hỏi: {full_instruction}\n### Trả lời:"
+        
+        # Log để debug
+        logger.debug(f"Official PhoGPT format applied")
+        
+        return formatted_prompt
     
     def generate_response(
         self, 
@@ -107,38 +177,125 @@ Câu hỏi của người dùng: {user_query}"""
         context: str = "", 
         max_tokens: Optional[int] = None,
         temperature: Optional[float] = None,
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        chat_history: Optional[List[Dict[str, str]]] = None  # THAM SỐ MỚI cho ChatML
     ) -> Dict[str, Any]:
-        """Sinh response từ model - tối ưu để tránh lặp"""
+        """Sinh response từ model - VRAM optimized với on-demand loading"""
+        
+        # VRAM Optimization: Ensure model is loaded
+        self.ensure_loaded()
         
         if not self.model:
             raise Exception("Model not loaded")
         
-        # Sử dụng values từ config với tối ưu
+        # Sử dụng values từ config - LOẠI BỎ HARDCODE
         if max_tokens is None:
-            max_tokens = min(settings.max_tokens, 512)  # Giảm max_tokens để tránh lặp
+            max_tokens = settings.max_tokens  # Lấy từ .env thay vì hardcode
         if temperature is None:
-            temperature = max(settings.temperature, 0.3)  # Tăng temperature để tránh lặp
+            temperature = settings.temperature  # Lấy từ .env thay vì hardcode
         
-        # System prompt tối ưu cho legal domain
+        # System prompt tối ưu cho legal domain với enhanced metadata awareness
         if system_prompt is None:
-            system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam. Trả lời ngắn gọn, chính xác và có cấu trúc rõ ràng. Không lặp lại thông tin."""
+            system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
+
+🚨 QUY TẮC BẮT BUỘC - KHÔNG ĐƯỢC VI PHẠM:
+1. **ƯU TIÊN TUYỆT ĐỐI:** Nếu trong ngữ cảnh có thông tin được đánh dấu bằng 🎯, hãy ưu tiên sử dụng thông tin đó trước tiên
+2. CHỈ trả lời dựa trên thông tin CÓ TRONG tài liệu được cung cấp
+3. Trả lời NGẮN GỌN, CHÍNH XÁC và TRỰC TIẾP (tối đa 9-10 câu)
+4. KHÔNG tự sáng tạo thông tin không có trong tài liệu
+5. KHÔNG đặt thêm câu hỏi
+
+🎯 THÔNG TIN METADATA CẦN QUAN TÂM ĐỔC BIỆT:
+- Khi hỏi về PHÍ/LỆ PHÍ → Tìm phần có đánh dấu 🎯 LỆ PHÍ
+- Khi hỏi về THỜI GIAN → Tìm phần có đánh dấu 🎯 THỜI GIAN XỬ LÝ  
+- Khi hỏi về BIỂU MẪU → Tìm phần có đánh dấu 🎯 BIỂU MẪU
+- Khi hỏi về CƠ QUAN → Tìm phần có đánh dấu 🎯 CƠ QUAN THỰC HIỆN
+
+ĐỊNH DẠNG TRẢ LỜI:
+- Câu trả lời ngắn gọn, chính xác
+- Ưu tiên thông tin được đánh dấu 🎯 nếu có
+- Nếu thông tin không có, trả lời: "Tài liệu không đề cập đến vấn đề này"
+
+Trả lời chính xác, ngắn gọn."""
         
-        # Format prompt
-        formatted_prompt = self._format_prompt(system_prompt, user_query, context)
+        # Format prompt theo chuẩn ChatML thay vì ### Câu hỏi: ### Trả lời:
+        formatted_prompt = self._format_prompt(
+            system_prompt, 
+            user_query, 
+            context, 
+            chat_history  # Truyền chat_history có cấu trúc
+        )
+        
+        # ======================================================================
+        # === QUẢN LÝ CONTEXT WINDOW CHỦ ĐỘNG (BẢO VỆ KHỎI OVERFLOW) ===
+        # ======================================================================
+        
+        # 1. Ước tính kích thước token của prompt đầu vào (1 token ≈ 3 ký tự tiếng Việt)
+        prompt_tokens_estimated = len(formatted_prompt) // 3
+        
+        # 2. Lấy tổng context window từ cấu hình (.env)
+        total_context_window = self.model_kwargs.get('n_ctx', settings.n_ctx)
+        
+        # 3. Tính toán không gian còn lại để sinh token (trừ đi buffer an toàn)
+        safety_buffer = 256  # Buffer an toàn để tránh edge cases
+        available_space_for_response = total_context_window - prompt_tokens_estimated - safety_buffer
+        
+        # 🔥 NGƯỠNG TỐI THIỂU ĐỂ SINH CÂU TRẢ LỜI CÓ Ý NGHĨA
+        MINIMUM_RESPONSE_TOKENS = 64  # Tối thiểu 64 tokens = ~200 chars tiếng Việt
+        
+        if available_space_for_response <= 0:
+            logger.error(f"🚨 Context window overflow! Prompt ({prompt_tokens_estimated} tokens) đã vượt quá giới hạn ({total_context_window}).")
+            raise ValueError(f"Prompt đầu vào quá lớn ({prompt_tokens_estimated} tokens), không còn không gian để sinh câu trả lời. Giới hạn: {total_context_window} tokens.")
+            
+        if available_space_for_response <= MINIMUM_RESPONSE_TOKENS:
+            logger.error(f"🚨 Không đủ không gian để sinh câu trả lời có ý nghĩa. Cần tối thiểu {MINIMUM_RESPONSE_TOKENS} tokens, chỉ còn {available_space_for_response} tokens.")
+            # Trả về một response thông báo thay vì crash
+            return {
+                'response': f"Xin lỗi, ngữ cảnh quá phức tạp để tạo câu trả lời trong giới hạn hiện tại. (Cần {MINIMUM_RESPONSE_TOKENS} tokens, chỉ còn {available_space_for_response} tokens)",
+                'processing_time': 0.0,
+                'prompt_tokens': prompt_tokens_estimated,
+                'completion_tokens': 0,
+                'total_tokens': prompt_tokens_estimated,
+                'context_info': {
+                    'total_context_window': total_context_window,
+                    'prompt_tokens_estimated': prompt_tokens_estimated,
+                    'available_space': available_space_for_response,
+                    'max_tokens_requested': max_tokens,
+                    'max_tokens_used': 0,
+                    'was_adjusted': True,
+                    'error_reason': 'insufficient_space'
+                }
+            }
+            
+        # 4. Điều chỉnh động `max_tokens` để không vượt quá không gian còn lại
+        original_max_tokens = max_tokens
+        dynamic_max_tokens = min(max_tokens, available_space_for_response)
+        
+        # 🔥 ĐẢM BẢO DYNAMIC_MAX_TOKENS KHÔNG QUÁ NHỎ
+        if dynamic_max_tokens < MINIMUM_RESPONSE_TOKENS:
+            logger.warning(f"⚠️ Dynamic max_tokens ({dynamic_max_tokens}) quá nhỏ, đặt về minimum {MINIMUM_RESPONSE_TOKENS}")
+            dynamic_max_tokens = MINIMUM_RESPONSE_TOKENS
+        
+        logger.info(f"📏 Context Info: Total={total_context_window}, Prompt≈{prompt_tokens_estimated}, Available={available_space_for_response}")
+        if dynamic_max_tokens != original_max_tokens:
+            logger.warning(f"⚠️ Max Tokens adjusted: {original_max_tokens} → {dynamic_max_tokens} (to prevent overflow)")
+        else:
+            logger.info(f"✅ Max Tokens: {dynamic_max_tokens} (no adjustment needed)")
+        
+        # ======================================================================
         
         try:
             start_time = time.time()
             
-            # Generate với parameters tối ưu để tránh lặp
+            # Generate với parameters tối ưu để tránh lặp - SỬ DỤNG DYNAMIC MAX_TOKENS
             response = self.model(
                 formatted_prompt,
-                max_tokens=max_tokens,
+                max_tokens=dynamic_max_tokens,  # ✨ SỬ DỤNG GIÁ TRỊ ĐÃ ĐIỀU CHỈNH
                 temperature=temperature,
                 top_p=0.9,  # Nucleus sampling để tăng đa dạng
                 top_k=40,   # Top-K sampling
                 repeat_penalty=1.1,  # Penalty cho từ lặp
-                stop=["### Câu hỏi:", "### Trả lời:", "\n\n###", "Câu hỏi:", "Question:"],
+                stop=["### Câu hỏi:", "\n### Câu hỏi:", "### Trả lời:", "\n### Trả lời:"],  # 🔥 STOP TOKENS CHO FORMAT CHÍNH THỨC
                 echo=False,
                 stream=False  # Ensure non-streaming response
             )
@@ -165,11 +322,21 @@ Câu hỏi của người dùng: {user_query}"""
                 'processing_time': processing_time,
                 'prompt_tokens': prompt_tokens,
                 'completion_tokens': completion_tokens,
-                'total_tokens': total_tokens
+                'total_tokens': total_tokens,
+                # Thêm thông tin debug cho context management
+                'context_info': {
+                    'total_context_window': total_context_window,
+                    'prompt_tokens_estimated': prompt_tokens_estimated,
+                    'available_space': available_space_for_response,
+                    'max_tokens_requested': original_max_tokens,
+                    'max_tokens_used': dynamic_max_tokens,
+                    'was_adjusted': dynamic_max_tokens != original_max_tokens
+                }
             }
             
-            logger.info(f"Generated response in {processing_time:.2f}s, "
-                       f"tokens: {result['total_tokens']}")
+            logger.info(f"✅ Generated response in {processing_time:.2f}s, "
+                       f"tokens: {result['total_tokens']} "
+                       f"(prompt: {prompt_tokens}, completion: {completion_tokens})")
             
             return result
             
@@ -178,8 +345,22 @@ Câu hỏi của người dùng: {user_query}"""
             raise
     
     def _clean_repetitive_response(self, text: str) -> str:
-        """Dọn dẹp response để loại bỏ patterns lặp lại"""
+        """Dọn dẹp response để loại bỏ patterns lặp lại và official format artifacts"""
         import re
+        
+        # 🔥 Loại bỏ official format patterns có thể rò rỉ
+        text = re.sub(r'###\s*Câu hỏi\s*:', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'###\s*Trả lời\s*:', '', text, flags=re.IGNORECASE)
+        
+        # 🔥 QUAN TRỌNG: Loại bỏ câu hỏi thừa do model tự tạo
+        text = re.sub(r'Câu hỏi cần trả lời thêm:.*$', '', text, flags=re.MULTILINE | re.IGNORECASE)
+        text = re.sub(r'Câu hỏi tiếp theo:.*$', '', text, flags=re.MULTILINE | re.IGNORECASE)
+        text = re.sub(r'Câu hỏi khác:.*$', '', text, flags=re.MULTILINE | re.IGNORECASE)
+        text = re.sub(r'Thắc mắc khác:.*$', '', text, flags=re.MULTILINE | re.IGNORECASE)
+        
+        # Loại bỏ role indicators có thể rò rỉ
+        text = re.sub(r'^\s*(user|assistant|system)\s*[:]\s*', '', text, flags=re.MULTILINE)
+        text = re.sub(r'^\s*(Người dùng|Trợ lý|Hệ thống)\s*[:]\s*', '', text, flags=re.MULTILINE)
         
         # Loại bỏ patterns lặp kiểu A. B. C. XI. XI. XI.
         text = re.sub(r'([A-Z]\.)\s*THỦ\s*TỤC\s*NUÔI\s*CON\s*NUÔI\s*TRONG\s*NƯỚC\s*\n*', '', text, flags=re.IGNORECASE)

@@ -81,6 +81,65 @@
   color: #374151;
 }
 
+.message-bubble.clarification {
+  align-self: flex-start;
+  background: #fffbeb;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  max-width: 90%;
+}
+
+.clarification-options {
+  margin-top: 1rem;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.clarification-option {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clarification-option:hover {
+  border-color: #2563eb;
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.option-title {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.option-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.option-confidence {
+  font-size: 0.75rem;
+  color: #059669;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.option-examples {
+  font-size: 0.75rem;
+  color: #7c3aed;
+  font-style: italic;
+}
+
 .message-header {
   display: flex;
   justify-content: space-between;
