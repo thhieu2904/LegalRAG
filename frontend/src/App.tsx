@@ -16,7 +16,12 @@ import "./styles/speech.css";
 function App() {
   return (
     <VoiceProvider>
-      <Router>
+      <Router
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <div className="App">
           <Routes>
             <Route path="/" element={<ChatInterface />} />

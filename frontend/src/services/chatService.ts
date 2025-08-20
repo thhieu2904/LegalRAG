@@ -101,7 +101,7 @@ export class ChatService {
       };
 
       const response = await axios.post<ApiResponse>(
-        `${BASE_URL}/api/v2/optimized-query`,
+        `${BASE_URL}/api/v1/query`,
         requestData,
         {
           headers: {
@@ -168,7 +168,7 @@ export class ChatService {
   ): Promise<ChatResponse> {
     try {
       const response = await axios.post<ApiResponse>(
-        `${BASE_URL}/api/v2/clarify`,
+        `${BASE_URL}/api/v1/clarify`,
         {
           session_id: sessionId,
           original_query: originalQuery,
@@ -214,7 +214,7 @@ export class ChatService {
   ): Promise<ContextSummary | null> {
     try {
       const response = await axios.get<SessionInfo>(
-        `${BASE_URL}/api/v2/session/${sessionId}`,
+        `${BASE_URL}/api/v1/session/${sessionId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -234,7 +234,7 @@ export class ChatService {
   static async resetSessionContext(sessionId: string): Promise<boolean> {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/v2/session/${sessionId}/reset`,
+        `${BASE_URL}/api/v1/session/${sessionId}/reset`,
         {},
         {
           headers: {

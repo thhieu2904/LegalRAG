@@ -16,7 +16,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 logger = logging.getLogger(__name__)
 
-class EnhancedSmartQueryRouter:
+class QueryRouter:
     """Router thông minh sử dụng database example questions cho routing chính xác"""
     
     def __init__(self, embedding_model: SentenceTransformer):
@@ -861,10 +861,10 @@ class EnhancedSmartQueryRouter:
                 for q in fallback_questions
             ]
 
-class RouterBasedAmbiguousQueryService:
+class RouterBasedQueryService:
     """Service xử lý câu hỏi mơ hồ dựa trên router results"""
     
-    def __init__(self, router: EnhancedSmartQueryRouter):
+    def __init__(self, router: QueryRouter):
         self.router = router
         self.clarification_templates = {
             'ambiguous': [

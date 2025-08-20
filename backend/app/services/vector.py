@@ -292,8 +292,23 @@ class VectorDBService:
             else:
                 logger.info(f"🔍 Search WITHOUT filters")
             
-            # Execute the main search
-            results = collection.query(**query_params)
+            # Execute the main search with fallback
+            try:
+                results = collection.query(**query_params)
+            except Exception as filter_error:
+                logger.warning(f"🔍 Filtered search failed: {filter_error}")
+                # Fallback: search without filters
+                if where_clause:
+                    logger.info("🔄 Falling back to search without filters")
+                    fallback_params = {
+                        'query_embeddings': [query_embedding],
+                        'n_results': top_k,
+                        'include': ['documents', 'metadatas', 'distances']
+                    }
+                    results = collection.query(**fallback_params)
+                else:
+                    # If no filters were used and still failed, raise the error
+                    raise filter_error
             
             # Xử lý kết quả
             formatted_results = []

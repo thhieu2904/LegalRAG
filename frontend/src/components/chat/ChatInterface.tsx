@@ -38,14 +38,32 @@ export function ChatInterface({
     }
   }, [messages]);
 
-  // Auto speak bot messages when voice is enabled
+  // Auto speak bot messages when voice is enabled (only after user interaction)
   useEffect(() => {
-    if (isVoiceEnabled && messages.length > 0) {
+    // Only auto-speak if voice is enabled AND this is a response to user input
+    if (isVoiceEnabled && messages.length > 1) {
+      // Changed from > 0 to > 1
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage.isBot && lastMessage.content && !isLoading) {
+      const secondLastMessage = messages[messages.length - 2];
+
+      // Only speak if last message is bot response to user message
+      if (
+        lastMessage.isBot &&
+        lastMessage.content &&
+        !isLoading &&
+        !secondLastMessage.isBot
+      ) {
         // Delay speaking a bit to ensure message is fully rendered
-        setTimeout(() => {
-          speakText(lastMessage.content);
+        setTimeout(async () => {
+          try {
+            await speakText(lastMessage.content);
+          } catch (error) {
+            // Silently handle TTS errors (like "not-allowed")
+            console.log(
+              "TTS not available:",
+              error instanceof Error ? error.message : "Unknown error"
+            );
+          }
         }, 500);
       }
     }

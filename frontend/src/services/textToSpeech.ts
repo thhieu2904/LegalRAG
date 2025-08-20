@@ -19,6 +19,7 @@ export class TextToSpeechService {
   private voices: SpeechSynthesisVoice[] = [];
   private config: Required<TextToSpeechConfig>;
   private statusCallbacks: ((status: SpeechStatus) => void)[] = [];
+  private userHasInteracted: boolean = false;
 
   constructor(config: TextToSpeechConfig = {}) {
     this.synthesis = window.speechSynthesis;
@@ -38,6 +39,25 @@ export class TextToSpeechService {
         this.loadVoices.bind(this)
       );
     }
+
+    // Track user interaction for autoplay policy
+    this.initUserInteractionTracking();
+  }
+
+  private initUserInteractionTracking(): void {
+    const markUserInteracted = () => {
+      this.userHasInteracted = true;
+    };
+
+    // Listen for various user interaction events
+    const events = ["click", "keydown", "touchstart"];
+    events.forEach((event) => {
+      document.addEventListener(event, markUserInteracted, { once: true });
+    });
+  }
+
+  private hasUserInteracted(): boolean {
+    return this.userHasInteracted;
   }
 
   private loadVoices(): void {
@@ -62,6 +82,14 @@ export class TextToSpeechService {
     return new Promise((resolve, reject) => {
       if (!this.isSupported()) {
         reject(new Error("Trình duyệt không hỗ trợ Text-to-Speech"));
+        return;
+      }
+
+      // Check if user has interacted with the page
+      if (!this.hasUserInteracted()) {
+        reject(
+          new Error("Cần tương tác với trang trước khi sử dụng Text-to-Speech")
+        );
         return;
       }
 
@@ -110,7 +138,14 @@ export class TextToSpeechService {
           isSupported: true,
           currentText: undefined,
         });
-        reject(new Error(`Lỗi Text-to-Speech: ${error.error}`));
+
+        // Handle interrupted error gracefully (common when user clicks fast)
+        if (error.error === "interrupted") {
+          console.log("TTS interrupted (normal when user clicks fast)");
+          resolve(); // Don't reject for interruptions
+        } else {
+          reject(new Error(`Lỗi Text-to-Speech: ${error.error}`));
+        }
       };
 
       this.currentUtterance.onpause = () => {

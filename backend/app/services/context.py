@@ -10,7 +10,7 @@ import json
 
 logger = logging.getLogger(__name__)
 
-class EnhancedContextExpansionService:
+class ContextExpander:
     """Service mở rộng ngữ cảnh với Nucleus Chunk strategy"""
     
     def __init__(self, vectordb_service, documents_dir: str):

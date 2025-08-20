@@ -1,6 +1,9 @@
 """
 API Routes for Optimized Enhanced RAG Service
-Endpoints tối ưu với VRAM-optimized architecture
+Endpoints tốidef get_rag_service():
+    if rag_service is None:
+        raise HTTPException(status_code=503, detail="RAG service not initialized")
+    return rag_servicevới VRAM-optimized architecture
 """
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -10,15 +13,15 @@ import logging
 from ..services.rag_engine import convert_numpy_types
 
 # This will be set by main.py
-optimized_rag_service = None
+rag_service = None
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v2", tags=["Optimized Enhanced RAG"])
+router = APIRouter(prefix="/api/v1", tags=["RAG Service"])
 
 # Pydantic Models
-class OptimizedQueryRequest(BaseModel):
-    """Request model cho optimized query"""
+class QueryRequest(BaseModel):
+    """Request model cho query"""
     query: str = Field(..., min_length=1, description="Câu hỏi của người dùng")
     session_id: Optional[str] = Field(None, description="ID session chat (tùy chọn)")
     max_context_length: int = Field(8000, ge=500, le=12000, description="Độ dài context tối đa")  # INCREASED: 3000 → 8000
@@ -61,15 +64,15 @@ class QueryResponse(BaseModel):
     preserved_collection: Optional[str] = Field(None, description="Collection được preserve")  # 🔧 NEW: Preserved collection info
 
 # Dependency để kiểm tra service
-def get_optimized_rag_service():
-    if optimized_rag_service is None:
-        raise HTTPException(status_code=503, detail="Optimized RAG service not initialized")
-    return optimized_rag_service
+def get_rag_service():
+    if rag_service is None:
+        raise HTTPException(status_code=503, detail="RAG service not initialized")
+    return rag_service
 
-@router.post("/optimized-query", response_model=QueryResponse)
-async def optimized_enhanced_query(
-    request: OptimizedQueryRequest,
-    service = Depends(get_optimized_rag_service)
+@router.post("/query", response_model=QueryResponse)
+async def query_endpoint(
+    request: QueryRequest,
+    service = Depends(get_rag_service)
 ):
     """
     Enhanced query với tối ưu VRAM và ambiguous detection
@@ -84,7 +87,7 @@ async def optimized_enhanced_query(
     try:
         logger.info(f"Processing optimized query: {request.query[:50]}...")
         
-        result = service.enhanced_query(
+        result = service.process_query(
             query=request.query,
             session_id=request.session_id,
             forced_collection=request.forced_collection  # 🔧 NEW: Pass forced collection
@@ -99,7 +102,7 @@ async def optimized_enhanced_query(
 @router.post("/clarify", response_model=QueryResponse)
 async def handle_clarification(
     request: ClarificationRequest,
-    service = Depends(get_optimized_rag_service)
+    service = Depends(get_rag_service)
 ):
     """
     Xử lý phản hồi clarification từ người dùng
@@ -120,7 +123,7 @@ async def handle_clarification(
 @router.post("/session/create")
 async def create_session(
     request: SessionCreateRequest,
-    service = Depends(get_optimized_rag_service)
+    service = Depends(get_rag_service)
 ):
     """Tạo session chat mới"""
     try:
@@ -138,7 +141,7 @@ async def create_session(
 @router.get("/session/{session_id}")
 async def get_session_info(
     session_id: str,
-    service = Depends(get_optimized_rag_service)
+    service = Depends(get_rag_service)
 ):
     """Lấy thông tin session với context summary"""
     try:
@@ -171,7 +174,7 @@ async def get_session_info(
 @router.post("/session/{session_id}/reset")
 async def reset_session_context(
     session_id: str,
-    service = Depends(get_optimized_rag_service)
+    service = Depends(get_rag_service)
 ):
     """Reset ngữ cảnh của session về trạng thái mặc định"""
     try:
@@ -198,7 +201,7 @@ async def reset_session_context(
 @router.delete("/session/{session_id}")
 async def delete_session(
     session_id: str,
-    service = Depends(get_optimized_rag_service)
+    service = Depends(get_rag_service)
 ):
     """Xóa session"""
     try:
@@ -216,7 +219,7 @@ async def delete_session(
 
 @router.get("/health")
 async def health_check(
-    service = Depends(get_optimized_rag_service)
+    service = Depends(get_rag_service)
 ):
     """
     Health check cho optimized service
@@ -233,10 +236,10 @@ async def health_check(
             "error": str(e)
         }
 
-@router.post("/cleanup-sessions")
+@router.post("/sessions/cleanup")
 async def cleanup_old_sessions(
     max_age_hours: int = 24,
-    service = Depends(get_optimized_rag_service)
+    service = Depends(get_rag_service)
 ):
     """Dọn dẹp sessions cũ"""
     try:
@@ -254,7 +257,7 @@ async def cleanup_old_sessions(
 
 @router.get("/metrics")
 async def get_metrics(
-    service = Depends(get_optimized_rag_service)
+    service = Depends(get_rag_service)
 ):
     """Lấy metrics của hệ thống"""
     try:
@@ -271,7 +274,7 @@ async def get_metrics(
 
 @router.get("/collections/stats")
 async def get_collections_stats(
-    service = Depends(get_optimized_rag_service)
+    service = Depends(get_rag_service)
 ):
     """Thống kê collections"""
     try:

@@ -25,7 +25,7 @@ class ClarificationLevel:
     strategy: str
     message_template: str
 
-class SmartClarificationService:
+class ClarificationService:
     """Service tạo clarification thông minh dựa trên confidence levels"""
     
     def __init__(self):

@@ -14,10 +14,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.services.vector_database import VectorDBService
+from app.services.vector import VectorDBService
 from app.services.language_model import LLMService
-from app.services.rag_engine import OptimizedEnhancedRAGService
-from app.api import optimized_routes
+from app.services.rag_engine import RAGService
+from app.api import rag
 
 # Cấu hình logging
 logging.basicConfig(
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 # Global services
 vectordb_service = None
 llm_service = None
-optimized_enhanced_rag_service = None
+rag_service = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
     
     try:
         # Khởi tạo services theo thứ tự tối ưu VRAM
-        global vectordb_service, llm_service, optimized_enhanced_rag_service
+        global vectordb_service, llm_service, rag_service
         logger.info("Initializing VRAM-optimized services...")
         
         # 1. VectorDB Service (Embedding Model sẽ được chuyển sang CPU)
@@ -55,7 +55,7 @@ async def lifespan(app: FastAPI):
         # 3. Optimized Enhanced RAG Service
         logger.info("🔧 Initializing Optimized Enhanced RAG service...")
         documents_dir = settings.base_dir / "data" / "documents"  
-        optimized_enhanced_rag_service = OptimizedEnhancedRAGService(
+        rag_service = RAGService(
             documents_dir=str(documents_dir),
             vectordb_service=vectordb_service,
             llm_service=llm_service
@@ -63,10 +63,10 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Optimized Enhanced RAG service initialized")
         
         # Set global service for routes
-        optimized_routes.optimized_rag_service = optimized_enhanced_rag_service
+        rag.rag_service = rag_service
         
         # Log system capabilities với thông tin VRAM optimization
-        health_status = optimized_enhanced_rag_service.get_health_status()
+        health_status = rag_service.get_health_status()
         logger.info("📊 VRAM-Optimized System Status:")
         logger.info(f"  - Collections: {health_status.get('total_collections', 0)}")
         logger.info(f"  - Documents: {health_status.get('total_documents', 0)}")
@@ -90,11 +90,11 @@ async def lifespan(app: FastAPI):
     logger.info("🔄 Shutting down VRAM-Optimized LegalRAG API...")
     
     # Cleanup sessions if needed
-    if optimized_enhanced_rag_service:
-        active_sessions = len(optimized_enhanced_rag_service.chat_sessions)
+    if rag_service:
+        active_sessions = len(rag_service.chat_sessions)
         if active_sessions > 0:
             logger.info(f"Cleaning up {active_sessions} active chat sessions...")
-            optimized_enhanced_rag_service.chat_sessions.clear()
+            rag_service.chat_sessions.clear()
 
 # Tạo Optimized FastAPI app
 app = FastAPI(
@@ -146,7 +146,7 @@ app.add_middleware(
 )
 
 # Include optimized routes
-app.include_router(optimized_routes.router)
+app.include_router(rag.router)
 
 # Root endpoint với thông tin VRAM optimization
 @app.get("/")
