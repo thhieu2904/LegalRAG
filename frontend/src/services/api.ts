@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { ChatRequest, ChatResponse } from "../types/chat";
 
-const API_BASE_URL = "http://localhost:8000/api/v2";
+const API_BASE_URL = "http://localhost:8000/api/v1";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -24,7 +24,7 @@ interface ClarificationOption {
 
 export const apiService = {
   async sendQuery(query: string, sessionId: string | null) {
-    const response = await api.post("/optimized-query", {
+    const response = await api.post("/query", {
       query,
       session_id: sessionId,
     });
@@ -67,7 +67,7 @@ export const apiService = {
 
 export const chatApi = {
   async sendMessage(request: ChatRequest): Promise<ChatResponse> {
-    const response = await api.post("/optimized-query", request);
+    const response = await api.post("/query", request);
     return response.data;
   },
 

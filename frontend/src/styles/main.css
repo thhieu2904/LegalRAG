@@ -1,0 +1,120 @@
+/* Global CSS Reset and Base Styles - Updated */
+
+/* Import Design System */
+@import "./design-system/index.css";
+
+/* Layout Styles */
+@import "./layouts/app.css";
+@import "./layouts/admin.css";
+
+/* Component Styles */
+@import "./components/chat.css";
+@import "./components/speech.css";
+@import "./components/ui.css";
+
+/* Page Specific Styles */
+@import "./pages/chat-page.css";
+@import "./pages/admin-pages.css";
+
+/* Additional Global Styles */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family-sans);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Remove Tailwind base styles that conflict */
+.App * {
+  box-sizing: border-box;
+}
+
+/* Typography override for legacy components */
+.App h1,
+.App h2,
+.App h3,
+.App h4,
+.App h5,
+.App h6 {
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+}
+
+/* Button override for legacy components */
+.App button:not(.btn) {
+  font-family: inherit;
+}
+
+/* Utility classes for quick migration */
+.w-full {
+  width: 100% !important;
+}
+.h-full {
+  height: 100% !important;
+}
+.flex {
+  display: flex !important;
+}
+.flex-1 {
+  flex: 1 1 0% !important;
+}
+.flex-col {
+  flex-direction: column !important;
+}
+.text-primary {
+  color: var(--color-primary-600) !important;
+}
+.text-muted {
+  color: var(--color-text-muted) !important;
+}
+.text-secondary {
+  color: var(--color-text-secondary) !important;
+}
+.bg-surface {
+  background-color: var(--color-surface) !important;
+}
+.bg-background {
+  background-color: var(--color-background) !important;
+}
+.border-border {
+  border-color: var(--color-border) !important;
+}
+
+/* Animation classes */
+@keyframes bounce {
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    transform: translate3d(0, 0, 0);
+  }
+  40%,
+  43% {
+    animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    transform: translate3d(0, -30px, 0) scaleY(1.1);
+  }
+  70% {
+    animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    transform: translate3d(0, -15px, 0) scaleY(1.05);
+  }
+  90% {
+    transform: translate3d(0, -4px, 0) scaleY(0.95);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}

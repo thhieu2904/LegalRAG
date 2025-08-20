@@ -15,13 +15,12 @@ from typing import Dict, List, Any, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .vector_database import VectorDBService
+from .vector import VectorDBService
 from .language_model import LLMService
-from .result_reranker import RerankerService
-from .smart_clarification import SmartClarificationService
-from .smart_router import EnhancedSmartQueryRouter, RouterBasedAmbiguousQueryService
-from .smart_clarification import SmartClarificationService
-from .context_expander import EnhancedContextExpansionService
+from .reranker import RerankerService
+from .clarification import ClarificationService
+from .router import QueryRouter, RouterBasedQueryService
+from .context import ContextExpander
 from ..core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -184,9 +183,9 @@ class OptimizedChatSession:
         
         return context_summary
 
-class OptimizedEnhancedRAGService:
+class RAGService:
     """
-    Enhanced RAG Service được tối ưu VRAM và performance
+    RAG Service được tối ưu VRAM và performance
     
     Kiến trúc:
     - Embedding Model: CPU (tiết kiệm VRAM cho query ngắn)
@@ -227,7 +226,7 @@ class OptimizedEnhancedRAGService:
             embedding_model = self.vectordb_service.embedding_model
             if embedding_model is None:
                 raise ValueError("VectorDB embedding model not initialized")
-            self.smart_router = EnhancedSmartQueryRouter(embedding_model=embedding_model)
+            self.smart_router = QueryRouter(embedding_model=embedding_model)
             logger.info("✅ Enhanced Smart Query Router initialized")
             
             # Reranker Service (GPU)
@@ -235,17 +234,17 @@ class OptimizedEnhancedRAGService:
             logger.info("✅ Reranker Service initialized (GPU)")
             
             # Router-based Ambiguous Query Service (CPU)
-            self.ambiguous_service = RouterBasedAmbiguousQueryService(
+            self.ambiguous_service = RouterBasedQueryService(
                 router=self.smart_router
             )
             logger.info("✅ Router-based Ambiguous Query Service initialized (CPU)")
             
             # Smart Clarification Service
-            self.clarification_service = SmartClarificationService()
+            self.clarification_service = ClarificationService()
             logger.info("✅ Smart Clarification Service initialized")
             
             # Enhanced Context Expansion Service  
-            self.context_expansion_service = EnhancedContextExpansionService(
+            self.context_expansion_service = ContextExpander(
                 vectordb_service=self.vectordb_service,
                 documents_dir=self.documents_dir
             )
@@ -304,7 +303,7 @@ class OptimizedEnhancedRAGService:
         logger.info(f"🧹 Reset context for session: {session_id}")
         return True
         
-    def enhanced_query(
+    def process_query(
         self,
         query: str,
         session_id: Optional[str] = None,
@@ -899,7 +898,7 @@ class OptimizedEnhancedRAGService:
                     logger.info(f"🎯 Target document: '{document_title}' (source: {source_file})")
                 
                 # Chạy RAG với câu hỏi ĐÃ ĐƯỢC LÀM RÕ và collection ĐÃ CHỈ ĐỊNH
-                return self.enhanced_query(
+                return self.process_query(
                     query=question_text,  # 🔥 Dùng câu hỏi cụ thể, không phải original query mơ hồ
                     session_id=session_id,
                     forced_collection=collection,  # 🔥 Force routing to selected collection
@@ -1238,7 +1237,7 @@ class OptimizedEnhancedRAGService:
         query_text = question or query
         if not query_text:
             raise ValueError("Either 'question' or 'query' parameter is required")
-        return self.enhanced_query(query_text, **kwargs)
+        return self.process_query(query_text, **kwargs)
     
     @property
     def query_router(self):
@@ -1321,7 +1320,7 @@ class OptimizedEnhancedRAGService:
         """Tạo clarification thông minh dựa trên confidence level"""
         try:
             # Gọi Smart Clarification Service để tạo clarification thông minh
-            clarification_service = SmartClarificationService()
+            clarification_service = ClarificationService()
             clarification_response = clarification_service.generate_clarification(
                 query=query,
                 confidence=routing_result.get('confidence', 0.0),

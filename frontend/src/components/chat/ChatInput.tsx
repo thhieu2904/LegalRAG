@@ -30,6 +30,14 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
     setIsListening(false);
   };
 
+  const handleAutoSend = (transcript: string) => {
+    if (transcript.trim() && !disabled) {
+      onSendMessage(transcript.trim());
+      setMessage("");
+      setIsListening(false);
+    }
+  };
+
   const handleVoiceStart = () => {
     setIsListening(true);
     setMessage(""); // Xóa nội dung cũ khi bắt đầu ghi âm
@@ -45,25 +53,25 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
   };
 
   return (
-    <div className="p-6">
-      <div className="max-w-6xl mx-auto space-y-4">
-        <form onSubmit={handleSubmit} className="flex gap-4 items-end">
+    <div className="chat-input-container">
+      <div className="chat-input-layout">
+        <form onSubmit={handleSubmit} className="chat-input-form">
           {/* Input Area */}
-          <div className="flex-1 relative">
+          <div className="chat-input-field-wrapper">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder={getVoiceStatusText()}
               disabled={disabled}
-              className={`h-14 text-base border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl px-4 ${
-                isListening ? "bg-green-50 border-green-300" : ""
+              className={`chat-input-field ${
+                isListening ? "chat-input-field--listening" : ""
               }`}
             />
             {isListening && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="flex items-center gap-2 text-green-600">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium">Đang ghi âm</span>
+              <div className="chat-input-recording-indicator">
+                <div className="chat-input-recording-content">
+                  <div className="chat-input-recording-dot"></div>
+                  <span className="chat-input-recording-text">Đang ghi âm</span>
                 </div>
               </div>
             )}
@@ -72,6 +80,7 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
           <VoiceInput
             onTranscriptChange={handleTranscriptChange}
             onFinalTranscript={handleFinalTranscript}
+            onAutoSend={handleAutoSend}
             onStart={handleVoiceStart}
             onStop={handleVoiceStop}
             disabled={disabled}
@@ -81,9 +90,9 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
           <Button
             type="submit"
             disabled={!message.trim() || disabled}
-            className="bg-blue-600 hover:bg-blue-700 h-14 w-14 p-0 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all duration-200 hover:scale-105"
+            className="chat-input-send-button"
           >
-            <Send className="w-6 h-6" />
+            <Send className="chat-input-send-icon" />
           </Button>
         </form>
       </div>

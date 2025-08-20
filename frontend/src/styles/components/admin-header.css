@@ -1,0 +1,143 @@
+/* Admin Header Styles - Identical to Chat Header */
+
+/* Main Container */
+.admin-header-container {
+  background: white;
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Header Layout */
+.admin-header-layout {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-6);
+}
+
+/* Logo Section */
+.admin-header-logo-section {
+  width: 25%;
+  display: flex;
+  align-items: center;
+}
+
+.admin-header-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+/* Title Section */
+.admin-header-title-section {
+  width: 50%;
+  text-align: center;
+}
+
+.admin-header-title {
+  font-weight: var(--font-weight-medium);
+  color: #dc2626 !important; /* Red color - same as chat */
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-tight);
+}
+
+/* Assistant Section */
+.admin-header-assistant-section {
+  width: 25%;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.admin-header-assistant-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.admin-header-assistant-text {
+  text-align: right;
+}
+
+.admin-header-assistant-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-600);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-tight);
+}
+
+.admin-header-assistant-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  margin-top: var(--spacing-1);
+}
+
+/* Settings Button */
+.admin-header-settings-button {
+  padding: var(--spacing-2);
+  color: var(--color-text-tertiary);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-fast) var(--ease-out);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-header-settings-button:hover {
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+}
+
+.admin-header-settings-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-header-layout {
+    padding: var(--spacing-4);
+  }
+
+  .admin-header-title {
+    font-size: var(--font-size-base);
+    color: #dc2626 !important;
+  }
+
+  .admin-header-assistant-name {
+    font-size: var(--font-size-sm);
+  }
+
+  .admin-header-assistant-description {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-header-layout {
+    padding: var(--spacing-3);
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  .admin-header-logo-section,
+  .admin-header-title-section,
+  .admin-header-assistant-section {
+    width: 100%;
+    text-align: center;
+  }
+
+  .admin-header-assistant-info {
+    justify-content: center;
+  }
+
+  .admin-header-assistant-text {
+    text-align: center;
+  }
+
+  .admin-header-title {
+    font-size: var(--font-size-sm);
+    color: #dc2626 !important;
+  }
+}

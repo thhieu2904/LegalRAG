@@ -1,4 +1,4 @@
-export { ChatInterface } from "./ChatInterfaceUnified";
+export { ChatInterface } from "./ChatInterface";
 export { ChatHeader } from "./ChatHeader";
 export { ChatMessage } from "./ChatMessage";
 export { ChatInput } from "./ChatInput";

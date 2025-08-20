@@ -5,6 +5,7 @@ import { Mic, MicOff } from "lucide-react";
 interface VoiceInputProps {
   onTranscriptChange: (transcript: string) => void;
   onFinalTranscript: (transcript: string) => void;
+  onAutoSend?: (transcript: string) => void; // NEW: Auto-send callback
   onStart?: () => void;
   onStop?: () => void;
   disabled?: boolean;
@@ -69,6 +70,7 @@ type RecordingState = "idle" | "listening" | "speaking" | "processing";
 export function VoiceInput({
   onTranscriptChange,
   onFinalTranscript,
+  onAutoSend, // NEW: Auto-send callback
   onStart,
   onStop,
   disabled = false,
@@ -83,6 +85,20 @@ export function VoiceInput({
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationRef = useRef<number | null>(null);
+
+  // NEW: Check if auto-send is enabled
+  const getAutoSendEnabled = () => {
+    try {
+      const settings = localStorage.getItem("voiceSettings");
+      if (settings) {
+        const parsed = JSON.parse(settings);
+        return parsed.isAutoSendEnabled ?? false;
+      }
+    } catch (error) {
+      console.log("Error reading auto-send setting:", error);
+    }
+    return false;
+  };
 
   // Kiểm tra browser support
   useEffect(() => {
@@ -189,6 +205,11 @@ export function VoiceInput({
 
         if (finalText) {
           onFinalTranscript(finalText);
+
+          // NEW: Auto-send if enabled
+          if (getAutoSendEnabled() && onAutoSend) {
+            onAutoSend(finalText);
+          }
         }
 
         // Reset timeout để tự động dừng sau khi không có giọng nói

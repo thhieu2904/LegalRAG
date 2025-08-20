@@ -1,9 +1,45 @@
 .App {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
+}
+
+/* Only apply no-scroll for chat interface specifically */
+.chat-interface {
+  height: 100vh;
   overflow: hidden; /* Keep this to prevent body scroll, chat area will have its own scroll */
+}
+
+/* Ensure admin pages can scroll - STRONG SCROLL FIX */
+.admin-layout {
+  height: 100vh;
+  overflow: hidden; /* Container doesn't scroll */
+}
+
+.admin-layout main {
+  overflow-y: auto !important; /* Force scroll on main content */
+  overflow-x: hidden !important;
+  height: calc(100vh - 140px) !important; /* Account for header + footer */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.admin-layout main::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-layout main::-webkit-scrollbar-track {
+  background: #f7fafc;
+}
+
+.admin-layout main::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.admin-layout main::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
 }
 
 * {
@@ -13,5 +49,5 @@
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevent body scroll */
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
