@@ -492,92 +492,96 @@ export default function AdminQuestions() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Quản lý câu hỏi mẫu
-          </h1>
-          <p className="text-gray-600 mt-2">
+    <div className="admin-page-container admin-questions-page">
+      <div className="admin-page-header-section">
+        <div className="admin-page-header-content">
+          <h1 className="admin-page-title-main">Quản lý câu hỏi mẫu</h1>
+          <p className="admin-page-subtitle-main">
             Quản lý câu hỏi mẫu để huấn luyện hệ thống phân loại và định tuyến
           </p>
         </div>
-        <Button
-          onClick={handleImportFromFiles}
-          className="flex items-center space-x-2"
-        >
-          <FileText className="h-4 w-4" />
-          <span>Import từ file JSON</span>
-        </Button>
+        <div className="admin-page-actions-main">
+          <Button
+            onClick={handleImportFromFiles}
+            className="shared-button shared-button-primary"
+          >
+            <FileText className="w-4 h-4" />
+            Import từ file JSON
+          </Button>
+        </div>
       </div>
 
-      <Alert>
-        <Info className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Hướng dẫn:</strong> Câu hỏi mẫu giúp hệ thống học cách phân
-          loại và định tuyến câu hỏi mới. Dữ liệu được lưu trong{" "}
-          <code>backend/data/router_examples_smart_v3/</code>
-        </AlertDescription>
-      </Alert>
+      <div className="admin-content-section">
+        <Alert className="questions-alert">
+          <Info className="w-4 h-4" />
+          <AlertDescription>
+            <strong>Hướng dẫn:</strong> Câu hỏi mẫu giúp hệ thống học cách phân
+            loại và định tuyến câu hỏi mới. Dữ liệu được lưu trong{" "}
+            <code className="questions-code">
+              backend/data/router_examples_smart_v3/
+            </code>
+          </AlertDescription>
+        </Alert>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {collections.map((collection) => (
-          <CollectionCard key={collection.id} collection={collection} />
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {collections.map((collection) => (
+            <CollectionCard key={collection.id} collection={collection} />
+          ))}
+        </div>
+
+        {/* Summary Stats */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <MessageSquare className="h-5 w-5" />
+              <span>Thống kê câu hỏi mẫu</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-green-50 p-4 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <FolderOpen className="h-8 w-8 text-green-600" />
+                  <div>
+                    <p className="text-2xl font-bold text-green-900">
+                      {collections.length}
+                    </p>
+                    <p className="text-green-700">Collections</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <MessageSquare className="h-8 w-8 text-blue-600" />
+                  <div>
+                    <p className="text-2xl font-bold text-blue-900">
+                      {collections.reduce(
+                        (total, col) => total + col.questionCount,
+                        0
+                      )}
+                    </p>
+                    <p className="text-blue-700">Câu hỏi</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <FileText className="h-8 w-8 text-orange-600" />
+                  <div>
+                    <p className="text-2xl font-bold text-orange-900">
+                      {collections.reduce(
+                        (total, col) => total + col.questionCount,
+                        0
+                      )}
+                    </p>
+                    <p className="text-orange-700">Training samples</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Summary Stats */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <MessageSquare className="h-5 w-5" />
-            <span>Thống kê câu hỏi mẫu</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <FolderOpen className="h-8 w-8 text-green-600" />
-                <div>
-                  <p className="text-2xl font-bold text-green-900">
-                    {collections.length}
-                  </p>
-                  <p className="text-green-700">Collections</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <MessageSquare className="h-8 w-8 text-blue-600" />
-                <div>
-                  <p className="text-2xl font-bold text-blue-900">
-                    {collections.reduce(
-                      (total, col) => total + col.questionCount,
-                      0
-                    )}
-                  </p>
-                  <p className="text-blue-700">Câu hỏi</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-orange-50 p-4 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <FileText className="h-8 w-8 text-orange-600" />
-                <div>
-                  <p className="text-2xl font-bold text-orange-900">
-                    {collections.reduce(
-                      (total, col) => total + col.questionCount,
-                      0
-                    )}
-                  </p>
-                  <p className="text-orange-700">Training samples</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

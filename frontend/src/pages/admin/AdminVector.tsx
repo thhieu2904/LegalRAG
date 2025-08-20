@@ -71,13 +71,13 @@ export default function AdminVector() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "text-green-600 bg-green-50 border-green-200";
+        return "vector-status-active";
       case "building":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+        return "vector-status-building";
       case "error":
-        return "text-red-600 bg-red-50 border-red-200";
+        return "vector-status-error";
       default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
+        return "vector-status-default";
     }
   };
 
@@ -135,86 +135,78 @@ export default function AdminVector() {
   };
 
   const CollectionCard = ({ collection }: { collection: VectorCollection }) => (
-    <Card className="border-2">
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-3">
-            <Database className="h-6 w-6 text-blue-600 mt-1" />
+    <Card className="vector-collection-card">
+      <CardHeader className="vector-card-header">
+        <div className="vector-card-header-content">
+          <div className="vector-card-icon-title">
+            <Database className="vector-card-icon" />
             <div>
-              <CardTitle className="text-lg">
+              <CardTitle className="vector-card-title">
                 {collection.displayName}
               </CardTitle>
-              <p className="text-sm text-gray-500 mt-1">{collection.name}</p>
+              <p className="vector-card-subtitle">{collection.name}</p>
             </div>
           </div>
-          <div
-            className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
-              collection.status
-            )}`}
-          >
+          <div className={`vector-status ${getStatusColor(collection.status)}`}>
             {getStatusIcon(collection.status)}
             <span>{getStatusText(collection.status)}</span>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="vector-card-content">
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-xl font-bold text-blue-900">
-              {collection.documentCount}
-            </p>
-            <p className="text-xs text-blue-700">Tài liệu</p>
+        <div className="vector-card-stats">
+          <div className="vector-card-stat vector-card-stat-blue">
+            <p className="vector-card-stat-value">{collection.documentCount}</p>
+            <p className="vector-card-stat-label">Tài liệu</p>
           </div>
-          <div className="bg-green-50 p-3 rounded-lg">
-            <p className="text-xl font-bold text-green-900">
+          <div className="vector-card-stat vector-card-stat-green">
+            <p className="vector-card-stat-value">
               {collection.embeddings.toLocaleString()}
             </p>
-            <p className="text-xs text-green-700">Embeddings</p>
+            <p className="vector-card-stat-label">Embeddings</p>
           </div>
-          <div className="bg-orange-50 p-3 rounded-lg">
-            <p className="text-xl font-bold text-orange-900">
-              {collection.size}
-            </p>
-            <p className="text-xs text-orange-700">Dung lượng</p>
+          <div className="vector-card-stat vector-card-stat-orange">
+            <p className="vector-card-stat-value">{collection.size}</p>
+            <p className="vector-card-stat-label">Dung lượng</p>
           </div>
         </div>
 
         {/* Last Updated */}
-        <div className="text-sm text-gray-500">
+        <div className="vector-card-updated">
           Cập nhật cuối: {collection.lastUpdated}
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-2">
+        <div className="vector-card-actions">
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center space-x-1"
+            className="shared-button shared-button-small"
           >
-            <Eye className="h-4 w-4" />
-            <span>Xem</span>
+            <Eye className="w-4 h-4" />
+            Xem
           </Button>
 
           <Button
             variant="outline"
             size="sm"
             onClick={() => handleRebuildCollection(collection.id)}
-            className="flex items-center space-x-1"
+            className="shared-button shared-button-small"
           >
-            <RefreshCw className="h-4 w-4" />
-            <span>Rebuild</span>
+            <RefreshCw className="w-4 h-4" />
+            Rebuild
           </Button>
 
           <Button
             variant="outline"
             size="sm"
             onClick={() => handleDeleteCollection(collection.id)}
-            className="flex items-center space-x-1 text-red-600 hover:text-red-700"
+            className="shared-button shared-button-small shared-button-danger"
           >
-            <Trash2 className="h-4 w-4" />
-            <span>Xóa</span>
+            <Trash2 className="w-4 h-4" />
+            Xóa
           </Button>
         </div>
       </CardContent>
@@ -234,160 +226,150 @@ export default function AdminVector() {
   ).length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+    <div className="admin-page-container admin-vector-page">
+      <div className="admin-page-header-section">
+        <div className="admin-page-header-content">
+          <h1 className="admin-page-title-main">
             Quản lý Cơ sở dữ liệu Vector
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="admin-page-subtitle-main">
             Quản lý các collection văn bản đã được embedding hóa
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="admin-page-actions-main">
           <Button
             variant="outline"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center space-x-2"
+            className="shared-button"
           >
             <RefreshCw
-              className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+              className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
             />
-            <span>Làm mới</span>
+            Làm mới
           </Button>
           <Button
             onClick={handleCreateNewCollection}
-            className="flex items-center space-x-2"
+            className="shared-button shared-button-primary"
           >
-            <Plus className="h-4 w-4" />
-            <span>Tạo Collection</span>
+            <Plus className="w-4 h-4" />
+            Tạo Collection
           </Button>
         </div>
       </div>
 
-      <Alert>
-        <Info className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Lưu ý:</strong> Các collection này chứa dữ liệu đã được
-          embedding hóa để tìm kiếm. Rebuild sẽ tạo lại tất cả embeddings từ tài
-          liệu gốc.
-        </AlertDescription>
-      </Alert>
+      <div className="admin-content-section">
+        <Alert className="vector-alert">
+          <Info className="w-4 h-4" />
+          <AlertDescription>
+            <strong>Lưu ý:</strong> Các collection này chứa dữ liệu đã được
+            embedding hóa để tìm kiếm. Rebuild sẽ tạo lại tất cả embeddings từ
+            tài liệu gốc.
+          </AlertDescription>
+        </Alert>
+      </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Tổng Collections
-                </p>
-                <p className="text-2xl font-bold text-blue-900">
-                  {collections.length}
-                </p>
-                <p className="text-sm text-green-600">
+      <div className="admin-content-section">
+        <div className="admin-vector-stats-grid">
+          <Card className="vector-stat-card">
+            <CardContent className="vector-stat-content">
+              <div className="vector-stat-details">
+                <p className="vector-stat-label">Tổng Collections</p>
+                <p className="vector-stat-value">{collections.length}</p>
+                <p className="vector-stat-note vector-stat-success">
                   {activeCollections} đang hoạt động
                 </p>
               </div>
-              <div className="p-3 rounded-full bg-blue-100">
-                <Database className="h-6 w-6 text-blue-600" />
+              <div className="vector-stat-icon vector-stat-icon-blue">
+                <Database className="w-6 h-6" />
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Tổng Tài liệu
-                </p>
-                <p className="text-2xl font-bold text-green-900">
-                  {totalDocuments}
-                </p>
-                <p className="text-sm text-gray-600">Đã được xử lý</p>
+          <Card className="vector-stat-card">
+            <CardContent className="vector-stat-content">
+              <div className="vector-stat-details">
+                <p className="vector-stat-label">Tổng Tài liệu</p>
+                <p className="vector-stat-value">{totalDocuments}</p>
+                <p className="vector-stat-note">Đã được xử lý</p>
               </div>
-              <div className="p-3 rounded-full bg-green-100">
-                <HardDrive className="h-6 w-6 text-green-600" />
+              <div className="vector-stat-icon vector-stat-icon-green">
+                <HardDrive className="w-6 h-6" />
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Tổng Embeddings
-                </p>
-                <p className="text-2xl font-bold text-orange-900">
+          <Card className="vector-stat-card">
+            <CardContent className="vector-stat-content">
+              <div className="vector-stat-details">
+                <p className="vector-stat-label">Tổng Embeddings</p>
+                <p className="vector-stat-value">
                   {totalEmbeddings.toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600">Vector chunks</p>
+                <p className="vector-stat-note">Vector chunks</p>
               </div>
-              <div className="p-3 rounded-full bg-orange-100">
-                <RefreshCw className="h-6 w-6 text-orange-600" />
+              <div className="vector-stat-icon vector-stat-icon-orange">
+                <RefreshCw className="w-6 h-6" />
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Collections Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {collections.map((collection) => (
-          <CollectionCard key={collection.id} collection={collection} />
-        ))}
+      <div className="admin-content-section">
+        <div className="admin-vector-collections-grid">
+          {collections.map((collection) => (
+            <CollectionCard key={collection.id} collection={collection} />
+          ))}
+        </div>
       </div>
 
       {/* Build Tools */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Công cụ xây dựng Vector Database</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-2">
-              Các bước xây dựng:
-            </h4>
-            <ol className="list-decimal list-inside space-y-1 text-sm text-gray-600">
-              <li>
-                Chuẩn bị tài liệu trong thư mục{" "}
-                <code className="bg-gray-200 px-1 rounded">
-                  backend/data/documents/
-                </code>
-              </li>
-              <li>
-                Chạy tool{" "}
-                <code className="bg-gray-200 px-1 rounded">
-                  python tools/2_build_vectordb.py
-                </code>
-              </li>
-              <li>Chọn collection và cấu hình embedding</li>
-              <li>Hệ thống sẽ tự động tạo embeddings</li>
-            </ol>
-          </div>
+      <div className="admin-content-section">
+        <Card className="vector-build-tools">
+          <CardHeader>
+            <CardTitle className="admin-card-title">
+              Công cụ xây dựng Vector Database
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="vector-build-content">
+            <div className="vector-build-steps">
+              <h4 className="vector-build-steps-title">Các bước xây dựng:</h4>
+              <ol className="vector-build-steps-list">
+                <li>
+                  Chuẩn bị tài liệu trong thư mục{" "}
+                  <code className="vector-code">backend/data/documents/</code>
+                </li>
+                <li>
+                  Chạy tool{" "}
+                  <code className="vector-code">
+                    python tools/2_build_vectordb.py
+                  </code>
+                </li>
+                <li>Chọn collection và cấu hình embedding</li>
+                <li>Hệ thống sẽ tự động tạo embeddings</li>
+              </ol>
+            </div>
 
-          <div className="flex space-x-3">
-            <Button variant="outline" className="flex items-center space-x-2">
-              <RefreshCw className="h-4 w-4" />
-              <span>Rebuild All Collections</span>
-            </Button>
-            <Button variant="outline" className="flex items-center space-x-2">
-              <Database className="h-4 w-4" />
-              <span>Backup Database</span>
-            </Button>
-            <Button variant="outline" className="flex items-center space-x-2">
-              <Eye className="h-4 w-4" />
-              <span>Xem Log Build</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="vector-build-actions">
+              <Button variant="outline" className="shared-button">
+                <RefreshCw className="w-4 h-4" />
+                Rebuild All Collections
+              </Button>
+              <Button variant="outline" className="shared-button">
+                <Database className="w-4 h-4" />
+                Backup Database
+              </Button>
+              <Button variant="outline" className="shared-button">
+                <Eye className="w-4 h-4" />
+                Xem Log Build
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -168,22 +168,20 @@ export default function AdminDatabase() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Cơ sở dữ liệu pháp luật
-          </h1>
-          <p className="text-gray-600 mt-2">
+    <div className="admin-page-container admin-database-page">
+      <div className="admin-page-header-section">
+        <div className="admin-page-header-content">
+          <h1 className="admin-page-title-main">Cơ sở dữ liệu pháp luật</h1>
+          <p className="admin-page-subtitle-main">
             Quản lý collections và documents trong hệ thống
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="admin-page-actions-main">
           {selectedCollection && (
             <Button
               onClick={handleUploadDocument}
-              className="flex items-center gap-2"
+              className="shared-button shared-button-primary"
             >
               <Upload className="w-4 h-4" />
               Tải lên văn bản

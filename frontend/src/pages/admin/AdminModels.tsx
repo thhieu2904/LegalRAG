@@ -360,27 +360,25 @@ export default function AdminModels() {
     );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Quản lý mô hình AI
-          </h1>
-          <p className="text-gray-600 mt-2">
+    <div className="admin-page-container admin-models-page">
+      <div className="admin-page-header-section">
+        <div className="admin-page-header-content">
+          <h1 className="admin-page-title-main">Quản lý mô hình AI</h1>
+          <p className="admin-page-subtitle-main">
             Quản lý các mô hình trí tuệ nhân tạo của hệ thống
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="admin-page-actions-main">
           <Button
             variant="outline"
             onClick={handleRefreshModels}
             disabled={isRefreshing}
-            className="flex items-center space-x-2"
+            className="shared-button"
           >
             <RefreshCw
-              className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+              className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
             />
-            <span>Làm mới</span>
+            Làm mới
           </Button>
           <Button
             onClick={handleSetupAllModels}

@@ -70,129 +70,125 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="admin-page-container admin-dashboard-page">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Tổng quan hệ thống</h1>
-        <p className="text-gray-600 mt-2">
-          Theo dõi hoạt động và hiệu suất của hệ thống Trợ lý Pháp luật AI
-        </p>
+      <div className="admin-page-header-section">
+        <div className="admin-page-header-content">
+          <h1 className="admin-page-title-main">Tổng quan hệ thống</h1>
+          <p className="admin-page-subtitle-main">
+            Theo dõi hoạt động và hiệu suất của hệ thống Trợ lý Pháp luật AI
+          </p>
+        </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index} className="relative overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  {stat.title}
-                </CardTitle>
-                <Icon className={`h-4 w-4 ${stat.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-gray-900">
-                  {stat.value}
-                </div>
-                <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  {stat.change} so với tháng trước
-                </p>
-              </CardContent>
-            </Card>
-          );
-        })}
+      <div className="admin-content-section">
+        <div className="admin-dashboard-stats-grid">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={index} className="admin-stat-card">
+                <CardHeader className="admin-stat-header">
+                  <CardTitle className="admin-stat-title">
+                    {stat.title}
+                  </CardTitle>
+                  <Icon className={`admin-stat-icon ${stat.color}`} />
+                </CardHeader>
+                <CardContent>
+                  <div className="admin-stat-value">{stat.value}</div>
+                  <p className="admin-stat-change positive">
+                    <TrendingUp className="w-3 h-3" />
+                    {stat.change} so với tháng trước
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Questions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Câu hỏi gần đây</CardTitle>
-            <CardDescription>
-              Các câu hỏi mới nhất từ người dùng
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentQuestions.map((question) => (
-                <div
-                  key={question.id}
-                  className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {question.question}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {question.user} • {question.time}
-                    </p>
+      <div className="admin-content-section">
+        <div className="admin-dashboard-content-grid">
+          {/* Recent Questions */}
+          <Card className="admin-content-card">
+            <CardHeader>
+              <CardTitle className="admin-card-title">
+                Câu hỏi gần đây
+              </CardTitle>
+              <CardDescription className="admin-card-description">
+                Các câu hỏi mới nhất từ người dùng
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="questions-list">
+                {recentQuestions.map((question) => (
+                  <div key={question.id} className="question-item">
+                    <div className="question-header">
+                      <p className="question-text">{question.question}</p>
+                      <span
+                        className={`question-status ${
+                          question.status === "Đã trả lời"
+                            ? "status-completed"
+                            : "status-processing"
+                        }`}
+                      >
+                        {question.status}
+                      </span>
+                    </div>
+                    <div className="question-meta">
+                      <span>{question.user}</span>
+                      <span>{question.time}</span>
+                    </div>
                   </div>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      question.status === "Đã trả lời"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {question.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* System Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Trạng thái hệ thống</CardTitle>
-            <CardDescription>
-              Tình trạng hoạt động các thành phần chính
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
-                  Backend API
-                </span>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-sm text-green-600">Hoạt động</span>
+          {/* System Status */}
+          <Card className="admin-content-card">
+            <CardHeader>
+              <CardTitle className="admin-card-title">
+                Trạng thái hệ thống
+              </CardTitle>
+              <CardDescription className="admin-card-description">
+                Tình trạng hoạt động các thành phần chính
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="system-status-list">
+                <div className="system-status-item">
+                  <span className="system-status-label">Backend API</span>
+                  <div className="system-status-indicator">
+                    <div className="status-dot status-healthy"></div>
+                    <span className="system-status healthy">Hoạt động</span>
+                  </div>
+                </div>
+                <div className="system-status-item">
+                  <span className="system-status-label">Vector Database</span>
+                  <div className="system-status-indicator">
+                    <div className="status-dot status-healthy"></div>
+                    <span className="system-status healthy">Hoạt động</span>
+                  </div>
+                </div>
+                <div className="system-status-item">
+                  <span className="system-status-label">AI Models</span>
+                  <div className="system-status-indicator">
+                    <div className="status-dot status-healthy"></div>
+                    <span className="system-status healthy">Hoạt động</span>
+                  </div>
+                </div>
+                <div className="system-status-item">
+                  <span className="system-status-label">Text-to-Speech</span>
+                  <div className="system-status-indicator">
+                    <div className="status-dot status-warning"></div>
+                    <span className="system-status warning">Bảo trì</span>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
-                  Vector Database
-                </span>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-sm text-green-600">Hoạt động</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
-                  AI Models
-                </span>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-sm text-green-600">Hoạt động</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
-                  Text-to-Speech
-                </span>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                  <span className="text-sm text-yellow-600">Bảo trì</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

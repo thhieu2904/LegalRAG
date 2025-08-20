@@ -349,22 +349,26 @@ export default function AdminSystem() {
   );
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Cài đặt hệ thống</h1>
-        <p className="text-gray-600 mt-2">
-          Điều chỉnh cấu hình hoạt động của hệ thống AI
-        </p>
+    <div className="admin-page-container admin-system-page">
+      <div className="admin-page-header-section">
+        <div className="admin-page-header-content">
+          <h1 className="admin-page-title-main">Cài đặt hệ thống</h1>
+          <p className="admin-page-subtitle-main">
+            Điều chỉnh cấu hình hoạt động của hệ thống AI
+          </p>
+        </div>
       </div>
 
-      <Alert>
-        <Info className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Lưu ý:</strong> Thay đổi cài đặt sẽ ghi vào file{" "}
-          <code>backend/.env</code>. Khởi động lại server để áp dụng một số thay
-          đổi.
-        </AlertDescription>
-      </Alert>
+      <div className="admin-content-section">
+        <Alert className="system-alert">
+          <Info className="w-4 h-4" />
+          <AlertDescription>
+            <strong>Lưu ý:</strong> Thay đổi cài đặt sẽ ghi vào file{" "}
+            <code className="system-code">backend/.env</code>. Khởi động lại
+            server để áp dụng một số thay đổi.
+          </AlertDescription>
+        </Alert>
+      </div>
 
       {/* Status */}
       {lastSaved && (

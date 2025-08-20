@@ -30,6 +30,14 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
     setIsListening(false);
   };
 
+  const handleAutoSend = (transcript: string) => {
+    if (transcript.trim() && !disabled) {
+      onSendMessage(transcript.trim());
+      setMessage("");
+      setIsListening(false);
+    }
+  };
+
   const handleVoiceStart = () => {
     setIsListening(true);
     setMessage(""); // Xóa nội dung cũ khi bắt đầu ghi âm
@@ -72,6 +80,7 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
           <VoiceInput
             onTranscriptChange={handleTranscriptChange}
             onFinalTranscript={handleFinalTranscript}
+            onAutoSend={handleAutoSend}
             onStart={handleVoiceStart}
             onStop={handleVoiceStop}
             disabled={disabled}
