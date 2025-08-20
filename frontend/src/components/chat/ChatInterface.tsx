@@ -74,16 +74,16 @@ export function ChatInterface({
   };
 
   return (
-    <div className="chat-interface h-screen flex flex-col bg-gray-50">
+    <div className="chat-interface-container">
       {/* HEADER */}
       <ChatHeader />
 
       {/* CONTENT - Chat messages and input seamless */}
-      <div className="flex-1 flex flex-col min-h-0">
-        <div className="flex-1 flex flex-col bg-white overflow-hidden">
+      <div className="chat-content-wrapper">
+        <div className="chat-main-container">
           {/* Chat messages area - full width */}
-          <ScrollArea ref={scrollAreaRef} className="flex-1 bg-white">
-            <div className="w-full">
+          <ScrollArea ref={scrollAreaRef} className="chat-messages-area">
+            <div className="chat-messages-container">
               {messages.map((message) => (
                 <ChatMessage
                   key={message.id}
@@ -99,35 +99,27 @@ export function ChatInterface({
 
               {/* Loading indicator */}
               {isLoading && (
-                <div className="px-2 py-4 hover:bg-gray-50/50 transition-colors border-b border-gray-50 last:border-b-0">
-                  <div className="w-full">
-                    <div className="flex gap-3 pr-8">
-                      <img
-                        src={logoHCC}
-                        alt="Trợ lý AI"
-                        className="w-10 h-10 flex-shrink-0 ring-2 ring-white shadow-sm rounded-full object-cover"
-                      />
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-blue-700">
-                            Trợ lý AI
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            đang trả lời...
-                          </span>
-                        </div>
-                        <div className="rounded-xl p-4 bg-white border border-blue-100 shadow-sm">
-                          <div className="flex gap-2">
-                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-                            <div
-                              className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                              style={{ animationDelay: "0.1s" }}
-                            ></div>
-                            <div
-                              className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                              style={{ animationDelay: "0.2s" }}
-                            ></div>
-                          </div>
+                <div className="loading-indicator-wrapper">
+                  <div className="loading-indicator-layout">
+                    <img
+                      src={logoHCC}
+                      alt="Trợ lý AI"
+                      className="loading-indicator-avatar"
+                    />
+                    <div className="loading-indicator-content">
+                      <div className="loading-indicator-header">
+                        <span className="loading-indicator-name">
+                          Trợ lý AI
+                        </span>
+                        <span className="loading-indicator-status">
+                          đang trả lời...
+                        </span>
+                      </div>
+                      <div className="loading-indicator-bubble">
+                        <div className="loading-dots-container">
+                          <div className="loading-dot loading-dot-1"></div>
+                          <div className="loading-dot loading-dot-2"></div>
+                          <div className="loading-dot loading-dot-3"></div>
                         </div>
                       </div>
                     </div>
@@ -138,7 +130,7 @@ export function ChatInterface({
           </ScrollArea>
 
           {/* Chat input area - seamless connection */}
-          <div className="border-t border-gray-100 bg-white">
+          <div className="chat-input-wrapper">
             <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
           </div>
         </div>

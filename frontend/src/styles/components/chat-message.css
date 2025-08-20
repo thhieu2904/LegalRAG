@@ -1,0 +1,296 @@
+/* Chat Message Styles */
+
+/* Main Container */
+.chat-message-container {
+  margin-bottom: var(--spacing-4);
+  animation: message-appear var(--duration-normal) var(--ease-out);
+}
+
+@keyframes message-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-message-wrapper {
+  width: 100%;
+}
+
+/* Bot Message Layout */
+.bot-message-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  max-width: 85%;
+  margin-bottom: var(--spacing-1);
+}
+
+.bot-message-layout .message-avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.bot-message-layout .message-content-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.bot-message-layout .message-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-2);
+}
+
+.bot-message-layout .bot-name {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.bot-message-layout .message-timestamp {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.bot-message-layout .processing-time {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary-600);
+}
+
+.bot-message-bubble {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-3) var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+  width: fit-content;
+  max-width: 100%;
+  border-bottom-left-radius: var(--radius-sm);
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.bot-message-bubble:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* User Message Layout */
+.user-message-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  justify-content: flex-end;
+  max-width: 85%;
+  margin-left: auto;
+  margin-bottom: var(--spacing-1);
+}
+
+.user-message-layout .message-avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  order: 2;
+}
+
+.user-message-layout .user-message-content {
+  flex: 1;
+  min-width: 0;
+  order: 1;
+}
+
+.user-message-layout .message-header.user-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-2);
+  justify-content: flex-end;
+}
+
+.user-message-layout .user-name {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.user-message-bubble {
+  background: var(--color-primary-600);
+  color: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-3) var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+  width: fit-content;
+  max-width: 100%;
+  margin-left: auto;
+  border-bottom-right-radius: var(--radius-sm);
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.user-message-bubble:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Common Message Styles */
+.message-text {
+  line-height: var(--line-height-relaxed);
+  font-size: var(--font-size-base); /* Tăng từ sm lên base cho người lớn tuổi */
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  hyphens: auto;
+}
+
+.bot-message-bubble .message-text {
+  color: var(--color-text-primary);
+}
+
+.user-message-bubble .message-text {
+  color: white;
+}
+
+/* Avatar Styles */
+.message-avatar {
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.message-avatar .bot-avatar-fallback {
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+.bot-avatar-image,
+.bot-avatar-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-full);
+}
+
+.message-avatar .user-avatar-fallback {
+  background: var(--color-gray-600);
+  color: white;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+.message-avatar .avatar-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Source Documents */
+.source-documents {
+  margin-top: var(--spacing-3);
+  padding: var(--spacing-3);
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.source-documents-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.source-documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.source-document-item {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary-600);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.source-document-item:hover {
+  color: var(--color-primary-800);
+  text-decoration: underline;
+}
+
+/* Speech Controls */
+.speech-controls-wrapper {
+  margin-top: var(--spacing-2);
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Clarification Options */
+.clarification-options {
+  margin-top: var(--spacing-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.clarification-option {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-3);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.clarification-option:hover {
+  border-color: var(--color-primary-600);
+  background: var(--color-primary-50);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.clarification-option:active {
+  transform: translateY(0);
+}
+
+.option-title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-1);
+  font-size: var(--font-size-sm);
+}
+
+.option-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-2);
+  line-height: var(--line-height-normal);
+}
+
+.option-confidence {
+  font-size: var(--font-size-xs);
+  color: var(--color-success-600);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-1);
+}
+
+.option-examples {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary-700);
+  font-style: italic;
+  line-height: var(--line-height-normal);
+}

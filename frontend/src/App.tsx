@@ -9,9 +9,7 @@ import AdminDatabase from "./pages/admin/AdminDatabase";
 import AdminModels from "./pages/admin/AdminModels";
 import AdminSystem from "./pages/admin/AdminSystem";
 import { VoiceProvider } from "./contexts/VoiceContext";
-import "./App.css";
-import "./styles/chat.css";
-import "./styles/speech.css";
+import "./styles/main.css";
 
 function App() {
   return (

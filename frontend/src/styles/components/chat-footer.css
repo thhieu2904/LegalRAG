@@ -1,0 +1,56 @@
+/* Chat Footer Styles */
+
+/* Main Container */
+.chat-footer-container {
+  background: var(--color-gray-100);
+  border-top: 1px solid var(--color-gray-200);
+  padding: var(--spacing-3) var(--spacing-6);
+  position: relative;
+}
+
+/* Footer Content */
+.chat-footer-content {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.chat-footer-organization,
+.chat-footer-contact {
+  margin-bottom: var(--spacing-1);
+}
+
+.chat-footer-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chat-footer-container {
+    padding: var(--spacing-3) var(--spacing-4);
+  }
+
+  .chat-footer-content {
+    font-size: var(--font-size-xs);
+  }
+
+  .chat-footer-organization,
+  .chat-footer-contact {
+    margin-bottom: var(--spacing-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-footer-container {
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+
+  .chat-footer-organization,
+  .chat-footer-contact {
+    display: block;
+    text-align: left;
+    margin-bottom: var(--spacing-2);
+  }
+}
