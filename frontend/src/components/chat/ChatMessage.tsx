@@ -1,4 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import SpeechControlsSimple from "../SpeechControlsSimple";
 import logoHCC from "../../assets/LOGO_HCC.jpg";
 import { User } from "lucide-react";
 import type {
@@ -89,6 +90,13 @@ export function ChatMessage({
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Text-to-Speech Controls */}
+              {isBot && (
+                <div className="mt-3">
+                  <SpeechControlsSimple text={message} />
                 </div>
               )}
             </div>

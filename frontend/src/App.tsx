@@ -1,25 +1,38 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ChatInterface } from "./components/chat";
-import { ChatService } from "./services/chatService";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminVoice from "./pages/admin/AdminVoice";
+import AdminVector from "./pages/admin/AdminVector";
+import AdminQuestions from "./pages/admin/AdminQuestions";
+import AdminDatabase from "./pages/admin/AdminDatabase";
+import AdminModels from "./pages/admin/AdminModels";
+import AdminSystem from "./pages/admin/AdminSystem";
+import { VoiceProvider } from "./contexts/VoiceContext";
 import "./App.css";
+import "./styles/chat.css";
+import "./styles/speech.css";
 
 function App() {
-  const handleSendMessage = async (message: string): Promise<string> => {
-    try {
-      return (await ChatService.sendMessage(message)).response;
-    } catch (error) {
-      console.error("Error in App:", error);
-      return "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
-    }
-  };
-
-  const handleError = (error: Error) => {
-    console.error("Chat error:", error);
-  };
-
   return (
-    <div className="App">
-      <ChatInterface onSendMessage={handleSendMessage} onError={handleError} />
-    </div>
+    <VoiceProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<ChatInterface />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="voice" element={<AdminVoice />} />
+              <Route path="vector" element={<AdminVector />} />
+              <Route path="legal-database" element={<AdminDatabase />} />
+              <Route path="questions" element={<AdminQuestions />} />
+              <Route path="models" element={<AdminModels />} />
+              <Route path="system" element={<AdminSystem />} />
+            </Route>
+          </Routes>
+        </div>
+      </Router>
+    </VoiceProvider>
   );
 }
 

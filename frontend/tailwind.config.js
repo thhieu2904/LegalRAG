@@ -14,6 +14,10 @@ export default {
         ],
       },
       colors: {
+        background: "#ffffff",
+        primary: "#2563eb",
+        input: "#e5e7eb",
+        "apple-green": "#34C759",
         red: {
           600: "#dc2626",
         },
