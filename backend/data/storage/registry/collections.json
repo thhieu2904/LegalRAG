@@ -1,0 +1,26 @@
+{
+  "collections": {
+    "quy_trinh_cap_ho_tich_cap_xa": {
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa",
+      "document_count": 35,
+      "has_forms": true,
+      "status": "active"
+    },
+    "quy_trinh_chung_thuc": {
+      "path": "collections\\quy_trinh_chung_thuc",
+      "document_count": 15,
+      "has_forms": true,
+      "status": "active"
+    },
+    "quy_trinh_nuoi_con_nuoi": {
+      "path": "collections\\quy_trinh_nuoi_con_nuoi",
+      "document_count": 3,
+      "has_forms": true,
+      "status": "active"
+    }
+  },
+  "total_collections": 3,
+  "total_documents": 53,
+  "last_updated": "2025-08-21T15:58:00.958101",
+  "structure_version": "final_v1"
+}

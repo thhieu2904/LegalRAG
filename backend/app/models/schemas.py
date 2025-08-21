@@ -93,11 +93,24 @@ class DocumentChunk(BaseModel):
     processing_time: Optional[str] = Field(None, description="Thời gian xử lý thủ tục")
     fee_info: Optional[str] = Field(None, description="Thông tin lệ phí")
     legal_basis: List[str] = Field(default=[], description="Căn cứ pháp lý")
+    # Form-related fields
+    has_form: bool = Field(default=False, description="Có form đi kèm không")
+    form_url: Optional[str] = Field(None, description="URL download form (nếu có)")
+
+class FormAttachment(BaseModel):
+    """Form file đi kèm với response"""
+    document_id: str = Field(..., description="ID của document")
+    document_title: str = Field(..., description="Tiêu đề document")
+    form_filename: str = Field(..., description="Tên file form")
+    form_url: str = Field(..., description="URL download form")
+    collection_id: str = Field(..., description="Collection chứa form")
 
 class QueryResponse(BaseModel):
     answer: str = Field(..., description="Câu trả lời của AI với nguồn tham khảo")
     sources: List[DocumentChunk] = Field(..., description="Các chunk tài liệu tham khảo")
     source_files: List[str] = Field(default=[], description="Danh sách tên file tham khảo")
+    # Form attachments
+    form_attachments: List[FormAttachment] = Field(default=[], description="Danh sách form đi kèm")
     collections_used: Optional[List[str]] = Field(default=[], description="Danh sách collection đã sử dụng")
     routing_info: Optional[dict] = Field(default={}, description="Thông tin về query routing")
     processing_time: float = Field(..., description="Thời gian xử lý (giây)")

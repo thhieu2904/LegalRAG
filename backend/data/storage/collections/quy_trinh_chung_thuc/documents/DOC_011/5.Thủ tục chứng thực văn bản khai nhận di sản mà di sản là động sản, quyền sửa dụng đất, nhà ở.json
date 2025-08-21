@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/5.Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sửa dụng đất, nhà ở.doc",
+    "title": "Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sử dụng đất, nhà ở",
+    "code": "QT 05/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Không quá 02 ngày làm việc. Có thể kéo dài hơn theo thỏa thuận.",
+    "fee_vnd": 50000,
+    "fee_text": "50.000 đồng/văn bản.",
+    "has_form": false,
+    "requirements_conditions": null,
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Thông tư số 01/2020/TT-BTP",
+      "Thông tư số 226/2016/TT-BTC"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ",
+      "content": "Người yêu cầu chứng thực cần nộp 01 bộ hồ sơ, bao gồm:\n1.  **Dự thảo văn bản khai nhận di sản.**\n2.  **Bản sao giấy chứng nhận quyền sở hữu, quyền sử dụng** hoặc bản sao giấy tờ thay thế đối với tài sản phải đăng ký quyền sở hữu, quyền sử dụng.\n\n**Lưu ý:** Khi nộp bản sao giấy tờ về quyền sở hữu, quyền sử dụng, phải xuất trình kèm theo bản chính để đối chiếu.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "chứng thực",
+        "khai nhận di sản",
+        "dự thảo văn bản",
+        "giấy chứng nhận quyền sở hữu"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Không quá 02 ngày làm việc, kể từ ngày nhận đủ hồ sơ yêu cầu chứng thực. Thời hạn có thể kéo dài hơn theo thỏa thuận bằng văn bản với người yêu cầu. Trường hợp kéo dài, người tiếp nhận phải có phiếu hẹn ghi rõ thời gian trả kết quả.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "2 ngày",
+        "thỏa thuận",
+        "phiếu hẹn"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Cá nhân, tổ chức.\n**Cơ quan thực hiện:** Ủy ban nhân dân cấp xã.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": ["đối tượng", "cơ quan", "thẩm quyền", "UBND cấp xã"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả:** Văn bản khai nhận di sản được chứng thực.\n**Lệ phí:** 50.000 đồng/văn bản.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": ["kết quả", "văn bản được chứng thực", "lệ phí", "phí"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 02 ngày làm việc.\n**Các bước thực hiện:**\n1.  **Công chức tại Trung tâm hành chính công cấp xã:** Tiếp nhận hồ sơ, ghi giấy biên nhận/phiếu hẹn (½ ngày).\n2.  **Văn phòng HĐND và UBND cấp xã:** Kiểm tra tính pháp lý và nội dung hồ sơ (1 ngày).\n3.  **Lãnh đạo UBND cấp xã:** Xem xét và ký chứng thực.\n4.  **Văn thư:** Đóng dấu (½ ngày).\n5.  **Công chức tại Trung tâm hành chính công cấp xã:** Thu lệ phí và trả hồ sơ cho người dân.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "kiểm tra pháp lý",
+        "ký chứng thực",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/10. Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã.doc",
+    "title": "Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã",
+    "code": "QT 10/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu. Nếu nhận sau 15 giờ thì trả kết quả vào ngày làm việc tiếp theo.",
+    "fee_vnd": 10000,
+    "fee_text": "10.000 đồng/trường hợp.",
+    "has_form": false,
+    "requirements_conditions": "**Điều kiện đối với người dịch:**\n- Phải là người tự dịch giấy tờ, văn bản của chính mình.\n\n**Các loại giấy tờ, văn bản không được dịch để chứng thực chữ ký:**\n- Giấy tờ, văn bản đã bị tẩy xóa, sửa chữa, thêm, bớt nội dung không hợp lệ.\n- Giấy tờ, văn bản bị hư hỏng, cũ nát không xác định được nội dung.\n- Giấy tờ, văn bản đóng dấu \"Mật\" hoặc ghi rõ không được dịch.\n- Giấy tờ, văn bản có nội dung trái pháp luật, đạo đức xã hội; tuyên truyền, kích động chiến tranh; xuyên tạc lịch sử; xúc phạm danh dự, nhân phẩm của cá nhân, tổ chức.\n- Giấy tờ, văn bản do cơ quan nước ngoài cấp, công chứng hoặc chứng nhận chưa được hợp pháp hóa lãnh sự (trừ một số giấy tờ được miễn như hộ chiếu, thẻ căn cước, giấy phép lái xe, bằng cấp và bảng điểm kèm theo).",
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Thông tư số 01/2020/TT-BTP",
+      "Thông tư số 226/2016/TT-BTC",
+      "Thông tư số 08/2025/TT-BTP"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "Người yêu cầu chứng thực (người dịch) phải xuất trình các giấy tờ sau:\n\n1.  **Bản chính hoặc bản sao có chứng thực giấy tờ tùy thân** còn giá trị sử dụng (CCCD/CMND/Hộ chiếu...) hoặc Căn cước điện tử.\n2.  **Bản chính hoặc bản sao có chứng thực bằng cấp chuyên môn ngoại ngữ:** Bằng cử nhân ngoại ngữ trở lên hoặc bằng tốt nghiệp đại học trở lên về thứ tiếng nước ngoài cần dịch.\n    * Trong trường hợp dịch ngôn ngữ không phổ biến mà người dịch không có bằng cấp nhưng thông thạo, phải nộp **bản cam kết** về việc thông thạo ngôn ngữ đó và chịu trách nhiệm về nội dung bản dịch.\n3.  **Bản dịch** đính kèm với giấy tờ, văn bản gốc cần dịch.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "chứng thực chữ ký người dịch",
+        "bằng cấp ngoại ngữ",
+        "bản cam kết",
+        "bản dịch"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Ngay trong ngày cơ quan, tổ chức tiếp nhận yêu cầu hoặc trong ngày làm việc tiếp theo nếu tiếp nhận yêu cầu sau 15 giờ. Người tiếp nhận hồ sơ phải có phiếu hẹn ghi rõ thời gian trả kết quả nếu không thể trả ngay.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "trong ngày", "ngay lập tức"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Yêu cầu, điều kiện và các trường hợp không được dịch",
+      "content": "**Điều kiện:**\n- Ủy ban nhân dân cấp xã chỉ chứng thực chữ ký trong trường hợp người dịch tự dịch giấy tờ, văn bản của chính mình.\n\n**Các loại giấy tờ, văn bản không được dịch để chứng thực chữ ký:**\n- Giấy tờ, văn bản đã bị tẩy xóa, sửa chữa, thêm, bớt nội dung không hợp lệ.\n- Giấy tờ, văn bản bị hư hỏng, cũ nát không xác định được nội dung.\n- Giấy tờ, văn bản đóng dấu mật của cơ quan, tổ chức có thẩm quyền hoặc không đóng dấu mật nhưng ghi rõ không được dịch.\n- Giấy tờ, văn bản có nội dung trái pháp luật, đạo đức xã hội; tuyên truyền, kích động chiến tranh; xuyên tạc lịch sử; xúc phạm danh dự, nhân phẩm, uy tín của cá nhân, tổ chức.\n- Giấy tờ, văn bản do cơ quan nước ngoài cấp, công chứng hoặc chứng nhận chưa được hợp pháp hóa lãnh sự (trừ một số giấy tờ được miễn như hộ chiếu, thẻ căn cước, giấy phép lái xe, bằng cấp và bảng điểm kèm theo).",
+      "source_reference": "Mục 5.h",
+      "keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "không được dịch",
+        "tự dịch",
+        "dấu mật",
+        "nội dung cấm",
+        "hợp pháp hóa lãnh sự"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** Tối đa 01 ngày làm việc.\n**Các bước thực hiện:**\n1.  **Công chức tại Trung tâm hành chính công cấp xã:** Tiếp nhận hồ sơ và ghi phiếu hẹn.\n2.  **Văn phòng HĐND và UBND cấp xã:** Kiểm tra tính pháp lý của hồ sơ.\n3.  **Lãnh đạo UBND cấp xã:** Xem xét và ký chứng thực chữ ký người dịch.\n4.  **Văn thư:** Đóng dấu.\n5.  **Công chức tại Trung tâm hành chính công cấp xã:** Thu lệ phí và trả hồ sơ.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "kiểm tra pháp lý",
+        "ký chứng thực"
+      ]
+    }
+  ]
+}

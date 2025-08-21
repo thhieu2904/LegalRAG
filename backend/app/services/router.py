@@ -9,11 +9,26 @@ import json
 import os
 import pickle
 import time
+import sys
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Import PathConfig for new structure with multiple fallbacks
+PathConfig = None
+try:
+    from ..core.path_config import PathConfig
+except ImportError:
+    try:
+        from app.core.path_config import PathConfig
+    except ImportError:
+        try:
+            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from core.path_config import PathConfig
+        except ImportError:
+            pass
+    
 logger = logging.getLogger(__name__)
 
 class QueryRouter:
@@ -177,30 +192,71 @@ class QueryRouter:
             return {}
     
     def _load_from_cache(self) -> bool:
-        """Load router data from cache if available"""
+        """Load router data from cache if available - Updated for new structure"""
         try:
             if not os.path.exists(self.cache_file):
                 logger.info("📦 No router cache found")
                 return False
             
-            # Check cache freshness - với tolerance 10 seconds để tránh race condition
+            # Check cache freshness against new structure
             cache_time = os.path.getmtime(self.cache_file)
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
+            tolerance = 10  # seconds tolerance
             
-            if os.path.exists(router_smart_path):
-                from pathlib import Path
-                router_files = list(Path(router_smart_path).rglob("*.json"))
-                
-                if router_files:
-                    newest_router = max(f.stat().st_mtime for f in router_files)
-                    # Thêm tolerance 10 giây để tránh cache bị invalidate không cần thiết
-                    if cache_time < (newest_router - 10):
-                        logger.info(f"🔄 Cache is older than router files (cache: {cache_time}, newest: {newest_router})")
-                        return False
+            # Check against new structure router files
+            try:
+                if PathConfig:
+                    path_config = PathConfig()
+                    
+                    # Get all router_questions.json files in new structure
+                    router_files = path_config.get_all_router_files()
+                    
+                    if router_files:
+                        # Find newest router file
+                        newest_router_time = 0
+                        for router_info in router_files:
+                            router_path = router_info.get('router_path')
+                            if router_path and os.path.exists(router_path):
+                                file_time = os.path.getmtime(router_path)
+                                newest_router_time = max(newest_router_time, file_time)
+                        
+                        # Check cache freshness with tolerance
+                        if cache_time < (newest_router_time - tolerance):
+                            logger.info(f"🔄 Cache outdated vs new structure (cache: {cache_time}, newest: {newest_router_time})")
+                            return False
+                        else:
+                            logger.info(f"📦 Cache is fresh vs new structure (tolerance: {tolerance}s)")
                     else:
-                        logger.info(f"📦 Cache is fresh enough (tolerance: 10s)")
+                        logger.info("📦 No router files found in new structure, checking old structure...")
+                        
+                        # Fallback: check old structure if new structure empty
+                        router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
+                        if os.path.exists(router_smart_path):
+                            from pathlib import Path
+                            old_router_files = list(Path(router_smart_path).rglob("*.json"))
+                            
+                            if old_router_files:
+                                newest_router = max(f.stat().st_mtime for f in old_router_files)
+                                if cache_time < (newest_router - tolerance):
+                                    logger.info(f"🔄 Cache older than old structure files")
+                                    return False
                 else:
-                    logger.info("📦 No router files found, using cache")
+                    # PathConfig not available, use old structure check
+                    logger.info("📦 PathConfig not available, using old structure check...")
+                    router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
+                    if os.path.exists(router_smart_path):
+                        from pathlib import Path
+                        old_router_files = list(Path(router_smart_path).rglob("*.json"))
+                        
+                        if old_router_files:
+                            newest_router = max(f.stat().st_mtime for f in old_router_files)
+                            if cache_time < (newest_router - tolerance):
+                                logger.info(f"🔄 Cache older than old structure files")
+                                return False
+            
+            except Exception as e:
+                logger.warning(f"⚠️ Error checking cache freshness: {e}")
+                # If freshness check fails, load from cache anyway (safer)
+                logger.info("📦 Using cache despite freshness check failure")
             
             # Load cache
             logger.info("📦 Loading router from cache...")
@@ -209,9 +265,15 @@ class QueryRouter:
             with open(self.cache_file, 'rb') as f:
                 cache_data = pickle.load(f)
             
-            # Validate structure
+            # Validate cache structure
             if not all(key in cache_data for key in ['metadata', 'questions', 'embeddings']):
                 logger.warning("⚠️ Invalid cache structure")
+                return False
+            
+            # Check cache version compatibility
+            cache_version = cache_data.get('metadata', {}).get('version', '0.0')
+            if cache_version < '1.0':
+                logger.info(f"🔄 Cache version {cache_version} too old, rebuilding...")
                 return False
             
             # Load data
@@ -276,33 +338,30 @@ class QueryRouter:
             pass
     
     def _load_example_questions(self):
-        """Load all example questions from individual router JSON files"""
+        """Load all example questions from new storage structure with CRUD support"""
         try:
-            # Get router_examples_smart_v3 path
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
+            # Use PathConfig to access new structure
+            if not PathConfig:
+                logger.error("❌ PathConfig not available, cannot load from new structure")
+                return
+                
+            path_config = PathConfig()
             
-            if not os.path.exists(router_smart_path):
-                logger.warning(f"Router examples directory not found: {router_smart_path}")
+            # Get all collections from new structure
+            collections = path_config.list_collections()
+            if not collections:
+                logger.warning("No collections found in new storage structure")
                 return
             
-            from pathlib import Path
-            router_path = Path(router_smart_path)
-            json_files = list(router_path.rglob("*.json"))
-            
-            # Exclude summary files
-            json_files = [f for f in json_files if not f.name.endswith('_summary.json')]
+            logger.info(f"📂 Loading router questions from {len(collections)} collections in new structure...")
             
             # Reset collections
             self.collection_mappings = {}
             collections_data = {}
             
-            for json_file in json_files:
+            for collection_name in collections:
                 try:
-                    with open(json_file, 'r', encoding='utf-8') as f:
-                        router_data = json.load(f)
-                    
-                    # Get collection from metadata
-                    collection_name = router_data.get('expected_collection', 'general')
+                    logger.info(f"📋 Processing collection: {collection_name}")
                     
                     if collection_name not in collections_data:
                         collections_data[collection_name] = []
@@ -311,33 +370,49 @@ class QueryRouter:
                             'total_questions': 0
                         }
                     
-                    # Extract questions from individual router file
-                    main_question = {
-                        'text': router_data.get('main_question', ''),
-                        'collection': collection_name,
-                        'source': router_data.get('metadata', {}).get('title', ''),
-                        'keywords': router_data.get('smart_filters', {}).get('title_keywords', []),
-                        'type': 'main',
-                        'filters': router_data.get('smart_filters', {}),
-                        'priority_score': router_data.get('priority_score', 0.5)
-                    }
-                    collections_data[collection_name].append(main_question)
+                    # Get all documents in this collection
+                    documents = path_config.list_documents(collection_name)
                     
-                    # Add question variants
-                    for variant in router_data.get('question_variants', []):
-                        variant_question = {
-                            'text': variant,
-                            'collection': collection_name,
-                            'source': router_data.get('metadata', {}).get('title', ''),
-                            'keywords': router_data.get('smart_filters', {}).get('title_keywords', []),
-                            'type': 'variant',
-                            'filters': router_data.get('smart_filters', {}),
-                            'priority_score': router_data.get('priority_score', 0.5) - 0.1
-                        }
-                        collections_data[collection_name].append(variant_question)
+                    for doc_info in documents:
+                        doc_id = None  # Initialize doc_id
+                        try:
+                            # Extract doc_id from document info
+                            doc_id = doc_info.get('doc_id') if isinstance(doc_info, dict) else doc_info
+                            if not doc_id:
+                                continue
+                            
+                            # Check if document has router questions
+                            has_router = doc_info.get('has_router', False) if isinstance(doc_info, dict) else False
+                            if not has_router:
+                                continue
+                            
+                            # Try to load router questions for this document
+                            router_questions_path = path_config.get_document_router(collection_name, doc_id)
+                            
+                            if os.path.exists(router_questions_path):
+                                with open(router_questions_path, 'r', encoding='utf-8') as f:
+                                    router_data = json.load(f)
+                                
+                                # Extract questions with CRUD support
+                                questions = self._extract_questions_with_crud_support(router_data, collection_name)
+                                collections_data[collection_name].extend(questions)
+                                
+                                logger.debug(f"✅ Loaded {len(questions)} questions from {doc_id}")
+                            else:
+                                # If no router_questions.json, create basic questions from document
+                                doc_data = path_config.load_document_json(collection_name, doc_id)
+                                if doc_data:
+                                    basic_questions = self._create_basic_questions_from_document(doc_data, collection_name, doc_id)
+                                    collections_data[collection_name].extend(basic_questions)
+                                    logger.debug(f"✅ Created {len(basic_questions)} basic questions from {doc_id}")
+                        
+                        except Exception as e:
+                            doc_id_str = doc_id if doc_id else "unknown"
+                            logger.warning(f"⚠️ Error processing document {doc_id_str}: {e}")
+                            continue
                 
                 except Exception as e:
-                    logger.warning(f"⚠️ Error processing {json_file.name}: {e}")
+                    logger.warning(f"⚠️ Error processing collection {collection_name}: {e}")
                     continue
             
             # Store loaded questions and update counts
@@ -350,7 +425,7 @@ class QueryRouter:
                 self.collection_mappings[collection_name]['total_questions'] = len(questions)
                 total_questions += len(questions)
             
-            logger.info(f"📚 Loaded {total_questions} example questions from {len(json_files)} individual files")
+            logger.info(f"📚 Loaded {total_questions} example questions from {len(collections)} collections in new structure")
             logger.info(f"📂 Collections: {list(collections_data.keys())}")
             
             # Build embeddings cache if needed
@@ -358,7 +433,150 @@ class QueryRouter:
                 self._build_embeddings_cache()
             
         except Exception as e:
-            logger.error(f"❌ Error loading example questions: {e}")
+            logger.error(f"❌ Error loading example questions from new structure: {e}")
+    
+    def _create_basic_questions_from_document(self, doc_data: Dict[str, Any], collection_name: str, doc_id: str) -> List[Dict[str, Any]]:
+        """Create basic questions from document when no router_questions.json exists"""
+        try:
+            questions = []
+            title = doc_data.get('metadata', {}).get('title', f'Document {doc_id}')
+            
+            # Create main question
+            main_question = {
+                'id': f'{doc_id}_main',
+                'text': f'Thủ tục {title}',
+                'collection': collection_name,
+                'source': title,
+                'keywords': [title.lower()],
+                'type': 'main',
+                'category': 'main_procedure',
+                'priority_score': 1.0,
+                'status': 'active'
+            }
+            questions.append(main_question)
+            
+            # Create variant questions based on content
+            content = doc_data.get('content', '')
+            if 'thủ tục' in content.lower():
+                variant1 = {
+                    'id': f'{doc_id}_variant_1',
+                    'text': f'Làm thế nào để {title.lower()}?',
+                    'collection': collection_name,
+                    'source': title,
+                    'keywords': ['thủ tục', 'làm thế nào'],
+                    'type': 'variant',
+                    'category': 'procedure_variant',
+                    'priority_score': 0.8,
+                    'status': 'active'
+                }
+                questions.append(variant1)
+            
+            if 'hồ sơ' in content.lower():
+                variant2 = {
+                    'id': f'{doc_id}_variant_2', 
+                    'text': f'Cần chuẩn bị hồ sơ gì cho {title.lower()}?',
+                    'collection': collection_name,
+                    'source': title,
+                    'keywords': ['hồ sơ', 'cần chuẩn bị'],
+                    'type': 'variant',
+                    'category': 'document_requirements',
+                    'priority_score': 0.7,
+                    'status': 'active'
+                }
+                questions.append(variant2)
+            
+            return questions
+            
+        except Exception as e:
+            logger.error(f"❌ Error creating basic questions from document {doc_id}: {e}")
+            return []
+    
+    def _extract_questions_with_crud_support(self, router_data: Dict[str, Any], collection_name: str) -> List[Dict[str, Any]]:
+        """Extract questions with support for both old and new CRUD formats"""
+        questions = []
+        
+        try:
+            # 🔥 NEW FORMAT: CRUD-ready with individual question objects
+            if "crud_config" in router_data and router_data.get("crud_config", {}).get("enable_crud", False):
+                logger.info(f"📋 Loading CRUD format for {collection_name}")
+                
+                # Main question
+                main_q = router_data.get("main_question", {})
+                if main_q and main_q.get("text"):
+                    questions.append({
+                        'id': main_q.get('id', 'main_001'),
+                        'text': main_q['text'],
+                        'collection': collection_name,
+                        'source': router_data.get('metadata', {}).get('document_title', ''),
+                        'keywords': main_q.get('tags', []),
+                        'type': 'main',
+                        'filters': router_data.get('smart_filters', {}),
+                        'priority_score': main_q.get('priority', 1.0),
+                        'category': main_q.get('category', 'main_procedure'),
+                        'status': main_q.get('status', 'active'),
+                        'created_at': main_q.get('created_at'),
+                        'updated_at': main_q.get('updated_at'),
+                        'embedding_vector': main_q.get('embedding_vector')  # Pre-computed if available
+                    })
+                
+                # Individual questions with IDs
+                for question_obj in router_data.get("questions", []):
+                    if question_obj.get('status') == 'active':  # Only load active questions
+                        questions.append({
+                            'id': question_obj.get('id', f'q_{len(questions):03d}'),
+                            'text': question_obj['text'],
+                            'collection': collection_name,
+                            'source': router_data.get('metadata', {}).get('document_title', ''),
+                            'keywords': question_obj.get('tags', []),
+                            'type': 'variant',
+                            'filters': router_data.get('smart_filters', {}),
+                            'priority_score': question_obj.get('frequency_score', 0.5),
+                            'category': question_obj.get('category', 'procedure_variant'),
+                            'status': question_obj.get('status', 'active'),
+                            'created_at': question_obj.get('created_at'),
+                            'updated_at': question_obj.get('updated_at'),
+                            'embedding_vector': question_obj.get('embedding_vector')  # Pre-computed if available
+                        })
+                
+                logger.info(f"✅ Loaded {len(questions)} questions from CRUD format")
+            
+            # 🔄 LEGACY FORMAT: Backward compatibility
+            else:
+                logger.info(f"📋 Loading legacy format for {collection_name}")
+                
+                # Main question (legacy)
+                main_question = {
+                    'text': router_data.get('main_question', ''),
+                    'collection': collection_name,
+                    'source': router_data.get('metadata', {}).get('title', ''),
+                    'keywords': router_data.get('smart_filters', {}).get('title_keywords', []),
+                    'type': 'main',
+                    'filters': router_data.get('smart_filters', {}),
+                    'priority_score': router_data.get('priority_score', 0.5)
+                }
+                if main_question['text']:
+                    questions.append(main_question)
+                
+                # Question variants (legacy)
+                for variant in router_data.get('question_variants', []):
+                    variant_question = {
+                        'text': variant,
+                        'collection': collection_name,
+                        'source': router_data.get('metadata', {}).get('title', ''),
+                        'keywords': router_data.get('smart_filters', {}).get('title_keywords', []),
+                        'type': 'variant',
+                        'filters': router_data.get('smart_filters', {}),
+                        'priority_score': router_data.get('priority_score', 0.5) - 0.1
+                    }
+                    questions.append(variant_question)
+                
+                logger.info(f"✅ Loaded {len(questions)} questions from legacy format")
+            
+            return questions
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting questions from router data: {e}")
+            return []
     
     def _build_embeddings_cache(self):
         """Build embeddings cache for loaded questions"""
@@ -653,6 +871,337 @@ class QueryRouter:
     def get_example_questions_for_collection(self, collection_name: str) -> List[Dict[str, Any]]:
         """Trả về tất cả example questions cho một collection"""
         return self.example_questions.get(collection_name, [])
+    
+    # 🔥 NEW: CRUD Methods for Router Questions Management
+    def add_question(self, collection_name: str, question_data: Dict[str, Any]) -> bool:
+        """Add a new question to the router system with CRUD support"""
+        try:
+            from datetime import datetime
+            
+            # Validate required fields
+            if not question_data.get('text'):
+                logger.error("❌ Question text is required")
+                return False
+            
+            # Generate ID if not provided
+            if 'id' not in question_data:
+                existing_ids = set()
+                for questions in self.example_questions.get(collection_name, []):
+                    if questions.get('id'):
+                        existing_ids.add(questions['id'])
+                
+                # Generate unique ID
+                counter = 1
+                while f"q_{counter:03d}" in existing_ids:
+                    counter += 1
+                question_data['id'] = f"q_{counter:03d}"
+            
+            # Set defaults
+            question_data.setdefault('collection', collection_name)
+            question_data.setdefault('type', 'variant')
+            question_data.setdefault('status', 'active')
+            question_data.setdefault('priority_score', 0.5)
+            question_data.setdefault('category', 'user_generated')
+            question_data.setdefault('created_at', datetime.now().isoformat())
+            question_data.setdefault('updated_at', datetime.now().isoformat())
+            
+            # Add to in-memory collection
+            if collection_name not in self.example_questions:
+                self.example_questions[collection_name] = []
+            
+            self.example_questions[collection_name].append(question_data)
+            
+            # Update collection mappings
+            if collection_name not in self.collection_mappings:
+                self.collection_mappings[collection_name] = {
+                    'display_name': collection_name.replace('_', ' ').title(),
+                    'total_questions': 0
+                }
+            self.collection_mappings[collection_name]['total_questions'] += 1
+            
+            # 🔥 Incremental vector update
+            try:
+                # Combine question text with keywords for vectorization
+                keywords_text = " ".join(question_data.get('keywords', []))
+                combined_text = f"{question_data['text']} {keywords_text}"
+                
+                # Generate embedding vector
+                new_vector = self.embedding_model.encode([combined_text])[0]
+                
+                # Update question_vectors for this collection
+                if collection_name in self.question_vectors:
+                    # Append to existing vectors
+                    current_vectors = self.question_vectors[collection_name]
+                    self.question_vectors[collection_name] = np.vstack([current_vectors, new_vector])
+                else:
+                    # Create new vector array
+                    self.question_vectors[collection_name] = np.array([new_vector])
+                
+                logger.info(f"✅ Added vector for new question: {question_data['id']}")
+            except Exception as e:
+                logger.warning(f"⚠️ Could not generate vector for new question: {e}")
+            
+            logger.info(f"✅ Added question {question_data['id']} to collection {collection_name}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Error adding question: {e}")
+            return False
+    
+    def update_question(self, collection_name: str, question_id: str, updates: Dict[str, Any]) -> bool:
+        """Update an existing question in the router system"""
+        try:
+            from datetime import datetime
+            
+            if collection_name not in self.example_questions:
+                logger.error(f"❌ Collection {collection_name} not found")
+                return False
+            
+            # Find question by ID
+            question_index = None
+            for i, question in enumerate(self.example_questions[collection_name]):
+                if question.get('id') == question_id:
+                    question_index = i
+                    break
+            
+            if question_index is None:
+                logger.error(f"❌ Question {question_id} not found in collection {collection_name}")
+                return False
+            
+            # Apply updates
+            original_question = self.example_questions[collection_name][question_index]
+            for key, value in updates.items():
+                if key != 'id':  # Don't allow ID changes
+                    original_question[key] = value
+            
+            # Update timestamp
+            original_question['updated_at'] = datetime.now().isoformat()
+            
+            # Update vector if text or keywords changed
+            if ('text' in updates or 'keywords' in updates) and collection_name in self.question_vectors:
+                try:
+                    # Combine updated text with keywords
+                    keywords_text = " ".join(original_question.get('keywords', []))
+                    combined_text = f"{original_question['text']} {keywords_text}"
+                    
+                    # Generate new vector
+                    new_vector = self.embedding_model.encode([combined_text])[0]
+                    
+                    # Update in question_vectors array
+                    if question_index < len(self.question_vectors[collection_name]):
+                        self.question_vectors[collection_name][question_index] = new_vector
+                    
+                    logger.info(f"✅ Updated vector for question: {question_id}")
+                except Exception as e:
+                    logger.warning(f"⚠️ Could not update vector: {e}")
+            
+            logger.info(f"✅ Updated question {question_id} in collection {collection_name}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Error updating question: {e}")
+            return False
+    
+    def delete_question(self, collection_name: str, question_id: str) -> bool:
+        """Delete a question from the router system (soft delete)"""
+        try:
+            from datetime import datetime
+            
+            if collection_name not in self.example_questions:
+                logger.error(f"❌ Collection {collection_name} not found")
+                return False
+            
+            # Find and mark as deleted (soft delete)
+            for question in self.example_questions[collection_name]:
+                if question.get('id') == question_id:
+                    question['status'] = 'deleted'
+                    question['updated_at'] = datetime.now().isoformat()
+                    
+                    # Update collection count
+                    if collection_name in self.collection_mappings:
+                        self.collection_mappings[collection_name]['total_questions'] -= 1
+                    
+                    logger.info(f"✅ Soft deleted question {question_id} from collection {collection_name}")
+                    return True
+            
+            logger.error(f"❌ Question {question_id} not found in collection {collection_name}")
+            return False
+            
+        except Exception as e:
+            logger.error(f"❌ Error deleting question: {e}")
+            return False
+    
+    def get_questions_by_collection(self, collection_name: str, include_deleted: bool = False) -> List[Dict[str, Any]]:
+        """Get all questions in a collection with optional filtering"""
+        try:
+            if collection_name not in self.example_questions:
+                return []
+            
+            questions = self.example_questions[collection_name]
+            
+            if not include_deleted:
+                questions = [q for q in questions if q.get('status', 'active') != 'deleted']
+            
+            return questions
+            
+        except Exception as e:
+            logger.error(f"❌ Error getting questions for collection {collection_name}: {e}")
+            return []
+    
+    def search_questions(self, query: str, collection_name: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
+        """Search questions by text similarity with optional collection filtering"""
+        try:
+            if not self.question_vectors:
+                logger.warning("⚠️ No question vectors available for search")
+                return []
+            
+            # Generate query embedding
+            query_embedding = self.embedding_model.encode([query])
+            
+            # Get results from each collection
+            all_results = []
+            
+            for coll_name, vectors in self.question_vectors.items():
+                # Skip if collection filter is specified and doesn't match
+                if collection_name is not None and coll_name != collection_name:
+                    continue
+                
+                # Get questions for this collection (only active ones)
+                questions = self.get_questions_by_collection(coll_name, include_deleted=False)
+                
+                if len(questions) == 0 or len(vectors) == 0:
+                    continue
+                
+                # Calculate similarities using vectorized operations
+                from sklearn.metrics.pairwise import cosine_similarity
+                similarities = cosine_similarity(query_embedding, vectors)[0]
+                
+                # Create results with similarity scores
+                for i, (question, similarity) in enumerate(zip(questions, similarities)):
+                    if i < len(similarities):  # Safety check
+                        all_results.append({
+                            **question,
+                            'similarity_score': float(similarity)
+                        })
+            
+            # Sort by similarity and return top results
+            all_results.sort(key=lambda x: x['similarity_score'], reverse=True)
+            return all_results[:limit]
+            
+        except Exception as e:
+            logger.error(f"❌ Error searching questions: {e}")
+            return []
+    
+    def save_questions_to_file(self, collection_name: str) -> bool:
+        """Save questions back to individual router_questions.json files in new structure"""
+        try:
+            import json
+            from datetime import datetime
+            
+            if not PathConfig:
+                logger.error("❌ PathConfig not available, cannot save to new structure")
+                return False
+                
+            path_config = PathConfig()
+            
+            # Get questions for this collection
+            questions = self.get_questions_by_collection(collection_name, include_deleted=True)
+            if not questions:
+                logger.warning(f"No questions found for collection {collection_name}")
+                return False
+            
+            # Group questions by document (based on source or document ID)
+            questions_by_doc = {}
+            for question in questions:
+                # Extract document ID from question ID or source
+                doc_id = None
+                if question.get('id'):
+                    # Try to extract doc_id from question ID (format: DOC_XXX_main, DOC_XXX_variant_1)
+                    parts = question['id'].split('_')
+                    if len(parts) >= 2 and parts[0] == 'DOC':
+                        doc_id = f"{parts[0]}_{parts[1]}"
+                
+                if not doc_id:
+                    # Fallback: use 'general' as doc_id for questions without clear document association
+                    doc_id = 'DOC_GENERAL'
+                
+                if doc_id not in questions_by_doc:
+                    questions_by_doc[doc_id] = []
+                questions_by_doc[doc_id].append(question)
+            
+            # Save questions to individual router_questions.json files
+            saved_count = 0
+            for doc_id, doc_questions in questions_by_doc.items():
+                try:
+                    # Get router file path for this document
+                    router_file_path = path_config.get_document_router(collection_name, doc_id)
+                    
+                    # Ensure directory exists
+                    router_file_path.parent.mkdir(parents=True, exist_ok=True)
+                    
+                    # Separate main question and variants
+                    main_questions = [q for q in doc_questions if q.get('type') == 'main']
+                    variant_questions = [q for q in doc_questions if q.get('type') != 'main']
+                    
+                    # Create router data structure for this document
+                    router_data = {
+                        'metadata': {
+                            'document_id': doc_id,
+                            'collection': collection_name,
+                            'last_updated': datetime.now().isoformat()
+                        },
+                        'crud_config': {
+                            'enable_crud': True,
+                            'version': '1.0',
+                            'last_updated': datetime.now().isoformat()
+                        },
+                        'questions': []
+                    }
+                    
+                    # Add main question if exists
+                    if main_questions:
+                        main_q = main_questions[0]
+                        router_data['main_question'] = {
+                            'id': main_q.get('id', 'main_001'),
+                            'text': main_q['text'],
+                            'tags': main_q.get('keywords', []),
+                            'category': main_q.get('category', 'main_procedure'),
+                            'priority': main_q.get('priority_score', 1.0),
+                            'status': main_q.get('status', 'active'),
+                            'created_at': main_q.get('created_at'),
+                            'updated_at': main_q.get('updated_at')
+                        }
+                    
+                    # Add variant questions
+                    for question in variant_questions:
+                        router_data['questions'].append({
+                            'id': question.get('id', f'q_{len(router_data["questions"]):03d}'),
+                            'text': question['text'],
+                            'tags': question.get('keywords', []),
+                            'category': question.get('category', 'procedure_variant'),
+                            'frequency_score': question.get('priority_score', 0.5),
+                            'status': question.get('status', 'active'),
+                            'created_at': question.get('created_at'),
+                            'updated_at': question.get('updated_at')
+                        })
+                    
+                    # Save to file
+                    with open(router_file_path, 'w', encoding='utf-8') as f:
+                        json.dump(router_data, f, ensure_ascii=False, indent=2)
+                    
+                    saved_count += 1
+                    logger.debug(f"✅ Saved {len(doc_questions)} questions to {router_file_path}")
+                
+                except Exception as e:
+                    logger.warning(f"⚠️ Error saving questions for document {doc_id}: {e}")
+                    continue
+            
+            logger.info(f"✅ Saved questions to {saved_count} router files in collection {collection_name}")
+            return saved_count > 0
+            
+        except Exception as e:
+            logger.error(f"❌ Error saving questions to new structure: {e}")
+            return False
     
     def get_similar_procedures_for_collection(
         self, 

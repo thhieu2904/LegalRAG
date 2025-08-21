@@ -23,9 +23,14 @@ class Settings(BaseSettings):
     
     # Data Paths - Load from environment
     data_root_dir: str = "data"  # Overridden by DATA_ROOT_DIR in .env
-    documents_dir: str = "data/documents"  # Overridden by DOCUMENTS_DIR in .env
+    documents_dir: str = "data/documents"  # Overridden by DOCUMENTS_DIR in .env (OLD STRUCTURE)
     vectordb_dir: str = "data/vectordb"  # Overridden by VECTORDB_DIR in .env
     models_dir: str = "data/models"  # Overridden by MODELS_DIR in .env
+    
+    # New Structure Paths (using PathConfig)
+    storage_dir: str = "data/storage"  # New centralized storage
+    collections_dir: str = "data/storage/collections"  # Collections
+    registry_dir: str = "data/storage/registry"  # Registries
     
     # Model Configuration - Actual values từ .env file
     embedding_model_name: str = "AITeamVN/Vietnamese_Embedding_v2"  # From EMBEDDING_MODEL_NAME

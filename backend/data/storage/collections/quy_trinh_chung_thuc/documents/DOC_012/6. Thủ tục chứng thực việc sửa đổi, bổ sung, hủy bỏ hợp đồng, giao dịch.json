@@ -1,0 +1,87 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/6. Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch.doc",
+    "title": "Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch",
+    "code": "QT 06/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-01",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu. Nếu nhận sau 15 giờ thì trả kết quả vào ngày làm việc tiếp theo.",
+    "fee_vnd": 30000,
+    "fee_text": "30.000 đồng/hợp đồng, giao dịch.",
+    "has_form": false,
+    "requirements_conditions": "Việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch đã được chứng thực chỉ được thực hiện khi có thỏa thuận bằng văn bản của tất cả các bên tham gia hợp đồng, giao dịch.",
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 01/2020/TT-BTP",
+      "Thông tư số 226/2016/TT-BTC"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ",
+      "content": "Người yêu cầu chứng thực cần nộp 01 bộ hồ sơ, bao gồm:\n1.  **Hợp đồng, giao dịch đã được chứng thực** trước đó.\n2.  **Dự thảo hợp đồng, giao dịch sửa đổi, bổ sung, hoặc hủy bỏ** hợp đồng, giao dịch đã được chứng thực.\n3.  **Bản sao giấy chứng nhận quyền sở hữu, quyền sử dụng** (nếu nội dung sửa đổi, bổ sung có liên quan đến tài sản). Phải xuất trình bản chính để đối chiếu.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "chứng thực",
+        "sửa đổi hợp đồng",
+        "bổ sung hợp đồng",
+        "hủy bỏ hợp đồng",
+        "dự thảo"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Ngay trong ngày cơ quan, tổ chức tiếp nhận yêu cầu hoặc trong ngày làm việc tiếp theo, nếu tiếp nhận yêu cầu sau 15 giờ. Người tiếp nhận hồ sơ phải có phiếu hẹn ghi rõ thời gian trả kết quả nếu không thể trả ngay.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "trong ngày", "ngay lập tức"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Yêu cầu, điều kiện thực hiện",
+      "content": "Việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch đã được chứng thực chỉ được thực hiện khi có thỏa thuận bằng văn bản của các bên tham gia hợp đồng, giao dịch.",
+      "source_reference": "Mục 5.h",
+      "keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "thỏa thuận bằng văn bản",
+        "đồng ý của các bên"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Cá nhân, tổ chức.\n**Cơ quan thực hiện:** Ủy ban nhân dân cấp xã.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": ["đối tượng", "cơ quan", "thẩm quyền", "UBND cấp xã"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả:** Hợp đồng, giao dịch sửa đổi, bổ sung, hủy bỏ được chứng thực.\n**Lệ phí:** 30.000 đồng/hợp đồng, giao dịch.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": ["kết quả", "văn bản được chứng thực", "lệ phí", "phí"]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** Tối đa 01 ngày làm việc.\n**Các bước thực hiện:**\n1.  **Công chức tại Trung tâm hành chính công cấp xã:** Tiếp nhận hồ sơ và ghi phiếu hẹn.\n2.  **Văn phòng HĐND và UBND cấp xã:** Kiểm tra tính pháp lý của hồ sơ.\n3.  **Lãnh đạo UBND cấp xã:** Xem xét và ký chứng thực.\n4.  **Văn thư:** Đóng dấu.\n5.  **Công chức tại Trung tâm hành chính công cấp xã:** Thu lệ phí và trả hồ sơ.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "kiểm tra pháp lý",
+        "ký chứng thực"
+      ]
+    }
+  ]
+}

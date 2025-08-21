@@ -1,0 +1,84 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/34. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.doc",
+    "title": "Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh",
+    "code": "QT 34/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã).",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Ngay trong ngày tiếp nhận hồ sơ. Nếu nhận sau 15 giờ thì trả kết quả vào ngày làm việc tiếp theo.",
+    "fee_vnd": 8000,
+    "fee_text": "Phí là 8.000 đồng/bản sao hoặc 5.000 đồng/bản sao tùy theo khu vực áp dụng.",
+    "has_form": true,
+    "requirements_conditions": null,
+    "legal_basis_references": [
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Nghị định số 87/2020/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 01/2022/TT-BTP",
+      "Thông tư số 03/2023/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP",
+      "Thông tư số 281/2016/TT-BTC",
+      "Thông tư số 85/2019/TT-BTC",
+      "Thông tư số 106/2021/TT-BTC"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ và các lưu ý quan trọng",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- **Đối với cá nhân:** Tờ khai cấp bản sao Trích lục hộ tịch theo mẫu.\n- **Đối với cơ quan, tổ chức:** Văn bản yêu cầu nêu rõ lý do.\n- **Nếu nộp trực tuyến:** Mẫu hộ tịch điện tử tương tác.\n\n**B. GIẤY TỜ PHẢI NỘP:**\n- Văn bản ủy quyền (nếu có). Không cần chứng thực nếu người được ủy quyền là người thân ruột thịt.\n\n**C. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n- Giấy tờ tùy thân còn giá trị sử dụng của người yêu cầu (Hộ chiếu, Căn cước công dân...).\n\n**D. CÁC LƯU Ý QUAN TRỌNG:**\n- **Trường hợp từ chối:** Cơ quan đăng ký hộ tịch sẽ từ chối nếu người yêu cầu không cung cấp đầy đủ thông tin hoặc thông tin không chính xác, không thể tra cứu được.\n- **Hình thức giấy tờ:** Chấp nhận nộp bản sao chứng thực, bản sao từ sổ gốc, hoặc bản chụp kèm theo bản chính để đối chiếu. Giấy tờ trên ứng dụng VneID được chấp nhận.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "cấp bản sao",
+        "trích lục hộ tịch",
+        "giấy khai sinh",
+        "tờ khai",
+        "ủy quyền"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Ngay trong ngày tiếp nhận hồ sơ; trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp theo.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "trong ngày"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Cá nhân, tổ chức.\n**Cơ quan thực hiện:** Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã).",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": ["đối tượng", "cơ quan", "thẩm quyền", "UBND cấp xã"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả:** Bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.\n**Lệ phí:**\n- 8.000 đồng/bản sao tại các khu vực thuộc Phụ lục 1 và một phần Phụ lục 2.\n- 5.000 đồng/bản sao tại các khu vực thuộc Phụ lục 2.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": ["kết quả", "bản sao", "trích lục", "lệ phí", "phí"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 01 ngày làm việc.\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ.\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ.\n3. Lãnh đạo UBND xem xét, ký duyệt hồ sơ.\n4. Văn thư UBND đóng dấu văn bản.\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "thẩm tra",
+        "ký duyệt",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

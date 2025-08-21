@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/8. Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực.doc",
+    "title": "Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực",
+    "code": "QT 08/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi lưu trữ hợp đồng, giao dịch.",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu. Nếu nhận sau 15 giờ thì trả kết quả vào ngày làm việc tiếp theo.",
+    "fee_vnd": null,
+    "fee_text": "2.000 đồng/trang; từ trang thứ 3 trở lên thu 1.000 đồng/trang. Mức thu tối đa không quá 200.000 đồng/bản. Trang được tính theo trang của bản chính.",
+    "has_form": false,
+    "requirements_conditions": null,
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 01/2020/TT-BTP",
+      "Thông tư số 226/2016/TT-BTC"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "Người yêu cầu chứng thực chỉ cần xuất trình bản chính hoặc bản sao có chứng thực giấy tờ tùy thân còn giá trị sử dụng, bao gồm: Giấy chứng minh nhân dân, Thẻ căn cước công dân, Thẻ căn cước, Giấy chứng nhận căn cước, Hộ chiếu, giấy tờ xuất nhập cảnh, giấy tờ có giá trị đi lại quốc tế hoặc Căn cước điện tử.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "cấp bản sao",
+        "chứng thực",
+        "xuất trình",
+        "căn cước công dân",
+        "hộ chiếu"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Ngay trong ngày cơ quan, tổ chức tiếp nhận yêu cầu hoặc trong ngày làm việc tiếp theo nếu tiếp nhận yêu cầu sau 15 giờ. Người tiếp nhận hồ sơ phải có phiếu hẹn ghi rõ thời gian trả kết quả nếu không thể trả ngay.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "trong ngày", "ngay lập tức"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Cá nhân, tổ chức.\n**Cơ quan thực hiện:** Ủy ban nhân dân cấp xã nơi đang lưu trữ hợp đồng, giao dịch đã được chứng thực.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "cơ quan",
+        "thẩm quyền",
+        "UBND cấp xã",
+        "nơi lưu trữ"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả:** Bản sao hợp đồng, giao dịch được chứng thực.\n**Lệ phí:** 2.000 đồng/trang; từ trang thứ 3 trở lên thu 1.000 đồng/trang, tối đa không quá 200.000 đồng/bản. Phí được tính theo số trang của bản chính.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": ["kết quả", "bản sao được chứng thực", "lệ phí", "phí"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** Tối đa 01 ngày làm việc.\n**Các bước thực hiện:**\n1.  **Công chức tại Trung tâm hành chính công cấp xã:** Tiếp nhận yêu cầu và ghi phiếu hẹn.\n2.  **Văn phòng HĐND và UBND cấp xã:** Kiểm tra, đối chiếu với bản lưu trữ và thực hiện sao chụp.\n3.  **Lãnh đạo UBND cấp xã:** Xem xét và ký chứng thực bản sao.\n4.  **Văn thư:** Đóng dấu.\n5.  **Công chức tại Trung tâm hành chính công cấp xã:** Thu lệ phí và trả kết quả.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "kiểm tra",
+        "ký chứng thực",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

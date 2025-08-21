@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/31. Đăng ký kết hôn lưu động.doc",
+    "title": "Đăng ký kết hôn lưu động",
+    "code": "QT 31/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của hai bên nam, nữ.",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "05 ngày làm việc.",
+    "fee_vnd": 0,
+    "fee_text": "Miễn lệ phí.",
+    "has_form": true,
+    "requirements_conditions": "- Hai bên nam, nữ phải cùng thường trú trên địa bàn một xã.\n- Một hoặc cả hai bên nam, nữ là người khuyết tật, ốm bệnh không thể đi đăng ký kết hôn được.\n- Phải đáp ứng đủ các điều kiện kết hôn thông thường: Nam từ đủ 20 tuổi, nữ từ đủ 18 tuổi; tự nguyện; không mất năng lực hành vi dân sự và không thuộc các trường hợp cấm kết hôn.",
+    "legal_basis_references": [
+      "Luật Hôn nhân và gia đình năm 2014",
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Nghị định số 104/2022/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP",
+      "Thông tư số 85/2019/TT-BTC",
+      "Thông tư số 106/2021/TT-BTC",
+      "Nghị quyết số 12/2023/NQ-HĐND",
+      "Nghị quyết số 04/2023/NQ-HĐND"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. GIẤY TỜ PHẢI NỘP:**\n- Tờ khai đăng ký kết hôn theo mẫu (hai bên có thể khai chung).\n\n**B. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng của cả hai bên (Hộ chiếu, Căn cước công dân...).\n2. Giấy tờ chứng minh thông tin về nơi cư trú (nếu CSDLQGVDC không có).",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "kết hôn lưu động",
+        "tờ khai",
+        "xuất trình"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "5 ngày"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Yêu cầu, điều kiện thực hiện",
+      "content": "Thủ tục áp dụng khi:\n- Hai bên nam, nữ cùng thường trú trên địa bàn một xã và một hoặc cả hai bên là người khuyết tật, ốm bệnh không thể đi đăng ký kết hôn được.\n- Các bên phải đáp ứng đủ điều kiện kết hôn: Nam từ đủ 20 tuổi, nữ từ đủ 18 tuổi; tự nguyện; không mất năng lực hành vi dân sự; không thuộc các trường hợp cấm kết hôn (kết hôn giả tạo, tảo hôn, đang có vợ/chồng, cùng dòng máu trực hệ...).",
+      "source_reference": "Mục 5.i",
+      "keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "lưu động",
+        "khuyết tật",
+        "ốm bệnh",
+        "cùng thường trú",
+        "tuổi kết hôn"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 05 ngày làm việc.\n**Các bước thực hiện:**\n1. Công chức Tư pháp - Hộ tịch tiếp nhận, kiểm tra hồ sơ (3 ngày).\n2. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (1 ngày).\n3. Văn thư UBND đóng dấu văn bản (½ ngày).\n4. Công chức Tư pháp - Hộ tịch ghi sổ và trả kết quả (½ ngày).",
+      "source_reference": "Mục 5.l",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "thẩm tra",
+        "ký duyệt",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

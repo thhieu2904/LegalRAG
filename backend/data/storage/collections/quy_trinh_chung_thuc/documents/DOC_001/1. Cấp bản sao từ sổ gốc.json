@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/Quy trình NB chứng thực dùng chung/1. Cấp bản sao từ sổ gốc.doc",
+    "title": "Cấp bản sao từ sổ gốc",
+    "code": "QT 01/CT-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Cơ quan, tổ chức đang quản lý sổ gốc.",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu. Nếu nhận sau 15 giờ thì trả kết quả vào ngày làm việc tiếp theo.",
+    "fee_vnd": 0,
+    "fee_text": "Miễn lệ phí.",
+    "has_form": false,
+    "requirements_conditions": "Người yêu cầu phải là người được cấp bản chính, người đại diện hợp pháp, hoặc người thừa kế của người được cấp bản chính (trong trường hợp người đó đã chết). Phải có sổ gốc để thực hiện việc cấp bản sao.",
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ",
+      "content": "Người yêu cầu chỉ cần xuất trình giấy tờ tùy thân, không cần nộp hồ sơ.\n\n**GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1.  **Bản chính hoặc bản sao có chứng thực** các giấy tờ tùy thân còn giá trị sử dụng như: Giấy chứng minh nhân dân, Căn cước công dân, Hộ chiếu.\n2.  **Giấy tờ chứng minh quan hệ** với người được cấp bản chính (nếu là người đại diện, cha, mẹ, con, vợ, chồng, anh, chị, em ruột, hoặc người thừa kế).",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "cấp bản sao",
+        "sổ gốc",
+        "xuất trình",
+        "chứng minh nhân dân",
+        "căn cước công dân"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Ngay trong ngày cơ quan, tổ chức tiếp nhận yêu cầu hoặc trong ngày làm việc tiếp theo nếu tiếp nhận yêu cầu sau 15 giờ. Người tiếp nhận hồ sơ phải có phiếu hẹn ghi rõ thời gian trả kết quả nếu không thể trả ngay.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "trong ngày", "ngay lập tức"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Cá nhân, tổ chức.\n**Cơ quan thực hiện:** Cơ quan, tổ chức đang quản lý, lưu trữ sổ gốc.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "cá nhân",
+        "tổ chức",
+        "cơ quan thực hiện",
+        "sổ gốc"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả:** Bản sao được cấp từ sổ gốc.\n**Lệ phí:** Không thu phí.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": ["kết quả", "bản sao", "lệ phí", "miễn phí"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 01 ngày làm việc.\n**Các bước thực hiện:**\n1. Bộ phận tiếp nhận và trả kết quả tiếp nhận yêu cầu, kiểm tra giấy tờ.\n2. Phòng chuyên môn (hoặc bộ phận được giao quản lý sổ gốc) thực hiện kiểm tra, đối chiếu với sổ gốc.\n3. Lãnh đạo cơ quan/Sở ký duyệt bản sao.\n4. Văn thư ký số, đóng dấu, phát hành.\n5. Bộ phận tiếp nhận và trả kết quả trả bản sao cho người dân.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "tiếp nhận",
+        "kiểm tra",
+        "đối chiếu",
+        "ký duyệt",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

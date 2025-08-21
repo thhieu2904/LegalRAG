@@ -18,6 +18,7 @@ from app.services.vector import VectorDBService
 from app.services.language_model import LLMService
 from app.services.rag_engine import RAGService
 from app.api import rag
+from app.api import documents
 
 # Cấu hình logging
 logging.basicConfig(
@@ -147,6 +148,15 @@ app.add_middleware(
 
 # Include optimized routes
 app.include_router(rag.router)
+app.include_router(documents.router)
+
+# Include Router CRUD API
+try:
+    from app.api.router_crud import router as router_crud_router
+    app.include_router(router_crud_router)
+    logger.info("✅ Router CRUD API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Router CRUD API not available: {e}")
 
 # Root endpoint với thông tin VRAM optimization
 @app.get("/")

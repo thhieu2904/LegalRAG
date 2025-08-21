@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_nuoi_con_nuoi/ISO NCN MOI/2. Cấp xã - Đăng ký lại việc nuôi con nuôi trong nước.doc",
+    "title": "Đăng ký lại việc nuôi con nuôi trong nước",
+    "code": "QT 02/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-09",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "05 ngày làm việc.",
+    "fee_vnd": 0,
+    "fee_text": "Miễn lệ phí.",
+    "has_form": true,
+    "requirements_conditions": "- Sổ đăng ký nuôi con nuôi và bản chính giấy tờ đăng ký nuôi con nuôi đã bị mất hoặc hư hỏng không sử dụng được.\n- Cha, mẹ nuôi và con nuôi đều phải còn sống vào thời điểm yêu cầu đăng ký lại.",
+    "legal_basis_references": [
+      "Luật Nuôi con nuôi 2010",
+      "Nghị định số 19/2011/NĐ-CP",
+      "Nghị định số 06/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Nghị định số 114/2016/NĐ-CP",
+      "Nghị định số 104/2022/NĐ-CP",
+      "Thông tư số 10/2025/TT-BTP",
+      "Thông tư số 10/2020/TT-BTP",
+      "Thông tư số 267/2016/TT-BTC",
+      "Thông tư số 07/2023/TT-BTP"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. GIẤY TỜ PHẢI NỘP:**\n- Tờ khai đăng ký lại việc nuôi con nuôi, trong đó phải có nội dung cam đoan của người yêu cầu về tính trung thực của việc đăng ký trước đó và có chữ ký của ít nhất hai người làm chứng.\n\n**B. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n- Giấy tờ chứng minh nơi thường trú của cha mẹ nuôi và con nuôi (nếu thông tin chưa có trên CSDLQG), có thể là: Thẻ căn cước, Giấy xác nhận thông tin về cư trú, hoặc Giấy thông báo số định danh cá nhân.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "đăng ký lại nuôi con nuôi",
+        "tờ khai",
+        "cam đoan",
+        "người làm chứng"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Trong thời hạn 05 ngày làm việc, kể từ ngày nhận đủ hồ sơ hợp lệ.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "5 ngày"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Yêu cầu, điều kiện thực hiện",
+      "content": "- Sổ đăng ký nuôi con nuôi và bản chính giấy tờ đăng ký nuôi con nuôi bị mất hoặc hư hỏng không sử dụng được.\n- Cha, mẹ nuôi và con nuôi đều còn sống vào thời điểm yêu cầu đăng ký lại.",
+      "source_reference": "Mục 5.h",
+      "keywords": ["điều kiện", "yêu cầu", "mất giấy tờ", "hư hỏng", "còn sống"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Cá nhân có yêu cầu đăng ký lại việc nuôi con nuôi.\n**Cơ quan thực hiện:** Ủy ban nhân dân cấp xã.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": ["đối tượng", "cá nhân", "cơ quan", "UBND cấp xã"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả:** Giấy chứng nhận nuôi con nuôi trong nước.\n**Lệ phí:** Miễn lệ phí.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "giấy chứng nhận nuôi con nuôi",
+        "lệ phí",
+        "miễn phí"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 05 ngày làm việc.\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (½ ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ (2.5 ngày).\n3. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (1 ngày).\n4. Văn thư UBND đóng dấu (½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "thẩm tra",
+        "ký duyệt",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

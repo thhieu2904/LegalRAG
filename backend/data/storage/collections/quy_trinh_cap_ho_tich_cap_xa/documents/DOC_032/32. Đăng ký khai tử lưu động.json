@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/32. Đăng ký khai tử lưu động.doc",
+    "title": "Đăng ký khai tử lưu động",
+    "code": "QT 32/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết, hoặc nơi người đó chết/phát hiện thi thể.",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "05 ngày làm việc.",
+    "fee_vnd": null,
+    "fee_text": "Miễn lệ phí đối với trường hợp đăng ký khai tử đúng hạn. Trường hợp không đúng hạn, lệ phí là 8.000đ hoặc 5.000đ tùy khu vực. Phí cấp bản sao: 5.000đ/bản. Có các trường hợp được miễn lệ phí khác.",
+    "has_form": true,
+    "requirements_conditions": "Thủ tục này áp dụng trong trường hợp người chết không có người thân thích, hoặc người thân thích của người chết không sống cùng địa bàn xã, hoặc là người già, yếu, khuyết tật không thể đi đăng ký khai tử được.",
+    "legal_basis_references": [
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Nghị định số 104/2022/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP",
+      "Thông tư số 85/2019/TT-BTC",
+      "Thông tư số 106/2021/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND",
+      "Nghị quyết số 12/2023/NQ-HĐND",
+      "Nghị quyết số 04/2023/NQ-HĐND"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. GIẤY TỜ PHẢI NỘP:**\n1. Tờ khai đăng ký khai tử theo mẫu.\n2. Giấy báo tử hoặc giấy tờ thay thế do cơ quan có thẩm quyền cấp.\n\n**B. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng của người yêu cầu (Hộ chiếu, Căn cước công dân...).\n2. Giấy tờ chứng minh nơi cư trú cuối cùng của người chết (nếu CSDLQGVDC không có).\n3. Nếu không xác định được nơi cư trú cuối cùng, xuất trình giấy tờ chứng minh nơi người đó chết hoặc nơi phát hiện thi thể.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "khai tử lưu động",
+        "tờ khai",
+        "giấy báo tử"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "5 ngày"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Yêu cầu, điều kiện thực hiện",
+      "content": "Thủ tục này áp dụng trong trường hợp người chết không có người thân thích, hoặc người thân thích của người chết không sống cùng địa bàn xã, hoặc là người già, yếu, khuyết tật không thể đi đăng ký khai tử được.",
+      "source_reference": "Mục 5.i",
+      "keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "lưu động",
+        "không có người thân",
+        "già yếu",
+        "khuyết tật"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 05 ngày làm việc.\n**Các bước thực hiện:**\n1. Công chức Tư pháp - Hộ tịch tiếp nhận, kiểm tra hồ sơ (3 ngày).\n2. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (1 ngày).\n3. Văn thư UBND đóng dấu văn bản (½ ngày).\n4. Công chức Tư pháp - Hộ tịch ghi sổ và trả kết quả (½ ngày).",
+      "source_reference": "Mục 5.l",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "thẩm tra",
+        "ký duyệt",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

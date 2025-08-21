@@ -23,6 +23,13 @@ from .router import QueryRouter, RouterBasedQueryService
 from .context import ContextExpander
 from ..core.config import settings
 
+# Import path_config with try/except for graceful fallback
+try:
+    from ..core.path_config import path_config
+except ImportError:
+    logger.warning("PathConfig not available, using old structure only")
+    path_config = None
+
 logger = logging.getLogger(__name__)
 
 def convert_numpy_types(obj: Any) -> Any:
@@ -195,11 +202,22 @@ class RAGService:
     
     def __init__(
         self,
-        documents_dir: str,
-        vectordb_service: VectorDBService,
-        llm_service: LLMService
+        documents_dir: Optional[str] = None,  # Made optional, will use path_config if not provided
+        vectordb_service: Optional[VectorDBService] = None,
+        llm_service: Optional[LLMService] = None
     ):
-        self.documents_dir = documents_dir
+        # Use new path config by default, fallback to provided documents_dir for backward compatibility
+        if documents_dir is None:
+            # New structure - use path_config
+            self.use_new_structure = True
+            self.path_config = path_config
+            self.documents_dir = None  # Not used in new structure
+        else:
+            # Old structure - backward compatibility
+            self.use_new_structure = False
+            self.path_config = None
+            self.documents_dir = documents_dir
+            
         self.vectordb_service = vectordb_service
         self.llm_service = llm_service
         
@@ -635,19 +653,23 @@ class RAGService:
                 / self.metrics["total_queries"]
             )
             
-            return {
+            # 📎 CHECK FOR FORMS: If documents have forms, include them in response
+            source_documents = expanded_context.get("source_documents", []) if expanded_context else []
+            forms_info = self.check_document_forms(source_documents)
+            
+            response = {
                 "type": "answer",
                 "answer": answer,
                 "context_info": {
                     "nucleus_chunks": len(nucleus_chunks),
                     "context_length": len(context_text),
                     "source_collections": list(set(chunk.get("collection", "") for chunk in nucleus_chunks)),
-                    "source_documents": list(expanded_context.get("source_documents", [])) if expanded_context else []
+                    "source_documents": source_documents
                 },
                 "context_details": {
                     "total_length": expanded_context.get("total_length", len(context_text)) if expanded_context else len(context_text),
                     "expansion_strategy": expanded_context.get("expansion_strategy", "unknown") if expanded_context else "no_expansion",
-                    "source_documents": expanded_context.get("source_documents", []) if expanded_context else [],
+                    "source_documents": source_documents,
                     "nucleus_chunks_count": len(nucleus_chunks)
                 },
                 "session_id": session_id,
@@ -663,6 +685,13 @@ class RAGService:
                     "status": routing_result.get('status', 'routed')
                 }
             }
+            
+            # 📎 ADD FORMS IF AVAILABLE: User requested "khi người dùng hỏi, nếu trường has_form là có thì sẽ đính kèm form cho người dùng mở ra xem"
+            if forms_info:
+                response["forms"] = forms_info
+                logger.info(f"📎 Added {len(forms_info)} form sets to response from documents: {[f['document'] for f in forms_info]}")
+            
+            return response
             
         except Exception as e:
             logger.error(f"Error in enhanced query: {e}")
@@ -1230,6 +1259,70 @@ class RAGService:
             
         return len(old_sessions)
 
+    def check_document_forms(self, source_documents: List[str]) -> List[Dict[str, Any]]:
+        """
+        Check if documents have forms and collect form information
+        
+        Args:
+            source_documents: List of document names/titles
+            
+        Returns:
+            List of form info dictionaries
+        """
+        forms_info = []
+        
+        if not path_config:
+            logger.warning("PathConfig not available, cannot check for forms")
+            return forms_info
+            
+        try:
+            for doc_name in source_documents:
+                # Search for document across collections
+                for collection in path_config.list_collections():
+                    documents = path_config.list_documents(collection)
+                    
+                    # Search by document title or file name
+                    matching_doc = None
+                    for doc in documents:
+                        doc_content = path_config.load_document_json(collection, doc["doc_id"])
+                        if doc_content:
+                            doc_title = doc_content.get('metadata', {}).get('title', '')
+                            if (doc_name in doc_title or doc_title in doc_name or 
+                                doc_name in doc.get('json_file', '') or doc_name in doc.get('doc_file', '')):
+                                matching_doc = doc
+                                break
+                    
+                    if matching_doc:
+                        doc_content = path_config.load_document_json(collection, matching_doc["doc_id"])
+                        
+                        if doc_content and doc_content.get('metadata', {}).get('has_form'):
+                            # Get forms for this document
+                            forms_path = path_config.get_document_forms_path(collection, matching_doc["doc_id"])
+                            if forms_path and forms_path.exists():
+                                forms_list = []
+                                for form_file in forms_path.iterdir():
+                                    if form_file.is_file() and form_file.suffix.lower() in ['.pdf', '.doc', '.docx', '.xls', '.xlsx']:
+                                        forms_list.append({
+                                            'filename': form_file.name,
+                                            'path': str(form_file),
+                                            'size': form_file.stat().st_size,
+                                            'type': form_file.suffix.lower()
+                                        })
+                                
+                                if forms_list:
+                                    forms_info.append({
+                                        'document': doc_name,
+                                        'collection': collection,
+                                        'title': doc_content.get('metadata', {}).get('title', doc_name),
+                                        'forms': forms_list
+                                    })
+                        break  # Found document in this collection
+                        
+        except Exception as e:
+            logger.error(f"Error checking document forms: {e}")
+            
+        return forms_info
+
     # API Compatibility Methods
     def query(self, question: Optional[str] = None, query: Optional[str] = None, **kwargs) -> Dict[str, Any]:
         """Compatibility method cho API routes"""
@@ -1295,7 +1388,7 @@ class RAGService:
                         'collections_processed': 0,
                         'collection_name': collection_name,
                         'error': f'Collection {collection_name} does not exist',
-                        'suggestion': 'Run python tools/2_build_vectordb_final.py to build collections'
+                        'suggestion': 'Run python tools/2_build_vectordb_modernized.py to build collections'
                     }
             else:
                 # Build all collections - return info about existing ones
@@ -1306,7 +1399,7 @@ class RAGService:
                     'message': f'Found {len(collections)} existing collections',
                     'collections': [col['name'] for col in collections],
                     'total_documents': sum(col.get('document_count', 0) for col in collections),
-                    'suggestion': 'Use python tools/2_build_vectordb_final.py to build new collections from documents'
+                    'suggestion': 'Use python tools/2_build_vectordb_modernized.py to build new collections from documents'
                 }
         except Exception as e:
             logger.error(f"Error in build_index: {e}")
@@ -1467,30 +1560,54 @@ class RAGService:
     
     @property  
     def document_processor(self):
-        """Compatibility property cho API routes"""
+        """Compatibility property cho API routes với hỗ trợ new structure"""
         import os
         
         class DocumentProcessorCompat:
-            def get_available_collections(self, documents_dir):
-                """Lấy danh sách collections có thể tạo từ documents"""
+            def get_available_collections(self, documents_dir=None):
+                """Lấy danh sách collections từ new structure hoặc old structure"""
                 try:
-                    if not os.path.exists(documents_dir):
-                        return []
-                    
-                    collections = []
-                    for item in os.listdir(documents_dir):
-                        item_path = os.path.join(documents_dir, item)
-                        if os.path.isdir(item_path):
-                            # Đếm số files PDF trong thư mục
-                            pdf_count = len([f for f in os.listdir(item_path) 
-                                           if f.lower().endswith('.pdf')])
-                            if pdf_count > 0:
+                    # Try new structure first
+                    if path_config.is_new_structure_available():
+                        collections = []
+                        for collection_name in path_config.list_collections():
+                            documents = path_config.list_documents(collection_name)
+                            doc_count = len([doc for doc in documents if doc["json_path"]])
+                            
+                            if doc_count > 0:
                                 collections.append({
-                                    'name': item,
-                                    'path': item_path,
-                                    'document_count': pdf_count
+                                    'name': collection_name,
+                                    'path': str(path_config.get_collection_dir(collection_name)),
+                                    'document_count': doc_count,
+                                    'structure': 'new'  # Indicate new structure
                                 })
-                    return collections
+                        
+                        logger.info(f"📁 Found {len(collections)} collections in new structure")
+                        return collections
+                    
+                    # Fallback to old structure
+                    if documents_dir and os.path.exists(documents_dir):
+                        collections = []
+                        for item in os.listdir(documents_dir):
+                            item_path = os.path.join(documents_dir, item)
+                            if os.path.isdir(item_path):
+                                # Count JSON files instead of PDF files for old structure
+                                json_count = len([f for f in os.listdir(item_path) 
+                                               if f.lower().endswith('.json')])
+                                if json_count > 0:
+                                    collections.append({
+                                        'name': item,
+                                        'path': item_path,
+                                        'document_count': json_count,
+                                        'structure': 'old'  # Indicate old structure
+                                    })
+                        
+                        logger.info(f"📁 Found {len(collections)} collections in old structure")
+                        return collections
+                    
+                    logger.warning("📁 No document structure found (neither new nor old)")
+                    return []
+                    
                 except Exception as e:
                     logger.error(f"Error getting available collections: {e}")
                     return []

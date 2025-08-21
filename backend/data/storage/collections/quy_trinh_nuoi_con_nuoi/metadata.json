@@ -1,0 +1,22 @@
+{
+  "collection_id": "quy_trinh_nuoi_con_nuoi",
+  "collection_name": "Quy Trinh Nuoi Con Nuoi",
+  "description": "Legal documents for quy_trinh_nuoi_con_nuoi",
+  "document_count": 3,
+  "created_at": "2025-08-21T15:58:00.958101",
+  "has_forms": true,
+  "status": "active",
+  "structure": {
+    "documents/DOC_XXX/": {
+      "original_name.json": "RAG content processed from original document",
+      "original_name.doc": "Original document from government agency",
+      "router_questions.json": "Questions for document classification/routing",
+      "forms/": "Directory for future form uploads (empty initially)"
+    }
+  },
+  "migration_info": {
+    "migrated_from": "data/documents/quy_trinh_nuoi_con_nuoi",
+    "migration_date": "2025-08-21T15:58:00.958101",
+    "migration_type": "final_structure_v1"
+  }
+}

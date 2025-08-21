@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/25. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc.doc",
+    "title": "Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc",
+    "code": "QT 25/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký hộ tịch trước đây hoặc nơi cư trú của người yêu cầu.",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "- Bổ sung thông tin hộ tịch: Ngay trong ngày làm việc.\n- Thay đổi, cải chính hộ tịch, xác định lại dân tộc: 03 ngày làm việc (nếu cần xác minh thì không quá 06 ngày làm việc).",
+    "fee_vnd": null,
+    "fee_text": "Lệ phí thay đổi tùy theo loại yêu cầu (thay đổi, cải chính, bổ sung, xác định lại dân tộc), hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí từ 5.000đ đến 28.000đ. Có các trường hợp được miễn lệ phí.",
+    "has_form": true,
+    "requirements_conditions": "- **Thay đổi họ, tên (người dưới 18 tuổi):** Phải có sự đồng ý của cha, mẹ. Người từ đủ 9 tuổi trở lên phải có sự đồng ý của chính người đó.\n- **Cải chính hộ tịch:** Chỉ giải quyết khi có sai sót trong đăng ký hộ tịch, không nhằm hợp thức hóa thông tin trên giấy tờ khác.\n- **Bổ sung hộ tịch:** Chỉ bổ sung thông tin còn thiếu khi có giấy tờ hợp lệ chứng minh.",
+    "legal_basis_references": [
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Nghị định số 87/2020/NĐ-CP",
+      "Nghị định số 104/2022/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 01/2022/TT-BTP",
+      "Thông tư số 03/2023/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP",
+      "Thông tư số 281/2016/TT-BTC",
+      "Thông tư số 85/2019/TT-BTC",
+      "Thông tư số 106/2021/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND",
+      "Nghị quyết số 06/2024/NQ-HĐND",
+      "Nghị quyết số 12/2023/NQ-HĐND",
+      "Nghị quyết số 04/2024/NQ-HĐND",
+      "Nghị quyết số 04/2023/NQ-HĐND"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ và các lưu ý quan trọng",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- Tờ khai đăng ký thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc theo mẫu.\n- Mẫu hộ tịch điện tử tương tác (nếu nộp trực tuyến).\n\n**B. GIẤY TỜ PHẢI NỘP:**\n1. Giấy tờ liên quan làm căn cứ cho việc thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc.\n2. Văn bản ủy quyền (nếu có). Không cần chứng thực nếu người được ủy quyền là người thân ruột thịt.\n\n**C. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng của người yêu cầu (Hộ chiếu, Căn cước công dân...).\n2. Giấy tờ chứng minh thông tin về nơi cư trú (nếu CSDLQGVDC không có).\n\n**D. CÁC LƯU Ý QUAN TRỌNG:**\n- **Hình thức giấy tờ:** Chấp nhận nộp bản sao chứng thực, bản sao từ sổ gốc, hoặc bản chụp kèm theo bản chính để đối chiếu. Giấy tờ trên ứng dụng VneID được chấp nhận.\n- **Giấy tờ nước ngoài:** Phải được hợp pháp hóa lãnh sự, trừ trường hợp được miễn.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "thay đổi hộ tịch",
+        "cải chính hộ tịch",
+        "bổ sung hộ tịch",
+        "xác định lại dân tộc",
+        "tờ khai",
+        "ủy quyền"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "- **Bổ sung thông tin hộ tịch:** Ngay trong ngày làm việc (hoặc ngày làm việc tiếp theo nếu nộp sau 15 giờ).\n- **Thay đổi, cải chính hộ tịch, xác định lại dân tộc:** 03 ngày làm việc. Nếu cần xác minh, thời hạn kéo dài thêm không quá 03 ngày làm việc.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "xác minh",
+        "bổ sung",
+        "thay đổi",
+        "cải chính"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Yêu cầu, điều kiện thực hiện",
+      "content": "- **Thay đổi họ, chữ đệm, tên cho người dưới 18 tuổi:** Phải có sự đồng ý của cha, mẹ người đó và được thể hiện rõ trong Tờ khai; đối với người từ đủ 9 tuổi trở lên thì còn phải có sự đồng ý của người đó.\n- **Cải chính hộ tịch:** Chỉ được giải quyết sau khi xác định có sai sót trong đăng ký hộ tịch; không cải chính nội dung trên giấy tờ hộ tịch đã được cấp hợp lệ nhằm hợp thức hóa thông tin trên hồ sơ, giấy tờ cá nhân khác.\n- **Bổ sung thông tin hộ tịch:** Giấy tờ hộ tịch được cấp hợp lệ mà thông tin hộ tịch còn thiếu thì được bổ sung, nếu có giấy tờ, tài liệu do cơ quan, tổ chức có thẩm quyền cấp hợp lệ chứng minh.\n- **Bổ sung quốc tịch Việt Nam:** Chỉ thực hiện đối với giấy tờ hộ tịch cấp từ ngày 01/01/2016, sau khi đã xác định người yêu cầu đang có quốc tịch Việt Nam.",
+      "source_reference": "Mục 5.i",
+      "keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "thay đổi họ tên",
+        "cải chính sai sót",
+        "bổ sung thông tin",
+        "đồng ý của cha mẹ"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Cá nhân.\n**Cơ quan thực hiện:**\n- Ủy ban nhân dân cấp xã nơi đã đăng ký hộ tịch trước đây hoặc nơi cư trú của người yêu cầu.\n- Ủy ban nhân dân cấp xã nơi đã đăng ký khai tử trước đây (đối với việc cải chính nội dung đăng ký khai tử).\n**Cơ quan phối hợp:** Cơ quan quản lý CSDLQGVDC.",
+      "source_reference": "Mục 5.c, 5.d, 5.đ",
+      "keywords": [
+        "đối tượng",
+        "cơ quan",
+        "thẩm quyền",
+        "UBND cấp xã",
+        "nơi đăng ký cũ",
+        "nơi cư trú"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:**\n- **Bổ sung hộ tịch:** 01 ngày làm việc.\n- **Thay đổi, cải chính, xác định lại dân tộc:** 03 ngày làm việc (không xác minh) hoặc 06 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ.\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ và tiến hành xác minh nếu cần.\n3. Lãnh đạo UBND xem xét, ký duyệt hồ sơ.\n4. Văn thư UBND đóng dấu.\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả.",
+      "source_reference": "Mục 5.l",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "thẩm tra",
+        "xác minh",
+        "ký duyệt"
+      ]
+    }
+  ]
+}

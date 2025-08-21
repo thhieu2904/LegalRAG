@@ -1,0 +1,321 @@
+{
+  "documents": {
+    "DOC_001": {
+      "collection": "quy_trinh_nuoi_con_nuoi",
+      "path": "collections\\quy_trinh_nuoi_con_nuoi\\documents\\DOC_001",
+      "json_file": "1. Cấp xã - Đăng ký việc nuôi con nuôi trong nước (1).json",
+      "doc_file": "1. Cấp xã - Đăng ký việc nuôi con nuôi trong nước (1).doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_002": {
+      "collection": "quy_trinh_nuoi_con_nuoi",
+      "path": "collections\\quy_trinh_nuoi_con_nuoi\\documents\\DOC_002",
+      "json_file": "1. STP -Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng (1).json",
+      "doc_file": "1. STP -Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng (1).doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_003": {
+      "collection": "quy_trinh_nuoi_con_nuoi",
+      "path": "collections\\quy_trinh_nuoi_con_nuoi\\documents\\DOC_003",
+      "json_file": "2. Cấp xã - Đăng ký lại việc nuôi con nuôi trong nước.json",
+      "doc_file": "2. Cấp xã - Đăng ký lại việc nuôi con nuôi trong nước.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_004": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_004",
+      "json_file": "1.Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở.json",
+      "doc_file": "1.Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_005": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_005",
+      "json_file": "10. Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã.json",
+      "doc_file": "10. Chứng thực chữ ký người dịch mà người dịch không phải là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_006": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_006",
+      "json_file": "11.Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản.json",
+      "doc_file": "11.Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_007": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_007",
+      "json_file": "12. Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản.json",
+      "doc_file": "12. Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_008": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_008",
+      "json_file": "2.Thủ tục chứng thực di chúc.json",
+      "doc_file": "2.Thủ tục chứng thực di chúc.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_009": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_009",
+      "json_file": "3.Thủ tục chứng thực văn bản từ chối nhận di sản.json",
+      "doc_file": "3.Thủ tục chứng thực văn bản từ chối nhận di sản.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_010": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_010",
+      "json_file": "4.Thủ tục chứng thực văn bản thỏa thuận phân chia di sản mà di sản là động sản, quyền sử dụng đất, nhà ở.json",
+      "doc_file": "4.Thủ tục chứng thực văn bản thỏa thuận phân chia di sản mà di sản là động sản, quyền sử dụng đất, nhà ở.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_011": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_011",
+      "json_file": "5.Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sửa dụng đất, nhà ở.json",
+      "doc_file": "5.Thủ tục chứng thực văn bản khai nhận di sản mà di sản là động sản, quyền sửa dụng đất, nhà ở.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_012": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_012",
+      "json_file": "6. Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch.json",
+      "doc_file": "6. Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_013": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_013",
+      "json_file": "7. Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch.json",
+      "doc_file": "7. Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_014": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_014",
+      "json_file": "8. Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực.json",
+      "doc_file": "8. Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_015": {
+      "collection": "quy_trinh_chung_thuc",
+      "path": "collections\\quy_trinh_chung_thuc\\documents\\DOC_015",
+      "json_file": "9. Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã.json",
+      "doc_file": "9. Chứng thực chữ ký người dịch mà người dịch là cộng tác viên dịch thuật của Ủy ban nhân dân cấp xã.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_016": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_016",
+      "json_file": "16. Đăng ký khai tử có yếu tố nước ngoài.json",
+      "doc_file": "16. Đăng ký khai tử có yếu tố nước ngoài.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_017": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_017",
+      "json_file": "17. Đăng ký lại khai tử.json",
+      "doc_file": "17. Đăng ký lại khai tử.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_018": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_018",
+      "json_file": "18. Đăng ký lại khai tử có yếu tố nước ngoài.json",
+      "doc_file": "18. Đăng ký lại khai tử có yếu tố nước ngoài.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_019": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_019",
+      "json_file": "19. Đăng ký giám hộ.json",
+      "doc_file": "19. Đăng ký giám hộ.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_020": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_020",
+      "json_file": "20. Đăng ký giám hộ có yếu tố nước ngoài.json",
+      "doc_file": "20. Đăng ký giám hộ có yếu tố nước ngoài.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_021": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_021",
+      "json_file": "21. Đăng ký chấm dứt giám hộ.json",
+      "doc_file": "21. Đăng ký chấm dứt giám hộ.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_022": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_022",
+      "json_file": "22. Đăng ký chấm dứt giám hộ có yếu tố nước ngoài.json",
+      "doc_file": "22. Đăng ký chấm dứt giám hộ có yếu tố nước ngoài.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_023": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_023",
+      "json_file": "23. Đăng ký giám sát việc giám hộ.json",
+      "doc_file": "23. Đăng ký giám sát việc giám hộ.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_024": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_024",
+      "json_file": "24. Đăng ký chấm dứt giám sát việc giám hộ.json",
+      "doc_file": "24. Đăng ký chấm dứt giám sát việc giám hộ.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_025": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_025",
+      "json_file": "25. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc.json",
+      "doc_file": "25. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_026": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_026",
+      "json_file": "26. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc có yếu tố nước ngoài.json",
+      "doc_file": "26. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc có yếu tố nước ngoài.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_027": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_027",
+      "json_file": "27. Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json",
+      "doc_file": "27. Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_028": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_028",
+      "json_file": "28. Ghi vào Sổ hộ tịch việc ly hôn, hủy việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json",
+      "doc_file": "28. Ghi vào Sổ hộ tịch việc ly hôn, hủy việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_029": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_029",
+      "json_file": "29. Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json",
+      "doc_file": "29. Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_030": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_030",
+      "json_file": "30. Đăng ký khai sinh lưu động.json",
+      "doc_file": "30. Đăng ký khai sinh lưu động.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_031": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_031",
+      "json_file": "31. Đăng ký kết hôn lưu động.json",
+      "doc_file": "31. Đăng ký kết hôn lưu động.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_032": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_032",
+      "json_file": "32. Đăng ký khai tử lưu động.json",
+      "doc_file": "32. Đăng ký khai tử lưu động.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_033": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_033",
+      "json_file": "33. Cấp Giấy xác nhận tình trạng hôn nhân.json",
+      "doc_file": "33. Cấp Giấy xác nhận tình trạng hôn nhân.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_034": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_034",
+      "json_file": "34. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.json",
+      "doc_file": "34. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    },
+    "DOC_035": {
+      "collection": "quy_trinh_cap_ho_tich_cap_xa",
+      "path": "collections\\quy_trinh_cap_ho_tich_cap_xa\\documents\\DOC_035",
+      "json_file": "35. Xác nhận hộ tịch.json",
+      "doc_file": "35. Xác nhận hộ tịch.doc",
+      "has_router": true,
+      "has_forms_dir": true,
+      "forms_count": 0
+    }
+  },
+  "total_documents": 53,
+  "last_updated": "2025-08-21T15:58:00.958101"
+}

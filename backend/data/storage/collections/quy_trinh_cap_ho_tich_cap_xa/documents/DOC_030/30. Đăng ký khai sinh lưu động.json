@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/30. Đăng ký khai sinh lưu động.doc",
+    "title": "Đăng ký khai sinh lưu động",
+    "code": "QT 30/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ.",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "05 ngày làm việc.",
+    "fee_vnd": null,
+    "fee_text": "Miễn lệ phí đối với trường hợp đăng ký khai sinh đúng hạn. Trường hợp không đúng hạn, lệ phí là 8.000đ hoặc 5.000đ tùy khu vực. Phí cấp bản sao: 5.000đ/bản. Có các trường hợp được miễn lệ phí khác.",
+    "has_form": true,
+    "requirements_conditions": "Áp dụng cho trẻ em sinh ra mà cha mẹ thuộc một trong các trường hợp sau:\n- Bị khuyết tật, ốm bệnh không thể đi đăng ký khai sinh cho con.\n- Bị bắt, tạm giam hoặc đang thi hành án phạt tù mà không còn ông bà nội, ngoại và người thân thích khác, hoặc những người này không có điều kiện đi đăng ký khai sinh cho trẻ.",
+    "legal_basis_references": [
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Nghị định số 104/2022/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP",
+      "Thông tư số 85/2019/TT-BTC",
+      "Thông tư số 106/2021/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND",
+      "Nghị quyết số 12/2023/NQ-HĐND",
+      "Nghị quyết số 04/2023/NQ-HĐND"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. GIẤY TỜ PHẢI NỘP:**\n1. Tờ khai đăng ký khai sinh theo mẫu.\n2. Bản chính Giấy chứng sinh. Nếu không có, nộp văn bản của người làm chứng hoặc giấy cam đoan về việc sinh.\n3. Văn bản xác nhận của cơ sở y tế (trường hợp khai sinh cho trẻ sinh ra do mang thai hộ).\n\n**B. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng của người yêu cầu (Hộ chiếu, Căn cước công dân...).\n2. Giấy tờ chứng minh thông tin về nơi cư trú (nếu CSDLQGVDC không có).\n3. Giấy chứng nhận kết hôn của cha, mẹ (nếu đã đăng ký kết hôn và thông tin chưa có trên CSDL).",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "khai sinh lưu động",
+        "tờ khai",
+        "giấy chứng sinh",
+        "cam đoan"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "5 ngày"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Yêu cầu, điều kiện thực hiện",
+      "content": "Thủ tục này áp dụng cho trẻ em sinh ra mà cha mẹ bị khuyết tật, ốm bệnh không thể đi đăng ký khai sinh cho con; hoặc trường hợp cha mẹ bị bắt, tạm giam hoặc đang thi hành án phạt tù mà không còn ông bà nội, ngoại và người thân thích khác (hoặc những người này không có điều kiện) để đi đăng ký khai sinh cho trẻ.",
+      "source_reference": "Mục 5.i",
+      "keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "lưu động",
+        "khuyết tật",
+        "ốm bệnh",
+        "thi hành án phạt tù"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 05 ngày làm việc.\n**Các bước thực hiện:**\n1. Công chức Tư pháp - Hộ tịch tiếp nhận, kiểm tra hồ sơ (3 ngày).\n2. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (1 ngày).\n3. Văn thư UBND đóng dấu văn bản (½ ngày).\n4. Công chức Tư pháp - Hộ tịch ghi sổ và trả kết quả (½ ngày).",
+      "source_reference": "Mục 5.l",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "thẩm tra",
+        "ký duyệt",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

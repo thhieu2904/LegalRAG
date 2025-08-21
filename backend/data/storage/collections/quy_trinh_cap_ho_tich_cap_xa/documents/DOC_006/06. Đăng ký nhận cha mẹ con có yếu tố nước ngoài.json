@@ -1,0 +1,94 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/06. Đăng ký nhận cha, mẹ, con có yếu tố nước ngoài.doc",
+    "title": "Đăng ký nhận cha, mẹ, con có yếu tố nước ngoài",
+    "code": "QT 06/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "10 ngày",
+    "fee_vnd": null,
+    "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 1.500.000đ, 1.200.000đ, 1.000.000đ, 800.000đ, 750.000đ. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...). Phí cấp bản sao: 8.000đ/bản.",
+    "has_form": true,
+    "requirements_conditions": null,
+    "legal_basis_references": [
+      "Luật Hôn nhân và gia đình năm 2014",
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Nghị định số 87/2020/NĐ-CP",
+      "Nghị định số 104/2022/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 01/2022/TT-BTP",
+      "Thông tư số 03/2023/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP",
+      "Thông tư số 281/2016/TT-BTC",
+      "Thông tư số 85/2019/TT-BTC",
+      "Thông tư số 106/2021/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND",
+      "Nghị quyết số 06/2024/NQ-HĐND",
+      "Nghị quyết số 12/2023/NQ-HĐND",
+      "Nghị quyết số 04/2024/NQ-HĐND",
+      "Nghị quyết số 04/2023/NQ-HĐND"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ và các lưu ý quan trọng",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- Tờ khai đăng ký nhận cha, mẹ, con theo mẫu.\n- Mẫu hộ tịch điện tử tương tác (nếu nộp trực tuyến).\n\n**B. GIẤY TỜ PHẢI NỘP:**\n1. **Chứng cứ chứng minh quan hệ cha, mẹ, con**, gồm một trong hai loại:\n   - Văn bản xác nhận của cơ quan y tế, giám định hoặc tổ chức có thẩm quyền trong nước hoặc nước ngoài.\n   - Nếu không có văn bản trên: Văn bản cam đoan của các bên, có ít nhất hai người làm chứng.\n2. **Đối với người nước ngoài:** Phải nộp bản sao hộ chiếu hoặc giấy tờ có giá trị thay hộ chiếu để chứng minh nhân thân.\n\n**C. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng (Hộ chiếu, Căn cước công dân...).\n2. Giấy tờ chứng minh thông tin về nơi cư trú (nếu CSDLQGVDC không có).\n\n**D. CÁC LƯU Ý QUAN TRỌNG:**\n- **Giấy tờ nước ngoài:** Phải được hợp pháp hóa lãnh sự, trừ trường hợp được miễn theo điều ước quốc tế mà Việt Nam là thành viên.\n- **Hình thức giấy tờ:** Chấp nhận nộp bản sao chứng thực, bản sao từ sổ gốc, hoặc bản chụp kèm theo bản chính để đối chiếu. Giấy tờ trên ứng dụng VneID được chấp nhận.\n- **Cam đoan:** Trường hợp lập văn bản cam đoan, người cam đoan phải chịu trách nhiệm về nội dung cam đoan. Nếu cam đoan sai sự thật, kết quả đăng ký sẽ bị hủy bỏ.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "nhận cha mẹ con",
+        "yếu tố nước ngoài",
+        "tờ khai",
+        "chứng cứ",
+        "cam đoan",
+        "hộ chiếu",
+        "hợp pháp hóa lãnh sự"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "10 ngày.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "10 ngày"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Cá nhân.\n**Cơ quan thực hiện:** Công chức tư pháp - hộ tịch tiếp nhận hồ sơ và tham mưu Lãnh đạo Ủy ban nhân dân cấp xã xem xét, quyết định.\n**Cơ quan phối hợp:** Ủy ban nhân dân cấp xã nơi cư trú của người được nhận là cha, mẹ, con; Cơ quan quản lý CSDLQGVDC.",
+      "source_reference": "Mục 5.c, 5.d, 5.đ",
+      "keywords": ["đối tượng", "cơ quan", "thẩm quyền", "UBND cấp xã"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện thủ tục hành chính",
+      "content": "- Trích lục đăng ký nhận cha, mẹ, con (bản chính).\n- Bản sao Trích lục (nếu có yêu cầu).\n- Bản điện tử Trích lục đăng ký nhận cha, mẹ, con.",
+      "source_reference": "Mục 5.e",
+      "keywords": ["kết quả", "trích lục", "bản sao"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 10 ngày.\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận hồ sơ (1 ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra, xác minh, niêm yết (7 ngày).\n3. Lãnh đạo UBND ký trích lục (1 ngày).\n4. Văn thư UBND đóng dấu văn bản (½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).",
+      "source_reference": "Mục 5.l",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "thẩm tra",
+        "niêm yết",
+        "ký duyệt",
+        "trả kết quả"
+      ]
+    }
+  ]
+}
