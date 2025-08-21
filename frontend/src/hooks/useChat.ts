@@ -301,6 +301,19 @@ export function useChat(options: UseChatOptions = {}) {
               "✅ Final answer received, clearing currentClarification"
             );
             setCurrentClarification(null);
+          } else if (apiResponse.type === "manual_input_request") {
+            // 🔧 NEW: Handle manual input request
+            console.log("📝 Manual input requested:", apiResponse.message);
+            addMessage(
+              apiResponse.message || "Vui lòng nhập câu hỏi cụ thể của bạn:",
+              true,
+              undefined,
+              apiResponse.processing_time,
+              apiResponse.context_info?.source_documents,
+              apiResponse
+            );
+            // Keep currentClarification for context but allow manual input
+            setCurrentClarification(null);
           } else if (
             apiResponse.type === "clarification_needed" &&
             apiResponse.clarification

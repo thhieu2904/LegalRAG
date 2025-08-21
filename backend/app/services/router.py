@@ -47,12 +47,14 @@ class QueryRouter:
         self.question_vectors = {}
         self.collection_mappings = {}
         
-        # Thresholds - Hạ thấp để linh hoạt hơn, không quá cứng nhắc
-        self.high_confidence_threshold = 0.80  # Hạ từ 0.85 -> 0.80 để linh hoạt hơn
-        self.min_confidence_threshold = 0.50   # Dưới threshold này = hỏi lại user
+        # Thresholds - UPDATED to match clarification levels
+        self.high_confidence_threshold = 0.80      # >= 0.80: auto route
+        self.medium_high_threshold = 0.65          # 0.65-0.79: questions in document  
+        self.min_confidence_threshold = 0.50       # 0.50-0.64: multiple choices
+        # < 0.50: category suggestions
         
-        logger.info(f"🎯 Router thresholds - Min: {self.min_confidence_threshold}, High: {self.high_confidence_threshold}")
-        logger.info("💡 STRATEGY: Threshold CỰC CAO, nếu không chắc chắn thì hỏi lại user")
+        logger.info(f"🎯 Router thresholds - Min: {self.min_confidence_threshold}, Medium-High: {self.medium_high_threshold}, High: {self.high_confidence_threshold}")
+        logger.info("💡 STRATEGY: 4-level clarification system")
         
         # Initialize database - cache first, fallback to live loading
         if self._load_from_cache():
@@ -699,8 +701,8 @@ class QueryRouter:
                     override_collection = session.last_successful_collection
                     override_filters = getattr(session, 'last_successful_filters', None)  # 🔥 NEW: Lấy filters từ session
                     should_override = True
-                    # Boost confidence to medium level khi override
-                    best_score = max(best_score, 0.75)
+                    # 🔧 FIX: Boost confidence to HIGH level để route trực tiếp (không trigger clarification)
+                    best_score = max(best_score, 0.85)  # Changed from 0.75 to 0.85 để đảm bảo HIGH confidence
                     best_collection = override_collection
                     if override_filters:
                         best_filters = override_filters  # 🔥 NEW: Override filters
@@ -722,6 +724,10 @@ class QueryRouter:
                         session.clear_routing_state()
             
             # 🔗 FOLLOW-UP DETECTION (chỉ khi KHÔNG có override)
+            # 🔍 DEBUG: Always log session state for debugging
+            if session:
+                logger.info(f"🔍 DEBUG Session state: last_successful_collection={getattr(session, 'last_successful_collection', 'MISSING')}, confidence={getattr(session, 'last_successful_confidence', 'MISSING')}")
+            
             if not should_override and session and hasattr(session, 'last_successful_collection') and session.last_successful_collection:
                 logger.info(f"🔗 Session has previous context: {session.last_successful_collection}")
                 is_followup = self._is_followup_question(query)
@@ -737,7 +743,7 @@ class QueryRouter:
                 final_title = best_filters.get('exact_title', ['Unknown'])
                 logger.info(f"🔍 FINAL FILTERS CHECK - Exact title: {final_title}")
             
-            # Determine routing decision - LOGIC MỚI với 3 mức tin cậy + Override
+            # Determine routing decision - LOGIC MỚI với 4 mức tin cậy + Override
             if best_score >= self.high_confidence_threshold:
                 # High confidence - route immediately với tin cậy cao
                 confidence_level = 'high' if not should_override else 'override_high'
@@ -757,12 +763,31 @@ class QueryRouter:
                     'inferred_filters': best_filters
                 }
             
-            elif best_score >= self.min_confidence_threshold:
-                # Khả năng match có thể đúng nhưng chưa chắc chắn - ROUTE NHƯNG CAUTION
-                confidence_level = 'low-medium' if not should_override else 'override_medium'
-                logger.info(f"⚠️ LOW-MEDIUM CONFIDENCE routing: {best_score:.3f} >= {self.min_confidence_threshold}")
+            elif best_score >= self.medium_high_threshold:
+                # Medium-high confidence - cần clarification cho questions trong document
+                confidence_level = 'medium-high' if not should_override else 'override_medium_high'
+                logger.info(f"🔍 MEDIUM-HIGH CONFIDENCE: {best_score:.3f} >= {self.medium_high_threshold} - questions in document")
                 return {
-                    'status': 'routed',
+                    'status': 'clarification_needed',
+                    'confidence_level': confidence_level,
+                    'target_collection': best_collection,
+                    'confidence': best_score,
+                    'original_confidence': original_confidence if should_override else best_score,
+                    'was_overridden': should_override,
+                    'all_scores': collection_scores,
+                    'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
+                    'clarification_needed': True,
+                    'matched_example': best_example,
+                    'source_procedure': best_source,
+                    'inferred_filters': best_filters
+                }
+            
+            elif best_score >= self.min_confidence_threshold:
+                # Medium confidence - cần clarification cho document selection
+                confidence_level = 'medium' if not should_override else 'override_medium'
+                logger.info(f"⚠️ MEDIUM CONFIDENCE: {best_score:.3f} >= {self.min_confidence_threshold} - document selection")
+                return {
+                    'status': 'clarification_needed',
                     'confidence_level': confidence_level, 
                     'target_collection': best_collection,
                     'confidence': best_score,
@@ -770,16 +795,15 @@ class QueryRouter:
                     'was_overridden': should_override,
                     'all_scores': collection_scores,
                     'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
-                    'clarification_needed': False,  # Route nhưng sẽ có extra validation
+                    'clarification_needed': True,
                     'matched_example': best_example,
                     'source_procedure': best_source,
-                    'inferred_filters': best_filters,
-                    'warning': 'low_medium_confidence' if not should_override else 'overridden_routing'
+                    'inferred_filters': best_filters
                 }
             
             else:
-                # Below min threshold - cần clarification vì quá mơ hồ
-                logger.warning(f"🤔 TOO AMBIGUOUS - cần clarification: {best_score:.3f} < {self.min_confidence_threshold}")
+                # Below min threshold - cần clarification cho collection selection
+                logger.warning(f"🤔 LOW CONFIDENCE - cần clarification: {best_score:.3f} < {self.min_confidence_threshold} - collection selection")
                 return {
                     'status': 'clarification_needed',
                     'confidence_level': 'low',

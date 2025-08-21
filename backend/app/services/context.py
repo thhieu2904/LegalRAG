@@ -56,6 +56,43 @@ class ContextExpander:
             
         except Exception as e:
             logger.error(f"Error building document metadata cache: {e}")
+
+    def _build_highlighted_context(self, full_content: str, nucleus_chunk: Dict) -> str:
+        """
+        🎯 PHASE 1: Highlight nucleus chunk trong full content để AI focus đúng chỗ
+        """
+        nucleus_content = nucleus_chunk.get('content', '')
+        
+        if not nucleus_content:
+            logger.warning("Nucleus chunk không có content để highlight")
+            return full_content
+        
+        # 🔍 DEBUG: Log nucleus content for troubleshooting
+        logger.debug(f"🔍 Nucleus content (first 200 chars): {nucleus_content[:200]}...")
+        logger.debug(f"🔍 Full content (first 200 chars): {full_content[:200]}...")
+        
+        # Tìm và highlight nucleus chunk
+        if nucleus_content in full_content:
+            highlighted_content = full_content.replace(
+                nucleus_content,
+                f"[THÔNG TIN CHÍNH]\n{nucleus_content}\n[/THÔNG TIN CHÍNH]"
+            )
+            logger.info("✅ Successfully highlighted nucleus chunk trong full context")
+            return highlighted_content
+        else:
+            # Try fuzzy matching for partial matches
+            nucleus_words = nucleus_content.split()[:10]  # First 10 words
+            partial_match = ' '.join(nucleus_words)
+            
+            if partial_match in full_content:
+                logger.info("✅ Found partial match with first 10 words, using fallback highlighting")
+            else:
+                logger.warning(f"⚠️ No match found for nucleus chunk. Nucleus length: {len(nucleus_content)}, Full content length: {len(full_content)}")
+                
+            # Fallback: add nucleus at top
+            highlighted_content = f"[THÔNG TIN CHÍNH]\n{nucleus_content}\n[/THÔNG TIN CHÍNH]\n\n{full_content}"
+            logger.info("⚠️ Nucleus chunk không tìm thấy trong full content, thêm lên đầu")
+            return highlighted_content
     
     def expand_context_with_nucleus(
         self,
@@ -174,20 +211,21 @@ class ContextExpander:
             metadata = json_data.get('metadata', {})
             content_chunks = json_data.get('content_chunks', [])
             
-            # Build complete content (same as _load_full_document)
+            # Build complete content với CLEAN FORMATTING - PHASE 3
             complete_parts = []
             
-            # METADATA SECTION - Đầy đủ thông tin
+            # 🧹 PHASE 3: Clean metadata formatting - bỏ dấu ===
             if metadata:
-                complete_parts.append("=== THÔNG TIN THỦ TỤC ===")
+                complete_parts.append("Thông tin thủ tục:")
                 for key, value in metadata.items():
                     if value:  # Chỉ loại bỏ empty values
-                        complete_parts.append(f"{key.upper()}: {value}")
+                        clean_key = key.replace('_', ' ').title()
+                        complete_parts.append(f"{clean_key}: {value}")
                 complete_parts.append("")  # Empty line separator
             
-            # CONTENT SECTIONS - Toàn bộ content chunks
+            # 🧹 PHASE 3: Clean content formatting - bỏ dấu ===
             if content_chunks:
-                complete_parts.append("=== NỘI DUNG CHI TIẾT ===")
+                complete_parts.append("Nội dung chi tiết:")
                 for chunk in content_chunks:
                     if chunk.get('content'):
                         complete_parts.append(chunk['content'])
@@ -229,20 +267,21 @@ class ContextExpander:
             metadata = json_data.get('metadata', {})
             content_chunks = json_data.get('content_chunks', [])
             
-            # Build COMPLETE document content
+            # 🧹 PHASE 3: Build COMPLETE document content với clean formatting
             complete_parts = []
             
-            # METADATA SECTION - Đầy đủ thông tin
+            # 🧹 PHASE 3: Clean metadata formatting - bỏ dấu ===
             if metadata:
-                complete_parts.append("=== THÔNG TIN THỦ TỤC ===")
+                complete_parts.append("Thông tin thủ tục:")
                 for key, value in metadata.items():
                     if value:  # Chỉ loại bỏ empty values
-                        complete_parts.append(f"{key.upper()}: {value}")
+                        clean_key = key.replace('_', ' ').title()
+                        complete_parts.append(f"{clean_key}: {value}")
                 complete_parts.append("")  # Empty line separator
             
-            # CONTENT SECTIONS - Toàn bộ content chunks
+            # 🧹 PHASE 3: Clean content formatting - bỏ dấu ===
             if content_chunks:
-                complete_parts.append("=== NỘI DUNG CHI TIẾT ===")
+                complete_parts.append("Nội dung chi tiết:")
                 for chunk in content_chunks:
                     if chunk.get('content'):
                         complete_parts.append(chunk['content'])

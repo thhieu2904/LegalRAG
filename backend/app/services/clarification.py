@@ -31,14 +31,20 @@ class ClarificationService:
     def __init__(self):
         self.clarification_levels = {
             'high_confidence': ClarificationLevel(
-                min_confidence=0.70,
-                max_confidence=0.84,
-                strategy='confirm_with_suggestion',
-                message_template="Tôi nghĩ bạn muốn hỏi về '{procedure}' (độ tin cậy: {confidence:.1%}). Đúng không?"
+                min_confidence=0.80,
+                max_confidence=1.00,
+                strategy='auto_route',
+                message_template="Routing automatically to '{procedure}' (confidence: {confidence:.1%})"
+            ),
+            'medium_high_confidence': ClarificationLevel(
+                min_confidence=0.65,
+                max_confidence=0.79,
+                strategy='questions_in_document', 
+                message_template="Tôi nghĩ bạn muốn hỏi về '{procedure}'. Chọn câu hỏi cụ thể hoặc tự nhập:"
             ),
             'medium_confidence': ClarificationLevel(
                 min_confidence=0.50,
-                max_confidence=0.69,
+                max_confidence=0.64,
                 strategy='multiple_choices',
                 message_template="Câu hỏi của bạn có thể liên quan đến các thủ tục sau. Bạn muốn hỏi về:"
             ),
@@ -50,8 +56,9 @@ class ClarificationService:
             )
         }
         
-        # Category mappings cho low confidence
+        # Category mappings cho low confidence - UPDATED FOR NEW STRUCTURE
         self.category_suggestions = {
+            # Old structure compatibility
             'ho_tich_cap_xa': {
                 'title': 'Hộ tịch cấp xã',
                 'description': 'Khai sinh, kết hôn, khai tử, thay đổi hộ tịch',
@@ -63,6 +70,22 @@ class ClarificationService:
                 'examples': ['chứng thực hợp đồng mua bán', 'chứng thực chữ ký', 'chứng thực bản sao']
             },
             'nuoi_con_nuoi': {
+                'title': 'Nuôi con nuôi',
+                'description': 'Thủ tục nhận con nuôi, giám hộ',
+                'examples': ['nhận con nuôi', 'thủ tục nuôi con nuôi', 'giám hộ trẻ em']
+            },
+            # New structure mappings
+            'quy_trinh_cap_ho_tich_cap_xa': {
+                'title': 'Hộ tịch cấp xã',
+                'description': 'Khai sinh, kết hôn, khai tử, thay đổi hộ tịch',
+                'examples': ['khai sinh con', 'đăng ký kết hôn', 'làm lại giấy khai sinh']
+            },
+            'quy_trinh_chung_thuc': {
+                'title': 'Chứng thực',
+                'description': 'Chứng thực hợp đồng, chữ ký, bản sao giấy tờ, di chúc',
+                'examples': ['chứng thực hợp đồng mua bán', 'chứng thực di chúc', 'chứng thực bản sao']
+            },
+            'quy_trinh_nuoi_con_nuoi': {
                 'title': 'Nuôi con nuôi',
                 'description': 'Thủ tục nhận con nuôi, giám hộ',
                 'examples': ['nhận con nuôi', 'thủ tục nuôi con nuôi', 'giám hộ trẻ em']
@@ -89,7 +112,13 @@ class ClarificationService:
             logger.info(f"🎯 Generating {clarification_level} clarification for confidence: {confidence:.3f}")
             
             # Generate theo strategy
-            if level_config.strategy == 'confirm_with_suggestion':
+            if level_config.strategy == 'auto_route':
+                return self._generate_auto_route_response(confidence, routing_result, level_config)
+            
+            elif level_config.strategy == 'questions_in_document':
+                return self._generate_questions_in_document_clarification(confidence, routing_result, level_config)
+            
+            elif level_config.strategy == 'confirm_with_suggestion':
                 return self._generate_confirmation_clarification(confidence, routing_result, level_config)
             
             elif level_config.strategy == 'multiple_choices':
@@ -107,21 +136,102 @@ class ClarificationService:
             return self._generate_fallback_clarification(float(confidence) if confidence is not None else 0.0, routing_result)
     
     def _determine_clarification_level(self, confidence: float) -> str:
-        """Xác định clarification level dựa trên confidence"""
+        """Xác định clarification level dựa trên confidence - UPDATED WITH 4 LEVELS"""
         # FIXED: Kiểm tra theo thứ tự từ cao xuống thấp để tránh overlap
-        if confidence >= 0.70 and confidence <= 0.84:
+        if confidence >= 0.80:
             return 'high_confidence'
-        elif confidence >= 0.50 and confidence < 0.70:
+        elif confidence >= 0.65 and confidence < 0.80:
+            return 'medium_high_confidence'
+        elif confidence >= 0.50 and confidence < 0.65:
             return 'medium_confidence'
         elif confidence >= 0.00 and confidence < 0.50:
             return 'low_confidence'
         
         # Edge cases
-        if confidence > 0.84:
-            return 'high_confidence'
         else:
             return 'low_confidence'
     
+    def _generate_auto_route_response(
+        self, 
+        confidence: float, 
+        routing_result: Dict[str, Any], 
+        level_config: ClarificationLevel
+    ) -> Dict[str, Any]:
+        """
+        HIGH CONFIDENCE (>0.80): Auto route without clarification
+        """
+        return {
+            "type": "auto_route",
+            "confidence_level": "high_confidence",
+            "confidence": float(confidence),
+            "routing_result": routing_result,
+            "message": "Routing automatically with high confidence",
+            "strategy": level_config.strategy
+        }
+    
+    def _generate_questions_in_document_clarification(
+        self, 
+        confidence: float, 
+        routing_result: Dict[str, Any], 
+        level_config: ClarificationLevel
+    ) -> Dict[str, Any]:
+        """
+        MEDIUM-HIGH CONFIDENCE (0.65-0.79): Show questions within best matched document
+        """
+        source_procedure = routing_result.get('source_procedure', 'thủ tục này')
+        target_collection = routing_result.get('target_collection')
+        
+        # Debug logging
+        logger.info(f"🔍 MEDIUM-HIGH DEBUG: source_procedure={source_procedure}, target_collection={target_collection}")
+        logger.info(f"🔍 MEDIUM-HIGH DEBUG: routing_result keys={list(routing_result.keys())}")
+        
+        # Handle case where source_procedure is None
+        if source_procedure is None or source_procedure == 'thủ tục này':
+            # Try to get display name from collection mappings
+            display_name = routing_result.get('display_name')
+            if display_name:
+                source_procedure = display_name
+            else:
+                source_procedure = f"thủ tục trong {target_collection}" if target_collection else "thủ tục này"
+        
+        message = level_config.message_template.format(
+            procedure=source_procedure,
+            confidence=confidence
+        )
+        
+        # This will be handled by RAG engine to get questions from the specific document
+        options = [
+            {
+                'id': 'show_questions',
+                'title': f"Xem câu hỏi về {source_procedure}",
+                'description': f"Hiển thị các câu hỏi thường gặp về {source_procedure}",
+                'action': 'show_document_questions',  # New action for medium-high
+                'collection': target_collection,
+                'procedure': source_procedure,
+                'document_title': source_procedure  # Pass procedure as document title
+            },
+            {
+                'id': 'manual',
+                'title': "Tôi muốn mô tả câu hỏi cụ thể",
+                'description': "Để tôi diễn đạt lại câu hỏi một cách chi tiết hơn",
+                'action': 'manual_input',
+                'collection': target_collection
+            }
+        ]
+        
+        return {
+            "type": "clarification_needed",
+            "confidence_level": "medium_high_confidence",
+            "confidence": float(confidence),
+            "clarification": {
+                "message": message,
+                "options": options,
+                "style": "questions_in_document"
+            },
+            "routing_context": routing_result,
+            "strategy": level_config.strategy
+        }
+
     def _generate_confirmation_clarification(
         self, 
         confidence: float, 

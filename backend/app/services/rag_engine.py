@@ -374,11 +374,19 @@ class RAGService:
                     logger.info(f"🔄 Found preserved document context: {preserved_document['title']}")
                     forced_collection = preserved_document['collection']
                     forced_document_title = preserved_document['title']
+                    
+                # 🔧 NEW: Check for manual input context
+                manual_input_context = session.metadata.get('manual_input_context')
+                if manual_input_context and manual_input_context.get('bypass_router'):
+                    logger.info(f"🔄 Found manual input context: {manual_input_context['collection']}")
+                    forced_collection = manual_input_context['collection']
+                    # Clear manual input context after use
+                    session.metadata.pop('manual_input_context', None)
             
             # Step 1: Enhanced Smart Query Routing với MULTI-LEVEL Confidence Processing + Stateful Router
             if forced_collection:
                 # � FORCED ROUTING: Dành cho clarification hoặc debug
-                logger.info(f"⚡ Forced routing to collection: {forced_collection} (from clarification)")
+                logger.info(f"⚡ Forced routing to collection: {forced_collection} (from clarification/manual input)")
                 routing_result = {
                     "target_collection": forced_collection,
                     "confidence": 0.95,  # High confidence cho forced routing
@@ -411,29 +419,57 @@ class RAGService:
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
                     logger.info(f"✅ HIGH CONFIDENCE routing to: {target_collection}")
                     
+                elif confidence_level in ['medium-high', 'override_medium_high']:
+                    # MEDIUM-HIGH CONFIDENCE - Show questions within best document
+                    logger.info(f"🎯 MEDIUM-HIGH CONFIDENCE ({routing_result['confidence']:.3f}) - showing questions in document")
+                    
+                    # 🔧 FIX: Set session context để follow-up questions có thể hoạt động 
+                    if session:
+                        target_collection = routing_result.get('target_collection')
+                        session.last_successful_collection = target_collection
+                        session.last_successful_filters = routing_result.get('inferred_filters', {})
+                        session.last_successful_timestamp = start_time
+                        logger.info(f"🔄 Set session context for follow-up: {target_collection}")
+                    
+                    return self._generate_smart_clarification(routing_result, query, session_id, start_time)
+                    
                 elif confidence_level in ['low-medium', 'override_medium', 'medium_followup']:
-                    # MEDIUM CONFIDENCE (including overridden & follow-up) - Route với caution
-                    target_collection = routing_result['target_collection']
-                    inferred_filters = routing_result.get('inferred_filters', {})
-                    best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
-                    logger.info(f"⚠️ MEDIUM CONFIDENCE routing to: {target_collection}")
+                    # 🔥 MEDIUM CONFIDENCE FIX - Trigger clarification instead of routing
+                    # Vì medium confidence có risk cao matching sai topic → cần hỏi user xác nhận
+                    logger.info(f"🤔 MEDIUM CONFIDENCE ({routing_result['confidence']:.3f}) - triggering clarification to avoid wrong routing")
+                    
+                    # 🔧 FIX: Set session context cho follow-up (medium confidence vẫn có potential collection)
+                    if session:
+                        target_collection = routing_result.get('target_collection')
+                        session.last_successful_collection = target_collection
+                        session.last_successful_filters = routing_result.get('inferred_filters', {})
+                        session.last_successful_timestamp = start_time
+                        logger.info(f"🔄 Set session context for follow-up (medium): {target_collection}")
+                    
+                    return self._generate_smart_clarification(routing_result, query, session_id, start_time)
                     
                 else:
-                    # TẤT CẢ CONFIDENCE < THRESHOLD - Hỏi lại user, không route
-                    logger.info(f"🤔 CONFIDENCE KHÔNG ĐỦ CAO ({confidence_level}) - hỏi lại user thay vì route")
+                    # LOW CONFIDENCE - Hỏi lại user, không route
+                    logger.info(f"🤔 LOW CONFIDENCE ({confidence_level}) - hỏi lại user thay vì route")
+                    
+                    # 🔧 FIX: Set session context nếu có target collection (low confidence vẫn có thể có best guess)
+                    if session and routing_result.get('target_collection'):
+                        target_collection = routing_result.get('target_collection')
+                        session.last_successful_collection = target_collection
+                        session.last_successful_filters = routing_result.get('inferred_filters', {})
+                        session.last_successful_timestamp = start_time
+                        logger.info(f"🔄 Set session context for follow-up (low): {target_collection}")
+                    
                     return self._generate_smart_clarification(routing_result, query, session_id, start_time)
             
-            # Step 2: Focused Search với ĐỘNG BROAD_SEARCH_K dựa trên router confidence
-            # 🚀 PERFORMANCE OPTIMIZATION: Giảm số documents cần rerank
+            # Step 2: Focused Search với DYNAMIC BROAD_SEARCH_K dựa trên router confidence  
+            # 🚀 PERFORMANCE OPTIMIZATION: Chỉ optimize cho HIGH confidence vì MEDIUM đã trigger clarification
             dynamic_k = settings.broad_search_k  # default 12
             if confidence_level in ['high', 'high_followup']:
                 dynamic_k = max(8, settings.broad_search_k - 4)  # Router tự tin → ít docs hơn
                 logger.info(f"🎯 HIGH CONFIDENCE: Giảm broad_search_k xuống {dynamic_k}")
-            elif confidence_level in ['low-medium', 'override_medium', 'medium_followup']:
-                dynamic_k = min(15, settings.broad_search_k + 3)  # Router không chắc → nhiều docs hơn
-                logger.info(f"🔍 MEDIUM CONFIDENCE: Tăng broad_search_k lên {dynamic_k}")
             else:
-                logger.info(f"📊 DEFAULT/FALLBACK: Sử dụng broad_search_k={dynamic_k}")
+                logger.info(f"� HIGH CONFIDENCE ONLY: Sử dụng broad_search_k={dynamic_k}")
             
             broad_search_results = []
             for collection_name in best_collections[:2]:  # Limit to top 2 collections
@@ -567,7 +603,8 @@ class RAGService:
                 nucleus_chunks=nucleus_chunks
             )
             
-            context_text = self._build_context_from_expanded(expanded_context)
+            # 🎯 PHASE 1: Apply highlighting cho nucleus chunks
+            context_text = self._build_context_from_expanded(expanded_context, nucleus_chunks)
             
             # ✅ ENHANCED: Smart context building với intent detection
             detected_intent = self._detect_specific_intent(query)
@@ -615,8 +652,10 @@ class RAGService:
             
             # 🔥 Update session state for Stateful Router
             # Chỉ update state khi routing thành công với confidence đủ tốt (0.78+)
+            logger.info(f"🔍 Session update check: routing_result={routing_result is not None}, confidence={routing_result.get('confidence', 0) if routing_result else 'None'}")
             if routing_result and routing_result.get('confidence', 0) >= 0.78:
                 target_collection = routing_result.get('target_collection')
+                logger.info(f"🔍 Target collection for session update: {target_collection}")
                 if target_collection:
                     rag_content = {
                         "context_text": context_text,
@@ -821,6 +860,102 @@ class RAGService:
                     "processing_time": time.time() - start_time
                 }
         
+        if action == 'show_document_questions' and collection:
+            # 🎯 MEDIUM-HIGH CONFIDENCE: Show questions for specific procedure directly
+            procedure = selected_option.get('procedure')
+            document_title = selected_option.get('document_title') or procedure
+            
+            logger.info(f"🎯 Medium-High Confidence: Showing questions for procedure '{procedure}' in collection '{collection}'")
+            
+            try:
+                # Get questions that match the procedure
+                collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                
+                # Filter questions by procedure/document title
+                matching_questions = []
+                for question in collection_questions:
+                    question_text = question.get('text', str(question)) if isinstance(question, dict) else str(question)
+                    source = question.get('source', '') if isinstance(question, dict) else ''
+                    
+                    # Check if question is related to the procedure
+                    if procedure and (procedure.lower() in question_text.lower() or 
+                                    procedure.lower() in source.lower()):
+                        matching_questions.append(question)
+                
+                # If no specific matches, get top questions from collection
+                if not matching_questions:
+                    matching_questions = collection_questions[:5]
+                
+                # Create question suggestions
+                suggestions = []
+                for i, q in enumerate(matching_questions[:5]):
+                    question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
+                    suggestions.append({
+                        "id": str(i + 1),
+                        "title": question_text,
+                        "description": f"Câu hỏi về {procedure}",
+                        "action": "proceed_with_question",
+                        "collection": collection,
+                        "document_title": document_title,
+                        "question_text": question_text,
+                        "source_file": q.get('source', '') if isinstance(q, dict) else '',
+                        "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                    })
+                
+                # Add manual input option
+                suggestions.append({
+                    "id": str(len(suggestions) + 1),
+                    "title": "Câu hỏi khác...",
+                    "description": f"Tôi muốn hỏi về vấn đề khác trong {procedure}",
+                    "action": "manual_input",
+                    "collection": collection,
+                    "document_title": document_title
+                })
+                
+                clarification_response = {
+                    "message": f"Đây là các câu hỏi thường gặp về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
+                    "options": suggestions,
+                    "show_manual_input": True,
+                    "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {procedure}...",
+                    "context": "medium_high_questions",
+                    "metadata": {
+                        "collection": collection,
+                        "procedure": procedure,
+                        "document_title": document_title,
+                        "stage": "medium_high_questions"
+                    }
+                }
+                
+                # Update session state
+                session.metadata["routing_state"] = {
+                    "collection": collection,
+                    "procedure": procedure,
+                    "document_title": document_title,
+                    "stage": "medium_high_questions"
+                }
+                self.chat_sessions[session_id] = session
+                
+                return {
+                    "answer": clarification_response["message"],
+                    "clarification": clarification_response,
+                    "collection": collection,
+                    "document_title": document_title,
+                    "type": "clarification_needed",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+                
+            except Exception as e:
+                logger.error(f"❌ Error in medium-high question generation: {e}")
+                import traceback
+                traceback.print_exc()
+                return {
+                    "answer": f"Có lỗi khi tải câu hỏi về '{procedure}'. Vui lòng thử lại.",
+                    "type": "error",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+        
         if action == 'proceed_with_document' and collection:
             # 🎯 GIAI ĐOẠN 2.5: User chọn document, generate question suggestions trong document đó
             document_filename = selected_option.get('document_filename')
@@ -947,9 +1082,14 @@ class RAGService:
             
             # ✅ SMART CONTEXT PRESERVATION: Giữ context có giá trị thay vì clear all
             original_routing = session.metadata.get('original_routing_context', {})
-            selected_collection = selected_option.get('collection')  # Collection user đã chọn
+            
+            # 🔧 FIX: Get collection from original routing context, not from selected_option
+            selected_collection = (selected_option.get('collection') or 
+                                 original_routing.get('target_collection'))
             selected_document = selected_option.get('document_filename')  # Document user đã chọn (if any)
             document_title = selected_option.get('document_title')  # Document title (if any)
+            
+            logger.info(f"🔍 Context check: selected_collection={selected_collection}, original_target={original_routing.get('target_collection')}")
             
             # Determine context to preserve based on conversation stage
             if selected_document and selected_collection:
@@ -1002,18 +1142,46 @@ class RAGService:
                     "preserved_collection": selected_collection
                 }
             else:
-                # Không có collection context → Clear session (fallback)
-                logger.info(f"🔄 No collection context to preserve, clearing session state.")
-                session.clear_routing_state()
-                session.metadata.clear()
-                
-                return {
-                    "type": "manual_input_request",
-                    "message": "Vui lòng nhập lại câu hỏi cụ thể hơn. Tôi sẽ tìm kiếm trong ngữ cảnh phù hợp.",
-                    "session_id": session_id,
-                    "processing_time": time.time() - start_time,
-                    "context_preserved": False
-                }
+                # 🔧 FIX: Check if we have ANY collection context to preserve
+                if selected_collection:
+                    logger.info(f"🔄 FOUND COLLECTION CONTEXT: Preserving collection context: {selected_collection}")
+                    session.last_successful_collection = selected_collection
+                    session.last_successful_confidence = original_routing.get('confidence', 0.7)
+                    session.last_successful_timestamp = time.time()
+                    session.last_successful_filters = original_routing.get('inferred_filters', {})
+                    
+                    # Clear only metadata về clarification process
+                    session.metadata.pop('original_routing_context', None)
+                    session.metadata.pop('original_query', None)
+                    
+                    # 🔥 NEW: Set manual input context for next query
+                    session.metadata['manual_input_context'] = {
+                        'collection': selected_collection,
+                        'bypass_router': True,
+                        'preserve_collection': True
+                    }
+                    
+                    return {
+                        "type": "manual_input_request",
+                        "message": f"Vui lòng nhập lại câu hỏi cụ thể hơn về '{selected_collection}'. Tôi sẽ tìm kiếm trong lĩnh vực này.",
+                        "session_id": session_id,
+                        "processing_time": time.time() - start_time,
+                        "context_preserved": True,
+                        "preserved_collection": selected_collection
+                    }
+                else:
+                    # Không có collection context → Clear session (fallback)
+                    logger.info(f"🔄 No collection context to preserve, clearing session state.")
+                    session.clear_routing_state()
+                    session.metadata.clear()
+                    
+                    return {
+                        "type": "manual_input_request",
+                        "message": "Vui lòng nhập lại câu hỏi cụ thể hơn. Tôi sẽ tìm kiếm trong ngữ cảnh phù hợp.",
+                        "session_id": session_id,
+                        "processing_time": time.time() - start_time,
+                        "context_preserved": False
+                    }
             
             # ✅ Update session access time  
             session.last_accessed = time.time()
@@ -1027,8 +1195,11 @@ class RAGService:
                 "processing_time": 0.0
             }
         
-    def _build_context_from_expanded(self, expanded_context: Dict[str, Any]) -> str:
-        """Build context string từ expanded context"""
+    def _build_context_from_expanded(self, expanded_context: Dict[str, Any], nucleus_chunks: Optional[List[Dict]] = None) -> str:
+        """
+        🎯 PHASE 1: Build context với highlighting cho nucleus chunks
+        🧹 PHASE 3: Clean formatting - bỏ decorative symbols
+        """
         context_parts = []
         
         for doc_content in expanded_context.get("expanded_content", []):
@@ -1036,7 +1207,24 @@ class RAGService:
             text = doc_content.get("text", "")
             chunk_count = doc_content.get("chunk_count", 0)
             
-            context_parts.append(f"=== Tài liệu: {source} ({chunk_count} đoạn) ===\n{text}")
+            # Apply highlighting cho nucleus chunk nếu có
+            if nucleus_chunks and self.context_expansion_service:
+                nucleus_chunk = nucleus_chunks[0]  # Lấy nucleus chunk đầu tiên
+                
+                # 🔍 DEBUG: Log nucleus chunk structure
+                logger.info(f"🔍 Nucleus chunk keys: {list(nucleus_chunk.keys())}")
+                logger.info(f"🔍 Nucleus chunk content preview: {nucleus_chunk.get('content', 'NO_CONTENT')[:100]}...")
+                
+                highlighted_text = self.context_expansion_service._build_highlighted_context(
+                    full_content=text,
+                    nucleus_chunk=nucleus_chunk
+                )
+                # 🧹 PHASE 3: Clean format - bỏ dấu ===
+                context_parts.append(f"Tài liệu: {source} ({chunk_count} đoạn)\n{highlighted_text}")
+                logger.info("✅ Applied highlighting to nucleus chunk in context")
+            else:
+                # 🧹 PHASE 3: Clean format - bỏ dấu ===
+                context_parts.append(f"Tài liệu: {source} ({chunk_count} đoạn)\n{text}")
             
         return "\n\n".join(context_parts)
     
@@ -1069,41 +1257,50 @@ class RAGService:
     
     def _build_smart_context(self, intent: Optional[str], metadata: Dict[str, Any], full_text: str) -> str:
         """
-        Xây dựng context thông minh dựa trên intent và metadata
-        Ưu tiên thông tin cụ thể lên đầu thay vì đánh dấu phức tạp
+        🧹 PHASE 3: Enhanced smart context building - Cải thiện thông tin về phí
         """
         priority_info = ""
         
         if intent == 'query_fee':
             fee_text = metadata.get('fee_text', '')
-            fee_vnd = metadata.get('fee_vnd', '')
-            if fee_text or fee_vnd:
-                fee_info = f"{fee_text} {fee_vnd}".strip()
-                priority_info = f"🎯 LỆ PHÍ: {fee_info}\n\n"
+            fee_vnd = metadata.get('fee_vnd', 0)
+            
+            if fee_text:
+                # Xử lý thông tin phí chi tiết và rõ ràng
+                if fee_vnd == 0 and "Miễn" in fee_text:
+                    # Trường hợp miễn phí thủ tục chính nhưng có phí phụ
+                    priority_info = f"THÔNG TIN VỀ PHÍ:\n{fee_text}\n\n"
+                else:
+                    # Trường hợp có phí
+                    priority_info = f"LỆ PHÍ: {fee_text}\n\n"
+            elif fee_vnd == 0:
+                priority_info = f"LỆ PHÍ: Miễn phí\n\n"
+            else:
+                priority_info = f"LỆ PHÍ: {fee_vnd:,} VNĐ\n\n"
         
         elif intent == 'query_time':
             time_text = metadata.get('processing_time_text', '')
             if time_text:
-                priority_info = f"🎯 THỜI GIAN XỬ LÝ: {time_text}\n\n"
+                priority_info = f"THỜI GIAN XỬ LÝ: {time_text}\n\n"
 
         elif intent == 'query_form':
             has_form = metadata.get('has_form', False)
             form_text = "Có biểu mẫu/tờ khai cần điền" if has_form else "Không có biểu mẫu cụ thể"
-            priority_info = f"🎯 BIỂU MẪU: {form_text}\n\n"
+            priority_info = f"BIỂU MẪU: {form_text}\n\n"
             
         elif intent == 'query_agency':
             agency = metadata.get('executing_agency', '')
             if agency:
-                priority_info = f"🎯 CƠ QUAN THỰC HIỆN: {agency}\n\n"
+                priority_info = f"CƠ QUAN THỰC HIỆN: {agency}\n\n"
                 
         elif intent == 'query_requirements':
             requirements = metadata.get('requirements_conditions', '')
             if requirements:
-                priority_info = f"🎯 ĐIỀU KIỆN/YÊU CẦU: {requirements}\n\n"
+                priority_info = f"ĐIỀU KIỆN/YÊU CẦU: {requirements}\n\n"
 
-        # Kết hợp thông tin ưu tiên với full context
+        # Kết hợp thông tin ưu tiên với full context - CLEAN FORMAT
         if priority_info:
-            return f"{priority_info}===== THÔNG TIN CHI TIẾT =====\n{full_text}"
+            return f"{priority_info}THÔNG TIN CHI TIẾT:\n{full_text}"
         else:
             # Không có intent cụ thể - giữ nguyên context
             return full_text
@@ -1129,27 +1326,28 @@ class RAGService:
                 answer_preview = item['answer'][:100] + "..." if len(item['answer']) > 100 else item['answer']
                 chat_history_structured.append({"role": "assistant", "content": answer_preview})
             
-        # ALWAYS use FULL system prompt - No conservative strategy
-        system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
+        # 🎯 PHASE 2: Enhanced Clean System Prompt - Cải thiện khả năng phân biệt thông tin
+        system_prompt_clean = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
 
-🚨 QUY TẮC BẮT BUỘC - KHÔNG ĐƯỢC VI PHẠM:
-1. CHỈ trả lời dựa CHÍNH XÁC trên thông tin CÓ TRONG tài liệu
-2. Trả lời NGẮN GỌN (tối đa 9-10 câu)
-3. KHÔNG tự sáng tạo thông tin không có trong tài liệu
-4. Nếu thông tin không có trong tài liệu, hãy trả lời: "Tài liệu không đề cập đến vấn đề này."
+QUY TẮC:
+1. Ưu tiên thông tin trong [THÔNG TIN CHÍNH]...[/THÔNG TIN CHÍNH]
+2. Trả lời ngắn gọn, tự nhiên như nói chuyện (5-7 câu)
+3. CHỈ dựa trên thông tin có trong tài liệu
+4. Nếu không có thông tin: "Tài liệu không đề cập vấn đề này"
+5. KHÔNG sử dụng ký tự đặc biệt, emoji, dấu gạch
 
-🎯 CÁC LOẠI THÔNG TIN QUAN TRỌNG CẦN CHÚ Ý:
-- PHÍ/LỆ PHÍ: Tìm "fee_text", "fee_vnd" - nêu rõ miễn phí hoặc số tiền cụ thể
-- THỜI GIAN: Tìm "processing_time_text" - nêu rõ thời gian xử lý
-- CƠ QUAN: Tìm "executing_agency" - nêu rõ nơi thực hiện thủ tục  
-- FORM MẪU: Tìm "has_form" - nêu có/không có form mẫu
-- ĐIỀU KIỆN: Tìm "requirements_conditions" - nêu điều kiện cần đáp ứng
-- MÃ THỦ TỤC: Tìm "code" - mã quy trình
+PHÂN BIỆT CÁC LOẠI PHÍ:
+- Khi hỏi về phí thủ tục: Kiểm tra fee_vnd và fee_text
+- Nếu fee_vnd = 0: "Miễn phí" cho thủ tục chính
+- Nếu fee_text có "Miễn lệ phí" + "Phí cấp bản sao": Phân biệt rõ 2 loại
+- VÍ DỤ: "Đăng ký kết hôn miễn phí. Chỉ tính phí 8.000đ/bản khi xin bản sao trích lục"
 
-ĐỊNH DẠNG TRẢ LỜI:
-- Câu trả lời ngắn gọn, chính xác
-- Ưu tiên thông tin user hỏi nhưng có thể bổ sung thông tin liên quan
-- Dẫn chứng từ tài liệu nếu có"""
+THÔNG TIN QUAN TRỌNG:
+- Thời gian: Tìm processing_time_text - thời gian xử lý
+- Nơi làm: Tìm executing_agency - cơ quan thực hiện  
+- Biểu mẫu: Tìm has_form - có/không có mẫu đơn
+
+PHONG CÁCH: Tự nhiên, thân thiện, chính xác về thông tin phí."""
         
         logger.info(f"📝 Using ChatML format with structured chat history: {len(chat_history_structured)} messages")
         
@@ -1159,7 +1357,7 @@ class RAGService:
         # Ước tính token đơn giản (1 token ≈ 3-4 ký tự tiếng Việt)
         # Tính toán cho ChatML format với các token đặc biệt
         chat_history_text = "\n".join([f"{item['role']}: {item['content']}" for item in chat_history_structured])
-        estimated_tokens = len(system_prompt + context + query + chat_history_text + "<|im_start|><|im_end|>") // 3
+        estimated_tokens = len(system_prompt_clean + context + query + chat_history_text + "<|im_start|><|im_end|>") // 3
         max_context_tokens = settings.n_ctx - 500  # Để lại 500 token cho response
         
         if estimated_tokens > max_context_tokens:
@@ -1167,7 +1365,7 @@ class RAGService:
             logger.warning(f"🚨 Context overflow detected: {estimated_tokens} tokens > {max_context_tokens} max")
             
             # Tính toán space còn lại cho context
-            fixed_parts_length = len(system_prompt + chat_history_text + query + "<|im_start|><|im_end|>")
+            fixed_parts_length = len(system_prompt_clean + chat_history_text + query + "<|im_start|><|im_end|>")
             remaining_space = (max_context_tokens * 3) - fixed_parts_length
             
             if remaining_space > 500:  # Đảm bảo có ít nhất 500 ký tự cho context
@@ -1187,7 +1385,7 @@ class RAGService:
                 context=context,
                 max_tokens=settings.max_tokens,
                 temperature=settings.temperature,
-                system_prompt=system_prompt,
+                system_prompt=system_prompt_clean,
                 chat_history=chat_history_structured  # 🔥 THAM SỐ MỚI cho ChatML
             )
             

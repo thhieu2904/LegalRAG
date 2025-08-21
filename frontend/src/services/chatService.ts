@@ -67,6 +67,7 @@ export interface SessionInfo {
 export interface ApiResponse {
   type: string;
   answer?: string;
+  message?: string; // 🔧 NEW: For manual_input_request and other messages
   clarification?: ClarificationData;
   session_id: string;
   processing_time: number;
