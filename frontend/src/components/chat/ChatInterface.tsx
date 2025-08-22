@@ -93,6 +93,7 @@ export function ChatInterface({
                   clarification={message.clarification}
                   processingTime={message.processingTime}
                   sourceDocuments={message.sourceDocuments}
+                  formAttachments={message.formAttachments}
                   onClarificationSelect={handleClarificationOption}
                 />
               ))}

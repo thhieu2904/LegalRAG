@@ -39,6 +39,9 @@
 .bot-message-layout .message-content-wrapper {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .bot-message-layout .message-header {
@@ -196,13 +199,245 @@
   height: 16px;
 }
 
-/* Source Documents */
+/* Combined Attachments Section - Layout 2 dòng theo Figma */
+.attachments-section {
+  margin-top: var(--spacing-3);
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  width: fit-content;
+  max-width: 100%;
+  align-self: flex-start;
+}
+
+.attachments-header {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-2);
+}
+
+.attachments-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.attachments-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+/* Source documents row - horizontal layout */
+.source-documents-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+/* Forms row - vertical layout */
+.forms-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.row-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-700);
+  margin-bottom: var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-2);
+  background: var(--color-primary-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-primary-200);
+  width: fit-content;
+  white-space: nowrap;
+}
+
+/* Row title in horizontal layout */
+.source-documents-row .row-title {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+/* Row title in vertical layout */
+.forms-row .row-title {
+  margin-bottom: var(--spacing-2);
+}
+
+.attachments-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  align-items: flex-start;
+}
+
+/* Source documents - horizontal layout */
+.source-documents-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+/* Form attachments - vertical layout for better organization */
+.form-attachments-list {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2);
+  background: white;
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-out);
+  white-space: nowrap;
+  max-width: fit-content;
+}
+
+.attachment-item:hover {
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.attachment-icon {
+  color: var(--color-primary-600);
+  flex-shrink: 0;
+}
+
+.attachment-name {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+/* Form-specific styles within combined layout */
+.form-item {
+  justify-content: space-between;
+  min-width: 250px;
+  max-width: 350px;
+}
+
+.form-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.form-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.form-document-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.form-filename {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.download-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  background: var(--color-primary-600);
+  color: white;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--duration-fast) var(--ease-out);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.download-button:hover {
+  background: var(--color-primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  color: white;
+  text-decoration: none;
+}
+
+.download-button:active {
+  transform: translateY(0);
+}
+
+/* Source-only items (no download button) */
+.source-item {
+  cursor: pointer;
+  max-width: fit-content;
+  flex-shrink: 0;
+  min-width: auto;
+}
+
+.source-item:hover .attachment-name {
+  color: var(--color-primary-700);
+  text-decoration: underline;
+}
+
+/* Enhanced layout for source documents list */
+.source-documents-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.source-documents-list .attachment-item {
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: auto;
+  max-width: none;
+}
+
+/* Enhanced layout for form attachments list */
+.form-attachments-list {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.form-attachments-list .attachment-item {
+  min-width: 250px;
+  max-width: 400px;
+}
+
+/* Legacy styles for backward compatibility */
 .source-documents {
   margin-top: var(--spacing-3);
-  padding: var(--spacing-3);
   background: var(--color-surface-secondary);
-  border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-3);
 }
 
 .source-documents-label {
@@ -293,4 +528,102 @@
   color: var(--color-primary-700);
   font-style: italic;
   line-height: var(--line-height-normal);
+}
+
+/* Form Attachments Styles */
+.form-attachments {
+  margin-top: var(--spacing-3);
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-3);
+}
+
+.form-attachments-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.form-attachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.form-attachment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  padding: var(--spacing-2);
+  background: white;
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.form-attachment-item:hover {
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-attachment-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.form-icon {
+  color: var(--color-primary-600);
+  flex-shrink: 0;
+}
+
+.form-title {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.form-filename {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.form-download-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  background: var(--color-primary-600);
+  color: white;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--duration-fast) var(--ease-out);
+  flex-shrink: 0;
+}
+
+.form-download-button:hover {
+  background: var(--color-primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  color: white;
+  text-decoration: none;
+}
+
+.form-download-button:active {
+  transform: translateY(0);
 }

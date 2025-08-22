@@ -1,12 +1,20 @@
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import SpeechControlsSimple from "../SpeechControlsSimple";
 import logoHCC from "../../assets/LOGO_HCC.jpg";
-import { User } from "lucide-react";
+import { User, Download, FileText } from "lucide-react";
 import type {
   ClarificationData,
   ClarificationOption,
 } from "../../services/chatService";
 import { ClarificationOptions } from "./ClarificationOptions";
+
+interface FormAttachment {
+  document_id: string;
+  document_title: string;
+  form_filename: string;
+  form_url: string;
+  collection_id: string;
+}
 
 interface ChatMessageProps {
   message: string;
@@ -15,6 +23,7 @@ interface ChatMessageProps {
   clarification?: ClarificationData;
   processingTime?: number;
   sourceDocuments?: string[];
+  formAttachments?: FormAttachment[]; // NEW: Form attachments
   onClarificationSelect?: (option: ClarificationOption) => void;
 }
 
@@ -25,6 +34,7 @@ export function ChatMessage({
   clarification,
   processingTime,
   sourceDocuments,
+  formAttachments,
   onClarificationSelect,
 }: ChatMessageProps) {
   const formatFileName = (filePath: string): string => {
@@ -72,18 +82,74 @@ export function ChatMessage({
                 )}
               </div>
 
-              {/* Source Documents */}
-              {sourceDocuments && sourceDocuments.length > 0 && (
-                <div className="source-documents">
-                  <div className="source-documents-label">
-                    📄 Nguồn tài liệu tham khảo:
+              {/* Combined Attachments - Nguồn tham khảo và Biểu mẫu */}
+              {((sourceDocuments && sourceDocuments.length > 0) ||
+                (formAttachments && formAttachments.length > 0)) && (
+                <div className="attachments-section">
+                  <div className="attachments-header">
+                    📎 Tệp đính kèm & Tài liệu tham khảo
                   </div>
-                  <div className="source-documents-list">
-                    {sourceDocuments.map((doc, index) => (
-                      <div key={index} className="source-document-item">
-                        {formatFileName(doc)}
+
+                  <div className="attachments-rows">
+                    {/* Source Documents Row */}
+                    {sourceDocuments && sourceDocuments.length > 0 && (
+                      <div className="attachments-row source-documents-row">
+                        <div className="row-title">📄 Nguồn tham khảo</div>
+                        <div className="attachments-list source-documents-list">
+                          {sourceDocuments.map((doc, index) => (
+                            <div
+                              key={index}
+                              className="attachment-item source-item"
+                            >
+                              <FileText size={14} className="attachment-icon" />
+                              <span className="attachment-name">
+                                {formatFileName(doc)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
+                    )}
+
+                    {/* Form Attachments Row */}
+                    {formAttachments && formAttachments.length > 0 && (
+                      <div className="attachments-row forms-row">
+                        <div className="row-title">📋 Biểu mẫu/Tờ khai</div>
+                        <div className="attachments-list form-attachments-list">
+                          {formAttachments.map((form, index) => (
+                            <div
+                              key={index}
+                              className="attachment-item form-item"
+                            >
+                              <div className="form-info">
+                                <FileText
+                                  size={14}
+                                  className="attachment-icon"
+                                />
+                                <div className="form-details">
+                                  <span className="form-document-title">
+                                    {form.document_title}
+                                  </span>
+                                  <span className="form-filename">
+                                    {form.form_filename}
+                                  </span>
+                                </div>
+                              </div>
+                              <a
+                                href={form.form_url}
+                                download={form.form_filename}
+                                className="download-button"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Download size={12} />
+                                Tải về
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

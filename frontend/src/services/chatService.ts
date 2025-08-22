@@ -40,6 +40,15 @@ export interface ContextInfo {
   source_documents: string[];
 }
 
+// 🔥 NEW: Form Attachment interface
+export interface FormAttachment {
+  document_id: string;
+  document_title: string;
+  form_filename: string;
+  form_url: string;
+  collection_id: string;
+}
+
 // 🔥 NEW: Context Summary interface
 export interface ContextSummary {
   session_id: string;
@@ -72,6 +81,7 @@ export interface ApiResponse {
   session_id: string;
   processing_time: number;
   context_info?: ContextInfo;
+  form_attachments?: FormAttachment[]; // 🔥 NEW: Form attachments
   error?: string;
 }
 
@@ -83,6 +93,7 @@ export interface ChatResponse {
   processing_time?: number;
   is_ambiguous?: boolean;
   clarifying_questions?: string[];
+  form_attachments?: FormAttachment[]; // 🔥 NEW: Form attachments
   metadata?: {
     confidence?: number;
     sources?: string[];
@@ -128,6 +139,7 @@ export class ChatService {
         session_id: apiResponse.session_id,
         processing_time: apiResponse.processing_time,
         sources: apiResponse.context_info?.source_documents,
+        form_attachments: apiResponse.form_attachments, // 🔥 NEW: Include form attachments
         apiResponse: apiResponse, // Store full API response for advanced handling
       };
     } catch (error) {

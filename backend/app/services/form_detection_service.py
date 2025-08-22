@@ -32,6 +32,11 @@ class FormDetectionService:
         """
         documents = []
         
+        # Debug logging
+        logger.info(f"🔍 Context info keys: {list(context_info.keys())}")
+        logger.info(f"🔍 Source documents: {context_info.get('source_documents', [])}")
+        logger.info(f"🔍 Source collections: {context_info.get('source_collections', [])}")
+        
         # Extract from source_documents (old format)
         source_documents = context_info.get("source_documents", [])
         source_collections = context_info.get("source_collections", [])
@@ -43,6 +48,8 @@ class FormDetectionService:
                 
                 # Get collection (use first collection as default)
                 collection_id = source_collections[0] if source_collections else "unknown"
+                
+                logger.info(f"🔍 Extracted - Path: {doc_path}, Title: {doc_title}, Collection: {collection_id}")
                 
                 if doc_title:
                     documents.append({
@@ -65,6 +72,7 @@ class FormDetectionService:
                         "source_path": f"sources/{doc_title}"  # Mock path
                     })
         
+        logger.info(f"🔍 Final extracted documents: {documents}")
         return documents
     
     def _extract_document_title_from_path(self, file_path: str) -> Optional[str]:
@@ -104,16 +112,25 @@ class FormDetectionService:
         form_attachments = []
         
         try:
+            # Debug logging
+            logger.info(f"🔍 RAG Response keys: {list(rag_response.keys())}")
+            
             # Extract documents from context
             context_info = rag_response.get("context_info", {})
+            logger.info(f"🔍 Context info: {context_info}")
+            
             documents = self.extract_documents_from_context(context_info)
+            logger.info(f"🔍 Extracted {len(documents)} documents for form checking")
             
             for doc_info in documents:
                 collection_id = doc_info["collection_id"]
                 doc_title = doc_info["title"]
                 
+                logger.info(f"🔍 Checking form for: {doc_title} in collection: {collection_id}")
+                
                 # Check if document has form using hybrid service
                 has_form = self.hybrid_doc_service.has_form_file(collection_id, doc_title)
+                logger.info(f"🔍 Document '{doc_title}' has_form: {has_form}")
                 
                 if has_form:
                     # Get form file path if exists

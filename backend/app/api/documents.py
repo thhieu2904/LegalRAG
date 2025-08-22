@@ -9,16 +9,22 @@ from typing import List, Optional, Dict, Any
 from pathlib import Path
 import shutil
 import tempfile
+import logging
 
 from ..services.document_manager import DocumentManagerService
+from ..services.hybrid_document_service import HybridDocumentService
 from ..models.schemas import QueryResponse
 from pydantic import BaseModel
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/documents", tags=["Document Management"])
 
 # Dependency
 def get_document_manager() -> DocumentManagerService:
     return DocumentManagerService()
+
+def get_hybrid_document_service() -> HybridDocumentService:
+    return HybridDocumentService(migration_phase=1)
 
 # ============================================================================
 # Request/Response Models
@@ -222,6 +228,60 @@ async def check_has_form(
     """Kiểm tra document có form file không"""
     has_form = doc_manager.has_form_file(collection_id, document_id)
     return {"has_form": has_form}
+
+@router.get("/{collection_id}/{document_id}/files/form")
+async def download_form_file(
+    collection_id: str,
+    document_id: str,
+    hybrid_service: HybridDocumentService = Depends(get_hybrid_document_service)
+):
+    """Download form file cho document cụ thể"""
+    try:
+        # Get form file path using hybrid service
+        form_path = hybrid_service.get_form_file_path(collection_id, document_id)
+        
+        if not form_path or not Path(form_path).exists():
+            raise HTTPException(status_code=404, detail="Form file not found")
+        
+        # Get filename
+        filename = Path(form_path).name
+        
+        # Return file response
+        return FileResponse(
+            path=form_path,
+            filename=filename,
+            media_type='application/octet-stream'
+        )
+        
+    except Exception as e:
+        logger.error(f"Error downloading form file: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{collection_id}/{document_id}/files/form/{filename}")
+async def download_specific_form_file(
+    collection_id: str,
+    document_id: str,
+    filename: str
+):
+    """Download specific form file với filename"""
+    try:
+        # Build form file path directly
+        storage_base = Path(__file__).parent.parent.parent / "data" / "storage" / "collections"
+        form_path = storage_base / collection_id / "documents" / document_id / "forms" / filename
+        
+        if not form_path.exists():
+            raise HTTPException(status_code=404, detail="Form file not found")
+        
+        # Return file response
+        return FileResponse(
+            path=str(form_path),
+            filename=filename,
+            media_type='application/octet-stream'
+        )
+        
+    except Exception as e:
+        logger.error(f"Error downloading specific form file: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ============================================================================
 # Collection Operations

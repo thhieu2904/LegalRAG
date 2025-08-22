@@ -211,9 +211,15 @@ class LLMService:
 - Khi hỏi về BIỂU MẪU → Tìm phần có đánh dấu 🎯 BIỂU MẪU
 - Khi hỏi về CƠ QUAN → Tìm phần có đánh dấu 🎯 CƠ QUAN THỰC HIỆN
 
+📋 QUY TẮC VỀ BIỂU MẪU/TỜ KHAI:
+- Khi thủ tục có biểu mẫu đi kèm (has_form = true), hãy đề cập: "Xem biểu mẫu/tờ khai đính kèm"
+- Luôn kiểm tra thông tin form trong metadata trước khi trả lời về biểu mẫu
+- Nếu có form, hướng dẫn người dùng tải về và sử dụng
+
 ĐỊNH DẠNG TRẢ LỜI:
 - Câu trả lời ngắn gọn, chính xác
 - Ưu tiên thông tin được đánh dấu 🎯 nếu có
+- Nếu có form đi kèm, đề cập: "📋 Xem biểu mẫu đính kèm" ở cuối câu trả lời
 - Nếu thông tin không có, trả lời: "Tài liệu không đề cập đến vấn đề này"
 
 Trả lời chính xác, ngắn gọn."""

@@ -52,6 +52,9 @@ class QueryResponse(BaseModel):
     # Context info
     context_info: Optional[Dict[str, Any]] = Field(None, description="Thông tin về context")
     
+    # Form attachments - NEW
+    form_attachments: Optional[List[Dict[str, Any]]] = Field(None, description="Danh sách form đi kèm")
+    
     # Meta info
     session_id: str = Field(..., description="Session ID")
     processing_time: float = Field(..., description="Thời gian xử lý (seconds)")

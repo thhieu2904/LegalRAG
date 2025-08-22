@@ -21,6 +21,7 @@ from .reranker import RerankerService
 from .clarification import ClarificationService
 from .router import QueryRouter, RouterBasedQueryService
 from .context import ContextExpander
+from .simple_form_detection import SimpleFormDetectionService
 from ..core.config import settings
 
 # Import path_config with try/except for graceful fallback
@@ -267,6 +268,10 @@ class RAGService:
                 documents_dir=self.documents_dir
             )
             logger.info("✅ Enhanced Context Expansion Service initialized")
+            
+            # Simple Form Detection Service - NEW  
+            self.form_detection_service = SimpleFormDetectionService()
+            logger.info("✅ Simple Form Detection Service initialized")
             
         except Exception as e:
             logger.error(f"Error initializing services: {e}")
@@ -725,10 +730,27 @@ class RAGService:
                 }
             }
             
-            # 📎 ADD FORMS IF AVAILABLE: User requested "khi người dùng hỏi, nếu trường has_form là có thì sẽ đính kèm form cho người dùng mở ra xem"
-            if forms_info:
-                response["forms"] = forms_info
-                logger.info(f"📎 Added {len(forms_info)} form sets to response from documents: {[f['document'] for f in forms_info]}")
+            # 📎 ENHANCED FORM DETECTION & ATTACHMENT: Integrate with FormDetectionService
+            try:
+                # Use FormDetectionService to detect and attach forms
+                response = self.form_detection_service.enhance_rag_response_with_forms(response)
+                
+                # Update answer with form references if forms found
+                form_attachments = response.get("form_attachments", [])
+                if form_attachments:
+                    # Check if answer doesn't already mention forms
+                    if "form" not in response["answer"].lower() and "mẫu" not in response["answer"].lower():
+                        # Add form reference to answer
+                        form_text = "\n\n📋 **Biểu mẫu/tờ khai liên quan:**\n"
+                        for form in form_attachments:
+                            form_text += f"- {form['document_title']}: Xem biểu mẫu đính kèm\n"
+                        response["answer"] += form_text
+                    
+                    logger.info(f"📎 Enhanced response with {len(form_attachments)} form attachments")
+                    
+            except Exception as e:
+                logger.error(f"Error in form detection: {e}")
+                # Continue without forms if error occurs
             
             return response
             

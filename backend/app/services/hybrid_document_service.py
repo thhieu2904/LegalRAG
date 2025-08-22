@@ -48,23 +48,32 @@ class HybridDocumentService:
         """
         Find document by title, checking both old and new structure
         """
+        logger.info(f"🔍 Searching for document: '{title}' in collection: '{collection_id}' (phase: {self.migration_phase})")
+        
         # Phase 2+: Check new structure first
         if self.migration_phase >= 2:
+            logger.info(f"🔍 Phase {self.migration_phase}: Checking new structure first")
             new_doc = self._get_document_from_new_structure(collection_id, title)
             if new_doc:
+                logger.info(f"✅ Found in new structure: {new_doc.get('title')}")
                 return new_doc
         
         # Check old structure
+        logger.info(f"🔍 Checking old structure...")
         old_doc = self._get_document_from_old_structure(collection_id, title)
         if old_doc:
+            logger.info(f"✅ Found in old structure: {old_doc.get('title')}")
             return old_doc
         
         # Phase 1: Check new structure as fallback
         if self.migration_phase == 1:
+            logger.info(f"🔍 Phase 1: Checking new structure as fallback")
             new_doc = self._get_document_from_new_structure(collection_id, title)
             if new_doc:
+                logger.info(f"✅ Found in new structure fallback: {new_doc.get('title')}")
                 return new_doc
         
+        logger.warning(f"❌ Document '{title}' not found in any structure")
         return None
     
     def _get_document_from_new_structure(self, collection_id: str, title: str) -> Optional[Dict[str, Any]]:
