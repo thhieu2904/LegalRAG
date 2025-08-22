@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -23,7 +23,10 @@ import {
   Save,
   X,
   ChevronLeft,
+  Loader,
 } from "lucide-react";
+import { questionsService } from "../../services/questionsService";
+import type { Question, QuestionCreate } from "../../services/questionsService";
 
 interface QuestionCollection {
   id: string;
@@ -34,145 +37,246 @@ interface QuestionCollection {
   description: string;
 }
 
-interface SampleQuestion {
-  id: string;
-  question: string;
-  category: string;
-  keywords: string[];
-  expectedCollection: string;
-  confidence: number;
-  lastUpdated: string;
-}
-
 export default function AdminQuestions() {
   const [selectedCollection, setSelectedCollection] =
     useState<QuestionCollection | null>(null);
   const [showAddQuestion, setShowAddQuestion] = useState(false);
+  const [showEditQuestion, setShowEditQuestion] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data based on router_examples_smart_v3 structure
-  const [collections] = useState<QuestionCollection[]>([
-    {
-      id: "quy_trinh_cap_ho_tich_cap_xa",
-      name: "quy_trinh_cap_ho_tich_cap_xa",
-      displayName: "Hộ tịch cấp xã",
-      questionCount: 45,
-      lastUpdated: "2024-01-15",
-      description: "Câu hỏi về khai sinh, kết hôn, khai tử...",
-    },
-    {
-      id: "quy_trinh_chung_thuc",
-      name: "quy_trinh_chung_thuc",
-      displayName: "Chứng thực",
-      questionCount: 28,
-      lastUpdated: "2024-01-12",
-      description: "Câu hỏi về chứng thực hợp đồng, chữ ký...",
-    },
-    {
-      id: "quy_trinh_nuoi_con_nuoi",
-      name: "quy_trinh_nuoi_con_nuoi",
-      displayName: "Nuôi con nuôi",
-      questionCount: 15,
-      lastUpdated: "2024-01-10",
-      description: "Câu hỏi về thủ tục nhận con nuôi...",
-    },
-  ]);
+  // State for real data from API
+  const [collections, setCollections] = useState<QuestionCollection[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
 
-  // Mock questions for selected collection
-  const [questions] = useState<SampleQuestion[]>([
-    {
-      id: "q1",
-      question: "Làm thủ tục khai sinh cho em bé cần giấy tờ gì?",
-      category: "khai_sinh",
-      keywords: ["khai sinh", "em bé", "giấy tờ", "thủ tục"],
-      expectedCollection: "quy_trinh_cap_ho_tich_cap_xa",
-      confidence: 0.95,
-      lastUpdated: "2024-01-15",
-    },
-    {
-      id: "q2",
-      question: "Thời gian làm giấy khai sinh mất bao lâu?",
-      category: "khai_sinh",
-      keywords: ["thời gian", "giấy khai sinh", "bao lâu"],
-      expectedCollection: "quy_trinh_cap_ho_tich_cap_xa",
-      confidence: 0.92,
-      lastUpdated: "2024-01-14",
-    },
-    {
-      id: "q3",
-      question: "Có thể làm khai sinh ở xã khác không?",
-      category: "khai_sinh",
-      keywords: ["khai sinh", "xã khác", "nơi khác"],
-      expectedCollection: "quy_trinh_cap_ho_tich_cap_xa",
-      confidence: 0.88,
-      lastUpdated: "2024-01-13",
-    },
-    {
-      id: "q4",
-      question: "Đăng ký kết hôn cần chuẩn bị gì?",
-      category: "ket_hon",
-      keywords: ["đăng ký kết hôn", "chuẩn bị", "giấy tờ"],
-      expectedCollection: "quy_trinh_cap_ho_tich_cap_xa",
-      confidence: 0.94,
-      lastUpdated: "2024-01-12",
-    },
-    {
-      id: "q5",
-      question: "Người nước ngoài kết hôn với người Việt Nam cần làm gì?",
-      category: "ket_hon",
-      keywords: ["nước ngoài", "kết hôn", "Việt Nam", "thủ tục"],
-      expectedCollection: "quy_trinh_cap_ho_tich_cap_xa",
-      confidence: 0.91,
-      lastUpdated: "2024-01-11",
-    },
-  ]);
+  // Load collections from API
+  useEffect(() => {
+    loadCollections();
+  }, []);
+
+  const loadCollections = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const apiCollections = await questionsService.getCollections();
+
+      // Transform API data to local format
+      const transformedCollections: QuestionCollection[] = apiCollections.map(
+        (col) => ({
+          id: col.name,
+          name: col.name,
+          displayName: col.display_name,
+          questionCount: col.total_questions,
+          lastUpdated: new Date().toISOString().split("T")[0], // Mock last updated
+          description: `Quản lý câu hỏi cho ${col.display_name}`, // Mock description
+        })
+      );
+
+      setCollections(transformedCollections);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to load collections"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadQuestions = async (collectionName: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const apiQuestions = await questionsService.getCollectionQuestions(
+        collectionName
+      );
+      setQuestions(apiQuestions);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load questions");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load questions when collection is selected
+  useEffect(() => {
+    if (selectedCollection) {
+      loadQuestions(selectedCollection.name);
+    }
+  }, [selectedCollection]);
 
   const [newQuestion, setNewQuestion] = useState({
-    question: "",
+    text: "",
     category: "",
-    keywords: "",
-    expectedCollection: "",
-    confidence: 0.8,
+    keywords: [] as string[],
+    keywordsText: "", // For the input field
+    type: "variant",
+    priority_score: 0.8,
   });
 
   const filteredQuestions = questions.filter(
     (q) =>
-      q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      q.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
       q.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
       q.keywords.some((k) => k.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleSaveQuestion = () => {
-    // TODO: Implement save question
-    console.log("Save question:", newQuestion);
-    alert("Câu hỏi mẫu sẽ được lưu vào router examples");
-    setShowAddQuestion(false);
-    setNewQuestion({
-      question: "",
-      category: "",
-      keywords: "",
-      expectedCollection: "",
-      confidence: 0.8,
-    });
-  };
+  const handleSaveQuestion = async () => {
+    if (!selectedCollection) return;
 
-  const handleDeleteQuestion = (questionId: string) => {
-    // TODO: Implement delete question
-    if (confirm("Bạn có chắc muốn xóa câu hỏi này?")) {
-      console.log("Delete question:", questionId);
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Convert keywords text to array
+      const keywordsArray = newQuestion.keywordsText
+        .split(",")
+        .map((k) => k.trim())
+        .filter((k) => k.length > 0);
+
+      const questionData: QuestionCreate = {
+        text: newQuestion.text,
+        category: newQuestion.category,
+        keywords: keywordsArray,
+        type: newQuestion.type,
+        priority_score: newQuestion.priority_score,
+      };
+
+      await questionsService.createQuestion(
+        selectedCollection.name,
+        questionData
+      );
+
+      // Reload questions
+      await loadQuestions(selectedCollection.name);
+
+      // Reset form
+      setNewQuestion({
+        text: "",
+        category: "",
+        keywords: [],
+        keywordsText: "",
+        type: "variant",
+        priority_score: 0.8,
+      });
+
+      setShowAddQuestion(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save question");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleImportFromFiles = () => {
-    // TODO: Implement import from existing JSON files
-    console.log("Import from router_examples_smart_v3");
-    alert("Sẽ import câu hỏi từ các file JSON có sẵn");
+  const handleDeleteQuestion = async (questionId: string) => {
+    if (!selectedCollection) return;
+
+    if (confirm("Bạn có chắc muốn xóa câu hỏi này?")) {
+      try {
+        setLoading(true);
+        setError(null);
+
+        await questionsService.deleteQuestion(
+          selectedCollection.name,
+          questionId
+        );
+
+        // Reload questions
+        await loadQuestions(selectedCollection.name);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to delete question"
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
-  const handleExportQuestions = () => {
-    // TODO: Implement export to JSON
-    console.log("Export questions to JSON");
-    alert("Sẽ export câu hỏi ra file JSON cho router system");
+  const handleEditQuestion = (question: Question) => {
+    setEditingQuestion(question);
+    setNewQuestion({
+      text: question.text,
+      category: question.category || "",
+      keywords: question.keywords || [],
+      keywordsText: question.keywords?.join(", ") || "",
+      type: question.type || "variant",
+      priority_score: question.priority_score || 0.5,
+    });
+    setShowEditQuestion(true);
+  };
+
+  const handleUpdateQuestion = async () => {
+    if (!selectedCollection || !editingQuestion) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Convert keywords text to array
+      const keywordsArray = newQuestion.keywordsText
+        .split(",")
+        .map((k) => k.trim())
+        .filter((k) => k.length > 0);
+
+      const updates = {
+        text: newQuestion.text,
+        category: newQuestion.category,
+        keywords: keywordsArray,
+        priority_score: newQuestion.priority_score,
+      };
+
+      await questionsService.updateQuestion(
+        selectedCollection.name,
+        editingQuestion.id,
+        updates
+      );
+
+      // Reload questions
+      await loadQuestions(selectedCollection.name);
+
+      // Reset form
+      setEditingQuestion(null);
+      setShowEditQuestion(false);
+      setNewQuestion({
+        text: "",
+        category: "",
+        keywords: [],
+        keywordsText: "",
+        type: "variant",
+        priority_score: 0.8,
+      });
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to update question"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImportFromFiles = async () => {
+    // TODO: Implement import from existing JSON files
+    alert("Tính năng import sẽ được triển khai sau");
+  };
+
+  const handleExportQuestions = async () => {
+    if (!selectedCollection) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      await questionsService.saveCollectionToFile(selectedCollection.name);
+      alert("Đã lưu questions vào file JSON thành công!");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to export questions"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const CollectionCard = ({
@@ -212,20 +316,29 @@ export default function AdminQuestions() {
     </Card>
   );
 
-  const QuestionCard = ({ question }: { question: SampleQuestion }) => (
+  const QuestionCard = ({ question }: { question: Question }) => (
     <Card className="border-2">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <CardTitle className="text-base leading-tight">
-              {question.question}
+              {question.text}
             </CardTitle>
             <div className="flex items-center space-x-2 mt-2">
               <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                {question.category}
+                {question.category || "Không phân loại"}
               </span>
               <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                {Math.round(question.confidence * 100)}% tin cậy
+                {Math.round(question.priority_score * 100)}% ưu tiên
+              </span>
+              <span
+                className={`px-2 py-1 text-xs rounded-full ${
+                  question.status === "active"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {question.status}
               </span>
             </div>
           </div>
@@ -248,16 +361,30 @@ export default function AdminQuestions() {
           </div>
         </div>
 
-        {/* Expected Collection */}
-        <div>
-          <p className="text-xs font-medium text-gray-600 mb-1">
-            Collection dự kiến:
-          </p>
-          <p className="text-sm text-gray-800">{question.expectedCollection}</p>
+        {/* Type and Source */}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <p className="text-xs font-medium text-gray-600 mb-1">Loại:</p>
+            <p className="text-sm text-gray-800">{question.type}</p>
+          </div>
+          {question.source && (
+            <div>
+              <p className="text-xs font-medium text-gray-600 mb-1">Nguồn:</p>
+              <p className="text-sm text-gray-800 truncate">
+                {question.source}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="text-xs text-gray-500">
-          Cập nhật: {question.lastUpdated}
+          {question.updated_at &&
+            `Cập nhật: ${new Date(question.updated_at).toLocaleDateString(
+              "vi-VN"
+            )}`}
+          {question.created_at &&
+            !question.updated_at &&
+            `Tạo: ${new Date(question.created_at).toLocaleDateString("vi-VN")}`}
         </div>
 
         {/* Actions */}
@@ -266,7 +393,11 @@ export default function AdminQuestions() {
             <Eye className="h-3 w-3 mr-1" />
             Xem
           </Button>
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleEditQuestion(question)}
+          >
             <Edit className="h-3 w-3 mr-1" />
             Sửa
           </Button>
@@ -275,9 +406,10 @@ export default function AdminQuestions() {
             size="sm"
             onClick={() => handleDeleteQuestion(question.id)}
             className="text-red-600"
+            disabled={loading}
           >
             <Trash2 className="h-3 w-3 mr-1" />
-            Xóa
+            {loading ? "..." : "Xóa"}
           </Button>
         </div>
       </CardContent>
@@ -304,11 +436,11 @@ export default function AdminQuestions() {
           <div>
             <Label>Câu hỏi</Label>
             <Textarea
-              value={newQuestion.question}
+              value={newQuestion.text}
               onChange={(e) =>
                 setNewQuestion((prev) => ({
                   ...prev,
-                  question: e.target.value,
+                  text: e.target.value,
                 }))
               }
               placeholder="Nhập câu hỏi mẫu..."
@@ -331,23 +463,15 @@ export default function AdminQuestions() {
               />
             </div>
             <div>
-              <Label>Collection dự kiến</Label>
+              <Label>Collection</Label>
               <select
                 className="w-full p-2 border border-gray-300 rounded-md"
-                value={newQuestion.expectedCollection}
-                onChange={(e) =>
-                  setNewQuestion((prev) => ({
-                    ...prev,
-                    expectedCollection: e.target.value,
-                  }))
-                }
+                value={selectedCollection?.name || ""}
+                disabled
               >
-                <option value="">Chọn collection</option>
-                {collections.map((col) => (
-                  <option key={col.id} value={col.name}>
-                    {col.displayName}
-                  </option>
-                ))}
+                <option value="">
+                  {selectedCollection?.displayName || "Chọn collection"}
+                </option>
               </select>
             </div>
           </div>
@@ -355,11 +479,11 @@ export default function AdminQuestions() {
           <div>
             <Label>Từ khóa (phân cách bằng dấu phẩy)</Label>
             <Input
-              value={newQuestion.keywords}
+              value={newQuestion.keywordsText}
               onChange={(e) =>
                 setNewQuestion((prev) => ({
                   ...prev,
-                  keywords: e.target.value,
+                  keywordsText: e.target.value,
                 }))
               }
               placeholder="khai sinh, giấy tờ, thủ tục, em bé"
@@ -368,18 +492,18 @@ export default function AdminQuestions() {
 
           <div>
             <Label>
-              Độ tin cậy: {Math.round(newQuestion.confidence * 100)}%
+              Độ ưu tiên: {Math.round(newQuestion.priority_score * 100)}%
             </Label>
             <input
               type="range"
-              min="0.5"
+              min="0.1"
               max="1.0"
               step="0.05"
-              value={newQuestion.confidence}
+              value={newQuestion.priority_score}
               onChange={(e) =>
                 setNewQuestion((prev) => ({
                   ...prev,
-                  confidence: parseFloat(e.target.value),
+                  priority_score: parseFloat(e.target.value),
                 }))
               }
               className="w-full"
@@ -400,14 +524,142 @@ export default function AdminQuestions() {
             </Button>
             <Button
               onClick={handleSaveQuestion}
-              disabled={
-                !newQuestion.question ||
-                !newQuestion.category ||
-                !newQuestion.expectedCollection
-              }
+              disabled={loading || !newQuestion.text || !newQuestion.category}
             >
               <Save className="h-4 w-4 mr-2" />
-              Lưu câu hỏi
+              {loading ? "Đang lưu..." : "Lưu câu hỏi"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  // Edit Question Modal
+  const EditQuestionModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <Card className="w-full max-w-2xl mx-4">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Chỉnh sửa câu hỏi</CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setShowEditQuestion(false);
+                setEditingQuestion(null);
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Câu hỏi</Label>
+            <Textarea
+              value={newQuestion.text}
+              onChange={(e) =>
+                setNewQuestion((prev) => ({
+                  ...prev,
+                  text: e.target.value,
+                }))
+              }
+              placeholder="Nhập câu hỏi mẫu..."
+              rows={3}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Danh mục</Label>
+              <Input
+                value={newQuestion.category}
+                onChange={(e) =>
+                  setNewQuestion((prev) => ({
+                    ...prev,
+                    category: e.target.value,
+                  }))
+                }
+                placeholder="vd: khai_sinh, ket_hon"
+              />
+            </div>
+            <div>
+              <Label>Loại câu hỏi</Label>
+              <select
+                className="w-full p-2 border border-gray-300 rounded-md"
+                value={newQuestion.type}
+                onChange={(e) =>
+                  setNewQuestion((prev) => ({
+                    ...prev,
+                    type: e.target.value,
+                  }))
+                }
+              >
+                <option value="main">Câu hỏi chính</option>
+                <option value="variant">Câu hỏi phụ</option>
+                <option value="user_generated">Người dùng tạo</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <Label>Từ khóa (phân cách bằng dấu phẩy)</Label>
+            <Input
+              value={newQuestion.keywordsText}
+              onChange={(e) =>
+                setNewQuestion((prev) => ({
+                  ...prev,
+                  keywordsText: e.target.value,
+                }))
+              }
+              placeholder="khai sinh, giấy tờ, thủ tục, em bé"
+            />
+          </div>
+
+          <div>
+            <Label>
+              Độ ưu tiên: {Math.round(newQuestion.priority_score * 100)}%
+            </Label>
+            <input
+              type="range"
+              min="0.1"
+              max="1.0"
+              step="0.05"
+              value={newQuestion.priority_score}
+              onChange={(e) =>
+                setNewQuestion((prev) => ({
+                  ...prev,
+                  priority_score: parseFloat(e.target.value),
+                }))
+              }
+              className="w-full"
+            />
+          </div>
+
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Thay đổi sẽ được lưu vào database và cập nhật router cache.
+            </AlertDescription>
+          </Alert>
+
+          <div className="flex justify-end space-x-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowEditQuestion(false);
+                setEditingQuestion(null);
+              }}
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleUpdateQuestion}
+              disabled={loading || !newQuestion.text || !newQuestion.category}
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {loading ? "Đang cập nhật..." : "Cập nhật câu hỏi"}
             </Button>
           </div>
         </CardContent>
@@ -418,6 +670,15 @@ export default function AdminQuestions() {
   if (selectedCollection) {
     return (
       <div className="space-y-6">
+        {error && (
+          <Alert className="border-red-200 bg-red-50">
+            <Info className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-800">
+              {error}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="flex items-center justify-between">
           <div>
             <Button
@@ -439,6 +700,7 @@ export default function AdminQuestions() {
           <Button
             onClick={() => setShowAddQuestion(true)}
             className="flex items-center space-x-2"
+            disabled={loading}
           >
             <Plus className="h-4 w-4" />
             <span>Thêm câu hỏi</span>
@@ -471,22 +733,37 @@ export default function AdminQuestions() {
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Tìm thấy <strong>{filteredQuestions.length}</strong> câu hỏi. Đường
-            dẫn file:{" "}
-            <code>
-              backend/data/router_examples_smart_v3/{selectedCollection.name}/
-            </code>
+            Tìm thấy <strong>{filteredQuestions.length}</strong> câu hỏi trong
+            collection <strong>{selectedCollection.displayName}</strong>
           </AlertDescription>
         </Alert>
 
         {/* Questions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredQuestions.map((question) => (
-            <QuestionCard key={question.id} question={question} />
-          ))}
-        </div>
+        {loading && questions.length === 0 ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader className="w-6 h-6 animate-spin mr-2" />
+            <span>Đang tải câu hỏi...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredQuestions.map((question, index) => (
+              <QuestionCard
+                key={question.id || `question-${index}`}
+                question={question}
+              />
+            ))}
+            {filteredQuestions.length === 0 && !loading && (
+              <div className="col-span-full text-center py-12 text-gray-500">
+                {searchTerm
+                  ? "Không tìm thấy câu hỏi nào"
+                  : "Chưa có câu hỏi nào"}
+              </div>
+            )}
+          </div>
+        )}
 
         {showAddQuestion && <AddQuestionModal />}
+        {showEditQuestion && <EditQuestionModal />}
       </div>
     );
   }
@@ -504,30 +781,47 @@ export default function AdminQuestions() {
           <Button
             onClick={handleImportFromFiles}
             className="shared-button shared-button-primary"
+            disabled={loading}
           >
             <FileText className="w-4 h-4" />
-            Import từ file JSON
+            {loading ? "Đang xử lý..." : "Import từ file JSON"}
           </Button>
         </div>
       </div>
 
       <div className="admin-content-section">
+        {error && (
+          <Alert className="questions-alert border-red-200 bg-red-50 mb-6">
+            <Info className="w-4 h-4 text-red-600" />
+            <AlertDescription className="text-red-800">
+              {error}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Alert className="questions-alert">
           <Info className="w-4 h-4" />
           <AlertDescription>
             <strong>Hướng dẫn:</strong> Câu hỏi mẫu giúp hệ thống học cách phân
             loại và định tuyến câu hỏi mới. Dữ liệu được lưu trong{" "}
             <code className="questions-code">
-              backend/data/router_examples_smart_v3/
+              backend/data/storage/collections/
             </code>
           </AlertDescription>
         </Alert>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {collections.map((collection) => (
-            <CollectionCard key={collection.id} collection={collection} />
-          ))}
-        </div>
+        {loading && collections.length === 0 ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader className="w-6 h-6 animate-spin mr-2" />
+            <span>Đang tải collections...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {collections.map((collection) => (
+              <CollectionCard key={collection.id} collection={collection} />
+            ))}
+          </div>
+        )}
 
         {/* Summary Stats */}
         <Card>

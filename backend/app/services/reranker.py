@@ -45,19 +45,19 @@ class RerankerService:
                     
                     self.model = CrossEncoder(
                         str(local_model_path), 
-                        device='cuda:0', 
+                        device='cpu', 
                         max_length=2304,
                         trust_remote_code=False,  # Security best practice  
                         model_kwargs=model_kwargs
                     )
                     self.model_loaded = True
-                    logger.info("✅ Reranker model loaded from local cache on GPU (max_length=2304, trained optimal)")
+                    logger.info("✅ Reranker model loaded from local cache on CPU (max_length=2304, trained optimal)")
                     return
                 except Exception as e:
-                    logger.warning(f"Failed to load from local cache on GPU: {e}")
+                    logger.warning(f"Failed to load from local cache on CPU: {e}")
             
             # Fallback: load từ HuggingFace với max_length=2304 theo documentation
-            logger.info("Loading from HuggingFace (may download) on GPU with correct max_length=2304 (trained optimal)")
+            logger.info("Loading from HuggingFace (may download) on CPU with correct max_length=2304 (trained optimal)")
             # Model hỗ trợ max 8192 tokens nhưng trained với 2304 để đảm bảo quality
             
             # Sử dụng model_kwargs để optimize memory và performance
@@ -67,13 +67,13 @@ class RerankerService:
             
             self.model = CrossEncoder(
                 self.model_name, 
-                device='cuda:0', 
+                device='cpu', 
                 max_length=2304,
                 trust_remote_code=False,  # Security best practice
                 model_kwargs=model_kwargs
             )
             self.model_loaded = True
-            logger.info("✅ Reranker model loaded from HuggingFace on GPU (max_length=2304, trained optimal)")
+            logger.info("✅ Reranker model loaded from HuggingFace on CPU (max_length=2304, trained optimal)")
             
         except Exception as e:
             logger.error(f"Failed to load reranker model: {e}")

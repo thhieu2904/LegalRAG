@@ -6,9 +6,15 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
+import json
+import os
+import logging
 
 from ..services.router import QueryRouter
 from ..core.config import settings
+
+# Setup logger
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/router", tags=["Router CRUD"])
 
@@ -49,22 +55,56 @@ class CollectionInfo(BaseModel):
     total_questions: int
     active_questions: int
 
-# 🔥 Dependency: Get Router Instance
+class DocumentInfo(BaseModel):
+    id: str
+    title: str
+    collection: str
+    path: str
+    question_count: int
+    json_file: str
+
+# Global instances to prevent memory leaks
+_embedding_model = None
+_router_instance = None
+
+# 🔥 Dependency: Get Router Instance  
 def get_router() -> QueryRouter:
-    """Get router instance từ singleton hoặc create new"""
+    """Get router instance từ singleton hoặc create new - Fixed memory leak"""
+    global _embedding_model, _router_instance
+    
     try:
-        # Import router từ main app hoặc create new instance
-        from ...main import app
-        if hasattr(app.state, 'query_router'):
-            return app.state.query_router
-        else:
-            # Fallback: create new router instance
-            from sentence_transformers import SentenceTransformer
-            from ..core.config import settings
+        # Return cached router instance if available
+        if _router_instance is not None:
+            return _router_instance
             
-            model = SentenceTransformer(settings.embedding_model_name)
-            return QueryRouter(model)
+        # Try to get from main app state
+        try:
+            import sys
+            if 'main' in sys.modules:
+                main_module = sys.modules['main']
+                if hasattr(main_module, 'app') and hasattr(main_module.app.state, 'query_router'):
+                    if main_module.app.state.query_router:
+                        _router_instance = main_module.app.state.query_router
+                        return _router_instance
+        except Exception:
+            pass
+            
+        # Fallback: create router with singleton model to prevent VRAM leak
+        if _embedding_model is None:
+            from sentence_transformers import SentenceTransformer
+            
+            logger.info("🔄 Loading embedding model for router CRUD (one-time init)")
+            # Use CPU to avoid CUDA memory issues in API endpoints
+            _embedding_model = SentenceTransformer(settings.embedding_model_name, device='cpu')
+            logger.info("✅ Embedding model loaded successfully for router CRUD")
+        
+        # Create router instance and cache it
+        _router_instance = QueryRouter(_embedding_model)
+        logger.info("✅ Router instance created and cached")
+        return _router_instance
+        
     except Exception as e:
+        logger.error(f"❌ Cannot initialize router: {e}")
         raise HTTPException(status_code=500, detail=f"Cannot initialize router: {e}")
 
 # 🔥 CRUD Endpoints
@@ -92,6 +132,164 @@ async def get_collections(router_instance: QueryRouter = Depends(get_router)):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching collections: {e}")
+
+@router.get("/collections/{collection_name}/documents", response_model=List[DocumentInfo])
+async def get_documents_in_collection(
+    collection_name: str,
+    router_instance: QueryRouter = Depends(get_router)
+):
+    """Lấy danh sách documents trong một collection - Fixed to read from filesystem"""
+    try:
+        # Đọc trực tiếp từ filesystem thay vì registry để tránh missing documents
+        collection_path = os.path.join(settings.storage_dir, "collections", collection_name, "documents")
+        
+        if not os.path.exists(collection_path):
+            logger.warning(f"Collection path not found: {collection_path}")
+            return []
+            
+        documents = []
+        
+        # Đọc tất cả thư mục trong documents
+        for doc_dir in os.listdir(collection_path):
+            doc_path = os.path.join(collection_path, doc_dir)
+            if not os.path.isdir(doc_path):
+                continue
+                
+            # Tìm router_questions.json
+            router_questions_path = os.path.join(doc_path, 'router_questions.json')
+            
+            question_count = 0
+            title = doc_dir  # fallback title
+            json_file = ""
+            
+            if os.path.exists(router_questions_path):
+                try:
+                    with open(router_questions_path, 'r', encoding='utf-8') as qf:
+                        q_data = json.load(qf)
+                        question_count = len(q_data.get('question_variants', []))
+                        # Add main question to count
+                        if q_data.get('main_question'):
+                            question_count += 1
+                        title = q_data.get('metadata', {}).get('title', title)
+                except Exception as e:
+                    logger.warning(f"Error reading router_questions.json for {doc_dir}: {e}")
+                    
+            # Tìm file JSON chính
+            for file in os.listdir(doc_path):
+                if file.endswith('.json') and file != 'router_questions.json':
+                    json_file = file
+                    break
+            
+            documents.append(DocumentInfo(
+                id=doc_dir,
+                title=title,
+                collection=collection_name,
+                path=f"collections/{collection_name}/documents/{doc_dir}",
+                question_count=question_count,
+                json_file=json_file
+            ))
+        
+        # Sort by document ID for consistent ordering
+        documents.sort(key=lambda x: x.id)
+        logger.info(f"Found {len(documents)} documents in collection {collection_name}")
+        
+        return documents
+        
+    except Exception as e:
+        logger.error(f"Error fetching documents: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching documents: {e}")
+
+@router.get("/collections/{collection_name}/documents/{document_id}/questions", response_model=List[QuestionResponse])
+async def get_questions_in_document(
+    collection_name: str,
+    document_id: str,
+    include_deleted: bool = False,
+    router_instance: QueryRouter = Depends(get_router)
+):
+    """Lấy tất cả câu hỏi trong một document cụ thể"""
+    try:
+        router_questions_path = None
+        
+        # Try to read from documents.json registry first
+        documents_json_path = os.path.join(settings.storage_dir, "registry", "documents.json")
+        
+        if os.path.exists(documents_json_path):
+            try:
+                with open(documents_json_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    
+                doc_info = data.get('documents', {}).get(document_id)
+                if doc_info and doc_info.get('collection') == collection_name:
+                    # Registry path found and matches collection
+                    router_questions_path = os.path.join(
+                        settings.storage_dir, 
+                        doc_info.get('path', ''), 
+                        'router_questions.json'
+                    )
+            except Exception as e:
+                logger.warning(f"Error reading documents registry: {e}")
+        
+        # If registry lookup failed, try direct filesystem approach
+        if not router_questions_path or not os.path.exists(router_questions_path):
+            # Direct filesystem path approach
+            direct_path = os.path.join(
+                settings.storage_dir, 
+                "collections", 
+                collection_name, 
+                "documents", 
+                document_id,
+                'router_questions.json'
+            )
+            if os.path.exists(direct_path):
+                router_questions_path = direct_path
+            else:
+                raise HTTPException(status_code=404, detail="Document not found")
+        
+        if not os.path.exists(router_questions_path):
+            return []
+            
+        with open(router_questions_path, 'r', encoding='utf-8') as f:
+            q_data = json.load(f)
+            
+        questions = []
+        question_variants = q_data.get('question_variants', [])
+        
+        # Thêm main question
+        if q_data.get('main_question'):
+            questions.append(QuestionResponse(
+                id=f"{document_id}_main",
+                text=q_data['main_question'],
+                collection=collection_name,
+                keywords=q_data.get('keywords', []),
+                type="main",
+                category=q_data.get('metadata', {}).get('code', ''),
+                priority_score=1.0,
+                status="active",
+                created_at=q_data.get('metadata', {}).get('generated_at'),
+                updated_at=None,
+                source=document_id
+            ))
+        
+        # Thêm question variants
+        for i, variant in enumerate(question_variants):
+            questions.append(QuestionResponse(
+                id=f"{document_id}_variant_{i}",
+                text=variant,
+                collection=collection_name,
+                keywords=q_data.get('keywords', []),
+                type="variant",
+                category=q_data.get('metadata', {}).get('code', ''),
+                priority_score=0.8,
+                status="active",
+                created_at=q_data.get('metadata', {}).get('generated_at'),
+                updated_at=None,
+                source=document_id
+            ))
+        
+        return questions
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching document questions: {e}")
 
 @router.get("/collections/{collection_name}/questions", response_model=List[QuestionResponse])
 async def get_questions_in_collection(

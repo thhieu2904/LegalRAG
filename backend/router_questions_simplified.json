@@ -1,0 +1,13 @@
+{
+  "metadata": {
+    "title": "Đăng ký khai sinh",
+    "code": "QT 01/CX-HCTP",
+    "generated_at": "2025-08-23T01:25:00+07:00"
+  },
+  "main_question": "Thủ tục đăng ký khai sinh tại cấp xã được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn làm giấy khai sinh cho con thì cần chuẩn bị những giấy tờ gì?",
+    "Hồ sơ đăng ký khai sinh cho con gồm những gì, nói gọn thôi?",
+    "Con tôi sinh ở bệnh viện nhưng bị mất giấy chứng sinh, giờ làm sao để đăng ký khai sinh?"
+  ]
+}
