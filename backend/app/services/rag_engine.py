@@ -424,7 +424,7 @@ class RAGService:
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
                     logger.info(f"✅ HIGH CONFIDENCE routing to: {target_collection}")
                     
-                elif confidence_level in ['medium-high', 'override_medium_high']:
+                elif confidence_level in ['medium_high', 'medium-high', 'override_medium_high']:
                     # MEDIUM-HIGH CONFIDENCE - Show questions within best document
                     logger.info(f"🎯 MEDIUM-HIGH CONFIDENCE ({routing_result['confidence']:.3f}) - showing questions in document")
                     
@@ -471,8 +471,8 @@ class RAGService:
             # 🚀 PERFORMANCE OPTIMIZATION: Chỉ optimize cho HIGH confidence vì MEDIUM đã trigger clarification
             dynamic_k = settings.broad_search_k  # default 12
             if confidence_level in ['high', 'high_followup']:
-                dynamic_k = max(8, settings.broad_search_k - 4)  # Router tự tin → ít docs hơn
-                logger.info(f"🎯 HIGH CONFIDENCE: Giảm broad_search_k xuống {dynamic_k}")
+                dynamic_k = max(5, settings.broad_search_k - 6)  # Aggressive: 12-6=6, max(5,6)=6
+                logger.info(f"🎯 HIGH CONFIDENCE: Aggressive reduction to {dynamic_k} docs")
             else:
                 logger.info(f"� HIGH CONFIDENCE ONLY: Sử dụng broad_search_k={dynamic_k}")
             
@@ -483,11 +483,15 @@ class RAGService:
                     # 🔍 DEBUG: Log filter trước khi tìm kiếm để debug vấn đề filter bị "đánh rơi"
                     logger.info(f"🔍 Chuẩn bị tìm kiếm với filter: {inferred_filters}")
                     
-                    # 🔥 ADAPTIVE THRESHOLD: Hạ threshold khi có filter vì filter đã đảm bảo relevance
+                    # 🔥 ADAPTIVE THRESHOLD: Hạ threshold khi có filter hoặc session override
                     adaptive_threshold = settings.similarity_threshold
                     if inferred_filters:
                         adaptive_threshold = max(0.2, settings.similarity_threshold * 0.5)  # Hạ threshold khi có filter
                         logger.info(f"🎯 ADAPTIVE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (có filter)")
+                    elif was_overridden:
+                        # 🔥 SESSION OVERRIDE: Hạ threshold để đảm bảo tìm được context trong session collection
+                        adaptive_threshold = max(0.15, settings.similarity_threshold * 0.4)  # Hạ threshold mạnh cho session override
+                        logger.info(f"🎯 SESSION OVERRIDE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (session override)")
                     else:
                         logger.info(f"📊 STANDARD THRESHOLD: {adaptive_threshold} (không có filter)")
                     
@@ -539,7 +543,10 @@ class RAGService:
                         documents=docs_to_rerank,
                         top_k=5,  # Analyze top 5 candidates
                         consensus_threshold=0.6,  # 3/5 = 60%
-                        min_rerank_score=-0.5  # Adjusted for legal documents
+                        min_rerank_score=-0.5,  # Adjusted for legal documents
+                        router_confidence=routing_result.get('confidence', 0.0),
+                        router_confidence_level=routing_result.get('confidence_level', 'low'),
+                        router_selected_document=routing_result.get('best_match', {}).get('document')
                     )
                     
                     if consensus_document:
@@ -1426,33 +1433,33 @@ PHONG CÁCH: Tự nhiên, thân thiện, chính xác về thông tin phí."""
     def get_health_status(self) -> Dict[str, Any]:
         """Trạng thái health của service"""
         try:
-            collections = self.vectordb_service.list_collections()
-            total_documents = 0
-            
-            for collection_info in collections:
-                try:
-                    collection = self.vectordb_service.get_collection(collection_info["name"])
-                    count = collection.count()
-                    total_documents += count
-                except:
-                    continue
+            # Lấy thống kê từ router thay vì vectordb để accurate hơn
+            try:
+                router_collections = self.smart_router.get_collections()
+                total_collections = len(router_collections)
+                total_documents = sum(col.get('file_count', 0) for col in router_collections)
+            except:
+                # Fallback nếu router chưa ready
+                total_collections = 0
+                total_documents = 0
                     
             return {
                 "status": "healthy",
-                "total_collections": len(collections),
+                "total_collections": total_collections,
                 "total_documents": total_documents,
-                "llm_loaded": self.llm_service.model is not None,
-                "reranker_loaded": self.reranker_service.model is not None,
+                "llm_loaded": self.llm_service is not None and hasattr(self.llm_service, 'model') and self.llm_service.model is not None,
+                "reranker_loaded": self.reranker_service is not None and hasattr(self.reranker_service, 'model') and self.reranker_service.model is not None,
                 "embedding_device": "CPU (VRAM optimized)",
                 "llm_device": "GPU",
-                "reranker_device": "GPU",
+                "reranker_device": "GPU", 
                 "active_sessions": len(self.chat_sessions),
                 "metrics": self.metrics,
-                "router_stats": self.smart_router.get_collection_info(),
+                "router_ready": hasattr(self, 'smart_router') and self.smart_router is not None,
                 "context_expansion": {
                     "total_chunks_cached": len(self.context_expansion_service.document_metadata_cache),
                     **self.context_expansion_service.get_stats()
-                }
+                },
+                "ambiguous_patterns": 0  # Placeholder
             }
             
         except Exception as e:

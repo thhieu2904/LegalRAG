@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "title": "Đăng ký nhận cha, mẹ, con",
+    "code": "QT 05/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/05. Đăng ký nhận cha, mẹ, con.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:17:29+07:00"
+  },
+  "main_question": "Thủ tục đăng ký nhận cha, mẹ, con được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn làm thủ tục nhận con thì cần chuẩn bị hồ sơ gì?",
+    "Hồ sơ đăng ký nhận cha mẹ con gồm những giấy tờ nào?",
+    "Nếu không có giấy giám định ADN thì làm sao để chứng minh quan hệ cha con?",
+    "Để làm thủ tục nhận con, có bắt buộc phải có người làm chứng không?",
+    "Văn bản cam đoan về mối quan hệ cha mẹ con cần có những nội dung gì?",
+    "Khi đi làm thủ tục có cần mang theo giấy tờ tùy thân gốc không?",
+    "Thời gian giải quyết thủ tục nhận cha mẹ con là bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thêm thì tối đa phải chờ bao nhiêu ngày?",
+    "Điều kiện để được đăng ký nhận cha mẹ con là gì?",
+    "Nếu người con đã mất thì người cha có thể làm thủ tục nhận con được không?",
+    "Trường hợp đang có tranh chấp về việc nhận con thì có làm thủ tục được không?",
+    "Tôi và mẹ của đứa trẻ không đăng ký kết hôn, giờ tôi muốn nhận con nhưng không liên lạc được với cô ấy thì phải làm sao?",
+    "Nộp hồ sơ đăng ký nhận cha mẹ con ở đâu?",
+    "Tôi có thể nộp hồ sơ ở nơi tôi đang ở hay phải về quê của người con để nộp?",
+    "Lệ phí cho thủ tục này là bao nhiêu?",
+    "Gia đình tôi có công với cách mạng thì có được miễn phí không?",
+    "Quy trình xử lý hồ sơ đăng ký nhận cha mẹ con gồm những bước nào?",
+    "Ai là người có thẩm quyền ký vào trích lục đăng ký nhận cha mẹ con?",
+    "Kết quả tôi nhận được sau khi làm thủ tục là giấy tờ gì?",
+    "Có được cấp bản điện tử của trích lục nhận cha mẹ con không?",
+    "Nếu tôi cam đoan sai sự thật về mối quan hệ cha con thì có bị hủy kết quả không?",
+    "Tôi có thể nộp hồ sơ đăng ký nhận cha mẹ con trực tuyến được không?",
+    "Cần bao nhiêu người làm chứng cho việc nhận cha mẹ con?",
+    "Giấy tờ do cơ quan nước ngoài cấp để chứng minh quan hệ cha con có cần hợp pháp hóa lãnh sự không?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký nhận cha, mẹ, con",
+    "title_keywords": ["đăng ký", "nhận", "cha", "mẹ", "con"],
+    "procedure_code": "QT 05/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi cư trú của người nhận hoặc người được nhận là cha, mẹ, con.",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 6,
+    "questions_generated": 24,
+    "generation_method": "AI-Assisted"
+  }
+}

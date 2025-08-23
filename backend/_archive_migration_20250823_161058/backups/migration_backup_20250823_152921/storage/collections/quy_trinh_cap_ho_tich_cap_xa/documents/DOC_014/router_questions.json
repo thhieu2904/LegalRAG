@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "title": "Đăng ký lại kết hôn có yếu tố nước ngoài",
+    "code": "QT 14/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/14. Đăng ký lại kết hôn có yếu tố nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:21:49+07:00"
+  },
+  "main_question": "Thủ tục đăng ký lại kết hôn có yếu tố nước ngoài được thực hiện như thế nào?",
+  "question_variants": [
+    "Vợ chồng tôi kết hôn với người nước ngoài và bị mất giấy đăng ký kết hôn, giờ muốn làm lại thì cần hồ sơ gì?",
+    "Hồ sơ đăng ký lại kết hôn có yếu tố nước ngoài gồm những giấy tờ nào?",
+    "Nếu không còn bản sao giấy kết hôn cũ, tôi có thể dùng giấy tờ cá nhân khác để thay thế không?",
+    "Cả hai vợ chồng có bắt buộc phải cùng có mặt khi đi làm thủ tục không?",
+    "Giấy tờ do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự không?",
+    "Thời gian làm lại giấy đăng ký kết hôn có yếu tố nước ngoài mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thì tối đa phải chờ bao nhiêu ngày?",
+    "Điều kiện để được đăng ký lại kết hôn là gì?",
+    "Chúng tôi kết hôn năm 2018 và bị mất giấy, vậy có thuộc đối tượng được đăng ký lại không?",
+    "Nếu một trong hai vợ chồng đã mất thì người còn lại có thể đi đăng ký lại kết hôn được không?",
+    "Tôi phải đến đâu để nộp hồ sơ đăng ký lại kết hôn?",
+    "Cơ quan nào có thẩm quyền giải quyết việc đăng ký lại kết hôn có yếu tố nước ngoài?",
+    "Lệ phí đăng ký lại kết hôn có yếu tố nước ngoài là bao nhiêu?",
+    "Tôi là Việt Kiều thuộc diện hộ nghèo thì có được miễn lệ phí không?",
+    "Quy trình xử lý hồ sơ gồm mấy bước?",
+    "Bước thẩm tra và xác minh hồ sơ thường kéo dài bao lâu?",
+    "Sau khi hoàn tất thủ tục tôi sẽ nhận được mấy bản giấy chứng nhận kết hôn?",
+    "Có được cấp bản điện tử của giấy chứng nhận kết hôn không?",
+    "Nếu nộp hồ sơ trực tuyến thì khi nào cần phải có mặt cả hai vợ chồng để ký?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký lại kết hôn có yếu tố nước ngoài",
+    "title_keywords": ["đăng ký", "lại", "kết hôn", "yếu tố nước ngoài"],
+    "procedure_code": "QT 14/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 6,
+    "questions_generated": 19,
+    "generation_method": "AI-Assisted"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "title": "Đăng ký kết hôn có yếu tố nước ngoài",
+    "code": "QT 12/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/12. Đăng ký kết hôn có yếu tố nước ngoài.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:20:55+07:00"
+  },
+  "main_question": "Thủ tục đăng ký kết hôn có yếu tố nước ngoài được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn đăng ký kết hôn với người nước ngoài thì cần chuẩn bị hồ sơ gì?",
+    "Hồ sơ đăng ký kết hôn với Việt Kiều gồm những giấy tờ gì?",
+    "Giấy xác nhận tình trạng hôn nhân của người nước ngoài có thời hạn bao lâu?",
+    "Có bắt buộc phải có giấy khám sức khỏe tâm thần khi đăng ký kết hôn không?",
+    "Người nước ngoài cần nộp những giấy tờ gì để chứng minh nhân thân?",
+    "Nếu tôi là công chức nhà nước thì có cần xin giấy xác nhận của cơ quan không?",
+    "Giấy tờ do cơ quan nước ngoài cấp có cần hợp pháp hóa lãnh sự không?",
+    "Nếu tôi đã ly hôn ở nước ngoài, tôi có cần làm thủ tục ghi chú ly hôn trước khi kết hôn mới không?",
+    "Thời gian làm thủ tục đăng ký kết hôn với người nước ngoài mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thêm thì tối đa phải chờ bao nhiêu ngày?",
+    "Điều kiện để được đăng ký kết hôn có yếu tố nước ngoài là gì?",
+    "Tôi là Việt Kiều, cần giấy tờ gì để chứng minh tôi được phép cư trú hợp lệ?",
+    "Tôi 17 tuổi có được đăng ký kết hôn với người nước ngoài không?",
+    "Quy trình xử lý hồ sơ đăng ký kết hôn có yếu tố nước ngoài gồm mấy bước?",
+    "Bước nào trong quy trình mất nhiều thời gian nhất?",
+    "Lệ phí cho thủ tục này là bao nhiêu?",
+    "Tôi thuộc hộ nghèo thì có được miễn lệ phí kết hôn với người nước ngoài không?",
+    "Khi nộp hồ sơ trực tuyến, lúc nào tôi cần nộp bản chính của các giấy tờ?",
+    "Cả hai vợ chồng có bắt buộc phải có mặt khi nhận giấy chứng nhận kết hôn không?",
+    "Ai là người có thẩm quyền ký giấy đăng ký kết hôn của chúng tôi?",
+    "Tôi cần nộp hồ sơ ở đâu?",
+    "Hồ sơ cần nộp mấy bộ?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký kết hôn có yếu tố nước ngoài",
+    "title_keywords": ["đăng ký", "kết hôn", "yếu tố", "nước ngoài"],
+    "procedure_code": "QT 12/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 4,
+    "questions_generated": 22,
+    "generation_method": "AI-Assisted"
+  }
+}

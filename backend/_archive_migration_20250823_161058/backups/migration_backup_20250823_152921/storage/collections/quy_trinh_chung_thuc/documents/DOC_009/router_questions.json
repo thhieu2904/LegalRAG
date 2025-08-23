@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "title": "Thủ tục chứng thực văn bản từ chối nhận di sản",
+    "code": "QT 03/CX-HCTP",
+    "collection": "chung_thuc",
+    "source_document": "quy_trinh_chung_thuc/3.Thủ tục chứng thực văn bản từ chối nhận di sản.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:38:55+07:00"
+  },
+  "main_question": "Thủ tục chứng thực văn bản từ chối nhận di sản được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn làm văn bản từ chối nhận thừa kế thì cần chuẩn bị hồ sơ gì?",
+    "Hồ sơ để chứng thực văn bản từ chối nhận di sản gồm những giấy tờ nào?",
+    "Có cần phải soạn sẵn dự thảo văn bản từ chối trước khi đi chứng thực không?",
+    "Nếu di sản là nhà đất, tôi có cần nộp sổ đỏ không?",
+    "Có bắt buộc phải xuất trình bản chính giấy tờ nhà đất để đối chiếu không?",
+    "Thời gian chứng thực một văn bản từ chối nhận di sản mất bao lâu?",
+    "Nếu hồ sơ phức tạp, thời gian chứng thực có thể kéo dài hơn 2 ngày không?",
+    "Cơ quan nào có thẩm quyền chứng thực văn bản từ chối nhận di sản?",
+    "Tôi có thể đến UBND xã để chứng thực văn bản này được không?",
+    "Lệ phí chứng thực văn bản từ chối nhận di sản là bao nhiêu?",
+    "Chi phí để chứng thực một văn bản từ chối thừa kế là bao nhiêu tiền?",
+    "Kết quả tôi nhận được sau khi làm thủ tục là gì?",
+    "Quy trình chứng thực văn bản này ở xã gồm mấy bước?",
+    "Ai là người kiểm tra tính pháp lý của văn bản?",
+    "Lãnh đạo UBND xã có vai trò gì trong việc chứng thực văn bản?",
+    "Tôi nộp hồ sơ ở đâu và nhận kết quả ở đâu?",
+    "Nếu không thể trả kết quả trong 2 ngày thì có được cấp phiếu hẹn không?"
+  ],
+  "smart_filters": {
+    "exact_title": "Thủ tục chứng thực văn bản từ chối nhận di sản",
+    "title_keywords": [
+      "chứng thực",
+      "văn bản",
+      "từ chối",
+      "nhận di sản",
+      "thừa kế"
+    ],
+    "procedure_code": "QT 03/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân", "Tổ chức"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân", "Tổ chức"]
+  },
+  "expected_collection": "chung_thuc",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 5,
+    "questions_generated": 17,
+    "generation_method": "AI-Assisted"
+  }
+}

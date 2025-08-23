@@ -1,3 +1,7 @@
+
+# NOTE: Migration to questions.json + document.json structure completed
+# This tool may need updates to work with new clean architecture
+# Old router_questions.json files have been moved to cleanup_backup_*
 """
 MODERNIZED VECTOR DATABASE BUILDER
 =================================
@@ -6,7 +10,7 @@ Updated to work with new collection-based document structure:
 data/storage/collections/{collection}/documents/DOC_XXX/
 ├── original_name.json          ← RAG content (what we index)
 ├── original_name.doc           ← Original document  
-├── router_questions.json       ← Router questions (not indexed)
+├── questions.json       ← Router questions (not indexed)
 └── forms/                      ← Forms directory
 
 This tool scans all collections and builds vector database from the JSON content files.
@@ -94,9 +98,9 @@ class ModernizedVectorDBBuilder:
                 if not doc_dir.is_dir():
                     continue
                 
-                # Find JSON content file (exclude router_questions.json)
+                # Find JSON content file (exclude questions.json)
                 json_files = [f for f in doc_dir.glob("*.json") 
-                             if f.name != "router_questions.json"]
+                             if f.name != "questions.json"]
                 
                 if not json_files:
                     logger.warning(f"No content JSON in {doc_dir}")

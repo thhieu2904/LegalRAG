@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "title": "Đăng ký kết hôn",
+    "code": "QT 11/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/11. Đăng ký kết hôn.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:20:23+07:00"
+  },
+  "main_question": "Thủ tục đăng ký kết hôn được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn đăng ký kết hôn cần chuẩn bị những giấy tờ gì?",
+    "Hồ sơ đăng ký kết hôn có cần giấy xác nhận tình trạng hôn nhân không?",
+    "Hai vợ chồng có thể khai chung một tờ khai đăng ký kết hôn được không?",
+    "Khi đi đăng ký kết hôn có cần mang theo CCCD bản gốc không?",
+    "Tôi có thể dùng tài khoản VneID để xuất trình giấy tờ không?",
+    "Tôi đã ly hôn ở nước ngoài, giờ muốn kết hôn ở Việt Nam thì cần làm gì trước?",
+    "Thời gian làm thủ tục đăng ký kết hôn mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thì tối đa phải chờ bao nhiêu ngày?",
+    "Nộp hồ sơ đăng ký kết hôn buổi sáng thì buổi chiều có lấy được giấy chứng nhận không?",
+    "Điều kiện để được đăng ký kết hôn là gì?",
+    "Nam và nữ bao nhiêu tuổi thì được phép kết hôn?",
+    "Kết hôn có bắt buộc phải tự nguyện không?",
+    "Những trường hợp nào bị cấm kết hôn theo quy định của pháp luật?",
+    "Anh em họ có được lấy nhau không?",
+    "Pháp luật Việt Nam có công nhận hôn nhân đồng giới không?",
+    "Tôi phải đến đâu để làm thủ tục đăng ký kết hôn?",
+    "Tôi có thể đăng ký kết hôn ở UBND xã nơi tôi tạm trú được không?",
+    "Đăng ký kết hôn có mất lệ phí không?",
+    "Chi phí để xin cấp bản sao giấy chứng nhận kết hôn là bao nhiêu?",
+    "Sau khi đăng ký xong tôi sẽ nhận được mấy bản giấy chứng nhận kết hôn?",
+    "Quy trình đăng ký kết hôn gồm những bước nào?",
+    "Cả hai vợ chồng có bắt buộc phải có mặt để ký vào giấy chứng nhận kết hôn không?",
+    "Ai là người có thẩm quyền ký giấy đăng ký kết hôn?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký kết hôn",
+    "title_keywords": ["đăng ký", "kết hôn"],
+    "procedure_code": "QT 11/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã nơi cư trú của bên nam hoặc bên nữ.",
+    "agency_level": "commune",
+    "cost_type": "free",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân"]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "free",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 6,
+    "questions_generated": 23,
+    "generation_method": "AI-Assisted"
+  }
+}

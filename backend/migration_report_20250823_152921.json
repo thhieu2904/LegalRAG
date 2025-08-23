@@ -1,0 +1,80 @@
+{
+  "migration_summary": {
+    "total_files_found": 53,
+    "successfully_migrated": 53,
+    "migration_errors": 0,
+    "success_rate": 100.0,
+    "duration_seconds": 0.930054,
+    "backup_location": "d:/Personal/LegalRAG_Fixed/backend/migration_backup_20250823_152921"
+  },
+  "validation_results": {
+    "timestamp": "2025-08-23T15:29:21.932608",
+    "total_validations": 53,
+    "successful_validations": 53,
+    "errors": [],
+    "warnings": [],
+    "success_rate": 100.0
+  },
+  "migration_log": [
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_009\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_009\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.779897"
+    },
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_010\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_010\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.798878"
+    },
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_011\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_011\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.816894"
+    },
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_012\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_012\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.831880"
+    },
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_013\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_013\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.846971"
+    },
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_014\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_014\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.864952"
+    },
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_015\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_chung_thuc\\documents\\DOC_015\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.884611"
+    },
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_nuoi_con_nuoi\\documents\\DOC_001\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_nuoi_con_nuoi\\documents\\DOC_001\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.901608"
+    },
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_nuoi_con_nuoi\\documents\\DOC_002\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_nuoi_con_nuoi\\documents\\DOC_002\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.916608"
+    },
+    {
+      "original": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_nuoi_con_nuoi\\documents\\DOC_003\\router_questions.json",
+      "new": "d:/Personal/LegalRAG_Fixed/backend/data\\storage\\collections\\quy_trinh_nuoi_con_nuoi\\documents\\DOC_003\\questions.json",
+      "validation": true,
+      "timestamp": "2025-08-23T15:29:21.931625"
+    }
+  ]
+}

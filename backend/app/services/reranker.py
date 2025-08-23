@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import torch
 from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
 from sentence_transformers import CrossEncoder
@@ -18,6 +19,15 @@ class RerankerService:
         self.model_loaded = False
         
         # VRAM Optimization: Load model khi cần thiết
+        
+    def get_optimal_device(self) -> str:
+        """Get optimal device for reranker"""
+        if torch.cuda.is_available():
+            logger.info("🎮 CUDA available - using GPU for reranker")
+            return 'cuda'
+        else:
+            logger.info("💻 CUDA not available - falling back to CPU")
+            return 'cpu'
         # self._load_model()  # Comment out để load on-demand
     
     def _load_model(self):
@@ -45,13 +55,13 @@ class RerankerService:
                     
                     self.model = CrossEncoder(
                         str(local_model_path), 
-                        device='cpu', 
+                        device=self.get_optimal_device(),  # ← Dynamic device selection
                         max_length=2304,
                         trust_remote_code=False,  # Security best practice  
                         model_kwargs=model_kwargs
                     )
                     self.model_loaded = True
-                    logger.info("✅ Reranker model loaded from local cache on CPU (max_length=2304, trained optimal)")
+                    logger.info(f"✅ Reranker model loaded from local cache on {self.get_optimal_device().upper()} (max_length=2304, trained optimal)")
                     return
                 except Exception as e:
                     logger.warning(f"Failed to load from local cache on CPU: {e}")
@@ -67,13 +77,13 @@ class RerankerService:
             
             self.model = CrossEncoder(
                 self.model_name, 
-                device='cpu', 
+                device=self.get_optimal_device(),  # ← Dynamic device selection
                 max_length=2304,
                 trust_remote_code=False,  # Security best practice
                 model_kwargs=model_kwargs
             )
             self.model_loaded = True
-            logger.info("✅ Reranker model loaded from HuggingFace on CPU (max_length=2304, trained optimal)")
+            logger.info(f"✅ Reranker model loaded from HuggingFace on {self.get_optimal_device().upper()} (max_length=2304, trained optimal)")
             
         except Exception as e:
             logger.error(f"Failed to load reranker model: {e}")
@@ -242,78 +252,50 @@ class RerankerService:
         self, 
         query: str, 
         documents: List[Dict[str, Any]], 
-        top_k: int = 5,
-        consensus_threshold: float = 0.6,  # 3/5 = 0.6
-        min_rerank_score: float = -0.5  # LOWER for legal documents (cross-encoder can give negative scores)
+        top_k: int = 20,
+        consensus_threshold: float = 0.3,
+        min_rerank_score: float = 0.03,
+        router_confidence: Optional[float] = None,
+        router_confidence_level: Optional[str] = None,
+        router_selected_document: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
         """
-        🎯 ENHANCED RERANKING: Tìm document dựa trên consensus của top-k chunks
-        
-        Thay vì chỉ lấy 1 chunk cao nhất (dễ sai lệch), method này:
-        1. Lấy top-k chunks sau rerank (default: 5)
-        2. Phân tích xem chunks nào thuộc document nào
-        3. Tìm document có >= consensus_threshold chunks trong top-k
-        4. Trả về document có consensus cao nhất
-        5. Xử lý trường hợp "scattered chunks" (chunks từ các documents hoàn toàn khác nhau)
+        Tìm document có consensus cao nhất dựa trên nhiều chunks được rerank
         
         Args:
-            query: Câu hỏi cần tìm
-            documents: Danh sách documents cần đánh giá
-            top_k: Số chunks hàng đầu để phân tích consensus (default: 5)
-            consensus_threshold: Tỷ lệ minimum chunks cùng document (default: 0.6 = 3/5)
-            min_rerank_score: Score minimum để xem xét (đã điều chỉnh cho văn bản pháp luật)
+            query: Câu hỏi từ user
+            documents: Danh sách documents để rerank
+            top_k: Số lượng chunks tốt nhất để xem xét
+            consensus_threshold: Ngưỡng consensus tối thiểu (0.0-1.0)
+            min_rerank_score: Điểm rerank tối thiểu để xem xét chunk
+            router_confidence: Confidence score từ router (0.0-1.0)
+            router_confidence_level: Mức độ confidence từ router ('low', 'medium', 'high')
+            router_selected_document: Document ID mà router đã chọn (VD: 'DOC_011')
         
         Returns:
-            Document có consensus cao nhất hoặc None nếu không có consensus
+            Document chunk tốt nhất hoặc None
         """
         if not documents:
             return None
+        
+        # ⚡ ROUTER TRUST MODE: Nếu router có confidence cao, tin tưởng router decision
+        if router_confidence and router_confidence > 0.85:
+            logger.info(f"🎯 ROUTER TRUST MODE: High confidence {router_confidence:.3f} > 0.85 - Using router decision")
+            
+            # 🔍 FIXED: Tìm chunk từ document mà router đã chọn
+            if router_selected_document:
+                router_chunk = self._find_chunk_from_document(documents, router_selected_document)
+                if router_chunk:
+                    logger.info(f"✅ Found chunk from router-selected document: {router_selected_document}")
+                    return router_chunk
+                else:
+                    logger.warning(f"⚠️ No chunk found from router-selected document {router_selected_document}, falling back to first document")
+            
+            # Fallback: Trả về document đầu tiên
+            return documents[0] if documents else None
             
         # Bước 1: Rerank tất cả documents và lấy top-k
         reranked = self.rerank_documents(query, documents, top_k=top_k)
-        
-        if not reranked:
-            return None
-            
-        # Bước 2: Lọc ra những chunks có score đủ cao (điều chỉnh cho văn bản pháp luật)
-        qualified_chunks = [
-            doc for doc in reranked 
-            if doc.get('rerank_score', -999) >= min_rerank_score
-        ]
-        
-        if not qualified_chunks:
-            logger.warning(f"No chunks meet minimum rerank score {min_rerank_score}")
-            return reranked[0] if reranked else None  # Fallback to best chunk
-            
-        logger.info(f"🔍 CONSENSUS ANALYSIS: Analyzing {len(qualified_chunks)} qualified chunks (top_k={top_k})")
-        
-        # Bước 3: Phân tích document consensus
-        document_analysis = self._analyze_document_consensus(qualified_chunks)
-        
-        # Bước 4: Tìm document có consensus cao nhất
-        best_consensus = self._find_best_consensus(
-            document_analysis, 
-            consensus_threshold, 
-            len(qualified_chunks)
-        )
-        
-        if best_consensus:
-            logger.info(f"✅ CONSENSUS FOUND: Document '{best_consensus['document_id']}' "
-                       f"has {best_consensus['chunk_count']}/{len(qualified_chunks)} chunks "
-                       f"(ratio: {best_consensus['consensus_ratio']:.2f})")
-            return best_consensus['best_chunk']
-        else:
-            # 🔥 NEW LOGIC: Kiểm tra nếu các chunks thuộc các documents hoàn toàn khác nhau
-            unique_documents = set(self._extract_document_id(chunk) for chunk in qualified_chunks)
-            
-            if len(unique_documents) == len(qualified_chunks):
-                logger.warning(f"🚨 SCATTERED CHUNKS: {len(qualified_chunks)} chunks from {len(unique_documents)} different documents")
-                logger.info("📋 Falling back to SINGLE BEST CHUNK strategy (traditional reranking)")
-                return qualified_chunks[0]  # Return highest scored chunk
-            else:
-                logger.warning(f"❌ NO STRONG CONSENSUS: Falling back to traditional single best document "
-                              f"(threshold: {consensus_threshold})")
-                return qualified_chunks[0]  # Fallback to highest scored chunk
 
     def _analyze_document_consensus(self, chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
@@ -424,22 +406,69 @@ class RerankerService:
         
         return best_consensus
     
-    def get_best_document(self, query: str, documents: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-        """
-        Tìm document có độ liên quan cao nhất với query (Legacy method)
-        
-        ⚠️  DEPRECATED: Khuyến khích dùng get_consensus_document() để có kết quả chính xác hơn
-        
-        Args:
-            query: Câu hỏi cần tìm
-            documents: Danh sách documents cần đánh giá
-        
-        Returns:
-            Document có điểm rerank cao nhất
-        """
-        reranked = self.rerank_documents(query, documents, top_k=1)
+    # ❌ DEPRECATED METHOD REMOVED
+    # def get_best_document(self, query: str, documents: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    #     """
+    #     DEPRECATED: Use get_consensus_document() instead for better accuracy
+    #     """
+    #     pass
         return reranked[0] if reranked else None
     
+    def _find_chunk_from_document(self, documents: List[Dict[str, Any]], target_document_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Tìm chunk từ document cụ thể mà router đã chọn
+        
+        Args:
+            documents: List các chunks từ vector search
+            target_document_id: Document ID mà router chọn (VD: 'DOC_011')
+        
+        Returns:
+            Chunk từ target document hoặc None
+        """
+        try:
+            for doc in documents:
+                # Check multiple possible locations for document ID
+                doc_id = None
+                
+                # Method 1: Check metadata.source field
+                if 'metadata' in doc and 'source' in doc['metadata']:
+                    source = doc['metadata']['source']
+                    if isinstance(source, dict) and 'file_path' in source:
+                        file_path = source['file_path']
+                        # Extract DOC_XXX from file path
+                        import re
+                        match = re.search(r'DOC_(\d+)', file_path)
+                        if match:
+                            doc_id = f"DOC_{match.group(1)}"
+                
+                # Method 2: Check direct metadata fields
+                if not doc_id and 'metadata' in doc:
+                    metadata = doc['metadata']
+                    for key in ['document_id', 'doc_id', 'source_document']:
+                        if key in metadata:
+                            potential_id = metadata[key]
+                            if target_document_id in str(potential_id):
+                                doc_id = target_document_id
+                                break
+                
+                # Method 3: Check source field directly
+                if not doc_id and 'source' in doc:
+                    source_str = str(doc['source'])
+                    if target_document_id in source_str:
+                        doc_id = target_document_id
+                
+                # If found matching document, return it
+                if doc_id == target_document_id:
+                    logger.info(f"✅ Found chunk from document {target_document_id}: {doc.get('id', 'Unknown ID')}")
+                    return doc
+            
+            logger.warning(f"❌ No chunk found from document {target_document_id} in {len(documents)} available chunks")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error finding chunk from document {target_document_id}: {e}")
+            return None
+
     def is_loaded(self) -> bool:
         """Kiểm tra xem model đã được load chưa"""
         return self.model is not None

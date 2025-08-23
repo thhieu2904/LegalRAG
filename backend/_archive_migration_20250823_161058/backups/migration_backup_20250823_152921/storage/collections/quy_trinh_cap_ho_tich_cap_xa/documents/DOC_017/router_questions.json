@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "title": "Đăng ký lại khai tử",
+    "code": "QT 17/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/17. Đăng ký lại khai tử.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:23:42+07:00"
+  },
+  "main_question": "Thủ tục đăng ký lại khai tử được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi bị mất giấy chứng tử của người thân, giờ muốn làm lại thì cần hồ sơ gì?",
+    "Hồ sơ đăng ký lại khai tử bao gồm những giấy tờ nào?",
+    "Nếu không còn bản sao giấy chứng tử cũ, tôi có thể dùng giấy tờ cá nhân khác để thay thế không?",
+    "Văn bản cam đoan về việc đã nộp đủ giấy tờ hiện có cần công chứng không?",
+    "Tôi có thể ủy quyền cho con cái đi làm thủ tục này hộ được không?",
+    "Ủy quyền cho người thân đi làm lại giấy chứng tử có cần phải công chứng không?",
+    "Thời gian làm lại giấy chứng tử mất bao lâu?",
+    "Nếu hồ sơ của tôi cần xác minh thêm thì tối đa phải chờ bao nhiêu ngày?",
+    "Điều kiện để được đăng ký lại khai tử là gì?",
+    "Người thân tôi mất năm 2018 và bị mất giấy tờ, vậy có thuộc đối tượng được đăng ký lại không?",
+    "Tôi phải đến đâu để nộp hồ sơ đăng ký lại khai tử?",
+    "Bắt buộc phải về đúng UBND xã nơi đã đăng ký khai tử trước đây để làm thủ tục phải không?",
+    "Lệ phí đăng ký lại khai tử là bao nhiêu?",
+    "Gia đình tôi thuộc hộ nghèo thì có được miễn lệ phí làm lại giấy chứng tử không?",
+    "Quy trình xử lý hồ sơ đăng ký lại khai tử gồm mấy bước?",
+    "Bước xác minh thông tin thường kéo dài bao lâu?",
+    "Ai là người có thẩm quyền ký trích lục khai tử?",
+    "Sau khi hoàn tất thủ tục tôi sẽ nhận được giấy tờ gì?",
+    "Có được cấp bản điện tử của trích lục khai tử không?",
+    "Tôi có thể dùng VneID để xuất trình giấy tờ tùy thân của mình không?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký lại khai tử",
+    "title_keywords": ["đăng ký", "lại", "khai tử"],
+    "procedure_code": "QT 17/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã, nơi đã đăng ký khai tử trước đây.",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "multiple_days",
+    "applicant_type": ["Cá nhân"]
+  },
+  "key_attributes": {
+    "speed": "multi_day",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 6,
+    "questions_generated": 20,
+    "generation_method": "AI-Assisted"
+  }
+}

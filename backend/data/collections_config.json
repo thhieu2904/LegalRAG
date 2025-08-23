@@ -1,0 +1,49 @@
+{
+  "_metadata": {
+    "description": "Dynamic Collections Configuration",
+    "version": "1.0",
+    "auto_generated": true,
+    "last_updated": "2025-08-23"
+  },
+  "collections": {
+    "quy_trinh_cap_ho_tich_cap_xa": {
+      "display_name": "Hộ tịch cấp xã",
+      "short_name": "ho_tich_cap_xa",
+      "description": "Thủ tục về khai sinh, kết hôn, khai tử và các dịch vụ hộ tịch cấp xã",
+      "category": "ho_tich",
+      "enabled": true,
+      "keywords": ["khai sinh", "kết hôn", "khai tử", "hộ tịch", "đăng ký"],
+      "admin_managed": false
+    },
+    "quy_trinh_chung_thuc": {
+      "display_name": "Chứng thực",
+      "short_name": "chung_thuc",
+      "description": "Thủ tục chứng thực hợp đồng, chữ ký, bản sao giấy tờ",
+      "category": "chung_thuc",
+      "enabled": true,
+      "keywords": ["chứng thực", "hợp đồng", "chữ ký", "bản sao"],
+      "admin_managed": false
+    },
+    "quy_trinh_nuoi_con_nuoi": {
+      "display_name": "Nuôi con nuôi",
+      "short_name": "nuoi_con_nuoi",
+      "description": "Thủ tục nhận con nuôi và giám hộ trẻ em",
+      "category": "gia_dinh",
+      "enabled": true,
+      "keywords": ["nuôi con nuôi", "nhận con nuôi", "giám hộ"],
+      "admin_managed": false
+    }
+  },
+  "display_name_rules": {
+    "auto_generate": true,
+    "prefix_removal": ["quy_trinh_", "thu_tuc_"],
+    "word_separator": "_",
+    "title_case": true
+  },
+  "short_name_rules": {
+    "auto_generate": true,
+    "prefix_removal": ["quy_trinh_", "thu_tuc_"],
+    "max_length": 20,
+    "snake_case": true
+  }
+}

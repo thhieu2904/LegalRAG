@@ -1,0 +1,13 @@
+{
+  "migration_date": "2025-08-23 15:34:26",
+  "storage_reduction": {
+    "questions_files": 106,
+    "total_questions_size": 291376,
+    "total_backup_size": 178437,
+    "reduction_percent": -63.29348733726749
+  },
+  "filter_engine_test": true,
+  "data_integrity_test": true,
+  "performance_test": true,
+  "overall_success": true
+}

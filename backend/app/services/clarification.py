@@ -194,10 +194,19 @@ class ClarificationService:
             else:
                 source_procedure = f"thủ tục trong {target_collection}" if target_collection else "thủ tục này"
         
-        message = level_config.message_template.format(
-            procedure=source_procedure,
-            confidence=confidence
-        )
+        # Get similarity info from routing result
+        best_match_info = routing_result.get('best_match', {})
+        similarity_percent = best_match_info.get('similarity_percent', round(confidence * 100, 1))
+        best_question = best_match_info.get('question', '')
+        
+        # Enhanced message with similarity info
+        if best_question:
+            message = f"Tôi nghĩ bạn muốn hỏi về '{source_procedure}'. Câu hỏi tương tự nhất ({similarity_percent}%): \"{best_question[:60]}...\"\n\nChọn câu hỏi cụ thể hoặc tự nhập:"
+        else:
+            message = level_config.message_template.format(
+                procedure=source_procedure,
+                confidence=confidence
+            )
         
         # This will be handled by RAG engine to get questions from the specific document
         options = [
