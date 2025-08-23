@@ -467,49 +467,160 @@ class RAGService:
                     
                     return self._generate_smart_clarification(routing_result, query, session_id, start_time)
             
-            # Step 2: Focused Search với DYNAMIC BROAD_SEARCH_K dựa trên router confidence  
-            # 🚀 PERFORMANCE OPTIMIZATION: Chỉ optimize cho HIGH confidence vì MEDIUM đã trigger clarification
-            dynamic_k = settings.broad_search_k  # default 12
-            if confidence_level in ['high', 'high_followup']:
-                dynamic_k = max(5, settings.broad_search_k - 6)  # Aggressive: 12-6=6, max(5,6)=6
-                logger.info(f"🎯 HIGH CONFIDENCE: Aggressive reduction to {dynamic_k} docs")
-            else:
-                logger.info(f"� HIGH CONFIDENCE ONLY: Sử dụng broad_search_k={dynamic_k}")
+            # Check for preserved document from session override
+            preserved_document = None
+            if confidence_level == 'override_high' and routing_result.get('inferred_filters') and 'source_file' in routing_result['inferred_filters']:
+                preserved_document = routing_result['inferred_filters']['source_file']
+                logger.info(f"⚡ FULL CONTEXT PRESERVATION: Using document {preserved_document} directly from session")
             
-            broad_search_results = []
-            for collection_name in best_collections[:2]:  # Limit to top 2 collections
-                try:
-                    # ✅ CRITICAL FIX: Pass smart filters to vector search với dynamic K
-                    # 🔍 DEBUG: Log filter trước khi tìm kiếm để debug vấn đề filter bị "đánh rơi"
-                    logger.info(f"🔍 Chuẩn bị tìm kiếm với filter: {inferred_filters}")
-                    
-                    # 🔥 ADAPTIVE THRESHOLD: Hạ threshold khi có filter hoặc session override
-                    adaptive_threshold = settings.similarity_threshold
-                    if inferred_filters:
-                        adaptive_threshold = max(0.2, settings.similarity_threshold * 0.5)  # Hạ threshold khi có filter
-                        logger.info(f"🎯 ADAPTIVE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (có filter)")
-                    elif was_overridden:
-                        # 🔥 SESSION OVERRIDE: Hạ threshold để đảm bảo tìm được context trong session collection
-                        adaptive_threshold = max(0.15, settings.similarity_threshold * 0.4)  # Hạ threshold mạnh cho session override
-                        logger.info(f"🎯 SESSION OVERRIDE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (session override)")
-                    else:
-                        logger.info(f"📊 STANDARD THRESHOLD: {adaptive_threshold} (không có filter)")
-                    
-                    results = self.vectordb_service.search_in_collection(
-                        collection_name=collection_name,
-                        query=query,
-                        top_k=dynamic_k,
-                        similarity_threshold=adaptive_threshold,
-                        where_filter=inferred_filters if inferred_filters else None
+            # If we have a preserved document, skip search and go directly to context expansion
+            if preserved_document:
+                # Create nucleus chunk directly pointing to preserved document
+                nucleus_chunks = [{
+                    'content': f"Preserved document from previous question: {preserved_document}",
+                    'collection': target_collection,
+                    'document_title': preserved_document,
+                    'source_file': preserved_document,
+                    'rerank_score': 1.0,  # High score since we're certain
+                    'similarity': 1.0
+                }]
+                
+                # Construct the full path for the source
+                full_source_path = f"data/storage/collections/{target_collection}/documents/{preserved_document}/{preserved_document.replace(' ', '_')}.json"  # Adjust based on your naming convention
+                nucleus_chunks[0]['source'] = full_source_path  # Add the 'source' key with full path
+                
+                # Skip to context expansion
+                logger.info(f"🔒 SESSION CONTINUITY: Skipping vector search and reranking for preserved document")
+                expanded_context = self.context_expansion_service.expand_context_with_nucleus(
+                    nucleus_chunks=nucleus_chunks
+                )
+                
+                # Skip ahead to context building
+                context_text = self._build_context_from_expanded(expanded_context, nucleus_chunks)
+                
+                # ✅ ENHANCED: Smart context building với intent detection
+                detected_intent = self._detect_specific_intent(query)
+                if detected_intent and expanded_context.get('structured_metadata'):
+                    context_text = self._build_smart_context(
+                        intent=detected_intent,
+                        metadata=expanded_context['structured_metadata'],
+                        full_text=context_text
                     )
-                    
-                    for result in results:
-                        result["collection"] = collection_name
+                
+                logger.info(f"Context expanded: {expanded_context['total_length']} chars from {len(expanded_context.get('source_documents', []))} documents")
+                if detected_intent:
+                    logger.info(f"🎯 Detected intent: {detected_intent} - Applied smart context building")
+                
+                # Jump to LLM generation
+                logger.info("🔄 PHASE 2: LLM Generation (GPU) - Loading LLM for final answer...")
+                
+                # Skip all the search and reranking logic, move straight to answer generation
+                answer = self._generate_answer_with_context(
+                    query=query,
+                    context=context_text,
+                    session=session
+                )
+                
+                # Update session history
+                session.query_history.append({
+                    "query": query,
+                    "answer": answer,
+                    "timestamp": time.time(),
+                    "nucleus_chunks_count": len(nucleus_chunks),
+                    "context_length": len(context_text),
+                    "from_preserved_document": True
+                })
+                
+                # Keep only last 5 queries in session
+                if len(session.query_history) > 5:
+                    session.query_history = session.query_history[-5:]
+                
+                # Update session state for next query
+                session.update_successful_routing(
+                    collection=target_collection, 
+                    confidence=routing_result.get('confidence', 0.85),
+                    filters={"source_file": preserved_document},
+                    rag_content={
+                        "context_text": context_text,
+                        "nucleus_chunks": nucleus_chunks,
+                        "expanded_context": expanded_context,
+                        "collections": [target_collection]
+                    }
+                )
+                logger.info(f"🔥 Reinforced session state with preserved document: {preserved_document}")
+                
+                processing_time = time.time() - start_time
+                
+                # Check for forms
+                forms_info = self.check_document_forms([preserved_document])
+                
+                # Return final response with preserved document
+                return {
+                    "type": "answer",
+                    "answer": answer,
+                    "context_info": {
+                        "nucleus_chunks": 1,
+                        "context_length": len(context_text),
+                        "source_collections": [target_collection],
+                        "source_documents": [preserved_document],
+                        "from_preserved_document": True
+                    },
+                    "session_id": session_id,
+                    "processing_time": processing_time,
+                    "routing_info": {
+                        "best_collections": [target_collection],
+                        "target_collection": target_collection,
+                        "confidence": float(routing_result.get('confidence', 0.85)),
+                        "confidence_level": "preserved_document",
+                        "preserved_document": preserved_document
+                    }
+                }
+                
+            else:
+                # Step 2: Focused Search với DYNAMIC BROAD_SEARCH_K dựa trên router confidence  
+                # 🚀 PERFORMANCE OPTIMIZATION: Chỉ optimize cho HIGH confidence vì MEDIUM đã trigger clarification
+                dynamic_k = settings.broad_search_k  # default 12
+                if confidence_level in ['high', 'high_followup']:
+                    dynamic_k = max(5, settings.broad_search_k - 6)  # Aggressive: 12-6=6, max(5,6)=6
+                    logger.info(f"🎯 HIGH CONFIDENCE: Aggressive reduction to {dynamic_k} docs")
+                else:
+                    logger.info(f"� HIGH CONFIDENCE ONLY: Sử dụng broad_search_k={dynamic_k}")
+                
+                broad_search_results = []
+                for collection_name in best_collections[:2]:  # Limit to top 2 collections
+                    try:
+                        # ✅ CRITICAL FIX: Pass smart filters to vector search với dynamic K
+                        # 🔍 DEBUG: Log filter trước khi tìm kiếm để debug vấn đề filter bị "đánh rơi"
+                        logger.info(f"🔍 Chuẩn bị tìm kiếm với filter: {inferred_filters}")
                         
-                    broad_search_results.extend(results)
-                    
-                except Exception as e:
-                    logger.warning(f"Error searching in collection {collection_name}: {e}")
+                        # 🔥 ADAPTIVE THRESHOLD: Hạ threshold khi có filter hoặc session override
+                        adaptive_threshold = settings.similarity_threshold
+                        if inferred_filters:
+                            adaptive_threshold = max(0.2, settings.similarity_threshold * 0.5)  # Hạ threshold khi có filter
+                            logger.info(f"🎯 ADAPTIVE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (có filter)")
+                        elif was_overridden:
+                            # 🔥 SESSION OVERRIDE: Hạ threshold để đảm bảo tìm được context trong session collection
+                            adaptive_threshold = max(0.15, settings.similarity_threshold * 0.4)  # Hạ threshold mạnh cho session override
+                            logger.info(f"🎯 SESSION OVERRIDE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (session override)")
+                        else:
+                            logger.info(f"📊 STANDARD THRESHOLD: {adaptive_threshold} (không có filter)")
+                        
+                        results = self.vectordb_service.search_in_collection(
+                            collection_name=collection_name,
+                            query=query,
+                            top_k=dynamic_k,
+                            similarity_threshold=adaptive_threshold,
+                            where_filter=inferred_filters if inferred_filters else None
+                        )
+                        
+                        # Process results and add to broad search results
+                        for result in results:
+                            result["collection"] = collection_name
+                        
+                        broad_search_results.extend(results)
+                        
+                    except Exception as e:
+                        logger.warning(f"Error searching in collection {collection_name}: {e}")
             
             logger.info(f"📊 Dynamic search: {len(broad_search_results)} docs (k={dynamic_k}, confidence={confidence_level})")
             
@@ -693,7 +804,7 @@ class RAGService:
                     session.update_successful_routing(
                         collection=target_collection, 
                         confidence=routing_result.get('confidence', 0),
-                        filters=enhanced_filters,  # � Enhanced filters with document info
+                        filters=enhanced_filters,  # 🔧 Enhanced filters with document info
                         rag_content=rag_content
                     )
                     logger.info(f"🔥 Updated session state: {target_collection} (confidence: {routing_result.get('confidence', 0):.3f})")

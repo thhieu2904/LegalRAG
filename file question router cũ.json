@@ -1,0 +1,70 @@
+{
+  "metadata": {
+    "title": "Đăng ký khai sinh",
+    "code": "QT 01/CX-HCTP",
+    "collection": "ho_tich_cap_xa",
+    "source_document": "quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/01. Đăng ký khai sinh.json",
+    "generated_by": "Gemini AI Assistant",
+    "generated_at": "2025-08-16T01:14:16+07:00"
+  },
+  "main_question": "Thủ tục đăng ký khai sinh tại cấp xã được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn làm giấy khai sinh cho con thì cần chuẩn bị những giấy tờ gì?",
+    "Hồ sơ đăng ký khai sinh cho con gồm những gì, nói gọn thôi?",
+    "Con tôi sinh ở bệnh viện nhưng bị mất giấy chứng sinh, giờ làm sao để đăng ký khai sinh?",
+    "Tôi là ông bà đi làm khai sinh cho cháu thì có cần giấy ủy quyền của bố mẹ nó không?",
+    "Để làm khai sinh cho con, tôi có cần nộp bản sao công chứng giấy tờ tùy thân không, hay chỉ cần bản photo?",
+    "Tôi có thể dùng ứng dụng VneID để xuất trình giấy tờ khi đi đăng ký khai sinh cho con được không?",
+    "Vợ chồng tôi không thống nhất được việc đặt họ cho con theo họ cha hay họ mẹ, pháp luật quy định thế nào?",
+    "Làm giấy khai sinh cho con thì mất bao lâu mới có kết quả?",
+    "Nộp hồ sơ khai sinh buổi chiều thì có lấy được giấy trong ngày không?",
+    "Tôi có thể nộp hồ sơ đăng ký khai sinh ở đâu?",
+    "Tôi và chồng không có cùng nơi thường trú, vậy làm giấy khai sinh cho con ở UBND xã của bên nào?",
+    "Nếu phát hiện một đứa trẻ bị bỏ rơi, tôi phải đến cơ quan nào để làm thủ tục khai sinh cho bé?",
+    "Làm khai sinh xong thì tôi nhận được những gì?",
+    "Giấy khai sinh bản điện tử có giá trị pháp lý như bản giấy không?",
+    "Chi phí làm giấy khai sinh là bao nhiêu tiền?",
+    "Nhà tôi thuộc diện hộ nghèo thì có được miễn lệ phí đăng ký khai sinh cho con không?",
+    "Đăng ký khai sinh muộn có bị phạt tiền không? Mức phí là bao nhiêu?",
+    "Quy trình các bước làm giấy khai sinh ở xã diễn ra như thế nào?",
+    "Tôi cần nộp hồ sơ đăng ký khai sinh cho ai ở ủy ban?",
+    "Mẫu tờ khai đăng ký khai sinh lấy ở đâu hay tự viết tay?",
+    "Tôi nộp hồ sơ online thì cần chuẩn bị giấy tờ dạng gì?",
+    "Giấy tờ do nước ngoài cấp để làm khai sinh cho con có cần hợp pháp hóa lãnh sự không?",
+    "Nộp hồ sơ xong thì bao lâu có giấy khai sinh?",
+    "Cơ quan nào có thẩm quyền cấp giấy khai sinh cho con tôi?",
+    "Tôi có thể làm khai sinh cho con ở nơi tạm trú được không?",
+    "Kết quả làm khai sinh có được gửi về email hay điện thoại không?",
+    "Đăng ký khai sinh trực tuyến và trực tiếp thì lệ phí có khác nhau không?",
+    "Ai là người ký giấy khai sinh cho con tôi?",
+    "Nếu cán bộ tiếp nhận đòi thêm giấy tờ ngoài quy định thì tôi phải làm sao?",
+    "Tôi sinh con tại nhà không có người làm chứng thì cần giấy tờ gì để thay thế giấy chứng sinh?",
+    "Tôi muốn xin thêm vài bản sao giấy khai sinh cho con thì lệ phí thế nào?",
+    "Nếu cam đoan sai sự thật về việc sinh con thì có bị xử lý gì không?",
+    "Làm thế nào để chứng minh nơi cư trú khi đi đăng ký khai sinh?"
+  ],
+  "smart_filters": {
+    "exact_title": "Đăng ký khai sinh",
+    "title_keywords": ["đăng ký", "khai sinh"],
+    "procedure_code": "QT 01/CX-HCTP",
+    "agency": "Ủy ban nhân dân cấp xã",
+    "agency_level": "commune",
+    "cost_type": "paid",
+    "processing_speed": "immediate",
+    "applicant_type": ["Cá nhân", "Tổ chức"]
+  },
+  "key_attributes": {
+    "speed": "immediate",
+    "cost": "paid",
+    "level": "commune",
+    "applicant_scope": ["Cá nhân", "Tổ chức"]
+  },
+  "expected_collection": "ho_tich_cap_xa",
+  "confidence_threshold": 0.8,
+  "priority_score": 1.2,
+  "generation_stats": {
+    "chunks_processed": 7,
+    "questions_generated": 33,
+    "generation_method": "AI-Assisted"
+  }
+}

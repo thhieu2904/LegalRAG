@@ -423,11 +423,11 @@ class QueryRouter:
             
             # Determine confidence level based on similarity score
             confidence_level = 'low'
-            if best_score >= 0.85:  # Very high similarity
+            if best_score >= 0.80:  # Changed from 0.85 to match high threshold
                 confidence_level = 'high'
-            elif best_score >= 0.75:  # Good similarity
+            elif best_score >= 0.65:  # Combined medium_high and medium
                 confidence_level = 'medium_high'
-            elif best_score >= 0.65:  # Acceptable similarity
+            elif best_score >= 0.50:
                 confidence_level = 'medium'
             
             # Sort all similarities for clarification
@@ -445,6 +445,16 @@ class QueryRouter:
                     best_score = 0.85  # Override to high confidence 
                     confidence_level = 'override_high'
                     was_overridden = True
+
+                    
+                    # Add document preservation in router result
+                    inferred_filters = {}
+                    if hasattr(session, 'last_successful_filters') and session.last_successful_filters:
+                        if 'source_file' in session.last_successful_filters:
+                            # Pass document info in routing result
+                            inferred_filters = session.last_successful_filters.copy()
+                            logger.info(f"🔒 SESSION OVERRIDE: Preserving document {session.last_successful_filters['source_file']}")
+                    
                     logger.info(f"🔥 SESSION OVERRIDE: {original_confidence:.3f} → {best_score:.3f} for collection {target_collection}")
                 else:
                     target_collection = best_collection if best_score >= 0.65 else None
@@ -459,6 +469,7 @@ class QueryRouter:
                 'original_confidence': original_confidence if was_overridden else None,
                 'was_overridden': was_overridden,
                 'all_scores': {k: v['score'] for k, v in collection_scores.items()},
+                'inferred_filters': inferred_filters if was_overridden and 'inferred_filters' in locals() else {},
                 'best_match': {
                     'collection': best_collection,
                     'document': best_match['best_document'],
