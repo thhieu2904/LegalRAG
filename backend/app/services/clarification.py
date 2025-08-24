@@ -3,10 +3,12 @@
 Smart Clarification Service for LegalRAG
 ========================================
 
-Tạo câu hỏi clarification thông minh dựa trên confidence levels:
-- High confidence (0.7-0.84): Xác nhận với gợi ý cụ thể
-- Medium confidence (0.5-0.69): Multiple choices từ top matches  
-- Low confidence (0.0-0.49): Category-based suggestions
+5-Layer Clarification System:
+- High confidence (≥0.80): Auto route - no clarification needed
+- Medium-High confidence (0.65-0.79): Confirm with best questions
+- Medium confidence (0.50-0.64): Multiple choice options
+- Low confidence (0.30-0.49): Category-based suggestions
+- Insufficient context (<0.30): Context gathering
 
 Author: LegalRAG Team
 """
@@ -34,13 +36,13 @@ class ClarificationService:
                 min_confidence=0.80,
                 max_confidence=1.00,
                 strategy='auto_route',
-                message_template="Routing automatically to '{procedure}' (confidence: {confidence:.1%})"
+                message_template="Routing automatically with high confidence (confidence: {confidence:.1%})"
             ),
             'medium_high_confidence': ClarificationLevel(
                 min_confidence=0.65,
                 max_confidence=0.79,
-                strategy='questions_in_document', 
-                message_template="Tôi nghĩ bạn muốn hỏi về '{procedure}'. Chọn câu hỏi cụ thể hoặc tự nhập:"
+                strategy='confirm_with_best_questions', 
+                message_template="Tôi nghĩ bạn muốn hỏi về '{procedure}' (độ tin cậy: {confidence:.1%}). Đúng không?"
             ),
             'medium_confidence': ClarificationLevel(
                 min_confidence=0.50,
@@ -49,10 +51,16 @@ class ClarificationService:
                 message_template="Câu hỏi của bạn có thể liên quan đến các thủ tục sau. Bạn muốn hỏi về:"
             ),
             'low_confidence': ClarificationLevel(
-                min_confidence=0.00,
+                min_confidence=0.30,
                 max_confidence=0.49,
                 strategy='category_suggestions',
                 message_template="Tôi chưa hiểu rõ ý bạn. Bạn có thể cho biết bạn quan tâm đến lĩnh vực nào?"
+            ),
+            'insufficient_context': ClarificationLevel(
+                min_confidence=0.00,
+                max_confidence=0.29,
+                strategy='context_gathering',
+                message_template="Tôi cần thêm thông tin để hiểu rõ câu hỏi của bạn. Bạn có thể:"
             )
         }
         
@@ -111,14 +119,11 @@ class ClarificationService:
             
             logger.info(f"🎯 Generating {clarification_level} clarification for confidence: {confidence:.3f}")
             
-            # Generate theo strategy
+            # Generate theo strategy - 5-LAYER SYSTEM
             if level_config.strategy == 'auto_route':
                 return self._generate_auto_route_response(confidence, routing_result, level_config)
             
-            elif level_config.strategy == 'questions_in_document':
-                return self._generate_questions_in_document_clarification(confidence, routing_result, level_config)
-            
-            elif level_config.strategy == 'confirm_with_suggestion':
+            elif level_config.strategy == 'confirm_with_best_questions':
                 return self._generate_confirmation_clarification(confidence, routing_result, level_config)
             
             elif level_config.strategy == 'multiple_choices':
@@ -126,6 +131,9 @@ class ClarificationService:
             
             elif level_config.strategy == 'category_suggestions':
                 return self._generate_category_clarification(confidence, routing_result, level_config)
+            
+            elif level_config.strategy == 'context_gathering':
+                return self._generate_context_gathering_clarification(confidence, routing_result, level_config)
             
             else:
                 # Fallback
@@ -136,20 +144,21 @@ class ClarificationService:
             return self._generate_fallback_clarification(float(confidence) if confidence is not None else 0.0, routing_result)
     
     def _determine_clarification_level(self, confidence: float) -> str:
-        """Xác định clarification level dựa trên confidence - UPDATED WITH 4 LEVELS"""
-        # FIXED: Kiểm tra theo thứ tự từ cao xuống thấp để tránh overlap
+        """Xác định clarification level dựa trên confidence - 5-LAYER SYSTEM"""
+        # Kiểm tra theo thứ tự từ cao xuống thấp để tránh overlap
         if confidence >= 0.80:
             return 'high_confidence'
         elif confidence >= 0.65 and confidence < 0.80:
             return 'medium_high_confidence'
         elif confidence >= 0.50 and confidence < 0.65:
             return 'medium_confidence'
-        elif confidence >= 0.00 and confidence < 0.50:
+        elif confidence >= 0.30 and confidence < 0.50:
             return 'low_confidence'
-        
-        # Edge cases
+        elif confidence >= 0.00 and confidence < 0.30:
+            return 'insufficient_context'
         else:
-            return 'low_confidence'
+            # Edge case - default to insufficient context
+            return 'insufficient_context'
     
     def _generate_auto_route_response(
         self, 
@@ -158,84 +167,70 @@ class ClarificationService:
         level_config: ClarificationLevel
     ) -> Dict[str, Any]:
         """
-        HIGH CONFIDENCE (>0.80): Auto route without clarification
+        HIGH CONFIDENCE (≥0.80): Auto route without clarification
         """
         return {
             "type": "auto_route",
             "confidence_level": "high_confidence",
             "confidence": float(confidence),
-            "routing_result": routing_result,
-            "message": "Routing automatically with high confidence",
+            "target_collection": routing_result.get('target_collection'),
+            "message": level_config.message_template.format(confidence=confidence),
+            "routing_context": routing_result,
             "strategy": level_config.strategy
         }
     
-    def _generate_questions_in_document_clarification(
+    def _generate_context_gathering_clarification(
         self, 
         confidence: float, 
         routing_result: Dict[str, Any], 
         level_config: ClarificationLevel
     ) -> Dict[str, Any]:
         """
-        MEDIUM-HIGH CONFIDENCE (0.65-0.79): Show questions within best matched document
+        INSUFFICIENT CONTEXT (0.00-0.29): Thu thập thêm context
         """
-        source_procedure = routing_result.get('source_procedure', 'thủ tục này')
-        target_collection = routing_result.get('target_collection')
+        message = level_config.message_template
         
-        # Debug logging
-        logger.info(f"🔍 MEDIUM-HIGH DEBUG: source_procedure={source_procedure}, target_collection={target_collection}")
-        logger.info(f"🔍 MEDIUM-HIGH DEBUG: routing_result keys={list(routing_result.keys())}")
-        
-        # Handle case where source_procedure is None
-        if source_procedure is None or source_procedure == 'thủ tục này':
-            # Try to get display name from collection mappings
-            display_name = routing_result.get('display_name')
-            if display_name:
-                source_procedure = display_name
-            else:
-                source_procedure = f"thủ tục trong {target_collection}" if target_collection else "thủ tục này"
-        
-        # Get similarity info from routing result
-        best_match_info = routing_result.get('best_match', {})
-        similarity_percent = best_match_info.get('similarity_percent', round(confidence * 100, 1))
-        best_question = best_match_info.get('question', '')
-        
-        # Enhanced message with similarity info
-        if best_question:
-            message = f"Tôi nghĩ bạn muốn hỏi về '{source_procedure}'. Câu hỏi tương tự nhất ({similarity_percent}%): \"{best_question[:60]}...\"\n\nChọn câu hỏi cụ thể hoặc tự nhập:"
-        else:
-            message = level_config.message_template.format(
-                procedure=source_procedure,
-                confidence=confidence
-            )
-        
-        # This will be handled by RAG engine to get questions from the specific document
         options = [
             {
-                'id': 'show_questions',
-                'title': f"Xem câu hỏi về {source_procedure}",
-                'description': f"Hiển thị các câu hỏi thường gặp về {source_procedure}",
-                'action': 'show_document_questions',  # New action for medium-high
-                'collection': target_collection,
-                'procedure': source_procedure,
-                'document_title': source_procedure  # Pass procedure as document title
+                'id': 'provide_more_details',
+                'title': "Mô tả chi tiết hơn về tình huống",
+                'description': "Ví dụ: Bạn đang làm thủ tục gì? Cần giấy tờ gì?",
+                'action': 'request_more_context',
+                'context_type': 'situation_description'
             },
             {
-                'id': 'manual',
-                'title': "Tôi muốn mô tả câu hỏi cụ thể",
-                'description': "Để tôi diễn đạt lại câu hỏi một cách chi tiết hơn",
+                'id': 'select_document_type',
+                'title': "Chọn loại giấy tờ bạn cần",
+                'description': "Giấy khai sinh, chứng minh nhân dân, sổ hộ khẩu...",
+                'action': 'request_document_type',
+                'context_type': 'document_type'
+            },
+            {
+                'id': 'select_urgency',
+                'title': "Mức độ khẩn cấp",
+                'description': "Cần gấp trong ngày, tuần này, hay không gấp?",
+                'action': 'request_urgency',
+                'context_type': 'urgency_level'
+            },
+            {
+                'id': 'manual_description',
+                'title': "Tôi muốn mô tả chi tiết",
+                'description': "Hãy cho tôi nhập câu hỏi cụ thể hơn",
                 'action': 'manual_input',
-                'collection': target_collection
+                'context_type': 'detailed_description'
             }
         ]
         
         return {
-            "type": "clarification_needed",
-            "confidence_level": "medium_high_confidence",
+            "type": "context_gathering_needed",
+            "confidence_level": "insufficient_context",
             "confidence": float(confidence),
             "clarification": {
                 "message": message,
                 "options": options,
-                "style": "questions_in_document"
+                "style": "context_gathering",
+                "requires_user_input": True,
+                "additional_help": "Bạn có thể mô tả cụ thể hơn về tình huống hoặc giấy tờ bạn cần làm"
             },
             "routing_context": routing_result,
             "strategy": level_config.strategy
@@ -248,44 +243,60 @@ class ClarificationService:
         level_config: ClarificationLevel
     ) -> Dict[str, Any]:
         """
-        HIGH CONFIDENCE (0.7-0.84): Xác nhận với gợi ý cụ thể
+        MEDIUM-HIGH CONFIDENCE (0.65-0.79): Xác nhận với câu hỏi gần nhất
         """
-        source_procedure = routing_result.get('source_procedure', 'thủ tục này')
-        best_match = routing_result.get('matched_example', '')
+        # Fix data mapping - sử dụng structure mới từ router
+        best_match = routing_result.get('best_match', {})
+        source_procedure = best_match.get('question', 'thủ tục này')
+        best_question = best_match.get('question', '')
+        target_collection = routing_result.get('target_collection')
+        
+        # Nếu không có best_match, thử fallback
+        if not source_procedure or source_procedure == 'thủ tục này':
+            # Try to get collection display name
+            collection_display = self.category_suggestions.get(target_collection, {})
+            source_procedure = collection_display.get('title', target_collection or 'thủ tục này')
         
         message = level_config.message_template.format(
             procedure=source_procedure,
             confidence=confidence
         )
         
+        # MEDIUM-HIGH: Hiển thị câu hỏi trong document để chọn
+        # Lấy document từ best_match 
+        target_document = best_match.get('document', '')
+        
         options = [
             {
                 'id': 'yes',
                 'title': f"Đúng, tôi muốn hỏi về {source_procedure}",
-                'description': f"Tiến hành tìm kiếm thông tin về {source_procedure}",
-                'action': 'proceed_with_collection',  # 🔧 CHANGE: Unified action name
-                'collection': routing_result.get('target_collection'),
+                'description': f"Hiển thị câu hỏi về {source_procedure}",
+                'action': 'show_document_questions', 
+                'collection': target_collection,
+                'document': target_document,
                 'procedure': source_procedure
             },
             {
                 'id': 'similar',
                 'title': "Tương tự, nhưng không hoàn toàn chính xác",
-                'description': f"Câu hỏi gốc: {best_match[:80]}..." if best_match else "Hãy giúp tôi tìm thủ tục phù hợp hơn",
-                'action': 'proceed_with_collection',  # 🔧 CHANGE: Use same action, let collection decide
-                'collection': routing_result.get('target_collection')
+                'description': f"Câu hỏi gốc: {best_question[:80]}..." if best_question else "Hãy giúp tôi tìm thủ tục phù hợp hơn",
+                'action': 'show_document_questions',
+                'collection': target_collection,
+                'document': target_document,
+                'procedure': source_procedure
             },
             {
                 'id': 'no',
                 'title': "Không, tôi muốn hỏi về thủ tục khác",
                 'description': "Hãy cho tôi thêm lựa chọn khác",
-                'action': 'manual_input',  # 🔧 CHANGE: Ask for manual input
+                'action': 'show_categories',
                 'collection': None
             }
         ]
         
         return {
             "type": "clarification_needed",
-            "confidence_level": "high_confidence",
+            "confidence_level": "medium_high_confidence",
             "confidence": float(confidence),
             "clarification": {
                 "message": message,
@@ -358,18 +369,37 @@ class ClarificationService:
         level_config: ClarificationLevel
     ) -> Dict[str, Any]:
         """
-        LOW CONFIDENCE (0.0-0.49): Category-based suggestions
+        LOW CONFIDENCE (0.30-0.49): Category-based suggestions
         """
         message = level_config.message_template
         
         options = []
-        for i, (collection_id, category_info) in enumerate(self.category_suggestions.items(), 1):
+        # Chỉ hiển thị 3 collections chính (bỏ qua duplicates)
+        main_collections = {
+            'quy_trinh_cap_ho_tich_cap_xa': {
+                'title': 'Hộ tịch cấp xã',
+                'description': 'Khai sinh, kết hôn, khai tử, thay đổi hộ tịch',
+                'examples': ['khai sinh con', 'đăng ký kết hôn', 'làm lại giấy khai sinh']
+            },
+            'quy_trinh_chung_thuc': {
+                'title': 'Chứng thực',
+                'description': 'Chứng thực hợp đồng, chữ ký, bản sao giấy tờ, di chúc',
+                'examples': ['chứng thực hợp đồng mua bán', 'chứng thực di chúc', 'chứng thực bản sao']
+            },
+            'quy_trinh_nuoi_con_nuoi': {
+                'title': 'Nuôi con nuôi',
+                'description': 'Thủ tục nhận con nuôi, giám hộ',
+                'examples': ['nhận con nuôi', 'thủ tục nuôi con nuôi', 'giám hộ trẻ em']
+            }
+        }
+        
+        for i, (collection_id, category_info) in enumerate(main_collections.items(), 1):
             option = {
                 'id': str(i),
                 'title': category_info['title'],
                 'description': category_info['description'],
                 'examples': category_info['examples'],
-                'action': 'proceed_with_collection',  # 🔧 CHANGE: Match handler expectation
+                'action': 'proceed_with_collection',
                 'collection': collection_id
             }
             options.append(option)

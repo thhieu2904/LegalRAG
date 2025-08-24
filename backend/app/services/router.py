@@ -134,35 +134,94 @@ class QueryRouter:
                 return False
             
             with open(self.cache_file, 'rb') as f:
-                cache_data = pickle.load(f)
+                cache_container = pickle.load(f)
             
-            # Check for NEW cache format with embeddings
-            if isinstance(cache_data, dict) and 'embeddings' in cache_data:
-                logger.info("🚀 Loading NEW cache format with pre-computed embeddings")
-                
-                # Load collections text data
-                self.example_questions = cache_data.get('collections', {})
-                
-                # Load pre-computed embeddings
-                self.cached_embeddings = cache_data.get('embeddings', {})
-                
-                # Build collection mappings from cache
-                self.collection_mappings = {}
-                for collection_name, docs in self.example_questions.items():
-                    self.collection_mappings[collection_name] = {
-                        'description': collection_name.replace('_', ' ').title(),
-                        'file_count': len(docs),
-                        'path': f"data/storage/collections/{collection_name}",
-                        'documents_path': f"data/storage/collections/{collection_name}/documents"
-                    }
-                
-                total_docs = sum(len(docs) for docs in self.example_questions.values())
-                logger.info(f"📦 Loaded cache with EMBEDDINGS: {len(self.collection_mappings)} collections, {total_docs} documents")
-                logger.info(f"🎯 Cached embeddings available for: {list(self.cached_embeddings.keys())}")
-                return True
-                
-            elif isinstance(cache_data, dict) and 'metadata' in cache_data:
-                # Old cache format without embeddings
+            # Handle new format with 'data' and metadata
+            if isinstance(cache_container, dict) and 'data' in cache_container:
+                cache_data = cache_container['data']
+                logger.info(f"Loaded new cache format with metadata: {cache_container.get('metadata', {})}")
+            else:
+                cache_data = cache_container
+                logger.warning("⚠️ Legacy cache format detected")
+            
+            # Check for cache format from script: {collection: {doc: {embeddings, fused_embedding, texts, metadata}}}
+            if isinstance(cache_data, dict) and cache_data:
+                # Check if it's the script format
+                first_collection = next(iter(cache_data.values()), {})
+                if isinstance(first_collection, dict):
+                    first_doc = next(iter(first_collection.values()), {})
+                    if isinstance(first_doc, dict) and 'embeddings' in first_doc:
+                        logger.info("🚀 Loading cache format from script with embeddings")
+                        
+                        # Build example_questions from cache
+                        self.example_questions = {}
+                        self.cached_embeddings = {}
+                        self.question_vectors = {}
+                        
+                        for collection_name, documents in cache_data.items():
+                            collection_questions = {}
+                            collection_embeddings = {}
+                            collection_vectors = {}
+                            
+                            for doc_name, doc_data in documents.items():
+                                # Extract questions
+                                texts = doc_data.get('texts', [])
+                                if texts:
+                                    main_question = texts[0] if texts else ''
+                                    variants = texts[1:] if len(texts) > 1 else []
+                                    
+                                    collection_questions[doc_name] = {
+                                        'main_question': main_question,
+                                        'question_variants': variants
+                                    }
+                                
+                                # Extract embeddings
+                                if 'embeddings' in doc_data:
+                                    collection_embeddings[doc_name] = {
+                                        'embeddings': doc_data['embeddings'],
+                                        'questions': texts,
+                                        'main_question': texts[0] if texts else ''
+                                    }
+                                
+                                # Extract fused embeddings
+                                if 'fused_embedding' in doc_data:
+                                    collection_vectors[doc_name] = {
+                                        'fused_embedding': doc_data['fused_embedding'],
+                                        'fused_text': doc_data.get('fused_text', ''),
+                                        'questions': texts,
+                                        'main_question': texts[0] if texts else ''
+                                    }
+                            
+                            if collection_questions:
+                                self.example_questions[collection_name] = collection_questions
+                            if collection_embeddings:
+                                self.cached_embeddings[collection_name] = collection_embeddings
+                            if collection_vectors:
+                                self.question_vectors[collection_name] = collection_vectors
+                        
+                        # Build collection mappings
+                        self.collection_mappings = {}
+                        for collection_name, docs in self.example_questions.items():
+                            self.collection_mappings[collection_name] = {
+                                'description': collection_name.replace('_', ' ').title(),
+                                'file_count': len(docs),
+                                'path': f"data/storage/collections/{collection_name}",
+                                'documents_path': f"data/storage/collections/{collection_name}/documents"
+                            }
+                        
+                        total_docs = sum(len(docs) for docs in self.example_questions.values())
+                        logger.info(f"📦 Loaded cache with EMBEDDINGS: {len(self.collection_mappings)} collections, {total_docs} documents")
+                        logger.info(f"🎯 Cached embeddings available for: {list(self.cached_embeddings.keys())}")
+                        if self.question_vectors:
+                            logger.info("Loaded fused embeddings from cache")
+                        return True
+            
+            # Old formats fallback
+            logger.warning("⚠️  Unknown cache format, will reload")
+            return False
+            
+            # Old metadata format
+            if isinstance(cache_data, dict) and 'metadata' in cache_data:
                 logger.warning("⚠️  OLD cache format without embeddings - will be slow")
                 self.example_questions = cache_data.get('collections', {})
                 self.cached_embeddings = {}  # No cached embeddings
@@ -239,10 +298,26 @@ class QueryRouter:
                 all_questions = [doc_data['main_question']]
                 all_questions.extend(doc_data['question_variants'])
                 
+                # Get document metadata
+                metadata = self._get_document_metadata(collection_name, doc_name)
+                
+                # Create fused text for embedding
+                fused_text = doc_data['main_question']  # Main đầu để weight cao
+                if all_questions[1:]:
+                    fused_text += " | " + " | ".join(all_questions[1:])
+                if metadata:
+                    metadata_str = " | ".join([f"{k}: {str(v)}" for k, v in metadata.items() if isinstance(v, (str, list))])
+                    fused_text += " | METADATA: " + metadata_str
+                # Giới hạn length nếu quá dài
+                if len(fused_text) > 2000:
+                    fused_text = fused_text[:2000]
+                
                 # Create embeddings (text-only for now)
                 collection_vectors[doc_name] = {
                     'questions': all_questions,
-                    'main_question': doc_data['main_question']
+                    'main_question': doc_data['main_question'],
+                    'fused_embedding': self.embedding_model.encode([fused_text])[0],
+                    'fused_text': fused_text  # Để debug
                 }
             
             self.question_vectors[collection_name] = collection_vectors
@@ -260,7 +335,8 @@ class QueryRouter:
                     'collections_count': len(self.example_questions),
                     'total_documents': sum(len(docs) for docs in self.example_questions.values())
                 },
-                'collections': self.example_questions
+                'collections': self.example_questions,
+                'vectors': self.question_vectors  # Thêm để lưu fused_embedding
             }
             
             os.makedirs(os.path.dirname(self.cache_file), exist_ok=True)
@@ -307,17 +383,23 @@ class QueryRouter:
                     collection_similarities = []
                     
                     for doc_name, doc_data in collection_data.items():
-                        cached_embeddings = doc_data['embeddings']
+                        # Use regular question embeddings (no fused)
+                        embeddings = doc_data['embeddings']
+                        
                         questions = doc_data['questions']
                         
-                        # Calculate cosine similarity with cached embeddings
+                        # Calculate cosine similarity with question embeddings
                         from sklearn.metrics.pairwise import cosine_similarity
-                        similarities = cosine_similarity(query_embedding, cached_embeddings)[0]
+                        similarities = cosine_similarity(query_embedding, embeddings)[0]
                         
                         # Get best similarity for this document
                         max_similarity = float(max(similarities))
                         best_question_idx = int(similarities.argmax())
                         best_question = questions[best_question_idx]
+                        
+                        # Boost if this is main_question match (no re-encoding needed)
+                        if best_question_idx == 0 and max_similarity > 0.6:  # main_question index = 0
+                            max_similarity = min(1.0, max_similarity * 1.15)  # Higher boost for main_question
                         
                         collection_similarities.append({
                             'similarity': max_similarity,
@@ -374,6 +456,10 @@ class QueryRouter:
                             best_question_idx = int(similarities.argmax())
                             best_question = valid_questions[best_question_idx]
                             
+                            # Boost if this is main_question match (no re-encoding needed)
+                            if best_question_idx == 0 and max_similarity > 0.6:  # main_question index = 0
+                                max_similarity = min(1.0, max_similarity * 1.15)  # Higher boost for main_question
+                            
                             collection_similarities.append({
                                 'similarity': max_similarity,
                                 'document': doc_name,
@@ -424,11 +510,11 @@ class QueryRouter:
             # Determine confidence level based on similarity score
             confidence_level = 'low'
             if best_score >= 0.80:  # Changed from 0.85 to match high threshold
-                confidence_level = 'high'
+                confidence_level = 'high_confidence'
             elif best_score >= 0.65:  # Combined medium_high and medium
-                confidence_level = 'medium_high'
+                confidence_level = 'medium_high_confidence'
             elif best_score >= 0.50:
-                confidence_level = 'medium'
+                confidence_level = 'medium_confidence'
             
             # Sort all similarities for clarification
             all_similarities.sort(key=lambda x: x['similarity'], reverse=True)
@@ -576,6 +662,210 @@ class QueryRouter:
             logger.error(f"Error getting questions for collection {collection_name}: {e}")
             return []
     
+    def get_questions_from_specific_document(self, collection_name: str, document_name: str) -> List[Dict[str, Any]]:
+        """
+        Get questions chỉ từ document cụ thể thay vì toàn bộ collection
+        Đây là method hiệu quả hơn khi router đã xác định được document
+        """
+        try:
+            # Collection name mapping
+            collection_mappings = {
+                'ho_tich_cap_xa': 'quy_trinh_cap_ho_tich_cap_xa',
+                'chung_thuc': 'quy_trinh_chung_thuc', 
+                'nuoi_con_nuoi': 'quy_trinh_nuoi_con_nuoi'
+            }
+            
+            actual_collection = collection_mappings.get(collection_name, collection_name)
+            
+            # Kiểm tra xem có data trong memory cache không
+            if actual_collection in self.example_questions:
+                collection_docs = self.example_questions[actual_collection]
+                if document_name in collection_docs:
+                    doc_data = collection_docs[document_name]
+                    
+                    main_question = doc_data.get('main_question', '')
+                    variants = doc_data.get('question_variants', [])
+                    
+                    questions_list = []
+                    
+                    # Add main question
+                    if main_question:
+                        questions_list.append({
+                            'text': main_question,
+                            'type': 'main',
+                            'source': f"{actual_collection}/documents/{document_name}/questions.json",
+                            'document': document_name,
+                            'priority': 'high'  # Main question có priority cao
+                        })
+                    
+                    # Add variants
+                    for i, variant in enumerate(variants):
+                        if variant.strip():
+                            questions_list.append({
+                                'text': variant,
+                                'type': 'variant',
+                                'source': f"{actual_collection}/documents/{document_name}/questions.json",
+                                'document': document_name,
+                                'priority': 'medium',
+                                'variant_index': i
+                            })
+                    
+                    logger.info(f"Retrieved {len(questions_list)} questions from specific document {document_name} in {actual_collection}")
+                    return questions_list
+                else:
+                    logger.warning(f"Document {document_name} not found in collection {actual_collection}")
+            
+            # Fallback: Load từ file nếu không có trong cache
+            questions_file = os.path.join(self.base_path, actual_collection, "documents", document_name, "questions.json")
+            
+            if not os.path.exists(questions_file):
+                logger.warning(f"Questions file not found: {questions_file}")
+                return []
+            
+            with open(questions_file, 'r', encoding='utf-8') as f:
+                questions_data = json.load(f)
+            
+            main_question = questions_data.get('main_question', '')
+            variants = questions_data.get('question_variants', [])
+            
+            questions_list = []
+            
+            # Add main question
+            if main_question:
+                questions_list.append({
+                    'text': main_question,
+                    'type': 'main',
+                    'source': f"{actual_collection}/documents/{document_name}/questions.json",
+                    'document': document_name,
+                    'priority': 'high'
+                })
+            
+            # Add variants
+            for i, variant in enumerate(variants):
+                if variant.strip():
+                    questions_list.append({
+                        'text': variant,
+                        'type': 'variant',
+                        'source': f"{actual_collection}/documents/{document_name}/questions.json",
+                        'document': document_name,
+                        'priority': 'medium',
+                        'variant_index': i
+                    })
+            
+            logger.info(f"Retrieved {len(questions_list)} questions from file for document {document_name} in {actual_collection}")
+            return questions_list
+            
+        except Exception as e:
+            logger.error(f"Error getting questions from document {document_name} in collection {collection_name}: {e}")
+            return []
+    
+    def get_document_info_from_routing_result(self, routing_result: Dict[str, Any]) -> Dict[str, str]:
+        """
+        Extract collection và document info từ routing result
+        Helper method để lấy thông tin cần thiết cho get_questions_from_specific_document
+        """
+        try:
+            collection = routing_result.get('target_collection')
+            best_match = routing_result.get('best_match', {})
+            document = best_match.get('document')
+            
+            if collection and document:
+                return {
+                    'collection': collection,
+                    'document': document,
+                    'status': 'found'
+                }
+            else:
+                logger.warning(f"Missing collection or document info in routing result: collection={collection}, document={document}")
+                return {
+                    'collection': collection or 'unknown',
+                    'document': document or 'unknown',
+                    'status': 'incomplete'
+                }
+        except Exception as e:
+            logger.error(f"Error extracting document info from routing result: {e}")
+            return {
+                'collection': 'unknown',
+                'document': 'unknown',
+                'status': 'error'
+            }
+    
+    def get_collection_documents_directly(self, collection_name: str) -> List[Dict[str, Any]]:
+        """
+        Lấy danh sách documents trực tiếp từ collection, không qua questions
+        Hiệu quả hơn cho việc hiển thị document list
+        """
+        try:
+            # Collection name mapping
+            collection_mappings = {
+                'ho_tich_cap_xa': 'quy_trinh_cap_ho_tich_cap_xa',
+                'chung_thuc': 'quy_trinh_chung_thuc', 
+                'nuoi_con_nuoi': 'quy_trinh_nuoi_con_nuoi'
+            }
+            
+            actual_collection = collection_mappings.get(collection_name, collection_name)
+            documents_path = os.path.join(self.base_path, actual_collection, "documents")
+            
+            if not os.path.exists(documents_path):
+                logger.warning(f"Documents directory not found: {documents_path}")
+                return []
+            
+            documents_list = []
+            
+            # Scan documents directory
+            for doc_name in os.listdir(documents_path):
+                doc_path = os.path.join(documents_path, doc_name)
+                if not os.path.isdir(doc_path):
+                    continue
+                
+                # Kiểm tra xem có questions.json không
+                questions_file = os.path.join(doc_path, "questions.json")
+                if not os.path.exists(questions_file):
+                    continue
+                
+                # Đếm số questions trong document này
+                try:
+                    with open(questions_file, 'r', encoding='utf-8') as f:
+                        questions_data = json.load(f)
+                    
+                    main_question = questions_data.get('main_question', '')
+                    variants = questions_data.get('question_variants', [])
+                    question_count = (1 if main_question else 0) + len([v for v in variants if v.strip()])
+                    
+                    # Lấy tiêu đề document từ main_question hoặc doc name
+                    document_title = main_question[:50] + "..." if main_question else doc_name
+                    
+                    documents_list.append({
+                        'filename': doc_name,
+                        'title': document_title,
+                        'description': f"Tài liệu về {document_title[:30]}...",
+                        'question_count': question_count,
+                        'full_path': f"{actual_collection}/documents/{doc_name}",
+                        'has_questions': question_count > 0
+                    })
+                    
+                except Exception as e:
+                    logger.warning(f"Error reading questions from {questions_file}: {e}")
+                    # Thêm document nhưng không có question count
+                    documents_list.append({
+                        'filename': doc_name,
+                        'title': doc_name,
+                        'description': f"Tài liệu {doc_name}",
+                        'question_count': 0,
+                        'full_path': f"{actual_collection}/documents/{doc_name}",
+                        'has_questions': False
+                    })
+            
+            # Sắp xếp theo số questions (nhiều nhất trước)
+            documents_list.sort(key=lambda x: x['question_count'], reverse=True)
+            
+            logger.info(f"🚀 Retrieved {len(documents_list)} documents directly from collection {actual_collection} (no questions loaded)")
+            return documents_list
+            
+        except Exception as e:
+            logger.error(f"Error getting documents from collection {collection_name}: {e}")
+            return []
+    
     def get_collections(self) -> List[Dict[str, Any]]:
         """Get list of available collections with proper structure"""
         try:
@@ -616,6 +906,98 @@ class QueryRouter:
         except Exception as e:
             logger.error(f"Error getting collections: {e}")
             return []
+    
+    def get_procedure_questions_limited(self, collection_name: str, procedure: str, limit: int = 20) -> List[Dict[str, Any]]:
+        """
+        Lấy questions liên quan đến procedure với giới hạn số lượng
+        Hiệu quả hơn cho việc hiển thị procedure-related questions
+        """
+        try:
+            # Collection name mapping
+            collection_mappings = {
+                'ho_tich_cap_xa': 'quy_trinh_cap_ho_tich_cap_xa',
+                'chung_thuc': 'quy_trinh_chung_thuc', 
+                'nuoi_con_nuoi': 'quy_trinh_nuoi_con_nuoi'
+            }
+            
+            actual_collection = collection_mappings.get(collection_name, collection_name)
+            
+            if actual_collection not in self.example_questions:
+                logger.warning(f"Collection not found: {actual_collection}")
+                return []
+            
+            collection_docs = self.example_questions[actual_collection]
+            matching_questions = []
+            
+            # Tìm questions phù hợp với procedure
+            for doc_name, doc_data in collection_docs.items():
+                main_question = doc_data.get('main_question', '')
+                variants = doc_data.get('question_variants', [])
+                
+                # Kiểm tra main question
+                if procedure and procedure.lower() in main_question.lower():
+                    matching_questions.append({
+                        'text': main_question,
+                        'type': 'main',
+                        'source': f"{actual_collection}/documents/{doc_name}/questions.json",
+                        'document': doc_name,
+                        'priority': 'high',
+                        'relevance_score': self._calculate_relevance(main_question, procedure)
+                    })
+                
+                # Kiểm tra variants
+                for i, variant in enumerate(variants):
+                    if variant.strip() and procedure and procedure.lower() in variant.lower():
+                        matching_questions.append({
+                            'text': variant,
+                            'type': 'variant',
+                            'source': f"{actual_collection}/documents/{doc_name}/questions.json",
+                            'document': doc_name,
+                            'priority': 'medium',
+                            'variant_index': i,
+                            'relevance_score': self._calculate_relevance(variant, procedure)
+                        })
+                
+                # Giới hạn số lượng để tránh quá nhiều
+                if len(matching_questions) >= limit:
+                    break
+            
+            # Sắp xếp theo relevance score (cao nhất trước)
+            matching_questions.sort(key=lambda x: x.get('relevance_score', 0), reverse=True)
+            
+            # Giới hạn kết quả
+            limited_questions = matching_questions[:limit]
+            
+            logger.info(f"🚀 Retrieved {len(limited_questions)} procedure-related questions for '{procedure}' in {actual_collection} (limit: {limit})")
+            return limited_questions
+            
+        except Exception as e:
+            logger.error(f"Error getting procedure questions for {collection_name}/{procedure}: {e}")
+            return []
+    
+    def _calculate_relevance(self, text: str, procedure: str) -> float:
+        """
+        Tính toán độ tương quan giữa text và procedure
+        Đơn giản: đếm số từ khóa khớp
+        """
+        if not text or not procedure:
+            return 0.0
+        
+        text_lower = text.lower()
+        procedure_lower = procedure.lower()
+        
+        # Đếm số từ khóa khớp
+        procedure_words = procedure_lower.split()
+        matches = sum(1 for word in procedure_words if word in text_lower)
+        
+        # Tính tỉ lệ khớp
+        relevance = matches / len(procedure_words) if procedure_words else 0.0
+        
+        # Bonus nếu khớp chính xác phrase
+        if procedure_lower in text_lower:
+            relevance += 0.5
+        
+        return min(1.0, relevance)  # Giới hạn 0-1
 
 class RouterBasedQueryService:
     """Service for handling ambiguous queries using router"""

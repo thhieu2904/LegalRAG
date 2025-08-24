@@ -72,11 +72,18 @@ async def get_collection_questions(
 ):
     """Get example questions for a collection - needed for clarification"""
     try:
+        # 🚀 OPTIMIZATION: Sử dụng method mới với limit
         questions = router_instance.get_example_questions_for_collection(collection_name)
+        
+        # Giới hạn số lượng questions trả về để tránh performance issues
+        limited_questions = questions[:50]  # Chỉ trả về 50 questions đầu tiên
+        
         return {
             "collection": collection_name,
-            "questions": questions,
-            "total": len(questions)
+            "questions": limited_questions,
+            "total": len(limited_questions),
+            "total_available": len(questions),
+            "note": f"Showing first 50 questions out of {len(questions)} total"
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting questions for {collection_name}: {e}")

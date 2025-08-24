@@ -128,10 +128,18 @@ async def get_collection_questions_business_data(
     NO display formatting, NO UI mapping - frontend handles all presentation.
     """
     try:
-        # Get raw questions from router
+        # Get raw questions from router with optimization
         questions = []
-        for question_data in router_instance.example_questions:
-            if question_data.get('collection') == collection_id:
+        
+        # 🚀 OPTIMIZATION: Sử dụng method mới thay vì truy cập trực tiếp
+        try:
+            # Sử dụng method mới với limit
+            raw_questions = router_instance.get_example_questions_for_collection(collection_id)
+            
+            # Giới hạn số lượng để tránh performance issues
+            limited_questions = raw_questions[:100]  # Chỉ trả về 100 questions đầu tiên
+            
+            for question_data in limited_questions:
                 # Return pure business data
                 questions.append({
                     "id": question_data.get('id'),
@@ -142,6 +150,24 @@ async def get_collection_questions_business_data(
                     "category": question_data.get('category', 'general'),
                     "metadata": question_data.get('metadata', {})
                 })
+            
+            logger.info(f"🚀 OPTIMIZATION: Retrieved {len(questions)} questions from {collection_id} (limited from {len(raw_questions)})")
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Error using optimized method, falling back to direct access: {e}")
+            # Fallback: Truy cập trực tiếp nhưng giới hạn
+            for question_data in list(router_instance.example_questions.items())[:50]:  # Chỉ 50 items
+                if question_data[0] == collection_id:
+                    # Return pure business data
+                    questions.append({
+                        "id": question_data[1].get('id'),
+                        "text": question_data[1].get('text'),
+                        "type": question_data[1].get('type', 'main'),
+                        "document": question_data[1].get('document'),
+                        "source_file": question_data[1].get('source'),
+                        "category": question_data[1].get('category', 'general'),
+                        "metadata": question_data[1].get('metadata', {})
+                    })
         
         return {
             "collection_id": collection_id,
@@ -161,13 +187,16 @@ async def get_collection_stats(
 ):
     """Get detailed statistics for a collection"""
     try:
-        # Count different types of questions
+        # Count different types of questions with optimization
         main_questions = 0
         variant_questions = 0
         documents = set()
         
-        for question_data in router_instance.example_questions:
-            if question_data.get('collection') == collection_id:
+        # 🚀 OPTIMIZATION: Sử dụng method mới thay vì truy cập trực tiếp
+        try:
+            raw_questions = router_instance.get_example_questions_for_collection(collection_id)
+            
+            for question_data in raw_questions:
                 if question_data.get('type') == 'main':
                     main_questions += 1
                 else:
@@ -175,6 +204,21 @@ async def get_collection_stats(
                 
                 if question_data.get('document'):
                     documents.add(question_data.get('document'))
+            
+            logger.info(f"🚀 OPTIMIZATION: Counted stats from {len(raw_questions)} questions for {collection_id}")
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Error using optimized method, falling back to direct access: {e}")
+            # Fallback: Truy cập trực tiếp nhưng giới hạn
+            for question_data in list(router_instance.example_questions.items())[:50]:  # Chỉ 50 items
+                if question_data[0] == collection_id:
+                    if question_data[1].get('type') == 'main':
+                        main_questions += 1
+                    else:
+                        variant_questions += 1
+                    
+                    if question_data[1].get('document'):
+                        documents.add(question_data[1].get('document'))
         
         return {
             "collection_id": collection_id,

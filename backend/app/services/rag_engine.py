@@ -14,6 +14,7 @@ import numpy as np
 from typing import Dict, List, Any, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from pathlib import Path
+from enum import Enum
 
 from .vector import VectorDBService
 from .language_model import LLMService
@@ -32,6 +33,59 @@ except ImportError:
     path_config = None
 
 logger = logging.getLogger(__name__)
+
+# 🎯 CENTRALIZED OVERRIDE SYSTEM
+class OverrideType(Enum):
+    """Types of routing overrides in the system"""
+    FORCED_COLLECTION = "forced_collection"
+    FORCED_DOCUMENT = "forced_document" 
+    MANUAL_INPUT_DOCUMENT = "manual_input_document"
+    MANUAL_INPUT_CLARIFICATION = "manual_input_clarification"
+    SESSION_CONTEXT = "session_context"
+
+@dataclass
+class OverrideContext:
+    """Centralized override context for consistent handling"""
+    override_type: OverrideType
+    target_collection: str
+    target_document: Optional[str] = None
+    confidence_level: Optional[str] = None
+    confidence_score: Optional[float] = None
+    inferred_filters: Dict[str, Any] = field(default_factory=dict)
+    session_data: Optional[Dict[str, Any]] = field(default_factory=dict)
+    
+    def __post_init__(self):
+        """Set confidence based on override type if not provided"""
+        if self.confidence_level is None or self.confidence_score is None:
+            confidence_mappings = {
+                OverrideType.FORCED_COLLECTION: ("forced_high", 0.95),
+                OverrideType.FORCED_DOCUMENT: ("forced_high", 0.98),
+                OverrideType.MANUAL_INPUT_DOCUMENT: ("manual_input_high", 0.92),
+                OverrideType.MANUAL_INPUT_CLARIFICATION: ("manual_input_medium", 0.85),
+                OverrideType.SESSION_CONTEXT: ("session_high", 0.88)
+            }
+            
+            level, score = confidence_mappings.get(self.override_type, ("forced_high", 0.95))
+            
+            if self.confidence_level is None:
+                self.confidence_level = level
+            if self.confidence_score is None:
+                self.confidence_score = score
+    
+    def to_routing_result(self) -> Dict[str, Any]:
+        """Convert to standard routing result format"""
+        return {
+            "target_collection": self.target_collection,
+            "confidence": self.confidence_score,
+            "confidence_level": self.confidence_level,
+            "inferred_filters": self.inferred_filters,
+            "was_overridden": True,
+            "override_type": self.override_type.value,
+            "best_match": {
+                "document": self.target_document,
+                "question": "Overridden query"
+            } if self.target_document else {}
+        }
 
 def convert_numpy_types(obj: Any) -> Any:
     """Convert numpy types to Python native types for JSON serialization"""
@@ -200,6 +254,100 @@ class RAGService:
     - LLM: GPU (cần song song hóa cho context dài)  
     - Reranker: GPU (cần song song hóa cho multiple comparisons)
     """
+    
+    # 🎯 OVERRIDE HELPER METHODS
+    def _create_override_context(
+        self,
+        override_type: OverrideType,
+        target_collection: str,
+        target_document: Optional[str] = None,
+        session_data: Optional[Dict[str, Any]] = None,
+        **kwargs
+    ) -> OverrideContext:
+        """Create standardized override context"""
+        
+        # Determine confidence based on override type
+        confidence_mappings = {
+            OverrideType.FORCED_COLLECTION: ("forced_high", 0.95),
+            OverrideType.FORCED_DOCUMENT: ("forced_high", 0.98),
+            OverrideType.MANUAL_INPUT_DOCUMENT: ("manual_input_high", 0.92),
+            OverrideType.MANUAL_INPUT_CLARIFICATION: ("manual_input_medium", 0.85),
+            OverrideType.SESSION_CONTEXT: ("session_high", 0.88)
+        }
+        
+        confidence_level, confidence_score = confidence_mappings.get(
+            override_type, ("forced_high", 0.95)
+        )
+        
+        # Build inferred filters based on override type
+        inferred_filters = {}
+        if target_document:
+            inferred_filters["document_title"] = target_document
+            
+        # Add any additional filters from kwargs
+        inferred_filters.update(kwargs.get('additional_filters', {}))
+        
+        return OverrideContext(
+            override_type=override_type,
+            target_collection=target_collection,
+            target_document=target_document,
+            confidence_level=confidence_level,
+            confidence_score=confidence_score,
+            inferred_filters=inferred_filters,
+            session_data=session_data or {}
+        )
+    
+    def _handle_manual_input_override(
+        self,
+        query: str,
+        collection: str,
+        document: Optional[str] = None,
+        clarification_context: Optional[Dict[str, Any]] = None
+    ) -> OverrideContext:
+        """Handle manual input override scenarios"""
+        
+        if document:
+            # Manual input with specific document
+            return self._create_override_context(
+                override_type=OverrideType.MANUAL_INPUT_DOCUMENT,
+                target_collection=collection,
+                target_document=document,
+                additional_filters={"manual_input": True}
+            )
+        elif clarification_context:
+            # Manual input with clarification context
+            return self._create_override_context(
+                override_type=OverrideType.MANUAL_INPUT_CLARIFICATION,
+                target_collection=collection,
+                session_data=clarification_context,
+                additional_filters={"manual_input": True, "clarification": True}
+            )
+        else:
+            # Basic manual input
+            return self._create_override_context(
+                override_type=OverrideType.FORCED_COLLECTION,
+                target_collection=collection,
+                additional_filters={"manual_input": True}
+            )
+    
+    def _handle_forced_routing_override(
+        self,
+        collection: str,
+        document: Optional[str] = None
+    ) -> OverrideContext:
+        """Handle forced routing scenarios"""
+        
+        if document:
+            return self._create_override_context(
+                override_type=OverrideType.FORCED_DOCUMENT,
+                target_collection=collection,
+                target_document=document
+            )
+        else:
+            return self._create_override_context(
+                override_type=OverrideType.FORCED_COLLECTION,
+                target_collection=collection
+            )
     
     def __init__(
         self,
@@ -395,12 +543,14 @@ class RAGService:
                 routing_result = {
                     "target_collection": forced_collection,
                     "confidence": 0.95,  # High confidence cho forced routing
+                    "confidence_level": "forced_high",
                     "inferred_filters": {}
                 }
                 # Get confidence level from routing result for further processing
                 confidence_level = routing_result.get('confidence_level', 'forced_high')
                 best_collections = [forced_collection]
                 inferred_filters = {}
+                was_overridden = True  # Forced routing có override
                 
                 # 🔥 NEW: Add document title filter if specified
                 if forced_document_title:
@@ -412,19 +562,20 @@ class RAGService:
                 routing_result = self.smart_router.route_query(query, session)
                 confidence_level = routing_result.get('confidence_level', 'low')
                 was_overridden = routing_result.get('was_overridden', False)
+                inferred_filters = routing_result.get('inferred_filters', {})
                 
                 logger.info(f"Router confidence: {confidence_level} (score: {routing_result['confidence']:.3f})")
                 if was_overridden:
                     logger.info(f"🔥 Session-based confidence override applied!")
                 
-                if confidence_level in ['high', 'override_high', 'high_followup']:
+                if confidence_level in ['high_confidence', 'high', 'override_high', 'high_followup']:
                     # HIGH CONFIDENCE (including overridden & follow-up) - Route trực tiếp
                     target_collection = routing_result['target_collection']
                     inferred_filters = routing_result.get('inferred_filters', {})
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
-                    logger.info(f"✅ HIGH CONFIDENCE routing to: {target_collection}")
+                    logger.info(f"✅ HIGH CONFIDENCE ({confidence_level}) routing to: {target_collection}")
                     
-                elif confidence_level in ['medium_high', 'medium-high', 'override_medium_high']:
+                elif confidence_level in ['medium_high_confidence', 'medium_high', 'medium-high', 'override_medium_high']:
                     # MEDIUM-HIGH CONFIDENCE - Show questions within best document
                     logger.info(f"🎯 MEDIUM-HIGH CONFIDENCE ({routing_result['confidence']:.3f}) - showing questions in document")
                     
@@ -438,7 +589,7 @@ class RAGService:
                     
                     return self._generate_smart_clarification(routing_result, query, session_id, start_time)
                     
-                elif confidence_level in ['low-medium', 'override_medium', 'medium_followup']:
+                elif confidence_level in ['medium_confidence', 'low-medium', 'override_medium', 'medium_followup']:
                     # 🔥 MEDIUM CONFIDENCE FIX - Trigger clarification instead of routing
                     # Vì medium confidence có risk cao matching sai topic → cần hỏi user xác nhận
                     logger.info(f"🤔 MEDIUM CONFIDENCE ({routing_result['confidence']:.3f}) - triggering clarification to avoid wrong routing")
@@ -453,7 +604,7 @@ class RAGService:
                     
                     return self._generate_smart_clarification(routing_result, query, session_id, start_time)
                     
-                else:
+                elif confidence_level in ['low_confidence', 'insufficient_context']:
                     # LOW CONFIDENCE - Hỏi lại user, không route
                     logger.info(f"🤔 LOW CONFIDENCE ({confidence_level}) - hỏi lại user thay vì route")
                     
@@ -465,6 +616,11 @@ class RAGService:
                         session.last_successful_timestamp = start_time
                         logger.info(f"🔄 Set session context for follow-up (low): {target_collection}")
                     
+                    return self._generate_smart_clarification(routing_result, query, session_id, start_time)
+                
+                else:
+                    # UNKNOWN CONFIDENCE LEVEL - Log warning và fallback to clarification
+                    logger.warning(f"⚠️ UNKNOWN CONFIDENCE LEVEL: {confidence_level} - falling back to clarification")
                     return self._generate_smart_clarification(routing_result, query, session_id, start_time)
             
             # Check for preserved document from session override
@@ -906,32 +1062,191 @@ class RAGService:
         action = selected_option.get('action')
         collection = selected_option.get('collection')
         
-        if action == 'proceed_with_collection' and collection:
+        if action == 'show_document_questions' and collection:
+            # 🎯 MEDIUM-HIGH CONFIDENCE: Hiển thị câu hỏi trong document cụ thể để chọn
+            document = selected_option.get('document', '')
+            procedure = selected_option.get('procedure', '')
+            
+            logger.info(f"🎯 Medium-High Step: User confirmed '{procedure}' in document '{document}'. Showing specific questions.")
+            
+            try:
+                # Sử dụng method mới để lấy câu hỏi liên quan đến procedure trong document
+                if document:
+                    # Lấy câu hỏi từ document cụ thể
+                    document_filename = f"{document}"
+                    matching_questions = self.smart_router.get_questions_from_specific_document(collection, document_filename)
+                    logger.info(f"🚀 SMART LOADING: Retrieved {len(matching_questions)} questions directly from document {document_filename}")
+                else:
+                    # Fallback: Sử dụng procedure để lấy câu hỏi liên quan
+                    matching_questions = self.smart_router.get_procedure_questions_limited(
+                        collection_name=collection,
+                        procedure=procedure,
+                        limit=20
+                    )
+                    logger.info(f"🚀 SMART LOADING: Retrieved {len(matching_questions)} procedure-related questions for '{procedure}'")
+                
+                if not matching_questions:
+                    logger.warning(f"⚠️ No questions found for procedure '{procedure}' in document '{document}'")
+                    # Fallback
+                    collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                    matching_questions = collection_questions[:10]
+                    logger.info(f"🔄 Fallback: Loaded {len(matching_questions)} questions (limited from {len(collection_questions)})")
+                
+                # Create question suggestions (sorted by relevance)
+                suggestions = []
+                for i, q in enumerate(matching_questions[:8]):  # Top 8 questions
+                    question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
+                    suggestions.append({
+                        "id": str(i + 1),
+                        "title": question_text,
+                        "description": f"Câu hỏi về {procedure}",
+                        "action": "proceed_with_question",
+                        "collection": collection,
+                        "document": document,
+                        "procedure": procedure,
+                        "question_text": question_text,
+                        "source_file": q.get('source', '') if isinstance(q, dict) else '',
+                        "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                    })
+                
+                # Add manual input option
+                suggestions.append({
+                    "id": str(len(suggestions) + 1),
+                    "title": "Câu hỏi khác...",
+                    "description": f"Tôi muốn hỏi về vấn đề khác trong {procedure}",
+                    "action": "manual_input",
+                    "collection": collection,
+                    "document": document,
+                    "procedure": procedure
+                })
+                
+                clarification_response = {
+                    "message": f"Đây là các câu hỏi về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
+                    "options": suggestions,
+                    "show_manual_input": True,
+                    "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {procedure}...",
+                    "context": "document_questions",
+                    "metadata": {
+                        "collection": collection,
+                        "document": document,
+                        "procedure": procedure,
+                        "stage": "document_questions"
+                    }
+                }
+                
+                # Update session state
+                session.metadata["routing_state"] = {
+                    "collection": collection,
+                    "document": document,
+                    "procedure": procedure,
+                    "stage": "document_questions"
+                }
+                self.chat_sessions[session_id] = session
+                
+                return {
+                    "answer": clarification_response["message"],
+                    "clarification": clarification_response,
+                    "collection": collection,
+                    "document": document,
+                    "procedure": procedure,
+                    "type": "clarification_needed",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+                
+            except Exception as e:
+                logger.error(f"❌ Error in document question generation: {e}")
+                return {
+                    "answer": f"Có lỗi khi tải câu hỏi về '{procedure}'. Vui lòng thử lại.",
+                    "type": "error",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+        
+        elif action == 'show_categories':
+            # 🔄 User muốn chọn thủ tục khác, hiển thị category suggestions
+            logger.info(f"🔄 User wants different categories. Showing all available options.")
+            
+            try:
+                # Get available collections
+                collections = self.smart_router.get_collections()
+                
+                # Create category suggestions
+                suggestions = []
+                for i, collection_info in enumerate(collections, 1):
+                    collection_name = collection_info.get('name')
+                    display_name = collection_info.get('display_name', collection_name)
+                    description = collection_info.get('description', '')
+                    
+                    suggestions.append({
+                        "id": str(i),
+                        "title": display_name,
+                        "description": description,
+                        "action": "proceed_with_collection",
+                        "collection": collection_name
+                    })
+                
+                clarification_response = {
+                    "message": "Hãy chọn lĩnh vực thủ tục bạn quan tâm:",
+                    "options": suggestions,
+                    "show_manual_input": True,
+                    "manual_input_placeholder": "Hoặc mô tả cụ thể thủ tục bạn cần...",
+                    "context": "category_selection",
+                    "metadata": {
+                        "stage": "category_selection"
+                    }
+                }
+                
+                # Reset session state
+                session.metadata["routing_state"] = {
+                    "stage": "category_selection"
+                }
+                self.chat_sessions[session_id] = session
+                
+                return {
+                    "answer": clarification_response["message"],
+                    "clarification": clarification_response,
+                    "type": "clarification_needed",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+                
+            except Exception as e:
+                logger.error(f"❌ Error in category generation: {e}")
+                return {
+                    "answer": "Có lỗi khi tải danh sách thủ tục. Vui lòng thử lại.",
+                    "type": "error",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+        
+        elif action == 'proceed_with_collection' and collection:
             # 🎯 GIAI ĐOẠN 2: User chọn collection, hiển thị documents để chọn
             logger.info(f"🎯 Clarification Step 2: User selected collection '{collection}'. Showing documents.")
             
             try:
-                # Lấy danh sách documents trong collection này từ smart_router
-                collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                # 🚀 OPTIMIZATION: Lấy danh sách documents trực tiếp, không qua questions
+                collection_documents_list = self.smart_router.get_collection_documents_directly(collection)
                 
-                # Extract unique documents from questions
+                # Convert to dictionary format for compatibility
                 collection_documents = {}
-                for question in collection_questions:
-                    source = question.get('source', '')
-                    if source:
-                        # Clean up source path to get document name
-                        doc_name = source.replace('.json', '').split('/')[-1]
-                        if '. ' in doc_name:
-                            doc_name = doc_name.split('. ', 1)[1]  # Remove numbering
-                        
-                        if doc_name not in collection_documents:
-                            collection_documents[doc_name] = {
-                                "filename": source,
-                                "title": doc_name,
-                                "description": f"Tài liệu về {doc_name}",
-                                "question_count": 0
-                            }
-                        collection_documents[doc_name]["question_count"] += 1
+                for doc_info in collection_documents_list:
+                    filename = doc_info['filename']
+                    
+                    # Clean up document name for display
+                    display_name = doc_info['title'][:50] + "..." if len(doc_info['title']) > 50 else doc_info['title']
+                    if '. ' in filename:
+                        clean_name = filename.split('. ', 1)[1] if '. ' in filename else filename
+                        display_name = clean_name
+                    
+                    collection_documents[display_name] = {
+                        "filename": f"{collection}/documents/{filename}/questions.json",
+                        "title": display_name,
+                        "description": doc_info['description'],
+                        "question_count": doc_info['question_count']
+                    }
+                
+                logger.info(f"🚀 OPTIMIZATION: Retrieved {len(collection_documents)} documents directly (no questions loaded)")
                 
                 if not collection_documents:
                     logger.warning(f"⚠️ No documents found in collection '{collection}'")
@@ -1008,25 +1323,21 @@ class RAGService:
             logger.info(f"🎯 Medium-High Confidence: Showing questions for procedure '{procedure}' in collection '{collection}'")
             
             try:
-                # Get questions that match the procedure
-                collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                # 🚀 OPTIMIZATION: Sử dụng procedure-limited loading thay vì load toàn bộ collection
+                matching_questions = self.smart_router.get_procedure_questions_limited(
+                    collection, procedure, limit=20
+                )
                 
-                # Filter questions by procedure/document title
-                matching_questions = []
-                for question in collection_questions:
-                    question_text = question.get('text', str(question)) if isinstance(question, dict) else str(question)
-                    source = question.get('source', '') if isinstance(question, dict) else ''
-                    
-                    # Check if question is related to the procedure
-                    if procedure and (procedure.lower() in question_text.lower() or 
-                                    procedure.lower() in source.lower()):
-                        matching_questions.append(question)
-                
-                # If no specific matches, get top questions from collection
+                # If no specific matches, fallback to limited collection loading
                 if not matching_questions:
-                    matching_questions = collection_questions[:5]
+                    logger.info(f"⚠️ No procedure-specific questions found for '{procedure}', using fallback")
+                    # Fallback: Lấy 10 questions đầu tiên trong collection thay vì toàn bộ
+                    all_questions = self.smart_router.get_example_questions_for_collection(collection)
+                    matching_questions = all_questions[:10]  # Chỉ lấy 10 thay vì toàn bộ
                 
-                # Create question suggestions
+                logger.info(f"🚀 OPTIMIZATION: Retrieved {len(matching_questions)} procedure-related questions (limited loading)")
+                
+                # Create question suggestions (from optimized loading)
                 suggestions = []
                 for i, q in enumerate(matching_questions[:5]):
                     question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
@@ -1104,19 +1415,26 @@ class RAGService:
             logger.info(f"🎯 Clarification Step 2.5: User selected document '{document_title}' in collection '{collection}'. Generating question suggestions.")
             
             try:
-                # Lấy tất cả questions trong collection và filter theo document
-                collection_questions = self.smart_router.get_example_questions_for_collection(collection)
-                
-                # Filter questions by document source
-                document_questions = []
-                for question in collection_questions:
-                    if question.get('source') and document_filename in question.get('source', ''):
-                        document_questions.append(question)
+                # 🚀 OPTIMIZATION: Lấy questions trực tiếp từ document cụ thể thay vì load toàn bộ collection
+                if document_filename:
+                    # Sử dụng method mới để lấy chỉ questions của document này
+                    document_questions = self.smart_router.get_questions_from_specific_document(collection, document_filename)
+                    logger.info(f"🚀 SMART LOADING: Retrieved {len(document_questions)} questions directly from document {document_filename}")
+                else:
+                    # Fallback: Document filename không rõ, phải load collection
+                    logger.warning(f"⚠️ Document filename not specified, falling back to collection loading")
+                    logger.info(f"🔄 Fallback: Loading limited questions from collection {collection}")
+                    collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                    document_questions = collection_questions[:10]  # Limit to 10 instead of all
+                    logger.info(f"🔄 Fallback: Loaded {len(document_questions)} questions (limited from {len(collection_questions)})")
                 
                 if not document_questions:
                     logger.warning(f"⚠️ No questions found for document {document_title}")
-                    # Fallback: Use all collection questions
-                    document_questions = collection_questions[:5]
+                    # Fallback: Lấy từ collection nhưng giới hạn số lượng
+                    logger.info(f"🔄 Fallback: Loading limited questions from collection {collection}")
+                    collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                    document_questions = collection_questions[:5]  # Chỉ lấy 5 questions thay vì toàn bộ
+                    logger.info(f"🔄 Fallback: Loaded {len(document_questions)} questions (limited from {len(collection_questions)})")
                 
                 # Create suggestions from document questions
                 suggestions = []
@@ -1217,6 +1535,41 @@ class RAGService:
                 }
             
         elif action == 'manual_input':
+            # 🎯 MANUAL INPUT: Sử dụng centralized override system
+            manual_query = selected_option.get('manual_query', original_query)
+            collection = selected_option.get('collection')
+            document = selected_option.get('document')
+            clarification_context = selected_option.get('clarification_context', {})
+            
+            logger.info(f"🎯 Manual Input: '{manual_query}' in collection '{collection}'" + 
+                       (f", document '{document}'" if document else ""))
+            
+            if collection:
+                # Create override context for manual input
+                override_context = self._handle_manual_input_override(
+                    query=manual_query,
+                    collection=collection,
+                    document=document,
+                    clarification_context=clarification_context
+                )
+                
+                logger.info(f"🎯 Manual Input Override: {override_context.override_type.value}")
+                
+                # Process query with override
+                return self.process_query(
+                    query=manual_query,
+                    session_id=session_id,
+                    forced_collection=collection,
+                    forced_document_title=document
+                )
+            else:
+                # No collection specified, fall back to normal processing
+                return self.process_query(
+                    query=manual_query,
+                    session_id=session_id
+                )
+        
+        elif action == 'old_manual_input':
             # 🔧 IMPROVED: Manual input với context preservation
             logger.info(f"🔄 Manual input requested by user. Preserving valuable context.")
             

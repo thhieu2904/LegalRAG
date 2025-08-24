@@ -98,19 +98,30 @@ class ModernizedVectorDBBuilder:
                 if not doc_dir.is_dir():
                     continue
                 
-                # Find JSON content file (exclude questions.json)
-                json_files = [f for f in doc_dir.glob("*.json") 
-                             if f.name != "questions.json"]
+                # Find JSON content file AND questions.json for fused indexing
+                content_files = [f for f in doc_dir.glob("*.json") 
+                               if f.name != "questions.json"]
+                questions_file = doc_dir / "questions.json"
                 
-                if not json_files:
+                if not content_files:
                     logger.warning(f"No content JSON in {doc_dir}")
                     continue
                 
-                json_file = json_files[0]
+                content_file = content_files[0]
                 
                 try:
-                    with open(json_file, 'r', encoding='utf-8') as f:
+                    # Load content file (document.json)
+                    with open(content_file, 'r', encoding='utf-8') as f:
                         content = json.load(f)
+                    
+                    # Load questions file if exists
+                    questions_data = {}
+                    if questions_file.exists():
+                        try:
+                            with open(questions_file, 'r', encoding='utf-8') as f:
+                                questions_data = json.load(f)
+                        except Exception as e:
+                            logger.warning(f"Could not load questions from {questions_file}: {e}")
                     
                     # Validate content - check multiple possible content fields
                     has_content = False
@@ -122,20 +133,21 @@ class ModernizedVectorDBBuilder:
                         has_content = True
                     
                     if not has_content:
-                        logger.warning(f"Empty content in {json_file}")
+                        logger.warning(f"Empty content in {content_file}")
                         continue
                     
                     documents.append({
                         "collection": collection_name,
                         "doc_id": doc_dir.name,
-                        "file_path": str(json_file),
-                        "file_name": json_file.name,
+                        "file_path": str(content_file),
+                        "file_name": content_file.name,
                         "content": content,
+                        "questions": questions_data,  # Add questions for fused indexing
                         "structure": "new"
                     })
                     
                 except Exception as e:
-                    logger.error(f"Error reading {json_file}: {e}")
+                    logger.error(f"Error reading {content_file}: {e}")
         
         logger.info(f"Found {len(documents)} documents in new structure")
         return documents
@@ -224,6 +236,7 @@ class ModernizedVectorDBBuilder:
                 
                 for doc in collection_docs:
                     content = doc["content"]
+                    questions = doc.get("questions", {})
                     
                     # Extract text content - handle multiple content formats
                     text_content = ""
@@ -252,7 +265,41 @@ class ModernizedVectorDBBuilder:
                         logger.warning(f"⚠️ Empty text content for {doc['file_name']}")
                         continue
                     
-                    texts.append(text_content)
+                    # CREATE FUSED TEXT (questions + metadata + content) - Same as router cache
+                    fused_text = ""
+                    
+                    # Add questions first (main_question gets priority)
+                    if questions.get("main_question"):
+                        fused_text = questions["main_question"]
+                        if questions.get("question_variants"):
+                            fused_text += " | " + " | ".join(questions["question_variants"])
+                    
+                    # Add metadata if available
+                    if content.get("metadata"):
+                        metadata_items = []
+                        for k, v in content["metadata"].items():
+                            if isinstance(v, (str, list)) and str(v).strip():
+                                if isinstance(v, list):
+                                    v = " ".join(str(item) for item in v)
+                                metadata_items.append(f"{k}: {str(v)}")
+                        if metadata_items:
+                            metadata_str = " | ".join(metadata_items)
+                            if fused_text:
+                                fused_text += " | METADATA: " + metadata_str
+                            else:
+                                fused_text = "METADATA: " + metadata_str
+                    
+                    # Add content last
+                    if fused_text:
+                        fused_text += " | CONTENT: " + text_content
+                    else:
+                        fused_text = text_content
+                    
+                    # Limit fused text length
+                    if len(fused_text) > 2000:
+                        fused_text = fused_text[:2000]
+                    
+                    texts.append(fused_text)  # Index fused text instead of just content
                     
                     # Prepare metadata
                     metadata = {

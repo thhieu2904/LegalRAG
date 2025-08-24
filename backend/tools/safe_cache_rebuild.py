@@ -44,17 +44,19 @@ def load_new_structure():
     for questions_file in questions_files:
         try:
             # Extract collection and document info from path
-            path_parts = questions_file.replace('\\\\', '/').split('/')
+            path_parts = os.path.normpath(questions_file).split(os.sep)
             
             # Find collection and document
             collection_name = None
             document_name = None
             
-            for i, part in enumerate(path_parts):
-                if part == "collections" and i + 1 < len(path_parts):
-                    collection_name = path_parts[i + 1]
-                elif part == "documents" and i + 1 < len(path_parts):
-                    document_name = path_parts[i + 1]
+            collection_idx = path_parts.index('collections') if 'collections' in path_parts else -1
+            if collection_idx != -1 and collection_idx + 1 < len(path_parts):
+                collection_name = path_parts[collection_idx + 1]
+
+            documents_idx = path_parts.index('documents') if 'documents' in path_parts else -1
+            if documents_idx != -1 and documents_idx + 1 < len(path_parts):
+                document_name = path_parts[documents_idx + 1]
                     
             if collection_name and document_name:
                 # Load questions
@@ -97,13 +99,14 @@ def generate_embeddings_safe(questions_data):
         # Try multiple approaches
         model = None
         
-        # Approach 1: Try with trust_remote_code=True (safer for known models)
+        # Approach 1: Load local Vietnamese_Embedding_v2
         try:
             from sentence_transformers import SentenceTransformer
-            model = SentenceTransformer('keepitreal/vietnamese-sbert', trust_remote_code=True)
-            logger.info("✅ Model loaded with trust_remote_code=True")
+            local_path = "data/models/hf_cache/hub/models--AITeamVN--Vietnamese_Embedding_v2/snapshots/18b44161e041bf1d3a333ab5144b5b7b93f914d2"
+            model = SentenceTransformer(local_path)
+            logger.info("✅ Loaded local Vietnamese_Embedding_v2 from snapshot")
         except Exception as e1:
-            logger.warning(f"⚠️  Approach 1 failed: {e1}")
+            logger.warning(f"⚠️  Local load failed: {e1}")
             
             # Approach 2: Try different model
             try:
@@ -134,15 +137,29 @@ def generate_embeddings_safe(questions_data):
                 
                 # Filter empty texts
                 texts = [t for t in texts if t and t.strip()]
+
+                # Thêm fused_text
+                fused_text = questions.get('main_question', '')  # Main đầu để weight cao
+                if texts[1:]:
+                    fused_text += " | " + " | ".join(texts[1:])
+                if doc_data['metadata']:
+                    metadata_str = " | ".join([f"{k}: {str(v)}" for k, v in doc_data['metadata'].items() if isinstance(v, (str, list))])
+                    fused_text += " | METADATA: " + metadata_str
+                if len(fused_text) > 2000:
+                    fused_text = fused_text[:2000]
                 
                 if texts:
                     # Generate embeddings
-                    embeddings = model.encode(texts)
+                    embeddings = model.encode(texts) if texts else None
+                    fused_embedding = model.encode([fused_text])[0] if fused_text else None
                     
+                    # Lưu vào cache_data
                     embeddings_data[collection_name][doc_name] = {
                         'embeddings': embeddings,
                         'texts': texts,
-                        'metadata': doc_data['metadata']
+                        'metadata': doc_data['metadata'],
+                        'fused_embedding': fused_embedding,
+                        'fused_text': fused_text  # Để debug
                     }
                     
                     logger.info(f"✅ Generated embeddings for {collection_name}/{doc_name}")

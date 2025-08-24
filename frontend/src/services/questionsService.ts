@@ -101,7 +101,7 @@ class QuestionsService {
       include_deleted: includeDeleted.toString(),
     });
     return this.fetchApi(
-      `${API_BASE_URL}/collections/${collectionName}/documents/${documentId}/questions?${params}`
+      `${API_BASE_URL}/router/collections/${collectionName}/documents/${documentId}/questions?${params}`
     );
   }
 
@@ -113,7 +113,7 @@ class QuestionsService {
       include_deleted: includeDeleted.toString(),
     });
     return this.fetchApi(
-      `${API_BASE_URL}/collections/${collectionName}/questions?${params}`
+      `${API_BASE_URL}/router/collections/${collectionName}/questions?${params}`
     );
   }
 
@@ -123,7 +123,7 @@ class QuestionsService {
     questionData: QuestionCreate
   ): Promise<ApiResponse> {
     return this.fetchApi(
-      `${API_BASE_URL}/collections/${collectionName}/questions`,
+      `${API_BASE_URL}/router/collections/${collectionName}/questions`,
       {
         method: "POST",
         body: JSON.stringify(questionData),
@@ -137,7 +137,7 @@ class QuestionsService {
     updates: QuestionUpdate
   ): Promise<ApiResponse> {
     return this.fetchApi(
-      `${API_BASE_URL}/collections/${collectionName}/questions/${questionId}`,
+      `${API_BASE_URL}/router/collections/${collectionName}/questions/${questionId}`,
       {
         method: "PUT",
         body: JSON.stringify(updates),
@@ -150,7 +150,7 @@ class QuestionsService {
     questionId: string
   ): Promise<ApiResponse> {
     return this.fetchApi(
-      `${API_BASE_URL}/collections/${collectionName}/questions/${questionId}`,
+      `${API_BASE_URL}/router/collections/${collectionName}/questions/${questionId}`,
       {
         method: "DELETE",
       }
