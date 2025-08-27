@@ -1,0 +1,70 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_boi_thuong_nn/QUY TRÌNH BỒI THƯỜNG NN/3. Thủ tục phục hồi danh dự.doc",
+    "title": "Thủ tục phục hồi danh dự",
+    "code": "QT 03/BTNN",
+    "issuing_authority": "Cơ quan trực tiếp quản lý người thi hành công vụ",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "15 ngày kể từ ngày nhận được văn bản có ý kiến đồng ý của người bị thiệt hại",
+    "description": "Thủ tục phục hồi danh dự cho người bị thiệt hại do hành vi trái pháp luật của người thi hành công vụ",
+    "legal_basis": [
+      "Luật Trách nhiệm bồi thường của Nhà nước năm 2017",
+      "Nghị định số 68/2018/NĐ-CP ngày 15/5/2018",
+      "Thông tư số 04/2018/TT-BTP ngày 17/5/2018",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025"
+    ],
+    "required_documents": [
+      "Văn bản yêu cầu bồi thường (Mẫu 01/BTNN)",
+      "Thông báo về việc tổ chức thực hiện phục hồi danh dự (Mẫu 17/BTNN)",
+      "Biên bản trả lời thông báo tổ chức thực hiện phục hồi danh dự (Mẫu 18/BTNN)",
+      "Ý kiến của người bị thiệt hại về việc phục hồi danh dự"
+    ],
+    "processing_steps": [
+      "Tiếp nhận văn bản có ý kiến đồng ý của người bị thiệt hại",
+      "Tổ chức trực tiếp xin lỗi và cải chính công khai",
+      "Đăng báo xin lỗi và cải chính công khai",
+      "Đăng tải nội dung xin lỗi trên Cổng thông tin điện tử",
+      "Lưu hồ sơ theo quy định của pháp luật"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "chunk_001",
+      "title": "Phục hồi danh dự",
+      "content": "Phục hồi danh dự bao gồm việc xin lỗi và cải chính công khai, đăng báo xin lỗi, đăng tải trên Cổng thông tin điện tử.",
+      "chunk_type": "introduction"
+    },
+    {
+      "chunk_id": "chunk_002",
+      "title": "Thành phần hồ sơ",
+      "content": "Văn bản yêu cầu bồi thường, thông báo về việc tổ chức thực hiện phục hồi danh dự, biên bản trả lời thông báo.",
+      "chunk_type": "documents"
+    },
+    {
+      "chunk_id": "chunk_003",
+      "title": "Thời hạn giải quyết",
+      "content": "15 ngày kể từ ngày nhận được văn bản có ý kiến đồng ý của người bị thiệt hại hoặc ý kiến cụ thể về việc phục hồi danh dự.",
+      "chunk_type": "timeline"
+    },
+    {
+      "chunk_id": "chunk_004",
+      "title": "Đối tượng áp dụng",
+      "content": "Người yêu cầu bồi thường theo quy định tại khoản 3 Điều 3 Luật TNBTCNN năm 2017, đã được thụ lý và giải quyết.",
+      "chunk_type": "eligibility"
+    },
+    {
+      "chunk_id": "chunk_005",
+      "title": "Cơ quan thực hiện",
+      "content": "Cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại trong hoạt động quản lý hành chính, tố tụng, thi hành án.",
+      "chunk_type": "authority"
+    },
+    {
+      "chunk_id": "chunk_006",
+      "title": "Quy trình thực hiện",
+      "content": "Tiếp nhận văn bản đồng ý, tổ chức xin lỗi trực tiếp và/hoặc đăng báo xin lỗi và cải chính công khai.",
+      "chunk_type": "process"
+    }
+  ]
+}

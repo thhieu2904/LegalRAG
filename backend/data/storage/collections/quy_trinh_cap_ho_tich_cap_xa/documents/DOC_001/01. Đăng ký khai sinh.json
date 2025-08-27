@@ -8,6 +8,74 @@
     "executing_agency": "Ủy ban nhân dân cấp xã",
     "applicant_type": ["Cá nhân", "Tổ chức"],
     "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu, trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp theo.",
+    "fee_structure": {
+      "main_fee": {
+        "type": "registration_fee",
+        "description": "Lệ phí đăng ký khai sinh",
+        "fee_amounts": [
+          {
+            "condition": "đúng hạn trực tiếp",
+            "amount": 0,
+            "currency": "VND",
+            "note": "Miễn phí hoàn toàn"
+          },
+          {
+            "condition": "không đúng hạn trực tiếp",
+            "amount": 8000,
+            "currency": "VND",
+            "note": "Lệ phí không đúng hạn"
+          },
+          {
+            "condition": "không đúng hạn trực tuyến",
+            "amount": 4000,
+            "currency": "VND",
+            "note": "Lệ phí không đúng hạn (đến 31/12/2025)"
+          }
+        ],
+        "exemptions": [
+          {
+            "condition": "đúng hạn",
+            "description": "Miễn phí hoàn toàn cho đăng ký đúng hạn",
+            "applicable_to": ["all"]
+          },
+          {
+            "condition": "gia đình có công với cách mạng",
+            "description": "Miễn phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "hộ nghèo",
+            "description": "Miễn phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "khuyết tật",
+            "description": "Miễn phí",
+            "applicable_to": ["registration_fee"]
+          }
+        ]
+      },
+      "additional_fees": [
+        {
+          "type": "copy_fee",
+          "description": "Phí cấp bản sao Giấy khai sinh",
+          "amount": 8000,
+          "currency": "VND",
+          "unit": "bản",
+          "optional": true,
+          "exemptions": [
+            {
+              "condition": "hộ nghèo",
+              "description": "Miễn phí"
+            },
+            {
+              "condition": "khuyết tật",
+              "description": "Miễn phí"
+            }
+          ]
+        }
+      ]
+    },
     "fee_vnd": null,
     "fee_text": "Lệ phí thay đổi tùy theo trường hợp (đúng hạn/không đúng hạn, nộp trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 8.000đ, 5.000đ, 4.000đ và có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...). Phí cấp bản sao: 8.000đ/bản.",
     "has_form": true,
@@ -52,21 +120,24 @@
         "lưu ý",
         "VneID",
         "hợp pháp hóa lãnh sự"
-      ]
+      ],
+      "chunk_type": "documents"
     },
     {
       "chunk_id": 2,
       "section_title": "Thời hạn giải quyết",
       "content": "Ngay trong ngày tiếp nhận yêu cầu, trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp theo.",
       "source_reference": "Mục 5.b",
-      "keywords": ["thời hạn", "giải quyết", "trong ngày", "ngày làm việc"]
+      "keywords": ["thời hạn", "giải quyết", "trong ngày", "ngày làm việc"],
+      "chunk_type": "process"
     },
     {
       "chunk_id": 3,
       "section_title": "Đối tượng thực hiện thủ tục hành chính",
       "content": "Cá nhân, tổ chức.",
       "source_reference": "Mục 5.c",
-      "keywords": ["đối tượng", "cá nhân", "tổ chức"]
+      "keywords": ["đối tượng", "cá nhân", "tổ chức"],
+      "chunk_type": "eligibility"
     },
     {
       "chunk_id": 4,
@@ -79,21 +150,24 @@
         "ủy ban nhân dân",
         "UBND cấp xã",
         "nơi cư trú"
-      ]
+      ],
+      "chunk_type": "authority"
     },
     {
       "chunk_id": 5,
       "section_title": "Kết quả thực hiện thủ tục hành chính",
       "content": "- Giấy khai sinh (bản chính), bản sao Giấy khai sinh (trường hợp yêu cầu cấp bản sao Giấy khai sinh).\n- Bản điện tử Giấy khai sinh (sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu).",
       "source_reference": "Mục 5.đ",
-      "keywords": ["kết quả", "giấy khai sinh", "bản sao", "bản điện tử"]
+      "keywords": ["kết quả", "giấy khai sinh", "bản sao", "bản điện tử"],
+      "chunk_type": "result"
     },
     {
       "chunk_id": 6,
       "section_title": "Phí, lệ phí",
       "content": "- Đăng ký khai sinh không đúng hạn (trực tiếp): 8.000 đồng; (trực tuyến đến 31/12/2025): 4.000 đồng.\n- Mức khác: 5.000 đồng/trường hợp.\n- Mức khác cho đăng ký không đúng hạn: 5.000 đồng (trực tiếp); 4.000 đồng (trực tuyến).\n- Miễn lệ phí: Áp dụng cho nhiều trường hợp như khai sinh đúng hạn, người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người khuyết tật, người cao tuổi, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn.\n- Phí cấp bản sao Giấy khai sinh (nếu có yêu cầu): 8.000 đồng/bản.",
       "source_reference": "Mục 5.e",
-      "keywords": ["phí", "lệ phí", "miễn lệ phí", "đúng hạn", "không đúng hạn"]
+      "keywords": ["phí", "lệ phí", "miễn lệ phí", "đúng hạn", "không đúng hạn"],
+      "chunk_type": "fees"
     },
     {
       "chunk_id": 7,
@@ -107,7 +181,8 @@
         "thẩm tra",
         "ký duyệt",
         "trả kết quả"
-      ]
+      ],
+      "chunk_type": "process"
     }
   ]
 }

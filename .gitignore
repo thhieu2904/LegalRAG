@@ -21,7 +21,7 @@ frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
 *.local
-data_moi_tu_co_quan
+
 
 # Distribution / packaging
 .Python

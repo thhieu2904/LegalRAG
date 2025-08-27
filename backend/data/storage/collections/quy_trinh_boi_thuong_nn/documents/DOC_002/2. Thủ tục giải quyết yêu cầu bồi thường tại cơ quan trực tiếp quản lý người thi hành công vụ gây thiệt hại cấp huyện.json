@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_boi_thuong_nn/QUY TRÌNH BỒI THƯỜNG NN/2. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại cấp huyện.doc",
+    "title": "Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại cấp huyện",
+    "code": "QT 02/BTNN",
+    "issuing_authority": "Ủy ban nhân dân cấp huyện",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Ủy ban nhân dân cấp huyện",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Thời hạn giải quyết theo quy định tại Luật TNBTCNN năm 2017",
+    "fee_vnd": null,
+    "fee_text": "Không quy định lệ phí cho thủ tục giải quyết yêu cầu bồi thường nhà nước",
+    "has_form": true,
+    "requirements_conditions": "Người thi hành công vụ gây thiệt hại thuộc thẩm quyền quản lý trực tiếp của UBND cấp huyện",
+    "legal_basis_references": [
+      "Luật Trách nhiệm bồi thường của Nhà nước năm 2017",
+      "Nghị định số 68/2018/NĐ-CP ngày 15/5/2018",
+      "Thông tư số 04/2018/TT-BTP ngày 17/5/2018",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ và các lưu ý quan trọng",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. VĂN BẢN YÊU CẦU:**\n- Văn bản yêu cầu bồi thường (Mẫu 01/BTNN).\n\n**B. VĂN BẢN LÀM CĂN CỨ:**\n- Văn bản làm căn cứ yêu cầu bồi thường.\n\n**C. GIẤY TỜ CHỨNG MINH:**\n- Giấy tờ chứng minh nhân thân của người yêu cầu bồi thường.\n- Giấy tờ chứng minh nhân thân của người thừa kế/người đại diện (nếu có).\n- Văn bản ủy quyền hợp pháp (nếu có).\n- Giấy tờ chứng minh nhân thân của người bị thiệt hại (nếu người bị thiệt hại chết).\n- Di chúc (nếu người bị thiệt hại chết).\n- Các tài liệu, chứng cứ khác chứng minh thiệt hại.\n\n**D. CÁC LƯU Ý QUAN TRỌNG:**\n- Hồ sơ được nộp trực tiếp tại UBND cấp huyện hoặc qua hệ thống bưu chính.\n- Trường hợp nộp qua bưu chính, phải gửi kèm bản sao có chứng thực các giấy tờ.\n- Người yêu cầu có quyền đề nghị tạm ứng kinh phí bồi thường.",
+      "source_reference": "Điều 34 Luật TNBTCNN 2017",
+      "keywords": [
+        "hồ sơ",
+        "yêu cầu bồi thường",
+        "giấy tờ chứng minh",
+        "ủy quyền",
+        "di chúc",
+        "tài liệu chứng cứ"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Thời hạn giải quyết theo quy định tại Luật TNBTCNN năm 2017, bao gồm:\n- Thời hạn thụ lý hồ sơ: 02 ngày làm việc.\n- Thời hạn xác minh thiệt hại: 15 ngày (hoặc 30 ngày nếu phức tạp).\n- Thời hạn thương lượng: 10 ngày sau khi hoàn thành báo cáo xác minh.",
+      "source_reference": "Điều 34 Luật TNBTCNN 2017",
+      "keywords": ["thời hạn", "giải quyết", "thụ lý", "xác minh", "thương lượng"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện thủ tục hành chính",
+      "content": "Cá nhân, tổ chức bị thiệt hại do hành vi trái pháp luật của người thi hành công vụ thuộc thẩm quyền quản lý của UBND cấp huyện gây ra.",
+      "source_reference": "Điều 34 Luật TNBTCNN 2017",
+      "keywords": ["đối tượng", "cá nhân", "tổ chức", "thiệt hại", "người thi hành công vụ"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Cơ quan thực hiện thủ tục hành chính",
+      "content": "**Cơ quan thực hiện:** Ủy ban nhân dân cấp huyện.\n\n**Cơ quan phối hợp:**\n- Cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại.\n- Các cơ quan chức năng có liên quan đến việc xác minh thiệt hại.",
+      "source_reference": "Điều 34 Luật TNBTCNN 2017",
+      "keywords": [
+        "cơ quan",
+        "thẩm quyền",
+        "UBND cấp huyện",
+        "quản lý trực tiếp",
+        "phối hợp"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục hành chính",
+      "content": "- Quyết định giải quyết bồi thường.\n- Giấy xác nhận đã nhận hồ sơ (trường hợp nộp trực tiếp).\n- Thông báo về việc nhận hồ sơ (trường hợp gửi qua bưu chính).\n- Thông báo bổ sung hồ sơ (nếu thiếu).\n- Quyết định tạm ứng kinh phí bồi thường (nếu có đề nghị).",
+      "source_reference": "Điều 34 Luật TNBTCNN 2017",
+      "keywords": ["kết quả", "quyết định", "giấy xác nhận", "thông báo", "tạm ứng"]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Bước 1:** Tiếp nhận hồ sơ và cấp giấy xác nhận.\n\n**Bước 2:** Thông báo về việc nhận hồ sơ (nếu gửi qua bưu chính).\n\n**Bước 3:** Thông báo bổ sung hồ sơ (nếu thiếu).\n\n**Bước 4:** Thụ lý hồ sơ và cử người giải quyết bồi thường.\n\n**Bước 5:** Xác minh thiệt hại trong thời hạn quy định.\n\n**Bước 6:** Thương lượng việc bồi thường.\n\n**Bước 7:** Ra quyết định giải quyết bồi thường.",
+      "source_reference": "Điều 34 Luật TNBTCNN 2017",
+      "keywords": [
+        "quy trình",
+        "tiếp nhận",
+        "thụ lý",
+        "xác minh",
+        "thương lượng",
+        "quyết định"
+      ]
+    }
+  ]
+}

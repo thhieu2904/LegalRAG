@@ -1,0 +1,22 @@
+{
+  "collection_id": "quy_trinh_luat_su",
+  "collection_name": "Quy Trinh Luat Su",
+  "description": "Legal documents for quy_trinh_luat_su",
+  "document_count": 20,
+  "created_at": "2025-08-27T00:00:00.000000",
+  "has_forms": true,
+  "status": "active",
+  "structure": {
+    "documents/DOC_XXX/": {
+      "original_name.json": "RAG content processed from original document",
+      "original_name.doc": "Original document from government agency",
+      "router_questions.json": "Questions for document classification/routing",
+      "forms/": "Directory for future form uploads (empty initially)"
+    }
+  },
+  "migration_info": {
+    "migrated_from": "data_moi_tu_co_quan/QUY TRÌNH LUẬT SƯ",
+    "migration_date": "2025-08-27T00:00:00.000000",
+    "migration_type": "initial_structure_v1"
+  }
+}

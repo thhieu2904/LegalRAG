@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_boi_thuong_nn/QUY TRÌNH BỒI THƯỜNG NN/2. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại.doc",
+    "title": "Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại",
+    "code": "QT 02/BTNN",
+    "issuing_authority": "Cơ quan trực tiếp quản lý người thi hành công vụ",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Thời hạn giải quyết theo quy định tại Luật TNBTCNN năm 2017",
+    "description": "Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại",
+    "legal_basis": [
+      "Luật Trách nhiệm bồi thường của Nhà nước năm 2017",
+      "Nghị định số 68/2018/NĐ-CP ngày 15/5/2018",
+      "Thông tư số 04/2018/TT-BTP ngày 17/5/2018",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025"
+    ],
+    "required_documents": [
+      "Văn bản yêu cầu bồi thường (Mẫu 01/BTNN)",
+      "Văn bản làm căn cứ yêu cầu bồi thường",
+      "Giấy tờ chứng minh nhân thân của người yêu cầu bồi thường",
+      "Giấy tờ chứng minh nhân thân của người thừa kế/người đại diện (nếu có)",
+      "Văn bản ủy quyền hợp pháp (nếu có)",
+      "Di chúc (nếu người bị thiệt hại chết)",
+      "Các tài liệu, chứng cứ khác chứng minh thiệt hại"
+    ],
+    "processing_steps": [
+      "Tiếp nhận hồ sơ và cấp giấy xác nhận",
+      "Thông báo về việc nhận hồ sơ (nếu gửi qua bưu chính)",
+      "Yêu cầu bổ sung hồ sơ (nếu thiếu)",
+      "Thụ lý hồ sơ",
+      "Cử người giải quyết bồi thường",
+      "Tạm ứng kinh phí bồi thường (nếu đề nghị)",
+      "Xác minh thiệt hại",
+      "Thương lượng việc bồi thường",
+      "Ra quyết định giải quyết bồi thường"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "chunk_001",
+      "title": "Thành phần hồ sơ",
+      "content": "Hồ sơ bao gồm văn bản yêu cầu bồi thường, văn bản làm căn cứ yêu cầu bồi thường, giấy tờ chứng minh nhân thân, và các tài liệu chứng minh thiệt hại.",
+      "chunk_type": "documents"
+    },
+    {
+      "chunk_id": "chunk_002",
+      "title": "Tiếp nhận hồ sơ",
+      "content": "Cơ quan giải quyết bồi thường tiếp nhận hồ sơ, ghi vào sổ nhận hồ sơ và cấp giấy xác nhận đã nhận hồ sơ cho người yêu cầu bồi thường.",
+      "chunk_type": "process"
+    },
+    {
+      "chunk_id": "chunk_003",
+      "title": "Thụ lý hồ sơ",
+      "content": "Trong thời hạn 02 ngày làm việc kể từ ngày nhận được hồ sơ hợp lệ, cơ quan giải quyết bồi thường thụ lý hồ sơ và cử người giải quyết bồi thường.",
+      "chunk_type": "process"
+    },
+    {
+      "chunk_id": "chunk_004",
+      "title": "Tạm ứng kinh phí bồi thường",
+      "content": "Người giải quyết bồi thường xác định giá trị thiệt hại và đề xuất tạm ứng kinh phí bồi thường cho người yêu cầu bồi thường.",
+      "chunk_type": "process"
+    },
+    {
+      "chunk_id": "chunk_005",
+      "title": "Xác minh thiệt hại",
+      "content": "Trong thời hạn 15 ngày (hoặc 30 ngày nếu phức tạp) kể từ ngày thụ lý hồ sơ, người giải quyết bồi thường hoàn thành việc xác minh thiệt hại.",
+      "chunk_type": "process"
+    },
+    {
+      "chunk_id": "chunk_006",
+      "title": "Thương lượng bồi thường",
+      "content": "Trong thời hạn 02 ngày sau khi hoàn thành báo cáo xác minh, tiến hành thương lượng việc bồi thường trong thời hạn 10 ngày.",
+      "chunk_type": "process"
+    },
+    {
+      "chunk_id": "chunk_007",
+      "title": "Ra quyết định",
+      "content": "Thủ trưởng cơ quan giải quyết bồi thường ra quyết định giải quyết bồi thường và trao cho người yêu cầu bồi thường.",
+      "chunk_type": "process"
+    }
+  ]
+}

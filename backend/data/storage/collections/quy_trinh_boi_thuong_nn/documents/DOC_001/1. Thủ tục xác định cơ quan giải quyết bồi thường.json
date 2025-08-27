@@ -1,0 +1,85 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_boi_thuong_nn/QUY TRÌNH BỒI THƯỜNG NN/1. Thủ tục xác định cơ quan giải quyết bồi thường.doc",
+    "title": "Thủ tục xác định cơ quan giải quyết bồi thường",
+    "code": "QT 01/BTNN",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Sở Tư pháp, UBND cấp tỉnh",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Thời hạn giải quyết theo quy định cụ thể cho từng trường hợp",
+    "fee_vnd": null,
+    "fee_text": "Không quy định lệ phí cho thủ tục xác định cơ quan giải quyết bồi thường",
+    "has_form": false,
+    "requirements_conditions": "Khi có nhiều người thi hành công vụ gây thiệt hại hoặc khi cơ quan nhà nước ở địa phương bị giải thể; hoặc khi người yêu cầu bồi thường chưa xác định ngay được cơ quan giải quyết bồi thường",
+    "legal_basis_references": [
+      "Luật Trách nhiệm bồi thường của Nhà nước năm 2017",
+      "Nghị định số 68/2018/NĐ-CP ngày 15/5/2018",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. VĂN BẢN YÊU CẦU:**\n- Văn bản yêu cầu xác định cơ quan giải quyết bồi thường.\n\n**B. HỒ SƠ YÊU CẦU BỒI THƯỜNG:**\n- Hồ sơ yêu cầu bồi thường (trong trường hợp chưa xác định được cơ quan giải quyết bồi thường).\n\n**C. CÁC LƯU Ý QUAN TRỌNG:**\n- Hồ sơ được nộp trực tiếp hoặc qua hệ thống bưu chính.\n- Trường hợp nộp qua bưu chính, phải gửi kèm bản sao có chứng thực các giấy tờ.",
+      "source_reference": "Điều 32, 33 Luật TNBTCNN 2017",
+      "keywords": [
+        "hồ sơ",
+        "yêu cầu",
+        "xác định cơ quan",
+        "bồi thường",
+        "văn bản"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Thời hạn giải quyết theo quy định cụ thể cho từng trường hợp, đảm bảo không quá 30 ngày kể từ ngày thụ lý hồ sơ.",
+      "source_reference": "Điều 32, 33 Luật TNBTCNN 2017",
+      "keywords": ["thời hạn", "giải quyết", "30 ngày"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện thủ tục hành chính",
+      "content": "Cá nhân, tổ chức bị thiệt hại do hành vi trái pháp luật của người thi hành công vụ gây ra.",
+      "source_reference": "Điều 32, 33 Luật TNBTCNN 2017",
+      "keywords": ["đối tượng", "cá nhân", "tổ chức", "thiệt hại"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Cơ quan thực hiện thủ tục hành chính",
+      "content": "**Cơ quan thực hiện:**\n- Sở Tư pháp (trong các trường hợp quy định tại Điều 32 và Điều 33 Luật TNBTCNN).\n- UBND cấp tỉnh (trong trường hợp quy định tại khoản 2 Điều 32 Luật TNBTCNN).\n\n**Cơ quan phối hợp:** Các cơ quan có liên quan đến việc xác định cơ quan giải quyết bồi thường.",
+      "source_reference": "Điều 32, 33 Luật TNBTCNN 2017",
+      "keywords": [
+        "cơ quan",
+        "thẩm quyền",
+        "Sở Tư pháp",
+        "UBND cấp tỉnh",
+        "phối hợp"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục hành chính",
+      "content": "Văn bản xác định cơ quan có thẩm quyền giải quyết yêu cầu bồi thường nhà nước.",
+      "source_reference": "Điều 32, 33 Luật TNBTCNN 2017",
+      "keywords": ["kết quả", "văn bản", "xác định cơ quan", "thẩm quyền"]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Bước 1:** Tiếp nhận yêu cầu xác định cơ quan giải quyết bồi thường.\n\n**Bước 2:** Thẩm tra, xác minh các thông tin liên quan đến vụ việc.\n\n**Bước 3:** Trao đổi với các cơ quan có liên quan để thống nhất về cơ quan giải quyết bồi thường.\n\n**Bước 4:** Ra văn bản xác định cơ quan giải quyết bồi thường.\n\n**Bước 5:** Gửi văn bản xác định cơ quan đến người yêu cầu và các cơ quan có liên quan.",
+      "source_reference": "Điều 32, 33 Luật TNBTCNN 2017",
+      "keywords": [
+        "quy trình",
+        "xử lý",
+        "tiếp nhận",
+        "thẩm tra",
+        "xác minh",
+        "trao đổi",
+        "văn bản"
+      ]
+    }
+  ]
+}
