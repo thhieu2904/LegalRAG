@@ -63,25 +63,32 @@ def load_new_structure():
                 with open(questions_file, 'r', encoding='utf-8') as f:
                     questions = json.load(f)
                 
-                # Load corresponding document metadata
+                # Load corresponding document content (document.json)
                 doc_dir = os.path.dirname(questions_file)
                 doc_files = [f for f in os.listdir(doc_dir) 
                            if f.endswith('.json') and f != 'questions.json']
                 
                 metadata = {}
+                content_data = {}
                 if doc_files:
                     doc_path = os.path.join(doc_dir, doc_files[0])
                     with open(doc_path, 'r', encoding='utf-8') as f:
                         doc_data = json.load(f)
                         metadata = doc_data.get('metadata', {})
+                        content_data = doc_data  # Store full content data
                 
-                # Store in structure
+                # 🚀 PHASE 1: CREATE FUSED TEXT EXACTLY LIKE VECTOR DB
+                fused_text = _create_fused_text_like_vectordb(questions, metadata, content_data)
+                
+                # Store in structure with fused text
                 if collection_name not in questions_data:
                     questions_data[collection_name] = {}
                 
                 questions_data[collection_name][document_name] = {
                     'questions': questions,
                     'metadata': metadata,
+                    'content_data': content_data,  # Store full content
+                    'fused_text': fused_text,     # Store fused text
                     'file_path': questions_file
                 }
                 
@@ -90,6 +97,80 @@ def load_new_structure():
     
     logger.info(f"✅ Loaded {len(questions_data)} collections")
     return questions_data
+
+def _create_fused_text_like_vectordb(questions, metadata, content_data):
+    """
+    🚀 CREATE FUSED TEXT EXACTLY LIKE VECTOR DB
+    Format: questions + metadata + content
+    """
+    try:
+        # Step 1: Extract text content (same as vector DB)
+        text_content = ""
+        
+        # Format 1: Direct content field
+        if isinstance(content_data.get("content"), str):
+            text_content = content_data["content"]
+        elif isinstance(content_data.get("content"), list):
+            text_content = " ".join(str(item) for item in content_data["content"])
+        
+        # Format 2: Content chunks (legal documents format)
+        elif content_data.get("content_chunks"):
+            chunks = []
+            for chunk in content_data["content_chunks"]:
+                if isinstance(chunk, dict) and chunk.get("content"):
+                    chunks.append(chunk["content"])
+            text_content = " ".join(chunks)
+        
+        # Format 3: Summary or text fields
+        elif content_data.get("summary"):
+            text_content = content_data["summary"]
+        elif content_data.get("text"):
+            text_content = content_data["text"]
+        
+        if not text_content.strip():
+            logger.warning(f"⚠️ Empty text content for document")
+            text_content = ""
+        
+        # Step 2: Create fused text (same as vector DB)
+        fused_text = ""
+        
+        # Add questions first (main_question gets priority)
+        if questions.get("main_question"):
+            fused_text = questions["main_question"]
+            if questions.get("question_variants"):
+                fused_text += " | " + " | ".join(questions["question_variants"])
+        
+        # Add metadata if available
+        if metadata:
+            metadata_items = []
+            for k, v in metadata.items():
+                if isinstance(v, (str, list)) and str(v).strip():
+                    if isinstance(v, list):
+                        v = " ".join(str(item) for item in v)
+                    metadata_items.append(f"{k}: {str(v)}")
+            if metadata_items:
+                metadata_str = " | ".join(metadata_items)
+                if fused_text:
+                    fused_text += " | METADATA: " + metadata_str
+                else:
+                    fused_text = "METADATA: " + metadata_str
+        
+        # Add content last
+        if fused_text and text_content:
+            fused_text += " | CONTENT: " + text_content
+        elif text_content:
+            fused_text = text_content
+        
+        # Limit fused text length (same as vector DB)
+        if len(fused_text) > cls:
+            fused_text = fused_text[:2000]
+        
+        logger.info(f"✅ Created fused text: {len(fused_text)} chars")
+        return fused_text
+        
+    except Exception as e:
+        logger.error(f"❌ Error creating fused text: {e}")
+        return ""
 
 def generate_embeddings_safe(questions_data):
     """Generate embeddings cho questions with safe model loading"""
@@ -131,38 +212,37 @@ def generate_embeddings_safe(questions_data):
             for doc_name, doc_data in documents.items():
                 questions = doc_data['questions']
                 
-                # Prepare text for embedding
+                # 🚀 PHASE 1: Use pre-created fused text (same as vector DB)
+                fused_text = doc_data.get('fused_text', '')
+                
+                if not fused_text:
+                    logger.warning(f"⚠️ No fused text for {collection_name}/{doc_name}")
+                    continue
+                
+                # Prepare texts for individual embeddings (for backward compatibility)
                 texts = [questions.get('main_question', '')]
                 texts.extend(questions.get('question_variants', []))
-                
-                # Filter empty texts
                 texts = [t for t in texts if t and t.strip()]
-
-                # Thêm fused_text
-                fused_text = questions.get('main_question', '')  # Main đầu để weight cao
-                if texts[1:]:
-                    fused_text += " | " + " | ".join(texts[1:])
-                if doc_data['metadata']:
-                    metadata_str = " | ".join([f"{k}: {str(v)}" for k, v in doc_data['metadata'].items() if isinstance(v, (str, list))])
-                    fused_text += " | METADATA: " + metadata_str
-                if len(fused_text) > 2000:
-                    fused_text = fused_text[:2000]
                 
                 if texts:
                     # Generate embeddings
                     embeddings = model.encode(texts) if texts else None
                     fused_embedding = model.encode([fused_text])[0] if fused_text else None
                     
-                    # Lưu vào cache_data
+                    # Lưu vào cache_data với fused text
                     embeddings_data[collection_name][doc_name] = {
                         'embeddings': embeddings,
                         'texts': texts,
                         'metadata': doc_data['metadata'],
                         'fused_embedding': fused_embedding,
-                        'fused_text': fused_text  # Để debug
+                        'fused_text': fused_text,  # Store fused text for exact matching
+                        'content_data': doc_data.get('content_data', {}),  # Store full content
+                        'cache_type': 'fused_text_embeddings'
                     }
                     
-                    logger.info(f"✅ Generated embeddings for {collection_name}/{doc_name}")
+                    logger.info(f"✅ Generated embeddings for {collection_name}/{doc_name} (fused: {len(fused_text)} chars)")
+                else:
+                    logger.warning(f"⚠️ No valid texts for {collection_name}/{doc_name}")
         
         logger.info(f"✅ Generated embeddings for all collections")
         return embeddings_data
@@ -183,6 +263,9 @@ def create_text_based_cache(questions_data):
         for doc_name, doc_data in documents.items():
             questions = doc_data['questions']
             
+            # 🚀 PHASE 1: Use pre-created fused text (same as vector DB)
+            fused_text = doc_data.get('fused_text', '')
+            
             # Store text data
             texts = [questions.get('main_question', '')]
             texts.extend(questions.get('question_variants', []))
@@ -191,11 +274,13 @@ def create_text_based_cache(questions_data):
             cache_data[collection_name][doc_name] = {
                 'texts': texts,
                 'metadata': doc_data['metadata'],
+                'fused_text': fused_text,  # Store fused text for exact matching
+                'content_data': doc_data.get('content_data', {}),  # Store full content
                 'embeddings': None,  # Will be generated on-demand
-                'cache_type': 'text_only'
+                'cache_type': 'fused_text_text_only'
             }
             
-            logger.info(f"✅ Cached text for {collection_name}/{doc_name}")
+            logger.info(f"✅ Cached text for {collection_name}/{doc_name} (fused: {len(fused_text)} chars)")
     
     logger.info("✅ Text-based cache created")
     return cache_data
@@ -213,13 +298,15 @@ def save_cache(cache_data):
             'data': cache_data,
             'metadata': {
                 'created_at': datetime.now().isoformat(),
-                'structure_version': '3.0',
-                'source': 'questions.json + document.json',
+                'structure_version': '4.0',  # Updated version
+                'source': 'questions.json + document.json + fused_text',
                 'cache_type': 'embeddings' if any(
                     doc.get('embeddings') is not None 
                     for collection in cache_data.values() 
                     for doc in collection.values()
-                ) else 'text_only'
+                ) else 'text_only',
+                'fused_text_enabled': True,  # New feature
+                'content_synchronization': 'vector_db_compatible'  # New feature
             }
         }
         

@@ -59,7 +59,8 @@ class ContextExpander:
 
     def _build_highlighted_context(self, full_content: str, nucleus_chunk: Dict) -> str:
         """
-        🎯 PHASE 1: Highlight nucleus chunk trong full content để AI focus đúng chỗ
+        🎯 PHASE 2: Highlight nucleus chunk trong full content để AI focus đúng chỗ
+        🚀 IMPROVED: Better content matching for full document content
         """
         nucleus_content = nucleus_chunk.get('content', '')
         
@@ -71,7 +72,7 @@ class ContextExpander:
         logger.debug(f"🔍 Nucleus content (first 200 chars): {nucleus_content[:200]}...")
         logger.debug(f"🔍 Full content (first 200 chars): {full_content[:200]}...")
         
-        # Tìm và highlight nucleus chunk
+        # 🚀 PHASE 2: Try exact match with nucleus content
         if nucleus_content in full_content:
             highlighted_content = full_content.replace(
                 nucleus_content,
@@ -79,20 +80,62 @@ class ContextExpander:
             )
             logger.info("✅ Successfully highlighted nucleus chunk trong full context")
             return highlighted_content
-        else:
-            # Try fuzzy matching for partial matches
-            nucleus_words = nucleus_content.split()[:10]  # First 10 words
-            partial_match = ' '.join(nucleus_words)
-            
-            if partial_match in full_content:
-                logger.info("✅ Found partial match with first 10 words, using fallback highlighting")
-            else:
-                logger.warning(f"⚠️ No match found for nucleus chunk. Nucleus length: {len(nucleus_content)}, Full content length: {len(full_content)}")
-                
-            # Fallback: add nucleus at top
-            highlighted_content = f"[THÔNG TIN CHÍNH]\n{nucleus_content}\n[/THÔNG TIN CHÍNH]\n\n{full_content}"
-            logger.info("⚠️ Nucleus chunk không tìm thấy trong full content, thêm lên đầu")
+        
+        # 🚀 PHASE 2: Try to find content from nucleus chunk metadata
+        nucleus_source = nucleus_chunk.get('source', {})
+        nucleus_metadata = nucleus_chunk.get('metadata', {})
+        
+        # Try to find content in nucleus chunk metadata
+        nucleus_text_content = ""
+        if nucleus_metadata.get('fused_text'):
+            nucleus_text_content = nucleus_metadata['fused_text']
+        elif nucleus_source.get('fused_text'):
+            nucleus_text_content = nucleus_source['fused_text']
+        
+        # If we have fused text, try to extract content part
+        if nucleus_text_content and " | CONTENT: " in nucleus_text_content:
+            content_part = nucleus_text_content.split(" | CONTENT: ")[-1]
+            if content_part in full_content:
+                highlighted_content = full_content.replace(
+                    content_part,
+                    f"[THÔNG TIN CHÍNH]\n{content_part}\n[/THÔNG TIN CHÍNH]"
+                )
+                logger.info("✅ Successfully highlighted content from fused text")
+                return highlighted_content
+        
+        # 🚀 PHASE 2: Try partial matching with nucleus content (improved)
+        # Split nucleus content into sentences for better matching
+        nucleus_sentences = nucleus_content.split('.')
+        if len(nucleus_sentences) > 1:
+            # Try to match first few sentences
+            first_sentences = '. '.join(nucleus_sentences[:3])  # First 3 sentences
+            if first_sentences in full_content:
+                highlighted_content = full_content.replace(
+                    first_sentences,
+                    f"[THÔNG TIN CHÍNH]\n{first_sentences}\n[/THÔNG TIN CHÍNH]"
+                )
+                logger.info("✅ Found match with first 3 sentences, using sentence-based highlighting")
+                return highlighted_content
+        
+        # 🚀 PHASE 2: Try word-based matching (improved)
+        nucleus_words = nucleus_content.split()[:30]  # Increased from 20 to 30
+        partial_match = ' '.join(nucleus_words)
+        
+        if partial_match in full_content:
+            highlighted_content = full_content.replace(
+                partial_match,
+                f"[THÔNG TIN CHÍNH]\n{partial_match}\n[/THÔNG TIN CHÍNH]"
+            )
+            logger.info("✅ Found partial match with first 30 words, using word-based highlighting")
             return highlighted_content
+        
+        # 🚀 PHASE 2: Final fallback - add nucleus at top with better logging
+        logger.warning(f"⚠️ No match found for nucleus chunk. Nucleus length: {len(nucleus_content)}, Full content length: {len(full_content)}")
+        logger.info("⚠️ Nucleus chunk không tìm thấy trong full content, thêm lên đầu")
+        
+        # Create highlighted content with nucleus at top
+        highlighted_content = f"[THÔNG TIN CHÍNH]\n{nucleus_content}\n[/THÔNG TIN CHÍNH]\n\n{full_content}"
+        return highlighted_content
     
     def expand_context_with_nucleus(
         self,

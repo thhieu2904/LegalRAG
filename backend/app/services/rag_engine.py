@@ -10,6 +10,8 @@ Tích hợp:
 import logging
 import time
 import uuid
+import os
+import json
 import numpy as np
 from typing import Dict, List, Any, Optional, Tuple, Union
 from dataclasses import dataclass, field
@@ -23,6 +25,7 @@ from .clarification import ClarificationService
 from .router import QueryRouter, RouterBasedQueryService
 from .context import ContextExpander
 from .simple_form_detection import SimpleFormDetectionService
+from .prompt_service import prompt_service, PromptType
 from ..core.config import settings
 
 # Import path_config with try/except for graceful fallback
@@ -424,6 +427,192 @@ class RAGService:
         except Exception as e:
             logger.error(f"Error initializing services: {e}")
             raise
+    
+    # 🚀 HELPER METHODS - INTELLIGENT SYSTEM UTILITIES
+    
+    def _map_document_title_to_doc_folder(self, document_title: str, collection: str) -> Optional[str]:
+        """
+        Map document title to correct DOC_XXX folder name
+        """
+        try:
+            import os
+            # Try to find matching document folder
+            collection_path = f"data/storage/collections/{collection}/documents"
+            if os.path.exists(collection_path):
+                for doc_folder in os.listdir(collection_path):
+                    if doc_folder.startswith("DOC_"):
+                        doc_path = os.path.join(collection_path, doc_folder)
+                        # Check for matching document file
+                        for file in os.listdir(doc_path):
+                            if file.endswith('.json') and document_title in file:
+                                return doc_folder
+            return None
+        except Exception as e:
+            logger.error(f"Error mapping document title: {e}")
+            return None
+
+    def _calculate_adaptive_k(
+        self, 
+        confidence_level: str, 
+        confidence_score: float, 
+        query: str,
+        session_history: Optional[List] = None
+    ) -> int:
+        """
+        🚀 INTELLIGENT ADAPTIVE K SYSTEM
+        Tính toán K thông minh dựa trên nhiều yếu tố
+        """
+        base_k = settings.broad_search_k  # Default: 12
+        
+        # 1. CONFIDENCE-BASED ADJUSTMENT
+        # 🚀 FIX: Handle both score-based and level-based confidence
+        if confidence_level in ['high_confidence', 'override_high', 'forced_high'] or confidence_score >= 0.8:
+            confidence_multiplier = 0.5  # High confidence → search ít
+        elif confidence_level in ['medium_high_confidence'] or confidence_score >= 0.7:
+            confidence_multiplier = 0.7  # Medium-high confidence
+        elif confidence_level in ['medium_confidence'] or confidence_score >= 0.6:
+            confidence_multiplier = 1.0  # Medium confidence
+        elif confidence_level in ['low_confidence', 'insufficient_context'] or confidence_score < 0.6:
+            confidence_multiplier = 1.5  # Low confidence → search nhiều
+        else:
+            # Fallback to score-based logic
+            if confidence_score >= 0.9:
+                confidence_multiplier = 0.3  # Rất cao
+            elif confidence_score >= 0.8:
+                confidence_multiplier = 0.5  # Cao
+            elif confidence_score >= 0.7:
+                confidence_multiplier = 0.7  # Trung bình cao
+            elif confidence_score >= 0.6:
+                confidence_multiplier = 1.0  # Trung bình
+            else:
+                confidence_multiplier = 1.5  # Thấp
+            
+        # 2. QUERY COMPLEXITY ADJUSTMENT
+        query_length = len(query.split())
+        if query_length <= 3:
+            complexity_multiplier = 0.6  # Simple query
+        elif query_length <= 8:
+            complexity_multiplier = 1.0  # Medium query
+        else:
+            complexity_multiplier = 1.3  # Complex query
+            
+        # 3. QUERY TYPE ADJUSTMENT
+        if any(word in query.lower() for word in ['phí', 'giá', 'tiền', 'chi phí']):
+            intent_multiplier = 0.7  # Specific fact question
+        elif any(word in query.lower() for word in ['như thế nào', 'cách', 'thủ tục']):
+            intent_multiplier = 1.2  # Process question
+        elif any(word in query.lower() for word in ['tất cả', 'toàn bộ', 'chi tiết']):
+            intent_multiplier = 1.4  # Comprehensive question
+        else:
+            intent_multiplier = 1.0  # General question
+            
+        # 4. SESSION HISTORY LEARNING
+        session_multiplier = 1.0
+        if session_history and len(session_history) > 0:
+            avg_context_length = sum(h.get('context_length', 0) for h in session_history[-3:]) / min(3, len(session_history))
+            if avg_context_length < 2000:
+                session_multiplier = 0.8  # User prefers short answers
+            elif avg_context_length > 8000:
+                session_multiplier = 1.3  # User prefers detailed answers
+                
+        # 5. CALCULATE FINAL K
+        final_k = int(base_k * confidence_multiplier * complexity_multiplier * 
+                      intent_multiplier * session_multiplier)
+        
+        # 6. BOUNDS CHECKING
+        final_k = max(3, min(50, final_k))
+        
+        logger.info(f"🎯 ADAPTIVE K: base={base_k}, conf={confidence_multiplier:.1f}, "
+                   f"complex={complexity_multiplier:.1f}, intent={intent_multiplier:.1f}, "
+                   f"session={session_multiplier:.1f} → final_k={final_k}")
+        
+        return final_k
+    
+    def _create_real_nucleus_chunks(
+        self, 
+        preserved_document: str, 
+        collection: str, 
+        doc_folder: str, 
+        query: str
+    ) -> List[Dict[str, Any]]:
+        """
+        🚀 CREATE REAL NUCLEUS CHUNKS với FULL DOCUMENT CONTENT
+        Load đúng document content đầy đủ để match với full document
+        🎯 PHASE 4: SYNCHRONIZE CONTENT FORMAT với context expansion
+        """
+        try:
+            # Construct full source path
+            full_source_path = f"data/storage/collections/{collection}/documents/{doc_folder}/{preserved_document}.json"
+            
+            if not os.path.exists(full_source_path):
+                logger.error(f"❌ Source file not found: {full_source_path}")
+                return []
+            
+            # Load document content
+            with open(full_source_path, 'r', encoding='utf-8') as f:
+                document_data = json.load(f)
+            
+            # 🚀 PHASE 4: Load FULL DOCUMENT CONTENT với format IDENTICAL với context expansion
+            content_chunks = document_data.get('content_chunks', [])
+            metadata = document_data.get('metadata', {})
+            
+            if not content_chunks:
+                logger.error(f"❌ No content chunks found in {preserved_document}")
+                return []
+            
+            # 🎯 PHASE 4: SYNCHRONIZE CONTENT FORMAT với context expansion
+            # Sử dụng EXACT format giống như _load_full_document_and_metadata
+            complete_parts = []
+            
+            # 🧹 PHASE 4: Clean metadata formatting - IDENTICAL với context expansion
+            if metadata:
+                complete_parts.append("Thông tin thủ tục:")
+                for key, value in metadata.items():
+                    if value:  # Chỉ loại bỏ empty values
+                        clean_key = key.replace('_', ' ').title()
+                        complete_parts.append(f"{clean_key}: {value}")
+                complete_parts.append("")  # Empty line separator
+            
+            # 🧹 PHASE 4: Clean content formatting - IDENTICAL với context expansion
+            if content_chunks:
+                complete_parts.append("Nội dung chi tiết:")
+                for chunk in content_chunks:
+                    if chunk.get('content'):
+                        complete_parts.append(chunk['content'])
+                    if chunk.get('subcontent'):
+                        for sub in chunk['subcontent']:
+                            if sub.get('content'):
+                                complete_parts.append(sub['content'])
+                complete_parts.append("")
+            
+            # Join tất cả content với format IDENTICAL
+            full_content = "\n".join(complete_parts)
+            
+            # 🚀 PHASE 4: Tạo nucleus chunk với FULL CONTENT format IDENTICAL
+            nucleus_chunk = {
+                'content': full_content,  # 🚀 FULL CONTENT với format IDENTICAL!
+                'collection': collection,
+                'document_title': preserved_document,
+                'source_file': preserved_document,
+                'rerank_score': 1.0,
+                'similarity': 1.0,
+                'source': {'file_path': full_source_path},
+                'section_title': 'Full Document',
+                'chunk_id': 'full_document',
+                'metadata': metadata  # Thêm metadata để context.py có thể sử dụng
+            }
+            
+            logger.info(f"✅ Created nucleus chunk with FULL CONTENT: {len(full_content)} chars")
+            logger.info(f"   Content preview: {full_content[:200]}...")
+            logger.info(f"🎯 PHASE 4: Content format SYNCHRONIZED với context expansion")
+            
+            return [nucleus_chunk]  # Return list với 1 nucleus chunk duy nhất
+            
+        except Exception as e:
+            logger.error(f"❌ Error creating real nucleus chunks: {e}")
+            return []
+    
+
             
     def create_session(self, metadata: Optional[Dict[str, Any]] = None) -> str:
         """Tạo session chat mới"""
@@ -625,25 +814,41 @@ class RAGService:
             
             # Check for preserved document from session override
             preserved_document = None
-            if confidence_level == 'override_high' and routing_result.get('inferred_filters') and 'source_file' in routing_result['inferred_filters']:
+            # 🚀 FIX: Check for both override_high and session override scenarios
+            if (confidence_level == 'override_high' and 
+                routing_result.get('inferred_filters') and 
+                'source_file' in routing_result['inferred_filters']):
                 preserved_document = routing_result['inferred_filters']['source_file']
                 logger.info(f"⚡ FULL CONTEXT PRESERVATION: Using document {preserved_document} directly from session")
+            elif (confidence_level == 'override_high' and 
+                  session and 
+                  session.metadata.get('current_document')):
+                # 🚀 FIX: Use session metadata if inferred_filters doesn't have source_file
+                preserved_document = session.metadata['current_document']
+                logger.info(f"⚡ SESSION METADATA PRESERVATION: Using document {preserved_document} from session metadata")
             
             # If we have a preserved document, skip search and go directly to context expansion
             if preserved_document:
-                # Create nucleus chunk directly pointing to preserved document
-                nucleus_chunks = [{
-                    'content': f"Preserved document from previous question: {preserved_document}",
-                    'collection': target_collection,
-                    'document_title': preserved_document,
-                    'source_file': preserved_document,
-                    'rerank_score': 1.0,  # High score since we're certain
-                    'similarity': 1.0
-                }]
-                
-                # Construct the full path for the source
-                full_source_path = f"data/storage/collections/{target_collection}/documents/{preserved_document}/{preserved_document.replace(' ', '_')}.json"  # Adjust based on your naming convention
-                nucleus_chunks[0]['source'] = full_source_path  # Add the 'source' key with full path
+                # 🚀 FIX: Map document title to correct DOC_XXX folder
+                doc_folder = self._map_document_title_to_doc_folder(preserved_document, best_collections[0])
+                if not doc_folder:
+                    logger.error(f"❌ Could not map document title '{preserved_document}' to DOC folder")
+                    # Fallback to normal search
+                    preserved_document = None
+                else:
+                    # 🚀 FIX: Load real document content instead of placeholder
+                    nucleus_chunks = self._create_real_nucleus_chunks(
+                        preserved_document=preserved_document,
+                        collection=best_collections[0],
+                        doc_folder=doc_folder,
+                        query=query
+                    )
+                    
+                    if not nucleus_chunks:
+                        logger.error(f"❌ Could not create real nucleus chunks for {preserved_document}")
+                        preserved_document = None
+                    else:
+                        logger.info(f"🔧 CREATED REAL NUCLEUS CHUNKS: {len(nucleus_chunks)} chunks with real content")
                 
                 # Skip to context expansion
                 logger.info(f"🔒 SESSION CONTINUITY: Skipping vector search and reranking for preserved document")
@@ -733,14 +938,15 @@ class RAGService:
                 }
                 
             else:
-                # Step 2: Focused Search với DYNAMIC BROAD_SEARCH_K dựa trên router confidence  
-                # 🚀 PERFORMANCE OPTIMIZATION: Chỉ optimize cho HIGH confidence vì MEDIUM đã trigger clarification
-                dynamic_k = settings.broad_search_k  # default 12
-                if confidence_level in ['high', 'high_followup']:
-                    dynamic_k = max(5, settings.broad_search_k - 6)  # Aggressive: 12-6=6, max(5,6)=6
-                    logger.info(f"🎯 HIGH CONFIDENCE: Aggressive reduction to {dynamic_k} docs")
-                else:
-                    logger.info(f"� HIGH CONFIDENCE ONLY: Sử dụng broad_search_k={dynamic_k}")
+                # Step 2: Focused Search với INTELLIGENT ADAPTIVE K SYSTEM  
+                # 🚀 FIX: Use intelligent adaptive K calculation
+                session_history = session.query_history if session else None
+                dynamic_k = self._calculate_adaptive_k(
+                    confidence_level=confidence_level,
+                    confidence_score=routing_result.get('confidence', 0.0),
+                    query=query,
+                    session_history=session_history
+                )
                 
                 broad_search_results = []
                 for collection_name in best_collections[:2]:  # Limit to top 2 collections
@@ -872,6 +1078,119 @@ class RAGService:
             expanded_context = None
             logger.info("🎯 INTELLIGENT CONTEXT EXPANSION - Ưu tiên nucleus chunk từ reranker")
             self.metrics["context_expansions"] += 1
+            
+            # 🚀 PHASE 6: COMPLETE CONTENT MATCHING - FINAL FIX
+            # Fix nucleus chunks để có content đầy đủ thay vì chỉ 2000 chars
+            enhanced_nucleus_chunks = []
+            for chunk in nucleus_chunks:
+                try:
+                    # 🎯 PHASE 6: DEBUG LOGGING - Xem chunk structure
+                    logger.debug(f"🔍 Processing chunk: {chunk.keys()}")
+                    logger.debug(f"🔍 Chunk source: {chunk.get('source', {})}")
+                    logger.debug(f"🔍 Chunk collection: {chunk.get('collection', '')}")
+                    
+                    # 🎯 PHASE 6: SMART EXTRACTION với ROUTER INFORMATION
+                    source_info = chunk.get('source', {})
+                    collection = chunk.get('collection', '')
+                    
+                    # 🚀 PHASE 6: Try multiple extraction strategies
+                    document_title = None
+                    doc_folder = None
+                    
+                    # Strategy 1: Use router information (most reliable)
+                    if routing_result and routing_result.get('best_match', {}).get('document'):
+                        router_document = routing_result['best_match']['document']
+                        if router_document:
+                            document_title = router_document
+                            logger.info(f"🎯 Strategy 1 (Router): Found document: {document_title}")
+                    
+                    # Strategy 2: Try document_title from source
+                    elif source_info.get('document_title'):
+                        document_title = source_info.get('document_title')
+                        logger.debug(f"🎯 Strategy 2: Found document_title: {document_title}")
+                    
+                    # Strategy 3: Try source_file from source
+                    elif source_info.get('source_file'):
+                        document_title = source_info.get('source_file')
+                        logger.debug(f"🎯 Strategy 3: Found source_file: {document_title}")
+                    
+                    # Strategy 4: Try to extract from file_path
+                    elif source_info.get('file_path'):
+                        file_path = source_info.get('file_path')
+                        logger.debug(f"🎯 Strategy 4: Found file_path: {file_path}")
+                        # Extract document name from path: .../DOC_001/01. Đăng ký khai sinh.json
+                        if 'DOC_' in file_path and '.json' in file_path:
+                            parts = file_path.split('\\')  # Windows path
+                            if len(parts) >= 2:
+                                doc_folder = parts[-2]  # DOC_001
+                                # Try to find the actual document file
+                                doc_dir = f"data/storage/collections/{collection}/documents/{doc_folder}"
+                                if os.path.exists(doc_dir):
+                                    # Look for JSON files in the directory
+                                    for file in os.listdir(doc_dir):
+                                        if file.endswith('.json'):
+                                            document_title = file.replace('.json', '')
+                                            logger.debug(f"🎯 Strategy 4: Found document from path: {document_title}")
+                                            break
+                    
+                    # Strategy 5: Use router collection + first document (fallback)
+                    if not document_title and collection:
+                        # Use the first document in collection as fallback
+                        collection_path = f"data/storage/collections/{collection}/documents"
+                        if os.path.exists(collection_path):
+                            doc_folders = [d for d in os.listdir(collection_path) if d.startswith('DOC_')]
+                            if doc_folders:
+                                doc_folder = doc_folders[0]  # Use first DOC folder
+                                doc_dir = f"{collection_path}/{doc_folder}"
+                                if os.path.exists(doc_dir):
+                                    for file in os.listdir(doc_dir):
+                                        if file.endswith('.json'):
+                                            document_title = file.replace('.json', '')
+                                            logger.info(f"🎯 Strategy 5 (Fallback): Found document from collection: {document_title}")
+                                            break
+                    
+                    # 🚀 PHASE 6: Create enhanced nucleus chunk nếu tìm được document
+                    if document_title and collection:
+                        # Map document title to DOC folder nếu chưa có
+                        if not doc_folder:
+                            doc_folder = self._map_document_title_to_doc_folder(document_title, collection)
+                        
+                        if doc_folder:
+                            logger.info(f"🎯 Attempting to enhance: {document_title} in {doc_folder}")
+                            # Create enhanced nucleus chunk với full content
+                            enhanced_chunks = self._create_real_nucleus_chunks(
+                                preserved_document=document_title,
+                                collection=collection,
+                                doc_folder=doc_folder,
+                                query=query
+                            )
+                            if enhanced_chunks:
+                                enhanced_nucleus_chunks.extend(enhanced_chunks)
+                                logger.info(f"✅ Enhanced nucleus chunk for {document_title} with full content")
+                            else:
+                                # Fallback to original chunk
+                                enhanced_nucleus_chunks.append(chunk)
+                                logger.warning(f"⚠️ Could not enhance {document_title}, using original chunk")
+                        else:
+                            # Fallback to original chunk
+                            enhanced_nucleus_chunks.append(chunk)
+                            logger.warning(f"⚠️ Could not map {document_title} to DOC folder")
+                    else:
+                        # Fallback to original chunk
+                        enhanced_nucleus_chunks.append(chunk)
+                        logger.warning(f"⚠️ Could not extract document info from chunk: {chunk.keys()}")
+                        
+                except Exception as e:
+                    logger.error(f"❌ Error enhancing nucleus chunk: {e}")
+                    # Fallback to original chunk
+                    enhanced_nucleus_chunks.append(chunk)
+            
+            # Use enhanced nucleus chunks if available, otherwise fallback to original
+            if enhanced_nucleus_chunks:
+                nucleus_chunks = enhanced_nucleus_chunks
+                logger.info(f"🚀 Using enhanced nucleus chunks: {len(nucleus_chunks)} chunks with full content")
+            else:
+                logger.warning("⚠️ No enhanced nucleus chunks available, using original")
             
             # 🧠 SMART OPTIMIZATION: Ưu tiên nucleus chunk + context liên quan thay vì cắt ngẫu nhiên
             # Logic: Luôn giữ nguyên nucleus chunk + thêm context xung quanh nếu còn chỗ
@@ -1819,28 +2138,9 @@ class RAGService:
                 answer_preview = item['answer'][:100] + "..." if len(item['answer']) > 100 else item['answer']
                 chat_history_structured.append({"role": "assistant", "content": answer_preview})
             
-        # 🎯 PHASE 2: Enhanced Clean System Prompt - Cải thiện khả năng phân biệt thông tin
-        system_prompt_clean = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
-
-QUY TẮC:
-1. Ưu tiên thông tin trong [THÔNG TIN CHÍNH]...[/THÔNG TIN CHÍNH]
-2. Trả lời ngắn gọn, tự nhiên như nói chuyện (5-7 câu)
-3. CHỈ dựa trên thông tin có trong tài liệu
-4. Nếu không có thông tin: "Tài liệu không đề cập vấn đề này"
-5. KHÔNG sử dụng ký tự đặc biệt, emoji, dấu gạch
-
-PHÂN BIỆT CÁC LOẠI PHÍ:
-- Khi hỏi về phí thủ tục: Kiểm tra fee_vnd và fee_text
-- Nếu fee_vnd = 0: "Miễn phí" cho thủ tục chính
-- Nếu fee_text có "Miễn lệ phí" + "Phí cấp bản sao": Phân biệt rõ 2 loại
-- VÍ DỤ: "Đăng ký kết hôn miễn phí. Chỉ tính phí 8.000đ/bản khi xin bản sao trích lục"
-
-THÔNG TIN QUAN TRỌNG:
-- Thời gian: Tìm processing_time_text - thời gian xử lý
-- Nơi làm: Tìm executing_agency - cơ quan thực hiện  
-- Biểu mẫu: Tìm has_form - có/không có mẫu đơn
-
-PHONG CÁCH: Tự nhiên, thân thiện, chính xác về thông tin phí."""
+        # 🎯 PHASE 2: Use Centralized Prompt Service - Improved maintainability
+        # Use default confidence level since routing_result is not available in this context
+        system_prompt_clean = prompt_service.get_legal_rag_prompt("medium")
         
         logger.info(f"📝 Using ChatML format with structured chat history: {len(chat_history_structured)} messages")
         

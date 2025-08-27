@@ -6,6 +6,7 @@ from typing import Optional, List, Dict, Any
 from llama_cpp import Llama
 import time
 from ..core.config import settings
+from .prompt_service import prompt_service
 
 logger = logging.getLogger(__name__)
 
@@ -142,16 +143,19 @@ class LLMService:
         if system_prompt:
             instruction_parts.append(system_prompt)
         
-        # 2. Chat history (nếu có) 
+        # 2. Chat history (nếu có) - 🔧 IMPROVED: Tránh context pollution
         if chat_history:
-            for turn in chat_history:
+            # Chỉ lấy 2-3 câu hỏi gần nhất để tránh context overflow
+            recent_history = chat_history[-3:] if len(chat_history) > 3 else chat_history
+            
+            for turn in recent_history:
                 role = turn.get("role")
                 content = turn.get("content")
                 if role and content:
                     if role == "user":
+                        # 🔧 IMPROVED: Chỉ ghi câu hỏi, không ghi câu trả lời để tránh contamination
                         instruction_parts.append(f"Người dùng hỏi: {content}")
-                    elif role == "assistant":
-                        instruction_parts.append(f"Trợ lý đã trả lời: {content}")
+                    # 🔧 REMOVED: Không ghi câu trả lời của assistant để tránh context pollution
         
         # 3. Context (nếu có)
         if context:
@@ -194,35 +198,11 @@ class LLMService:
         if temperature is None:
             temperature = settings.temperature  # Lấy từ .env thay vì hardcode
         
-        # System prompt tối ưu cho legal domain với enhanced metadata awareness
+        # 🎯 IMPROVED: Use Centralized Prompt Service for consistency
         if system_prompt is None:
-            system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
-
-🚨 QUY TẮC BẮT BUỘC - KHÔNG ĐƯỢC VI PHẠM:
-1. **ƯU TIÊN TUYỆT ĐỐI:** Nếu trong ngữ cảnh có thông tin được đánh dấu bằng 🎯, hãy ưu tiên sử dụng thông tin đó trước tiên
-2. CHỈ trả lời dựa trên thông tin CÓ TRONG tài liệu được cung cấp
-3. Trả lời NGẮN GỌN, CHÍNH XÁC và TRỰC TIẾP (tối đa 9-10 câu)
-4. KHÔNG tự sáng tạo thông tin không có trong tài liệu
-5. KHÔNG đặt thêm câu hỏi
-
-🎯 THÔNG TIN METADATA CẦN QUAN TÂM ĐỔC BIỆT:
-- Khi hỏi về PHÍ/LỆ PHÍ → Tìm phần có đánh dấu 🎯 LỆ PHÍ
-- Khi hỏi về THỜI GIAN → Tìm phần có đánh dấu 🎯 THỜI GIAN XỬ LÝ  
-- Khi hỏi về BIỂU MẪU → Tìm phần có đánh dấu 🎯 BIỂU MẪU
-- Khi hỏi về CƠ QUAN → Tìm phần có đánh dấu 🎯 CƠ QUAN THỰC HIỆN
-
-📋 QUY TẮC VỀ BIỂU MẪU/TỜ KHAI:
-- Khi thủ tục có biểu mẫu đi kèm (has_form = true), hãy đề cập: "Xem biểu mẫu/tờ khai đính kèm"
-- Luôn kiểm tra thông tin form trong metadata trước khi trả lời về biểu mẫu
-- Nếu có form, hướng dẫn người dùng tải về và sử dụng
-
-ĐỊNH DẠNG TRẢ LỜI:
-- Câu trả lời ngắn gọn, chính xác
-- Ưu tiên thông tin được đánh dấu 🎯 nếu có
-- Nếu có form đi kèm, đề cập: "📋 Xem biểu mẫu đính kèm" ở cuối câu trả lời
-- Nếu thông tin không có, trả lời: "Tài liệu không đề cập đến vấn đề này"
-
-Trả lời chính xác, ngắn gọn."""
+            # Get fallback prompt from centralized service
+            system_prompt = prompt_service.get_fallback_prompt()
+            logger.debug("📝 Using fallback prompt from PromptService")
         
         # Format prompt theo chuẩn ChatML thay vì ### Câu hỏi: ### Trả lời:
         formatted_prompt = self._format_prompt(
