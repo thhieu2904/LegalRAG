@@ -9,8 +9,29 @@
     "applicant_type": ["Cá nhân", "Tổ chức"],
     "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu. Trường hợp nhận hồ sơ sau 15 giờ thì trả kết quả trong ngày làm việc tiếp theo.",
     "fee_vnd": null,
-    "fee_text": "Miễn lệ phí đối với trường hợp đăng ký khai tử đúng hạn. Trường hợp không đúng hạn, lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng (8.000đ, 5.000đ, 4.000đ). Phí cấp bản sao: 8.000đ/bản.",
+    "fee_text": "Miễn lệ phí đối với trường hợp đăng ký khai tử đúng hạn. Trường hợp không đúng hạn: 8.000đ (trực tiếp), 4.000đ (trực tuyến). Đăng ký lại/quá hạn: 5.000đ. Phí cấp bản sao trích lục: 8.000đ/bản. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật, người cao tuổi, đồng bào dân tộc thiểu số...).",
     "has_form": true,
+    "fee_structure": {
+      "main_fee": {
+        "late_registration_fee": {
+          "direct": 8000,
+          "online": 4000
+        },
+        "re_registration_fee": 5000
+      },
+      "exemptions": [
+        "Đăng ký khai tử đúng hạn",
+        "Gia đình có công với cách mạng",
+        "Hộ nghèo",
+        "Người khuyết tật",
+        "Người cao tuổi",
+        "Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+        "Trẻ em"
+      ],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "requirements_conditions": null,
     "legal_basis_references": [
       "Luật Hộ tịch năm 2014",
@@ -74,7 +95,7 @@
     {
       "chunk_id": 4,
       "section_title": "Kết quả thực hiện và Lệ phí",
-      "content": "**Kết quả:**\n- Trích lục khai tử (bản chính).\n- Bản sao Trích lục khai tử (nếu có yêu cầu).\n- Bản điện tử Trích lục khai tử.\n**Lệ phí:**\n- Miễn lệ phí đối với trường hợp đăng ký khai tử đúng hạn.\n- Trường hợp không đúng hạn có các mức phí: 8.000đ, 5.000đ, 4.000đ tùy theo hình thức nộp và khu vực. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, người khuyết tật...).",
+      "content": "**Kết quả:**\n- Trích lục khai tử (bản chính).\n- Bản sao Trích lục khai tử (nếu có yêu cầu).\n- Bản điện tử Trích lục khai tử.\n\n**LỆ PHÍ CHI TIẾT:**\n\n**LỆ PHÍ ĐĂNG KÝ KHAI TỬ KHÔNG ĐÚNG HẠN:**\n- Nộp trực tiếp: 8.000đ\n- Nộp trực tuyến (đến 31/12/2025): 4.000đ\n\n**LỆ PHÍ ĐĂNG KÝ LẠI/QUÁ HẠN:**\n- 5.000đ/trường hợp\n\n**PHÍ CẤP BẢN SAO TRÍCH LỤC KHAI TỬ:**\n- 8.000đ/bản sao\n\n**CÁC TRƯỜNG HỢP ĐƯỢC MIỄN LỆ PHÍ:**\n- Đăng ký khai tử đúng hạn\n- Gia đình có công với cách mạng\n- Hộ nghèo\n- Người khuyết tật\n- Người cao tuổi\n- Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn\n- Trẻ em\n\n**LƯU Ý:** Mức lệ phí có thể thay đổi tùy theo khu vực áp dụng (32 xã/phường, 28 xã/phường, hoặc 43 xã/phường khác nhau).",
       "source_reference": "Mục 5.e, 5.g",
       "keywords": [
         "kết quả",

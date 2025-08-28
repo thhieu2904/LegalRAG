@@ -1,1 +1,53 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "24. Chuyển đổi Văn phòng công chứng theo loại hình doanh nghiệp tư nhân thành Văn phòng công chứng theo loại hình công ty hợp danh.doc",
+    "title": "Chuyển đổi Văn phòng công chứng theo loại hình doanh nghiệp tư nhân thành Văn phòng công chứng theo loại hình công ty hợp danh",
+    "code": "QT 24/CC",
+    "issuing_authority": "Ủy ban nhân dân cấp tỉnh",
+    "effective_date": "",
+    "executing_agency": "Sở Tư pháp",
+    "applicant_type": "Văn phòng công chứng theo loại hình doanh nghiệp tư nhân",
+    "processing_time_text": "05 ngày làm việc (Sở Tư pháp) + 10 ngày làm việc (UBND cấp tỉnh)",
+    "fee_vnd": 0,
+    "fee_text": "Không có lệ phí",
+    "has_form": true,
+    "requirements_conditions": "Văn phòng công chứng đã hoạt động từ đủ 02 năm trở lên; không thuộc trường hợp tạm ngừng hoạt động hoặc bị thu hồi quyết định cho phép thành lập, thu hồi giấy đăng ký hoạt động",
+    "legal_basis_references": [
+      "Luật Công chứng 2014",
+      "Nghị định số 29/2015/NĐ-CP của Chính phủ",
+      "Quyết định 30/QĐ-TTg của Thủ tướng Chính phủ về đơn giản hóa thủ tục hành chính"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": 0,
+    "exemptions": "Không có lệ phí cho thủ tục chuyển đổi Văn phòng công chứng",
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "chunk_1",
+      "title": "Thành phần hồ sơ",
+      "content": "1. Đơn đề nghị chuyển đổi Văn phòng công chứng, trong đó nêu rõ việc đáp ứng các điều kiện chuyển đổi quy định tại khoản 3 Điều 17 Nghị định số 29/2015/NĐ-CP.\n2. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử Quyết định bổ nhiệm của các công chứng viên hợp danh dự kiến của Văn phòng công chứng chuyển đổi.\n3. Giấy tờ chứng minh đã hành nghề công chứng từ đủ 02 năm trở lên đối với công chứng viên dự kiến làm Trưởng Văn phòng công chứng chuyển đổi.\n4. Cam kết bằng văn bản của Trưởng Văn phòng công chứng về việc chịu trách nhiệm cá nhân bằng toàn bộ tài sản của mình đối với các khoản nợ và nghĩa vụ tài sản khác chưa thanh toán.\n5. Thỏa thuận bằng văn bản của các thành viên hợp danh dự kiến về việc tiếp tục thực hiện các yêu cầu công chứng đang được giải quyết, các giao dịch khác đang thực hiện hoặc chưa chấm dứt, hủy bỏ.\n6. Các giấy tờ chứng minh về việc tiếp nhận và sử dụng người lao động hiện có của Văn phòng công chứng chuyển đổi.\n7. Các giấy tờ khác liên quan đến việc chuyển đổi theo quy định."
+    },
+    {
+      "chunk_id": "chunk_2",
+      "title": "Thời hạn giải quyết",
+      "content": "1. Trong thời hạn 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ, Sở Tư pháp xem xét, đề nghị Ủy ban nhân dân cấp tỉnh cho phép chuyển đổi Văn phòng công chứng.\n2. Trong thời hạn 10 ngày làm việc kể từ ngày nhận được văn bản đề nghị của Sở Tư pháp và hồ sơ hợp lệ, Ủy ban nhân dân cấp tỉnh xem xét, quyết định cho phép chuyển đổi Văn phòng công chứng.\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền giải quyết: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục."
+    },
+    {
+      "chunk_id": "chunk_3",
+      "title": "Đối tượng thực hiện/Cơ quan thực hiện",
+      "content": "Đối tượng thực hiện: Văn phòng công chứng theo loại hình doanh nghiệp tư nhân muốn chuyển đổi thành loại hình công ty hợp danh, đáp ứng các điều kiện theo quy định pháp luật.\nCơ quan thực hiện: Sở Tư pháp đề nghị Ủy ban nhân dân cấp tỉnh quyết định."
+    },
+    {
+      "chunk_id": "chunk_4",
+      "title": "Kết quả thực hiện/Lệ phí",
+      "content": "Kết quả: Quyết định cho phép chuyển đổi Văn phòng công chứng của Ủy ban nhân dân cấp tỉnh.\nLệ phí: Không có lệ phí cho thủ tục chuyển đổi Văn phòng công chứng."
+    },
+    {
+      "chunk_id": "chunk_5",
+      "title": "Quy trình xử lý chi tiết",
+      "content": "1. Văn phòng công chứng chuẩn bị hồ sơ đề nghị chuyển đổi theo quy định.\n2. Đảm bảo đáp ứng các điều kiện chuyển đổi: đã hoạt động từ đủ 02 năm trở lên, không thuộc trường hợp tạm ngừng hoặc bị thu hồi, v.v.\n3. Nộp hồ sơ tại Sở Tư pháp nơi Văn phòng công chứng có trụ sở.\n4. Sở Tư pháp tiếp nhận và kiểm tra tính hợp lệ của hồ sơ trong thời hạn 05 ngày làm việc.\n5. Sở Tư pháp đề nghị Ủy ban nhân dân cấp tỉnh cho phép chuyển đổi.\n6. Ủy ban nhân dân cấp tỉnh xem xét, quyết định trong thời hạn 10 ngày làm việc.\n7. Trường hợp hồ sơ thiếu hoặc không hợp lệ: Thông báo bổ sung hoặc từ chối.\n8. Sau khi có quyết định cho phép chuyển đổi: Văn phòng công chứng thực hiện thủ tục chuyển đổi theo quy định pháp luật.\n9. Văn phòng công chứng chuyển đổi tiếp tục hoạt động theo loại hình công ty hợp danh.\n10. Cập nhật thông tin đăng ký hoạt động và các giấy tờ liên quan theo quy định."
+    }
+  ]
+}

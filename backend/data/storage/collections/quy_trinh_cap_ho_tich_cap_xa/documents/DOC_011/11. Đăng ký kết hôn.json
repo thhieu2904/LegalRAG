@@ -9,7 +9,38 @@
     "applicant_type": ["Cá nhân"],
     "processing_time_text": "Ngay trong ngày tiếp nhận hồ sơ. Trường hợp cần xác minh điều kiện kết hôn thì không quá 05 ngày làm việc.",
     "fee_vnd": 0,
-    "fee_text": "Miễn lệ phí đăng ký kết hôn. Phí cấp bản sao Trích lục kết hôn (nếu có yêu cầu): 8.000 đồng/bản.",
+    "fee_text": "Miễn lệ phí đăng ký kết hôn. Phí cấp bản sao Trích lục kết hôn (nếu có yêu cầu): 8.000 đồng/bản sao.",
+    "fee_structure": {
+      "main_fee": {
+        "type": "registration_fee",
+        "description": "Lệ phí đăng ký kết hôn",
+        "fee_amounts": [
+          {
+            "condition": "đăng ký kết hôn",
+            "amount": 0,
+            "currency": "VND",
+            "note": "Miễn lệ phí"
+          }
+        ],
+        "exemptions": [
+          {
+            "condition": "tất cả trường hợp",
+            "description": "Miễn lệ phí đăng ký kết hôn",
+            "applicable_to": ["registration_fee"]
+          }
+        ]
+      },
+      "additional_fees": [
+        {
+          "type": "copy_fee",
+          "description": "Phí cấp bản sao Trích lục kết hôn",
+          "amount": 8000,
+          "currency": "VND",
+          "unit": "bản sao",
+          "optional": true
+        }
+      ]
+    },
     "has_form": true,
     "requirements_conditions": "Nam từ đủ 20 tuổi trở lên, nữ từ đủ 18 tuổi trở lên; Việc kết hôn do nam và nữ tự nguyện quyết định; Các bên không bị mất năng lực hành vi dân sự; Việc kết hôn không thuộc các trường hợp cấm (kết hôn giả tạo, tảo hôn, cưỡng ép, đang có vợ/chồng, cùng dòng máu trực hệ...). Nhà nước không thừa nhận hôn nhân giữa những người cùng giới tính.",
     "legal_basis_references": [
@@ -35,7 +66,7 @@
     {
       "chunk_id": 1,
       "section_title": "Thành phần, số lượng hồ sơ và các lưu ý quan trọng",
-      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- Tờ khai đăng ký kết hôn theo mẫu (hai bên có thể khai chung).\n- Mẫu hộ tịch điện tử tương tác đăng ký kết hôn (nếu nộp trực tuyến).\n\n**B. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng (Hộ chiếu, Căn cước công dân...).\n2. Giấy tờ chứng minh thông tin về nơi cư trú (nếu CSDLQGVDC không có).\n\n**C. CÁC LƯU Ý QUAN TRỌNG:**\n- **Trách nhiệm của cơ quan đăng ký:** Tự tra cứu thông tin về tình trạng hôn nhân của hai bên trên CSDLHTĐT và CSDLQGVDC. Nếu không tra cứu được, sẽ yêu cầu UBND nơi thường trú của người yêu cầu xác minh.\n- **Trường hợp đã ly hôn ở nước ngoài:** Phải thực hiện thủ tục ghi chú ly hôn vào sổ hộ tịch trước khi đăng ký kết hôn mới.\n- **Hình thức giấy tờ:** Chấp nhận nộp bản sao chứng thực, bản sao từ sổ gốc, hoặc bản chụp kèm theo bản chính để đối chiếu. Giấy tờ trên ứng dụng VneID được chấp nhận.\n- **Giấy tờ nước ngoài:** Phải được hợp pháp hóa lãnh sự, trừ trường hợp được miễn.",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- Tờ khai đăng ký kết hôn theo mẫu (hai bên có thể khai chung).\n- Mẫu hộ tịch điện tử tương tác đăng ký kết hôn (nếu nộp trực tuyến).\n\n**B. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng (Hộ chiếu, Căn cước công dân...).\n2. Giấy tờ chứng minh thông tin về nơi cư trú (nếu CSDLQGVDC không có).\n\n**C. CÁC LƯU Ý QUAN TRỌNG:**\n- **Tra cứu tình trạng hôn nhân:** Cơ quan đăng ký hộ tịch tự tra cứu thông tin về tình trạng hôn nhân của hai bên trên CSDLHTĐT và CSDLQGVDC. Nếu không tra cứu được, sẽ yêu cầu UBND nơi thường trú xác minh trong 03 ngày.\n- **Trường hợp đã ly hôn ở nước ngoài:** Phải thực hiện thủ tục ghi chú ly hôn vào sổ hộ tịch trước khi đăng ký kết hôn mới.\n- **Hình thức giấy tờ:** Chấp nhận nộp bản sao chứng thực, bản sao từ sổ gốc, hoặc bản chụp kèm theo bản chính để đối chiếu. Giấy tờ trên ứng dụng VneID được chấp nhận.\n- **Giấy tờ nước ngoài:** Phải được hợp pháp hóa lãnh sự, trừ trường hợp được miễn.",
       "source_reference": "Mục 5.a",
       "keywords": [
         "hồ sơ",

@@ -10,6 +10,32 @@
     "processing_time_text": "03 ngày làm việc. Trường hợp cần xác minh thì không quá 23 ngày.",
     "fee_vnd": null,
     "fee_text": "Lệ phí thay đổi tùy khu vực và hình thức nộp (trực tiếp/trực tuyến). Có thể miễn phí hoặc có các mức phí 10.000đ, 8.000đ. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...).",
+    "fee_structure": {
+      "main_fee": {
+        "direct": "0đ",
+        "description": "Không có lệ phí (áp dụng tại 32 xã, phường tại Phụ lục 1)"
+      },
+      "regional_fees": [
+        {
+          "area": "Tại 43 xã, phường",
+          "direct": "10.000đ",
+          "online": "8.000đ"
+        },
+        {
+          "area": "Tại 28 xã, phường",
+          "direct": "10.000đ",
+          "online": null
+        }
+      ],
+      "exemptions": [
+        "Người thuộc gia đình có công với cách mạng",
+        "Người thuộc hộ nghèo",
+        "Người cao tuổi",
+        "Người khuyết tật",
+        "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn"
+      ],
+      "additional_fees": {}
+    },
     "has_form": true,
     "requirements_conditions": "Trường hợp yêu cầu cấp Giấy xác nhận tình trạng hôn nhân để kết hôn, người yêu cầu phải đáp ứng đủ điều kiện kết hôn:\n- Nam từ đủ 20 tuổi, nữ từ đủ 18 tuổi trở lên.\n- Việc kết hôn do tự nguyện quyết định.\n- Không bị mất năng lực hành vi dân sự.\n- Không thuộc các trường hợp cấm kết hôn (kết hôn giả tạo, tảo hôn, đang có vợ/chồng, cùng dòng máu trực hệ...).",
     "legal_basis_references": [
@@ -73,7 +99,7 @@
     {
       "chunk_id": 4,
       "section_title": "Quy trình xử lý công việc",
-      "content": "**Thời gian:** 03 ngày làm việc (không xác minh) hoặc 23 ngày (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (½ ngày - 1 ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ và tiến hành xác minh nếu cần (1 ngày - 20 ngày).\n3. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (½ ngày - 1 ngày).\n4. Văn thư UBND đóng dấu (½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).",
+      "content": "**Thời gian:** 03 ngày làm việc (không xác minh) hoặc 23 ngày (có xác minh).\n**Các bước thực hiện:**\n1. **Tiếp nhận hồ sơ và kiểm tra tính pháp lý:** Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (½ ngày không xác minh, 1 ngày có xác minh). Nếu chưa phù hợp thì hướng dẫn làm lại hồ sơ.\n2. **Thẩm tra hồ sơ:** Công chức Tư pháp - Hộ tịch thẩm tra tính thống nhất, hợp lệ của các thông tin trong hồ sơ (1 ngày không xác minh, 20 ngày có xác minh).\n3. **Ký duyệt hồ sơ:** Lãnh đạo UBND xem xét, ký duyệt (½ ngày không xác minh, 1 ngày có xác minh).\n4. **Đóng dấu văn bản:** Văn thư UBND đóng dấu (½ ngày).\n5. **Ghi sổ và trả kết quả:** Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).\n\n*Ghi chú: Các bước có thể tăng hoặc giảm tùy theo đặc điểm của thủ tục nhưng đảm bảo tổng thời gian không quá quy định pháp luật.",
       "source_reference": "Mục 5.l",
       "keywords": [
         "quy trình",
@@ -83,6 +109,8 @@
         "thẩm tra",
         "xác minh",
         "ký duyệt",
+        "đóng dấu",
+        "ghi sổ",
         "trả kết quả"
       ]
     }

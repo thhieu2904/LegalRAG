@@ -10,6 +10,38 @@
     "processing_time_text": "Ngay trong ngày tiếp nhận hồ sơ. Trường hợp cần xác minh thì không quá 03 ngày làm việc.",
     "fee_vnd": null,
     "fee_text": "Lệ phí thay đổi tùy theo loại việc hộ tịch, hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 75.000đ, 60.000đ, 50.000đ, 40.000đ, 37.500đ. Có các trường hợp được miễn lệ phí. Phí cấp bản sao: 8.000đ/bản.",
+    "fee_structure": {
+      "main_fee": {
+        "direct": "75.000đ",
+        "online": "37.500đ",
+        "description": "Áp dụng tại 32 xã, phường tại Phụ lục 1"
+      },
+      "regional_fees": [
+        {
+          "area": "Tại tỉnh Sóc Trăng cũ",
+          "direct": null,
+          "online": "60.000đ"
+        },
+        {
+          "area": "Tại 28 xã, phường",
+          "direct": "50.000đ",
+          "online": "40.000đ"
+        }
+      ],
+      "exemptions": [
+        "Người thuộc gia đình có công với cách mạng",
+        "Người thuộc hộ nghèo",
+        "Người khuyết tật",
+        "Trẻ em (tại tỉnh Sóc Trăng cũ)",
+        "Người cao tuổi (tại tỉnh Sóc Trăng cũ)",
+        "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tại tỉnh Sóc Trăng cũ)",
+        "Người có công với cách mạng (tại 28 xã, phường)",
+        "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tại 28 xã, phường)"
+      ],
+      "additional_fees": {
+        "copy_fee": "8.000đ/bản sao"
+      }
+    },
     "has_form": true,
     "requirements_conditions": null,
     "legal_basis_references": [
@@ -74,16 +106,19 @@
     {
       "chunk_id": 5,
       "section_title": "Quy trình xử lý công việc",
-      "content": "**Thời gian:** 01 ngày làm việc (không xác minh) hoặc 03 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Bộ phận tiếp nhận và trả kết quả tiếp nhận, kiểm tra hồ sơ (1 ngày hoặc ½ ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ (nếu cần xác minh, ½ ngày).\n3. Lãnh đạo UBND ký Trích lục ghi chú (nếu cần xác minh, 1 ngày).\n4. Văn thư UBND đóng dấu văn bản (nếu cần xác minh, ½ ngày).\n5. Cán bộ tại Bộ phận tiếp nhận và trả kết quả ghi sổ và trả kết quả (½ ngày).",
+      "content": "**Thời gian:** Ngay trong ngày tiếp nhận hồ sơ (nếu nhận trước 15 giờ), hoặc trong ngày làm việc tiếp theo (nếu nhận sau 15 giờ). Trường hợp phải xác minh thì không quá 03 ngày làm việc.\n**Các bước thực hiện:**\n1. **Tiếp nhận hồ sơ và kiểm tra tính pháp lý:** Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (trong ngày).\n2. **Thẩm tra hồ sơ:** Công chức Tư pháp - Hộ tịch thẩm tra tính thống nhất, hợp lệ của các thông tin trong hồ sơ (trong ngày, hoặc có thể kéo dài nếu xác minh).\n3. **Ký Trích lục ghi chú:** Lãnh đạo UBND ký duyệt (trong ngày).\n4. **Đóng dấu văn bản:** Văn thư UBND đóng dấu (trong ngày).\n5. **Ghi sổ và hoàn trả kết quả:** Cán bộ tại Trung tâm Phục vụ hành chính công ghi vào Sổ hộ tịch tương ứng và hoàn trả kết quả (trong ngày).\n\n*Ghi chú: Quy trình có thể được điều chỉnh tùy theo đặc điểm của từng loại việc hộ tịch và có thể được xử lý trong cùng một ngày nếu không cần xác minh.",
       "source_reference": "Mục 5.l",
       "keywords": [
         "quy trình",
         "các bước",
         "thời gian",
+        "trong ngày",
         "tiếp nhận",
         "thẩm tra",
         "xác minh",
-        "ký duyệt"
+        "ký duyệt",
+        "đóng dấu",
+        "ghi sổ"
       ]
     }
   ]

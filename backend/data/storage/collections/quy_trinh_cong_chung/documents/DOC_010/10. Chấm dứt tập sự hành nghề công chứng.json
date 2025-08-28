@@ -1,1 +1,118 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "10. Chấm dứt tập sự hành nghề công chứng.doc",
+    "title": "Chấm dứt tập sự hành nghề công chứng",
+    "code": "QT 10/CC",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "15/05/2025",
+    "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương",
+    "applicant_type": "Người tập sự hành nghề công chứng hoặc tổ chức/cá nhân có liên quan",
+    "processing_time_text": "Thời hạn giải quyết: 07 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ",
+    "fee_vnd": 0,
+    "fee_text": "Không có phí",
+    "has_form": true,
+    "requirements_conditions": [
+      "Được tuyển dụng là cán bộ, công chức, viên chức (trừ viên chức làm việc tại Phòng công chứng)",
+      "Được tuyển dụng là sĩ quan, quân nhân chuyên nghiệp, công nhân quốc phòng",
+      "Được tuyển dụng là sĩ quan, hạ sĩ quan, công nhân trong cơ quan, đơn vị thuộc Công an nhân dân",
+      "Ký hợp đồng lao động với cơ quan, tổ chức, doanh nghiệp (trừ tổ chức hành nghề công chứng)",
+      "Không thực hiện việc tập sự trong thời hạn 30 ngày kể từ ngày quyết định đăng ký tập sự có hiệu lực",
+      "Tạm ngừng tập sự không thuộc trường hợp quy định hoặc quá số lần quy định",
+      "Vi phạm quy định về việc tập sự đã được nhắc nhở nhưng không sửa chữa"
+    ],
+    "legal_basis_references": [
+      "Thông tư số 06/2025/TT-BTP ngày 15/5/2025 của Bộ trưởng Bộ Tư pháp quy định về tập sự hành nghề công chứng",
+      "Luật Công chứng số 53/2014/QH13",
+      "Nghị định số 29/2015/NĐ-CP quy định chi tiết và hướng dẫn thi hành Luật Công chứng"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "amount_vnd": 0,
+      "description": "Không có phí cho thủ tục chấm dứt tập sự",
+      "payment_method": "Không áp dụng",
+      "exemption_conditions": [
+        "Thủ tục hành chính này không thu phí theo quy định"
+      ]
+    },
+    "exemptions": [
+      {
+        "condition": "Tất cả trường hợp",
+        "description": "Không thu phí cho thủ tục chấm dứt tập sự hành nghề công chứng"
+      }
+    ],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "QT_10_CC_01",
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Văn bản đề nghị chấm dứt tập sự hành nghề công chứng\n2. Quyết định đăng ký tập sự hành nghề công chứng (bản sao)\n3. Văn bản chứng minh thuộc một trong các trường hợp chấm dứt tập sự:\n   - Quyết định tuyển dụng vào cơ quan nhà nước\n   - Hợp đồng lao động với cơ quan, tổ chức, doanh nghiệp\n   - Văn bản xác nhận không thực hiện tập sự quá 30 ngày\n   - Báo cáo vi phạm quy định về tập sự\n4. Các tài liệu khác chứng minh thuộc trường hợp chấm dứt\n\nLưu ý: Hồ sơ có thể nộp trực tiếp, qua dịch vụ bưu chính hoặc trực tuyến.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "hồ sơ",
+        "đề nghị chấm dứt",
+        "quyết định tuyển dụng",
+        "hợp đồng lao động",
+        "vi phạm quy định"
+      ]
+    },
+    {
+      "chunk_id": "QT_10_CC_02",
+      "section_title": "Thời hạn giải quyết",
+      "content": "- Tiếp nhận hồ sơ: Trong ngày làm việc\n- Thụ lý hồ sơ: 02 ngày làm việc\n- Xác minh trường hợp chấm dứt: 03 ngày làm việc\n- Ra quyết định chấm dứt: 02 ngày làm việc\n\nTổng thời gian giải quyết: 07 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bổ sung trong 03 ngày làm việc.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "thời hạn",
+        "07 ngày",
+        "tiếp nhận",
+        "thụ lý",
+        "xác minh",
+        "quyết định"
+      ]
+    },
+    {
+      "chunk_id": "QT_10_CC_03",
+      "section_title": "Đối tượng thực hiện và Cơ quan có thẩm quyền",
+      "content": "Đối tượng thực hiện thủ tục:\n- Người tập sự hành nghề công chứng thuộc một trong các trường hợp chấm dứt\n- Tổ chức hành nghề công chứng nhận tập sự\n- Cơ quan, tổ chức tuyển dụng người tập sự\n\nCơ quan có thẩm quyền giải quyết:\n- Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương nơi đăng ký tập sự\n\nCác trường hợp chấm dứt tập sự:\n- Tuyển dụng vào cơ quan nhà nước (công chức, viên chức, sĩ quan, quân nhân)\n- Ký hợp đồng lao động với cơ quan, tổ chức, doanh nghiệp\n- Không thực hiện tập sự quá 30 ngày\n- Tạm ngừng tập sự không đúng quy định\n- Vi phạm quy định về tập sự",
+      "source_reference": "Điều 9 Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "đối tượng",
+        "người tập sự",
+        "tổ chức hành nghề",
+        "sở tư pháp",
+        "trường hợp chấm dứt"
+      ]
+    },
+    {
+      "chunk_id": "QT_10_CC_04",
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "Kết quả thực hiện thủ tục:\n- Quyết định chấm dứt tập sự hành nghề công chứng\n- Văn bản thông báo cho các bên liên quan\n\nLệ phí: Không có phí cho thủ tục này\n\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn bổ sung.\n\nMẫu đơn: Văn bản đề nghị chấm dứt tập sự hành nghề công chứng.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "kết quả",
+        "quyết định chấm dứt",
+        "không có phí",
+        "hồ sơ thiếu",
+        "mẫu đơn"
+      ]
+    },
+    {
+      "chunk_id": "QT_10_CC_05",
+      "section_title": "Quy trình xử lý chi tiết",
+      "content": "Bước 1: Người tập sự hoặc tổ chức liên quan nộp hồ sơ đề nghị chấm dứt tập sự đến Sở Tư pháp\n\nBước 2: Sở Tư pháp tiếp nhận và kiểm tra hồ sơ:\n- Trường hợp hồ sơ đầy đủ: Tiếp tục xử lý\n- Trường hợp hồ sơ thiếu: Thông báo bổ sung trong 03 ngày\n\nBước 3: Thụ lý hồ sơ và phân công xử lý trong 02 ngày\n\nBước 4: Xác minh trường hợp chấm dứt tập sự:\n- Kiểm tra các văn bản chứng minh\n- Xác minh với tổ chức hành nghề công chứng\n- Thẩm tra tính chính xác của hồ sơ\n\nBước 5: Lập báo cáo thẩm tra và trình lãnh đạo phê duyệt\n\nBước 6: Lãnh đạo Sở Tư pháp ký quyết định chấm dứt tập sự\n\nBước 7: Cấp quyết định chấm dứt tập sự cho người đề nghị\n\nBước 8: Thông báo cho tổ chức hành nghề công chứng và các bên liên quan\n\nLưu ý: Quyết định chấm dứt tập sự phải nêu rõ lý do chấm dứt theo quy định.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "quy trình",
+        "bước 1",
+        "bước 2",
+        "bước 3",
+        "bước 4",
+        "bước 5",
+        "bước 6",
+        "bước 7",
+        "bước 8"
+      ]
+    }
+  ]
+}

@@ -10,6 +10,26 @@
     "processing_time_text": "Ngay trong ngày tiếp nhận hồ sơ. Nếu nhận sau 15 giờ thì trả kết quả vào ngày làm việc tiếp theo.",
     "fee_vnd": 8000,
     "fee_text": "Phí là 8.000 đồng/bản sao hoặc 5.000 đồng/bản sao tùy theo khu vực áp dụng.",
+    "fee_structure": {
+      "main_fee": {
+        "direct": "8.000đ/bản sao",
+        "description": "Áp dụng tại 32 xã, phường tại Phụ lục 1"
+      },
+      "regional_fees": [
+        {
+          "area": "Tại 28 xã, phường",
+          "direct": "5.000đ/bản sao",
+          "description": "Phí cấp bản sao/sự kiện hộ tịch đã đăng ký"
+        },
+        {
+          "area": "Tại 43 xã, phường",
+          "direct": "8.000đ/bản sao",
+          "description": "Phí cấp bản sao/sự kiện hộ tịch đã đăng ký"
+        }
+      ],
+      "exemptions": [],
+      "additional_fees": {}
+    },
     "has_form": true,
     "requirements_conditions": null,
     "legal_basis_references": [
@@ -68,7 +88,7 @@
     {
       "chunk_id": 5,
       "section_title": "Quy trình xử lý công việc",
-      "content": "**Thời gian:** 01 ngày làm việc.\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ.\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ.\n3. Lãnh đạo UBND xem xét, ký duyệt hồ sơ.\n4. Văn thư UBND đóng dấu văn bản.\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả.",
+      "content": "**Thời gian:** 01 ngày làm việc.\n**Các bước thực hiện:**\n1. **Tiếp nhận hồ sơ và kiểm tra tính pháp lý:** Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (1 ngày). Nếu chưa phù hợp thì hướng dẫn làm lại hồ sơ.\n2. **Thẩm tra hồ sơ:** Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ (trong ngày).\n3. **Ký duyệt hồ sơ:** Lãnh đạo UBND xem xét, ký duyệt (trong ngày).\n4. **Đóng dấu văn bản:** Văn thư UBND đóng dấu (trong ngày).\n5. **Ghi sổ và trả kết quả:** Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (trong ngày).\n\n*Ghi chú: Quy trình được thực hiện trong ngày tiếp nhận hồ sơ để đảm bảo hiệu quả và thuận tiện cho người dân.",
       "source_reference": "Mục 5.k",
       "keywords": [
         "quy trình",
@@ -77,7 +97,10 @@
         "tiếp nhận",
         "thẩm tra",
         "ký duyệt",
-        "trả kết quả"
+        "đóng dấu",
+        "ghi sổ",
+        "trả kết quả",
+        "trong ngày"
       ]
     }
   ]

@@ -10,6 +10,13 @@
     "processing_time_text": "03 ngày làm việc. Trường hợp cần xác minh thì không quá 05 ngày làm việc.",
     "fee_vnd": 0,
     "fee_text": "Miễn lệ phí. Phí cấp bản sao Trích lục (nếu có yêu cầu): 8.000 đồng/bản.",
+    "fee_structure": {
+      "main_fee": 0,
+      "exemptions": ["Miễn lệ phí cho thủ tục chính"],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "has_form": true,
     "requirements_conditions": "Người giám sát việc giám hộ phải đáp ứng các điều kiện sau:\n- Nếu là cá nhân: Phải có năng lực hành vi dân sự đầy đủ.\n- Nếu là pháp nhân: Phải có năng lực pháp luật dân sự phù hợp với việc giám sát.\n- Cả cá nhân và pháp nhân đều phải có điều kiện cần thiết để thực hiện việc giám sát.",
     "legal_basis_references": [
@@ -68,18 +75,16 @@
     },
     {
       "chunk_id": 4,
-      "section_title": "Quy trình xử lý công việc",
-      "content": "**Thời gian:** 03 ngày làm việc (không xác minh) hoặc 05 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (½ ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ và tiến hành xác minh nếu cần (1 ngày - 3 ngày).\n3. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (½ ngày).\n4. Văn thư UBND đóng dấu văn bản (½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).",
-      "source_reference": "Mục 5.l",
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả:**\n- Trích lục đăng ký giám sát việc giám hộ (bản chính), bản sao Trích lục đăng ký giám sát việc giám hộ (trường hợp yêu cầu cấp bản sao Trích lục đăng ký giám sát việc giám hộ).\n- Bản điện tử Trích lục đăng ký giám sát việc giám hộ (Bản điện tử sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu sau khi đã hoàn tất thủ tục đăng ký giám sát việc giám hộ tại cơ quan đăng ký hộ tịch).\n**Lệ phí:** Không. Phí cấp bản sao Trích lục đăng ký giám sát giám hộ (nếu có yêu cầu): 8.000 đồng/bản sao Trích lục/sự kiện hộ tịch đã đăng ký.",
+      "source_reference": "Mục 5.e, 5.g",
       "keywords": [
-        "quy trình",
-        "các bước",
-        "thời gian",
-        "tiếp nhận",
-        "thẩm tra",
-        "xác minh",
-        "ký duyệt",
-        "trả kết quả"
+        "kết quả",
+        "trích lục giám sát giám hộ",
+        "bản sao",
+        "bản điện tử",
+        "lệ phí",
+        "miễn phí"
       ]
     }
   ]

@@ -10,6 +10,52 @@
     "processing_time_text": "- Bổ sung thông tin hộ tịch: Ngay trong ngày làm việc.\n- Thay đổi, cải chính hộ tịch, xác định lại dân tộc: 03 ngày làm việc (nếu cần xác minh thì không quá 06 ngày làm việc).",
     "fee_vnd": null,
     "fee_text": "Lệ phí thay đổi tùy theo loại yêu cầu (thay đổi, cải chính, bổ sung, xác định lại dân tộc), hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí từ 5.000đ đến 28.000đ. Có các trường hợp được miễn lệ phí.",
+    "fee_structure": {
+      "main_fee": {
+        "types": {
+          "change_correction": {
+            "direct": 15000,
+            "online": 7500,
+            "valid_until": "2025-12-31"
+          },
+          "ethnicity_identification": {
+            "direct": 28000,
+            "online": 14000,
+            "valid_until": "2025-12-31"
+          },
+          "supplement": {
+            "direct": 10000,
+            "online": 5000,
+            "valid_until": "2025-12-31"
+          }
+        },
+        "applies_to": "32 xã, phường tại Phụ lục 1"
+      },
+      "regional_fees": [
+        {
+          "direct": 10000,
+          "applies_to": "28 xã, phường tại Phụ lục 2",
+          "description": "Thay đổi, cải chính hộ tịch cho người dưới 14 tuổi cư trú ở trong nước; Xác định lại dân tộc; thay đổi, cải chính, bổ sung hộ tịch cho công dân Việt Nam"
+        },
+        {
+          "direct": 10000,
+          "online": 8000,
+          "applies_to": "43 xã, phường tại Phụ lục 3",
+          "description": "Thay đổi, cải chính hộ tịch cho người chưa đủ 14 tuổi cư trú ở trong nước; bổ sung hộ tịch cho công dân Việt Nam cư trú ở trong nước"
+        }
+      ],
+      "exemptions": [
+        "Người thuộc gia đình có công với cách mạng",
+        "Người thuộc hộ nghèo",
+        "Người khuyết tật",
+        "Trẻ em",
+        "Người cao tuổi",
+        "Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn"
+      ],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "has_form": true,
     "requirements_conditions": "- **Thay đổi họ, tên (người dưới 18 tuổi):** Phải có sự đồng ý của cha, mẹ. Người từ đủ 9 tuổi trở lên phải có sự đồng ý của chính người đó.\n- **Cải chính hộ tịch:** Chỉ giải quyết khi có sai sót trong đăng ký hộ tịch, không nhằm hợp thức hóa thông tin trên giấy tờ khác.\n- **Bổ sung hộ tịch:** Chỉ bổ sung thông tin còn thiếu khi có giấy tờ hợp lệ chứng minh.",
     "legal_basis_references": [
@@ -81,16 +127,23 @@
     },
     {
       "chunk_id": 4,
-      "section_title": "Đối tượng và Cơ quan thực hiện",
-      "content": "**Đối tượng thực hiện:** Cá nhân.\n**Cơ quan thực hiện:**\n- Ủy ban nhân dân cấp xã nơi đã đăng ký hộ tịch trước đây hoặc nơi cư trú của người yêu cầu.\n- Ủy ban nhân dân cấp xã nơi đã đăng ký khai tử trước đây (đối với việc cải chính nội dung đăng ký khai tử).\n**Cơ quan phối hợp:** Cơ quan quản lý CSDLQGVDC.",
-      "source_reference": "Mục 5.c, 5.d, 5.đ",
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả:**\n- Trích lục thay đổi/cải chính/bổ sung thông tin hộ tịch/xác định lại dân tộc (bản chính), bản sao Trích lục thay đổi/cải chính/bổ sung thông tin hộ tịch/xác định lại dân tộc (trường hợp yêu cầu cấp bản sao Trích lục thay đổi/cải chính/bổ sung thông tin hộ tịch/xác định lại dân tộc).\n- Bản điện tử Trích lục thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc (Bản điện tử sẽ tự động gửi về Kho quản lý dữ liệu của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu sau khi đã hoàn tất thủ tục đăng ký thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc tại cơ quan đăng ký hộ tịch).\n**Lệ phí:**\n- Nộp trực tiếp: Thay đổi, cải chính: 15.000 đồng; Xác định lại dân tộc: 28.000 đồng; Bổ sung hộ tịch: 10.000 đồng (áp dụng tại 32 xã, phường tại Phụ lục 1 kèm theo); nộp trực tuyến (áp dụng đến 31/12/2025): Thay đổi, cải chính: 7.500 đồng; Xác định lại dân tộc: 14.000 đồng; Bổ sung hộ tịch: 5.000 đồng.\n- Thay đổi, cải chính hộ tịch cho người dưới 14 tuổi cư trú ở trong nước; Xác định lại dân tộc; thay đổi, cải chính, bổ sung hộ tịch cho công dân Việt Nam: 10.000 đồng (áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo).\n- Nộp trực tiếp việc thay đổi, cải chính hộ tịch cho người chưa đủ 14 tuổi cư trú ở trong nước; bổ sung hộ tịch cho công dân Việt Nam cư trú ở trong nước: 10.000 đồng (áp dụng tại 43 xã, phường tại Phụ lục 3 kèm theo).\n- Nộp trực tuyến việc thay đổi, cải chính hộ tịch cho người chưa đủ 14 tuổi cư trú ở trong nước; bổ sung hộ tịch cho công dân Việt Nam cư trú ở trong nước: 8.000 đồng (áp dụng tại 43 xã, phường tại Phụ lục 3 kèm theo).\n- Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Miễn lệ phí đối với trường hợp đăng ký hộ tịch cho trẻ em, người cao tuổi, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn.\n- Phí cấp bản sao Trích lục đăng ký thay đổi/cải chính/xác định lại dân tộc/bổ sung thông tin hộ tịch (nếu có yêu cầu): 8.000 đồng/bản sao Trích lục/sự kiện hộ tịch đã đăng ký.",
+      "source_reference": "Mục 5.e, 5.g",
       "keywords": [
-        "đối tượng",
-        "cơ quan",
-        "thẩm quyền",
-        "UBND cấp xã",
-        "nơi đăng ký cũ",
-        "nơi cư trú"
+        "kết quả",
+        "trích lục thay đổi",
+        "trích lục cải chính",
+        "trích lục bổ sung",
+        "trích lục xác định lại dân tộc",
+        "bản sao",
+        "bản điện tử",
+        "lệ phí",
+        "thay đổi hộ tịch",
+        "cải chính hộ tịch",
+        "bổ sung hộ tịch",
+        "xác định lại dân tộc",
+        "miễn phí"
       ]
     },
     {

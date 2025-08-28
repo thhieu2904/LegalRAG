@@ -14,7 +14,7 @@
         "description": "Lệ phí đăng ký khai sinh",
         "fee_amounts": [
           {
-            "condition": "đúng hạn trực tiếp",
+            "condition": "đúng hạn",
             "amount": 0,
             "currency": "VND",
             "note": "Miễn phí hoàn toàn"
@@ -36,7 +36,7 @@
           {
             "condition": "đúng hạn",
             "description": "Miễn phí hoàn toàn cho đăng ký đúng hạn",
-            "applicable_to": ["all"]
+            "applicable_to": ["registration_fee"]
           },
           {
             "condition": "gia đình có công với cách mạng",
@@ -52,6 +52,16 @@
             "condition": "khuyết tật",
             "description": "Miễn phí",
             "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người cao tuổi",
+            "description": "Miễn phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "đồng bào dân tộc thiểu số ở xã khó khăn",
+            "description": "Miễn phí",
+            "applicable_to": ["registration_fee"]
           }
         ]
       },
@@ -59,7 +69,7 @@
         {
           "type": "copy_fee",
           "description": "Phí cấp bản sao Giấy khai sinh",
-          "amount": 8000,
+          "amount": 5000,
           "currency": "VND",
           "unit": "bản",
           "optional": true,
@@ -71,13 +81,21 @@
             {
               "condition": "khuyết tật",
               "description": "Miễn phí"
+            },
+            {
+              "condition": "người cao tuổi",
+              "description": "Miễn phí"
+            },
+            {
+              "condition": "đồng bào dân tộc thiểu số ở xã khó khăn",
+              "description": "Miễn phí"
             }
           ]
         }
       ]
     },
     "fee_vnd": null,
-    "fee_text": "Lệ phí thay đổi tùy theo trường hợp (đúng hạn/không đúng hạn, nộp trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 8.000đ, 5.000đ, 4.000đ và có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...). Phí cấp bản sao: 8.000đ/bản.",
+    "fee_text": "Đối với trường hợp đăng ký khai sinh không đúng hạn nộp trực tiếp: 8.000 đồng; đối với trường hợp đăng ký khai sinh không đúng hạn nộp trực tuyến (áp dụng đến 31/12/2025): 4.000 đồng. Miễn lệ phí đối với trường hợp khai sinh đúng hạn, người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Giấy khai sinh (nếu có yêu cầu): 5.000 đồng/trường hợp.",
     "has_form": true,
     "requirements_conditions": null,
     "legal_basis_references": [
@@ -107,7 +125,7 @@
     {
       "chunk_id": 1,
       "section_title": "Thành phần, số lượng hồ sơ và các lưu ý quan trọng",
-      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- Tờ khai đăng ký khai sinh theo mẫu (nếu nộp trực tiếp hoặc qua bưu chính).\n- Mẫu hộ tịch điện tử tương tác đăng ký khai sinh (nếu nộp trực tuyến).\n\n**B. GIẤY TỜ PHẢI NỘP:**\n1. Giấy chứng sinh. Trường hợp không có Giấy chứng sinh thì nộp văn bản của người làm chứng, nếu không có người làm chứng thì phải có giấy cam đoan về việc sinh.\n2. Biên bản về việc trẻ bị bỏ rơi do cơ quan có thẩm quyền lập (trường hợp trẻ em bị bỏ rơi).\n3. Văn bản xác nhận của cơ sở y tế đã thực hiện kỹ thuật hỗ trợ sinh sản (trường hợp khai sinh cho trẻ sinh ra do mang thai hộ).\n4. Văn bản ủy quyền được chứng thực (trường hợp ủy quyền).\n\n**C. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng như Hộ chiếu, Căn cước công dân, Thẻ căn cước...\n2. Giấy tờ chứng minh thông tin về nơi cư trú (trong trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin).\n\n**D. CÁC LƯU Ý ĐẶC BIỆT QUAN TRỌNG:**\n- **Quyền lựa chọn nơi đăng ký:** Cá nhân có quyền lựa chọn thực hiện tại cơ quan đăng ký hộ tịch nơi cư trú.\n- **Hình thức giấy tờ khi nộp trực tiếp:** Chấp nhận nộp bản sao chứng thực, bản sao từ sổ gốc, hoặc bản chụp kèm theo bản chính để đối chiếu. Giấy tờ trên ứng dụng VneID cũng được chấp nhận.\n- **Trách nhiệm của cán bộ tiếp nhận:** Phải kiểm tra, đối chiếu bản chụp với bản chính và ký xác nhận; không được yêu cầu nộp thêm giấy tờ không có trong quy định.\n- **Hình thức giấy tờ khi nộp trực tuyến:** Bản chụp phải rõ nét, đầy đủ, toàn vẹn. Chấp nhận sử dụng bản sao điện tử hoặc bản điện tử giấy tờ hộ tịch nếu có.\n- **Ủy quyền:** Ông, bà, người thân thích khác đi đăng ký khai sinh không cần văn bản ủy quyền nhưng phải thống nhất với cha, mẹ trẻ về nội dung khai sinh.\n- **Xác định thông tin cho trẻ:** Việc xác định họ, dân tộc, đặt tên cho trẻ phải phù hợp pháp luật, giữ gìn bản sắc dân tộc. Nếu cha mẹ không thỏa thuận được thì xác định theo tập quán nhưng phải theo họ, dân tộc của cha hoặc mẹ.\n- **Cam đoan:** Trường hợp lập văn bản cam đoan, người cam đoan phải chịu trách nhiệm về nội dung cam đoan. Nếu cam đoan sai sự thật, kết quả đăng ký sẽ bị hủy bỏ.\n- **Giấy tờ nước ngoài:** Phải được hợp pháp hóa lãnh sự, trừ trường hợp được miễn.",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- Tờ khai đăng ký khai sinh theo mẫu.\n- Mẫu hộ tịch điện tử tương tác đăng ký khai sinh (nếu nộp trực tuyến).\n\n**B. GIẤY TỜ PHẢI NỘP:**\n1. Giấy chứng sinh (trừ trường hợp trẻ em bị bỏ rơi hoặc sinh ra do mang thai hộ).\n2. Biên bản về việc trẻ bị bỏ rơi (trường hợp trẻ em bị bỏ rơi).\n3. Văn bản xác nhận của cơ sở y tế về việc thực hiện kỹ thuật hỗ trợ sinh sản (trường hợp trẻ sinh ra do mang thai hộ).\n4. Văn bản ủy quyền được chứng thực (trường hợp ủy quyền).\n\n**C. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng.\n2. Giấy tờ chứng minh thông tin về cư trú (trong trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin).\n\n**D. CÁC LƯU Ý ĐẶC BIỆT QUAN TRỌNG:**\n- **Quyền lựa chọn nơi đăng ký:** Cá nhân có quyền lựa chọn thực hiện thủ tục hành chính về hộ tịch tại cơ quan đăng ký hộ tịch nơi cư trú.\n- **Hình thức nộp hồ sơ:** Người yêu cầu có thể nộp bản sao được chứng thực từ bản chính, bản sao được cấp từ sổ gốc, hoặc bản chụp kèm theo bản chính để đối chiếu.\n- **Trách nhiệm của người tiếp nhận:** Phải tiếp nhận đúng, đủ hồ sơ theo quy định, không được yêu cầu thêm giấy tờ ngoài luật định.\n- **Khai thác thông tin từ CSDLQGVDC:** Người tiếp nhận có trách nhiệm khai thác thông tin trong Cơ sở dữ liệu quốc gia về dân cư.\n- **Hồ sơ trực tuyến:** Bản chụp các giấy tờ phải rõ nét, đầy đủ, toàn vẹn; có thể sử dụng bản điện tử giấy tờ hộ tịch nếu có.\n- **Giấy tờ nước ngoài:** Phải được hợp pháp hóa lãnh sự theo quy định.\n- **Ủy quyền:** Ông, bà, người thân thích khác đi đăng ký không cần văn bản ủy quyền nhưng phải thống nhất với cha, mẹ trẻ.\n- **Xác định thông tin cho trẻ:** Việc xác định họ, dân tộc, đặt tên phải phù hợp pháp luật, giữ gìn bản sắc dân tộc. Nếu cha mẹ không thỏa thuận được thì xác định theo tập quán nhưng phải theo họ, dân tộc của cha hoặc mẹ.\n- **Cam đoan:** Trường hợp lập văn bản cam đoan, người cam đoan phải chịu trách nhiệm về nội dung cam đoan. Nếu cam đoan sai sự thật, kết quả đăng ký sẽ bị hủy bỏ.\n- **Bản điện tử:** Sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân.",
       "source_reference": "Mục 5.a",
       "keywords": [
         "hồ sơ",
@@ -118,8 +136,9 @@
         "ủy quyền",
         "xuất trình",
         "lưu ý",
-        "VneID",
-        "hợp pháp hóa lãnh sự"
+        "CSDLQGVDC",
+        "hợp pháp hóa lãnh sự",
+        "bản điện tử"
       ],
       "chunk_type": "documents"
     },
@@ -134,9 +153,9 @@
     {
       "chunk_id": 3,
       "section_title": "Đối tượng thực hiện thủ tục hành chính",
-      "content": "Cá nhân, tổ chức.",
+      "content": "Cá nhân, tổ chức có nhu cầu đăng ký khai sinh cho trẻ em.",
       "source_reference": "Mục 5.c",
-      "keywords": ["đối tượng", "cá nhân", "tổ chức"],
+      "keywords": ["đối tượng", "cá nhân", "tổ chức", "trẻ em"],
       "chunk_type": "eligibility"
     },
     {
@@ -149,14 +168,15 @@
         "thẩm quyền",
         "ủy ban nhân dân",
         "UBND cấp xã",
-        "nơi cư trú"
+        "nơi cư trú",
+        "CSDLQGVDC"
       ],
       "chunk_type": "authority"
     },
     {
       "chunk_id": 5,
       "section_title": "Kết quả thực hiện thủ tục hành chính",
-      "content": "- Giấy khai sinh (bản chính), bản sao Giấy khai sinh (trường hợp yêu cầu cấp bản sao Giấy khai sinh).\n- Bản điện tử Giấy khai sinh (sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu).",
+      "content": "- Giấy khai sinh (bản chính).\n- Bản sao Giấy khai sinh (trường hợp yêu cầu cấp bản sao).\n- Bản điện tử Giấy khai sinh (sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu).",
       "source_reference": "Mục 5.đ",
       "keywords": ["kết quả", "giấy khai sinh", "bản sao", "bản điện tử"],
       "chunk_type": "result"
@@ -164,15 +184,22 @@
     {
       "chunk_id": 6,
       "section_title": "Phí, lệ phí",
-      "content": "- Đăng ký khai sinh không đúng hạn (trực tiếp): 8.000 đồng; (trực tuyến đến 31/12/2025): 4.000 đồng.\n- Mức khác: 5.000 đồng/trường hợp.\n- Mức khác cho đăng ký không đúng hạn: 5.000 đồng (trực tiếp); 4.000 đồng (trực tuyến).\n- Miễn lệ phí: Áp dụng cho nhiều trường hợp như khai sinh đúng hạn, người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người khuyết tật, người cao tuổi, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn.\n- Phí cấp bản sao Giấy khai sinh (nếu có yêu cầu): 8.000 đồng/bản.",
+      "content": "- Đăng ký khai sinh đúng hạn: Miễn phí hoàn toàn.\n- Đăng ký khai sinh không đúng hạn (trực tiếp): 8.000 đồng.\n- Đăng ký khai sinh không đúng hạn (trực tuyến, đến 31/12/2025): 4.000 đồng.\n- Miễn lệ phí: Áp dụng cho người thuộc gia đình có công với cách mạng, hộ nghèo, khuyết tật, người cao tuổi, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn.\n- Phí cấp bản sao Giấy khai sinh: 5.000 đồng/bản (miễn phí cho hộ nghèo, khuyết tật, người cao tuổi, đồng bào dân tộc thiểu số ở xã khó khăn).",
       "source_reference": "Mục 5.e",
-      "keywords": ["phí", "lệ phí", "miễn lệ phí", "đúng hạn", "không đúng hạn"],
+      "keywords": [
+        "phí",
+        "lệ phí",
+        "miễn lệ phí",
+        "đúng hạn",
+        "không đúng hạn",
+        "bản sao"
+      ],
       "chunk_type": "fees"
     },
     {
       "chunk_id": 7,
       "section_title": "Quy trình xử lý công việc",
-      "content": "Bước 1: Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận hồ sơ, kiểm tra tính pháp lý và nội dung.\nBước 2: Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ.\nBước 3: Lãnh đạo UBND xem xét, ký duyệt hồ sơ.\nBước 4: Văn thư UBND đóng dấu văn bản.\nBước 5: Cán bộ tại Trung tâm Phục vụ hành chính công ghi vào Sổ đăng ký khai sinh và hoàn trả kết quả.",
+      "content": "Bước 1: Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận hồ sơ, kiểm tra tính pháp lý và nội dung.\nBước 2: Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ.\nBước 3: Lãnh đạo UBND xem xét, ký duyệt hồ sơ.\nBước 4: Văn thư UBND đóng dấu văn bản.\nBước 5: Cán bộ tại Trung tâm Phục vụ hành chính công ghi vào Sổ đăng ký khai sinh và hoàn trả kết quả.\n\n**Lưu ý:** Một số thủ tục hành chính giải quyết trong ngày hoặc ít hơn 2 ngày; hoặc được xử lý bởi 1 người, 1 nhóm người trong cùng 1 phòng hay đơn vị thì không nhất thiết phải sử dụng phiếu theo dõi quá trình.",
       "source_reference": "Mục 5.k",
       "keywords": [
         "quy trình",
@@ -180,7 +207,8 @@
         "tiếp nhận",
         "thẩm tra",
         "ký duyệt",
-        "trả kết quả"
+        "trả kết quả",
+        "thời gian"
       ],
       "chunk_type": "process"
     }

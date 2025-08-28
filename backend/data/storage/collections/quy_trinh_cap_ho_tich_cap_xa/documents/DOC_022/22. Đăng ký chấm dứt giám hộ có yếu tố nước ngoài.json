@@ -10,6 +10,35 @@
     "processing_time_text": "02 ngày làm việc.",
     "fee_vnd": null,
     "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 75.000đ, 60.000đ, 50.000đ, 40.000đ, 37.500đ. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...). Phí cấp bản sao: 8.000đ/bản.",
+    "fee_structure": {
+      "main_fee": {
+        "direct": 75000,
+        "online": 37500,
+        "valid_until": "2025-12-31"
+      },
+      "regional_fees": [
+        {
+          "direct": 50000,
+          "online": 40000,
+          "applies_to": "28 xã, phường tại Phụ lục 2"
+        },
+        {
+          "online": 60000,
+          "applies_to": "43 xã, phường tại Phụ lục 3"
+        }
+      ],
+      "exemptions": [
+        "Người thuộc gia đình có công với cách mạng",
+        "Người thuộc hộ nghèo",
+        "Người khuyết tật",
+        "Trẻ em",
+        "Người cao tuổi",
+        "Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn"
+      ],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "has_form": true,
     "requirements_conditions": null,
     "legal_basis_references": [
@@ -73,10 +102,20 @@
     },
     {
       "chunk_id": 4,
-      "section_title": "Kết quả thực hiện thủ tục hành chính",
-      "content": "- Trích lục đăng ký chấm dứt giám hộ (bản chính).\n- Bản sao Trích lục (nếu có yêu cầu).\n- Bản điện tử Trích lục đăng ký chấm dứt giám hộ.",
-      "source_reference": "Mục 5.e",
-      "keywords": ["kết quả", "trích lục chấm dứt giám hộ", "bản sao"]
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả:**\n- Trích lục đăng ký chấm dứt giám hộ (bản chính), bản sao Trích lục đăng ký chấm dứt giám hộ (trường hợp yêu cầu cấp bản sao Trích lục đăng ký chấm dứt giám hộ).\n- Bản điện tử Trích lục đăng ký chấm dứt giám hộ (Bản điện tử sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu sau khi đã hoàn tất thủ tục đăng ký chấm dứt giám hộ tại cơ quan đăng ký hộ tịch).\n**Lệ phí:**\n- Nộp trực tiếp: 75.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 37.500 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật.\n- 50.000 đồng (nộp trực tiếp), 40.000 đồng (nộp trực tuyến): áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo.\n- Nộp trực tuyến 60.000 đồng (áp dụng tại 43 xã, phường tại Phụ lục 3 kèm theo).\n- Miễn lệ phí đối với trường hợp đăng ký hộ tịch cho trẻ em, người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người cao tuổi, người khuyết tật, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (áp dụng tại 43 xã, phường tại Phụ lục 3 kèm theo).\n- Phí cấp bản sao Trích lục đăng ký chấm dứt giám hộ (nếu có yêu cầu): 8.000 đồng/bản sao Trích lục/sự kiện hộ tịch đã đăng ký.",
+      "source_reference": "Mục 5.e, 5.g",
+      "keywords": [
+        "kết quả",
+        "trích lục chấm dứt giám hộ",
+        "bản sao",
+        "bản điện tử",
+        "lệ phí",
+        "miễn phí",
+        "gia đình có công",
+        "hộ nghèo",
+        "khuyết tật"
+      ]
     },
     {
       "chunk_id": 5,

@@ -10,6 +10,36 @@
     "processing_time_text": "05 ngày làm việc.",
     "fee_vnd": null,
     "fee_text": "Miễn lệ phí đối với trường hợp đăng ký khai sinh đúng hạn. Trường hợp không đúng hạn, lệ phí là 8.000đ hoặc 5.000đ tùy khu vực. Phí cấp bản sao: 5.000đ/bản. Có các trường hợp được miễn lệ phí khác.",
+    "fee_structure": {
+      "main_fee": {
+        "direct": "8.000đ",
+        "description": "Đăng ký khai sinh không đúng hạn (áp dụng tại 32 xã, phường tại Phụ lục 1). Miễn lệ phí cho đăng ký đúng hạn."
+      },
+      "regional_fees": [
+        {
+          "area": "Tại tỉnh Sóc Trăng cũ",
+          "direct": "5.000đ",
+          "description": "Đăng ký khai sinh không đúng hạn"
+        },
+        {
+          "area": "Tại 28 xã, phường",
+          "direct": "5.000đ/bản sao",
+          "description": "Phí cấp bản sao/sự kiện hộ tịch đã đăng ký"
+        }
+      ],
+      "exemptions": [
+        "Đăng ký khai sinh đúng hạn",
+        "Người thuộc gia đình có công với cách mạng",
+        "Người thuộc hộ nghèo",
+        "Người khuyết tật",
+        "Trẻ em (tại tỉnh Sóc Trăng cũ)",
+        "Người cao tuổi (tại tỉnh Sóc Trăng cũ)",
+        "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tại tỉnh Sóc Trăng cũ)",
+        "Người có công với cách mạng (tại 28 xã, phường)",
+        "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tại 28 xã, phường)"
+      ],
+      "additional_fees": {}
+    },
     "has_form": true,
     "requirements_conditions": "Áp dụng cho trẻ em sinh ra mà cha mẹ thuộc một trong các trường hợp sau:\n- Bị khuyết tật, ốm bệnh không thể đi đăng ký khai sinh cho con.\n- Bị bắt, tạm giam hoặc đang thi hành án phạt tù mà không còn ông bà nội, ngoại và người thân thích khác, hoặc những người này không có điều kiện đi đăng ký khai sinh cho trẻ.",
     "legal_basis_references": [
@@ -67,7 +97,7 @@
     {
       "chunk_id": 4,
       "section_title": "Quy trình xử lý công việc",
-      "content": "**Thời gian:** 05 ngày làm việc.\n**Các bước thực hiện:**\n1. Công chức Tư pháp - Hộ tịch tiếp nhận, kiểm tra hồ sơ (3 ngày).\n2. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (1 ngày).\n3. Văn thư UBND đóng dấu văn bản (½ ngày).\n4. Công chức Tư pháp - Hộ tịch ghi sổ và trả kết quả (½ ngày).",
+      "content": "**Thời gian:** 05 ngày làm việc.\n**Các bước thực hiện:**\n1. **Tiếp nhận hồ sơ và kiểm tra tính pháp lý:** Công chức Tư pháp - Hộ tịch tiếp nhận, kiểm tra hồ sơ (3 ngày). Nếu chưa phù hợp thì hướng dẫn làm lại hồ sơ.\n2. **Xem xét hồ sơ:** Công chức Tư pháp - Hộ tịch xem xét hồ sơ (1 ngày).\n3. **Ký duyệt hồ sơ:** Lãnh đạo UBND ký duyệt (½ ngày).\n4. **Đóng dấu văn bản:** Văn thư UBND đóng dấu (½ ngày).\n5. **Ghi sổ và trả kết quả:** Công chức Tư pháp - Hộ tịch ghi sổ và trả kết quả (½ ngày).\n\n*Ghi chú: Các bước có thể tăng hoặc giảm tùy theo đặc điểm của thủ tục nhưng đảm bảo tổng thời gian không quá quy định pháp luật.",
       "source_reference": "Mục 5.l",
       "keywords": [
         "quy trình",
@@ -76,6 +106,8 @@
         "tiếp nhận",
         "thẩm tra",
         "ký duyệt",
+        "đóng dấu",
+        "ghi sổ",
         "trả kết quả"
       ]
     }

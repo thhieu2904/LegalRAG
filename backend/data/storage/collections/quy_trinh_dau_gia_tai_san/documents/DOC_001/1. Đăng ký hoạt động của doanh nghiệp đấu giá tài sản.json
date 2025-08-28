@@ -1,1 +1,56 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "1. Đăng ký hoạt động của doanh nghiệp đấu giá tài sản.doc",
+    "title": "Đăng ký hoạt động của doanh nghiệp đấu giá tài sản",
+    "code": "QT 01/ĐGTS-BTTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "07/07/2025",
+    "executing_agency": "Sở Tư pháp",
+    "applicant_type": [
+      "Doanh nghiệp đấu giá tài sản"
+    ],
+    "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 0,
+    "fee_text": "Không có lệ phí",
+    "has_form": true,
+    "requirements_conditions": "Doanh nghiệp đấu giá tài sản phải đáp ứng các điều kiện theo quy định của Luật Đấu giá tài sản",
+    "legal_basis_references": [
+      "Luật Đấu giá tài sản 2016",
+      "Nghị định số 62/2017/NĐ-CP",
+      "Thông tư số 06/2017/TT-BTP",
+      "Nghị định số 17/2020/NĐ-CP"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": 0,
+    "exemptions": "Không có lệ phí cho thủ tục đăng ký hoạt động doanh nghiệp đấu giá tài sản",
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "chunk_1",
+      "title": "Thành phần hồ sơ",
+      "content": "1. Đơn đề nghị đăng ký hoạt động đấu giá tài sản theo mẫu do Bộ trưởng Bộ Tư pháp ban hành.\n2. Bản sao có chứng thực Giấy chứng nhận đăng ký doanh nghiệp hoặc Giấy chứng nhận đăng ký đầu tư.\n3. Bản sao có chứng thực Chứng chỉ hành nghề đấu giá của các đấu giá viên.\n4. Bản sao có chứng thực Giấy chứng nhận đủ điều kiện kinh doanh dịch vụ đấu giá tài sản (nếu có).\n5. Danh sách trích ngang công chứng viên, đấu giá viên, nhân viên nghiệp vụ.\n6. Bản sao có chứng thực văn bằng, chứng chỉ đào tạo nghiệp vụ đấu giá tài sản của nhân viên nghiệp vụ.\n7. Quy trình đấu giá tài sản do doanh nghiệp xây dựng.\n8. Bản sao có chứng thực tài liệu chứng minh về cơ sở vật chất, trang thiết bị, phương tiện làm việc.\n9. Các giấy tờ khác liên quan đến nội dung đề nghị đăng ký hoạt động đấu giá tài sản."
+    },
+    {
+      "chunk_id": "chunk_2",
+      "title": "Thời hạn giải quyết",
+      "content": "Trong thời hạn 30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ, Sở Tư pháp xem xét, cấp Giấy đăng ký hoạt động đấu giá tài sản.\nTrường hợp từ chối phải thông báo bằng văn bản có nêu rõ lý do.\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền giải quyết: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục trong thời hạn 05 ngày làm việc."
+    },
+    {
+      "chunk_id": "chunk_3",
+      "title": "Đối tượng thực hiện/Cơ quan thực hiện",
+      "content": "Đối tượng thực hiện: Doanh nghiệp đấu giá tài sản đã được thành lập theo quy định của pháp luật.\nCơ quan thực hiện: Sở Tư pháp tỉnh/thành phố trực thuộc trung ương."
+    },
+    {
+      "chunk_id": "chunk_4",
+      "title": "Kết quả thực hiện/Lệ phí",
+      "content": "Kết quả: Giấy đăng ký hoạt động đấu giá tài sản hoặc văn bản từ chối có nêu rõ lý do.\nLệ phí: Không có lệ phí cho thủ tục đăng ký hoạt động doanh nghiệp đấu giá tài sản."
+    },
+    {
+      "chunk_id": "chunk_5",
+      "title": "Quy trình xử lý chi tiết",
+      "content": "1. Doanh nghiệp đấu giá tài sản chuẩn bị hồ sơ đề nghị đăng ký hoạt động.\n2. Nộp hồ sơ tại Sở Tư pháp nơi doanh nghiệp đặt trụ sở chính.\n3. Sở Tư pháp tiếp nhận và kiểm tra tính hợp lệ của hồ sơ.\n4. Sở Tư pháp thẩm tra hồ sơ trong thời hạn 30 ngày làm việc.\n5. Trường hợp hồ sơ đầy đủ, chính xác: Sở Tư pháp cấp Giấy đăng ký hoạt động đấu giá tài sản.\n6. Trường hợp hồ sơ thiếu hoặc không hợp lệ: Thông báo bổ sung hoặc từ chối.\n7. Doanh nghiệp đấu giá tài sản nhận kết quả và bắt đầu hoạt động theo quy định.\n8. Sở Tư pháp cập nhật thông tin doanh nghiệp đấu giá tài sản vào hệ thống quản lý."
+    }
+  ]
+}

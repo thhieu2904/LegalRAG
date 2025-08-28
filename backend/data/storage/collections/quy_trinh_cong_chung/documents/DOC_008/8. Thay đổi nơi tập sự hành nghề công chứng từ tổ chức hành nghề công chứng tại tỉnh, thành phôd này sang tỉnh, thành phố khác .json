@@ -1,1 +1,118 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "8. Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng tại tỉnh, thành phôd này sang tỉnh, thành phố khác .doc",
+    "title": "Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng tại tỉnh, thành phố trực thuộc Trung ương này sang tổ chức hành nghề công chứng tại tỉnh, thành phố trực thuộc Trung ương khác",
+    "code": "QT 08/CC",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "15/05/2025",
+    "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương (cả nơi đi và nơi đến)",
+    "applicant_type": "Người tập sự hành nghề công chứng",
+    "processing_time_text": "Sở Tư pháp nơi đi: 05 ngày làm việc (xoá đăng ký) + Sở Tư pháp nơi đến: 07-10 ngày làm việc (đăng ký mới) = Tổng thời gian 12-15 ngày làm việc",
+    "fee_vnd": 0,
+    "fee_text": "Không có phí",
+    "has_form": true,
+    "requirements_conditions": [
+      "Đã được đăng ký tập sự tại tỉnh/thành phố đi",
+      "Có nguyện vọng thay đổi nơi tập sự sang tỉnh/thành phố khác",
+      "Có Giấy chứng nhận tốt nghiệp khoá đào tạo nghề công chứng hoặc quyết định công nhận tương đương",
+      "Trường hợp thay đổi nơi cư trú hoặc thuộc các trường hợp phải thay đổi theo quy định"
+    ],
+    "legal_basis_references": [
+      "Thông tư số 06/2025/TT-BTP ngày 15/5/2025 của Bộ trưởng Bộ Tư pháp quy định về tập sự hành nghề công chứng",
+      "Luật Công chứng số 53/2014/QH13",
+      "Nghị định số 29/2015/NĐ-CP quy định chi tiết và hướng dẫn thi hành Luật Công chứng"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "amount_vnd": 0,
+      "description": "Không có phí cho thủ tục thay đổi nơi tập sự sang tỉnh khác",
+      "payment_method": "Không áp dụng",
+      "exemption_conditions": [
+        "Thủ tục hành chính này không thu phí theo quy định"
+      ]
+    },
+    "exemptions": [
+      {
+        "condition": "Tất cả trường hợp",
+        "description": "Không thu phí cho thủ tục thay đổi nơi tập sự hành nghề công chứng sang tỉnh khác"
+      }
+    ],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "QT_08_CC_01",
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Giấy đề nghị thay đổi nơi tập sự hành nghề công chứng (Mẫu TP-TSCC-03)\n2. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử:\n   - Giấy chứng nhận tốt nghiệp khoá đào tạo nghề công chứng\n   - Hoặc quyết định công nhận tương đương đối với người được đào tạo nghề công chứng ở nước ngoài\n3. Quyết định xoá đăng ký tập sự hành nghề công chứng của Sở Tư pháp nơi đã đăng ký tập sự (Mẫu TP-TSCC-04)\n4. Các giấy tờ khác theo quy định (nếu có)\n\nLưu ý: Hồ sơ có thể nộp trực tiếp, qua dịch vụ bưu chính hoặc trực tuyến. Trường hợp nộp trực tuyến, các thông tin được khai thác từ Cơ sở dữ liệu quốc gia về dân cư.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "hồ sơ",
+        "giấy đề nghị",
+        "giấy chứng nhận",
+        "quyết định xoá đăng ký",
+        "mẫu TP-TSCC-03",
+        "mẫu TP-TSCC-04"
+      ]
+    },
+    {
+      "chunk_id": "QT_08_CC_02",
+      "section_title": "Thời hạn giải quyết",
+      "content": "- Sở Tư pháp nơi người tập sự đã đăng ký tập sự: 05 ngày làm việc kể từ ngày nhận được giấy đề nghị để ra quyết định xoá đăng ký tập sự\n- Sở Tư pháp nơi người tập sự chuyển đến:\n  * Trường hợp tự liên hệ được với tổ chức hành nghề công chứng: 07 ngày làm việc\n  * Trường hợp được Sở Tư pháp bố trí tập sự: 10 ngày làm việc\n\nTổng thời gian giải quyết: 12-15 ngày làm việc\n\nThời gian nộp hồ sơ: Trong thời hạn quy định sau khi có quyết định xoá đăng ký tập sự từ Sở Tư pháp nơi đi.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "thời hạn",
+        "05 ngày",
+        "07 ngày",
+        "10 ngày",
+        "tổng thời gian",
+        "sở tư pháp nơi đi",
+        "sở tư pháp nơi đến"
+      ]
+    },
+    {
+      "chunk_id": "QT_08_CC_03",
+      "section_title": "Đối tượng thực hiện và Cơ quan có thẩm quyền",
+      "content": "Đối tượng thực hiện thủ tục:\n- Người tập sự hành nghề công chứng đã được đăng ký tập sự tại tỉnh/thành phố này\n- Có nguyện vọng thay đổi nơi tập sự sang tỉnh/thành phố khác\n- Trường hợp thay đổi nơi cư trú sang tỉnh/thành phố khác\n- Hoặc thuộc trường hợp phải thay đổi tổ chức hành nghề công chứng theo quy định mà địa phương không còn tổ chức khác\n\nCơ quan có thẩm quyền giải quyết:\n- Sở Tư pháp nơi đã đăng ký tập sự (thực hiện xoá đăng ký)\n- Sở Tư pháp nơi chuyển đến (thực hiện đăng ký tập sự mới)\n\nQuy trình phối hợp giữa 2 Sở Tư pháp để đảm bảo quyền lợi của người tập sự.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "đối tượng",
+        "người tập sự",
+        "sở tư pháp",
+        "thẩm quyền",
+        "thay đổi nơi cư trú",
+        "quy trình phối hợp"
+      ]
+    },
+    {
+      "chunk_id": "QT_08_CC_04",
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "Kết quả thực hiện thủ tục:\n- Quyết định xoá đăng ký tập sự hành nghề công chứng của Sở Tư pháp nơi đi (Mẫu TP-TSCC-04)\n- Quyết định đăng ký tập sự hành nghề công chứng của Sở Tư pháp nơi đến (Mẫu TP-TSCC-01a hoặc TP-TSCC-01b)\n- Văn bản thông báo cho các bên liên quan về việc thay đổi nơi tập sự\n\nLệ phí: Không có phí cho thủ tục này\n\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn bổ sung.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "kết quả",
+        "quyết định xoá đăng ký",
+        "quyết định đăng ký mới",
+        "không có phí",
+        "hồ sơ thiếu"
+      ]
+    },
+    {
+      "chunk_id": "QT_08_CC_05",
+      "section_title": "Quy trình xử lý chi tiết",
+      "content": "Bước 1: Người tập sự nộp hồ sơ đề nghị thay đổi nơi tập sự đến Sở Tư pháp nơi đã đăng ký tập sự\n\nBước 2: Sở Tư pháp nơi đi tiếp nhận và kiểm tra hồ sơ:\n- Trường hợp hồ sơ đầy đủ: Tiếp tục xử lý\n- Trường hợp hồ sơ thiếu: Thông báo bổ sung trong 02 ngày làm việc\n\nBước 3: Sở Tư pháp nơi đi ra quyết định xoá đăng ký tập sự trong 05 ngày làm việc\n\nBước 4: Người tập sự nộp hồ sơ đăng ký tập sự mới đến Sở Tư pháp nơi chuyển đến\n\nBước 5: Sở Tư pháp nơi đến tiếp nhận và xử lý hồ sơ đăng ký tập sự mới:\n- Trường hợp tự liên hệ: 07 ngày làm việc\n- Trường hợp Sở Tư pháp bố trí: 10 ngày làm việc\n\nBước 6: Sở Tư pháp nơi đến ra quyết định đăng ký tập sự mới\n\nBước 7: Thông báo cho các bên liên quan và hoàn tất thủ tục\n\nLưu ý: Quy trình này đảm bảo sự phối hợp chặt chẽ giữa 2 Sở Tư pháp để bảo vệ quyền lợi của người tập sự.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "quy trình",
+        "bước 1",
+        "bước 2",
+        "bước 3",
+        "bước 4",
+        "bước 5",
+        "bước 6",
+        "bước 7",
+        "phối hợp"
+      ]
+    }
+  ]
+}

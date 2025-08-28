@@ -11,6 +11,15 @@
     "fee_vnd": 0,
     "fee_text": "Miễn lệ phí. Phí cấp bản sao Trích lục đăng ký giám hộ (nếu có yêu cầu): 8.000 đồng/bản.",
     "has_form": true,
+    "fee_structure": {
+      "main_fee": {
+        "registration_fee": 0
+      },
+      "exemptions": ["Miễn lệ phí cho tất cả trường hợp đăng ký giám hộ"],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "requirements_conditions": null,
     "legal_basis_references": [
       "Bộ luật Dân sự năm 2015",
@@ -70,7 +79,7 @@
     {
       "chunk_id": 4,
       "section_title": "Kết quả thực hiện và Lệ phí",
-      "content": "**Kết quả:**\n- Trích lục đăng ký giám hộ (bản chính).\n- Bản sao Trích lục đăng ký giám hộ (nếu có yêu cầu).\n- Bản điện tử Trích lục đăng ký giám hộ.\n**Lệ phí:** Miễn lệ phí. Phí cấp bản sao (nếu có yêu cầu) là 8.000 đồng/bản.",
+      "content": "**Kết quả:**\n- Trích lục đăng ký giám hộ (bản chính).\n- Bản sao Trích lục đăng ký giám hộ (nếu có yêu cầu).\n- Bản điện tử Trích lục đăng ký giám hộ.\n\n**LỆ PHÍ CHI TIẾT:**\n\n**LỆ PHÍ ĐĂNG KÝ GIÁM HỘ:**\n- Miễn lệ phí hoàn toàn\n\n**PHÍ CẤP BẢN SAO TRÍCH LỤC ĐĂNG KÝ GIÁM HỘ:**\n- 8.000đ/bản sao\n\n**CÁC TRƯỜNG HỢP ĐƯỢC MIỄN LỆ PHÍ:**\n- Tất cả trường hợp đăng ký giám hộ đều được miễn lệ phí\n\n**LƯU Ý:** Đăng ký giám hộ là thủ tục hành chính miễn phí nhằm bảo vệ quyền lợi của người chưa thành niên và người mất năng lực hành vi dân sự.",
       "source_reference": "Mục 5.e, 5.g",
       "keywords": [
         "kết quả",

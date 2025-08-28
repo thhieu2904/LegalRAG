@@ -9,8 +9,32 @@
     "applicant_type": ["Cá nhân", "Pháp nhân"],
     "processing_time_text": "05 ngày làm việc đối với giám hộ cử, 03 ngày làm việc đối với giám hộ đương nhiên.",
     "fee_vnd": null,
-    "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 75.000đ, 60.000đ, 50.000đ, 40.000đ, 37.500đ. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...). Phí cấp bản sao: 8.000đ/bản.",
+    "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Đăng ký giám hộ có yếu tố nước ngoài: 75.000đ (trực tiếp), 37.500đ (trực tuyến). Đăng ký lại/quá hạn: 50.000đ (trực tiếp), 40.000đ (trực tuyến), 60.000đ (trực tuyến tại 43 xã/phường). Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật, người cao tuổi, đồng bào dân tộc thiểu số...). Phí cấp bản sao: 8.000đ/bản.",
     "has_form": true,
+    "fee_structure": {
+      "main_fee": {
+        "registration_fee": {
+          "direct": 75000,
+          "online": 37500
+        },
+        "re_registration_fee": {
+          "direct": 50000,
+          "online": 40000,
+          "special_case_online": 60000
+        }
+      },
+      "exemptions": [
+        "Gia đình có công với cách mạng",
+        "Hộ nghèo",
+        "Người khuyết tật",
+        "Người cao tuổi",
+        "Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+        "Trẻ em"
+      ],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "requirements_conditions": "Áp dụng cho việc giám hộ giữa công dân Việt Nam và người nước ngoài cùng cư trú tại Việt Nam.\n**Điều kiện đối với người giám hộ là cá nhân:**\n- Có năng lực hành vi dân sự đầy đủ.\n- Có tư cách đạo đức tốt và các điều kiện cần thiết.\n- Không đang bị truy cứu trách nhiệm hình sự hoặc chưa được xoá án tích về các tội xâm phạm tính mạng, sức khỏe, danh dự, tài sản của người khác.\n- Không bị Tòa án tuyên bố hạn chế quyền đối với con chưa thành niên.\n**Điều kiện đối với người giám hộ là pháp nhân:**\n- Có năng lực pháp luật dân sự phù hợp.\n- Có điều kiện cần thiết để thực hiện quyền, nghĩa vụ của người giám hộ.",
     "legal_basis_references": [
       "Bộ luật Dân sự năm 2015",
@@ -81,6 +105,23 @@
     },
     {
       "chunk_id": 4,
+      "section_title": "Lệ phí và các trường hợp miễn lệ phí",
+      "content": "**LỆ PHÍ ĐĂNG KÝ GIÁM HỘ CÓ YẾU TỐ NƯỚC NGOÀI:**\n- Nộp trực tiếp: 75.000đ\n- Nộp trực tuyến (đến 31/12/2025): 37.500đ\n\n**LỆ PHÍ ĐĂNG KÝ LẠI/QUÁ HẠN:**\n- Nộp trực tiếp: 50.000đ/trường hợp\n- Nộp trực tuyến: 40.000đ/trường hợp\n- Trường hợp đặc biệt (nộp trực tuyến tại 43 xã/phường): 60.000đ\n\n**PHÍ CẤP BẢN SAO TRÍCH LỤC ĐĂNG KÝ GIÁM HỘ:**\n- 8.000đ/bản sao\n\n**CÁC TRƯỜNG HỢP ĐƯỢC MIỄN LỆ PHÍ:**\n- Gia đình có công với cách mạng\n- Hộ nghèo\n- Người khuyết tật\n- Người cao tuổi\n- Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn\n- Trẻ em\n\n**LƯU Ý:** Mức lệ phí có thể thay đổi tùy theo khu vực áp dụng (32 xã/phường, 28 xã/phường, hoặc 43 xã/phường khác nhau).",
+      "source_reference": "Mục 5.g",
+      "keywords": [
+        "lệ phí",
+        "miễn lệ phí",
+        "gia đình có công",
+        "hộ nghèo",
+        "khuyết tật",
+        "người cao tuổi",
+        "dân tộc thiểu số",
+        "đăng ký giám hộ",
+        "yếu tố nước ngoài"
+      ]
+    },
+    {
+      "chunk_id": 5,
       "section_title": "Quy trình xử lý công việc",
       "content": "**Thời gian:** 05 ngày làm việc (giám hộ cử) hoặc 03 ngày làm việc (giám hộ đương nhiên).\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (½ ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ (2 ngày đối với giám hộ cử, ½ ngày đối với giám hộ đương nhiên).\n3. Lãnh đạo UBND ký trích lục Giám hộ (1,5 ngày đối với giám hộ cử, 1 ngày đối với giám hộ đương nhiên).\n4. Văn thư UBND đóng dấu văn bản (½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).",
       "source_reference": "Mục 5.l",

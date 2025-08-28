@@ -9,8 +9,33 @@
     "applicant_type": ["Cá nhân"],
     "processing_time_text": "05 ngày làm việc. Trường hợp cần xác minh thì không quá 10 ngày làm việc.",
     "fee_vnd": null,
-    "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 1.500.000đ, 1.200.000đ, 1.000.000đ, 800.000đ, 750.000đ, 60.000đ, 50.000đ, 40.000đ, 37.500đ. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...). Phí cấp bản sao: 8.000đ/bản.",
+    "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Đăng ký lại khai tử có yếu tố nước ngoài: 75.000đ (trực tiếp), 37.500đ (trực tuyến). Đăng ký lại/quá hạn: 50.000đ (trực tiếp), 40.000đ (trực tuyến), 60.000đ (trực tuyến tại 43 xã/phường). Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật, người cao tuổi, đồng bào dân tộc thiểu số...). Phí cấp bản sao: 8.000đ/bản.",
     "has_form": true,
+    "fee_structure": {
+      "main_fee": {
+        "registration_fee": {
+          "direct": 75000,
+          "online": 37500
+        },
+        "re_registration_fee": {
+          "direct": 50000,
+          "online": 40000,
+          "special_case_online": 60000
+        }
+      },
+      "exemptions": [
+        "Gia đình có công với cách mạng",
+        "Hộ nghèo",
+        "Người khuyết tật",
+        "Người cao tuổi",
+        "Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+        "Trẻ em",
+        "Đăng ký khai tử đúng hạn"
+      ],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "requirements_conditions": "Việc khai tử của công dân Việt Nam định cư ở nước ngoài hoặc của người nước ngoài đã được đăng ký tại cơ quan có thẩm quyền của Việt Nam trước ngày 01/01/2016 nhưng Sổ đăng ký khai tử và bản chính Giấy chứng tử đều bị mất.",
     "legal_basis_references": [
       "Luật Hộ tịch năm 2014",
@@ -88,6 +113,23 @@
     },
     {
       "chunk_id": 5,
+      "section_title": "Lệ phí và các trường hợp miễn lệ phí",
+      "content": "**LỆ PHÍ ĐĂNG KÝ LẠI KHAI TỬ CÓ YẾU TỐ NƯỚC NGOÀI:**\n- Nộp trực tiếp: 75.000đ\n- Nộp trực tuyến (đến 31/12/2025): 37.500đ\n\n**LỆ PHÍ ĐĂNG KÝ LẠI/QUÁ HẠN:**\n- Nộp trực tiếp: 50.000đ/trường hợp\n- Nộp trực tuyến: 40.000đ/trường hợp\n- Trường hợp đặc biệt (nộp trực tuyến tại 43 xã/phường): 60.000đ\n\n**PHÍ CẤP BẢN SAO TRÍCH LỤC KHAI TỬ:**\n- 8.000đ/bản sao\n\n**CÁC TRƯỜNG HỢP ĐƯỢC MIỄN LỆ PHÍ:**\n- Gia đình có công với cách mạng\n- Hộ nghèo\n- Người khuyết tật\n- Người cao tuổi\n- Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn\n- Trẻ em\n- Đăng ký khai tử đúng hạn\n\n**LƯU Ý:** Mức lệ phí có thể thay đổi tùy theo khu vực áp dụng (32 xã/phường, 28 xã/phường, hoặc 43 xã/phường khác nhau).",
+      "source_reference": "Mục 5.g",
+      "keywords": [
+        "lệ phí",
+        "miễn lệ phí",
+        "gia đình có công",
+        "hộ nghèo",
+        "khuyết tật",
+        "người cao tuổi",
+        "dân tộc thiểu số",
+        "đăng ký lại khai tử",
+        "yếu tố nước ngoài"
+      ]
+    },
+    {
+      "chunk_id": 6,
       "section_title": "Quy trình xử lý công việc",
       "content": "**Thời gian:** 05 ngày làm việc (không xác minh) hoặc 10 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Bộ phận tiếp nhận và trả kết quả tiếp nhận hồ sơ (1 ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ và tiến hành xác minh nếu cần (2 ngày - 7 ngày).\n3. Lãnh đạo UBND ký Trích lục khai tử (1 ngày).\n4. Văn thư UBND đóng dấu (½ ngày).\n5. Cán bộ tại Bộ phận tiếp nhận và trả kết quả ghi sổ và trả kết quả (½ ngày).",
       "source_reference": "Mục 5.l",

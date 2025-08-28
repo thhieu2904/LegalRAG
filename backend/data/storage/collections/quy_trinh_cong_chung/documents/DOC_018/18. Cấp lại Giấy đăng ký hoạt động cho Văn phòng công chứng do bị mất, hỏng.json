@@ -1,1 +1,53 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "18. Cấp lại Giấy đăng ký hoạt động cho Văn phòng công chứng do bị mất, hỏng.doc",
+    "title": "Cấp lại Giấy đăng ký hoạt động cho Văn phòng công chứng do bị mất, hỏng",
+    "code": "QT 18/CC",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "",
+    "executing_agency": "Sở Tư pháp",
+    "applicant_type": "Văn phòng công chứng",
+    "processing_time_text": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 0,
+    "fee_text": "Theo quy định tại Thông tư số 257/2016/TT-BTC về phí công chứng",
+    "has_form": true,
+    "requirements_conditions": "Văn phòng công chứng đã được cấp Giấy đăng ký hoạt động nhưng bị mất hoặc hỏng",
+    "legal_basis_references": [
+      "Luật Công chứng 2014",
+      "Quyết định 30/QĐ-TTg của Thủ tướng Chính phủ về đơn giản hóa thủ tục hành chính",
+      "Thông tư số 257/2016/TT-BTC của Bộ Tài chính"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": 0,
+    "exemptions": "Phí cấp lại theo quy định của pháp luật về phí, lệ phí",
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "chunk_1",
+      "title": "Thành phần hồ sơ",
+      "content": "1. Văn bản đề nghị cấp lại Giấy đăng ký hoạt động của Văn phòng công chứng do bị mất, hỏng.\n2. Bản chính hoặc bản sao có chứng thực Giấy đăng ký hoạt động cũ (trường hợp bị hỏng).\n3. Trường hợp bị mất: Văn bản cam kết về việc bị mất Giấy đăng ký hoạt động.\n4. Các giấy tờ chứng minh về việc niêm yết công khai việc cấp lại Giấy đăng ký hoạt động theo quy định.\n5. Các giấy tờ khác liên quan đến việc cấp lại theo yêu cầu của Sở Tư pháp."
+    },
+    {
+      "chunk_id": "chunk_2",
+      "title": "Thời hạn giải quyết",
+      "content": "Trong thời hạn 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ, Sở Tư pháp cấp lại giấy đăng ký hoạt động cho Văn phòng công chứng.\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền giải quyết: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục."
+    },
+    {
+      "chunk_id": "chunk_3",
+      "title": "Đối tượng thực hiện/Cơ quan thực hiện",
+      "content": "Đối tượng thực hiện: Văn phòng công chứng đã được cấp Giấy đăng ký hoạt động nhưng bị mất hoặc hỏng.\nCơ quan thực hiện: Sở Tư pháp tỉnh/thành phố trực thuộc trung ương nơi Văn phòng công chứng đã đăng ký hoạt động."
+    },
+    {
+      "chunk_id": "chunk_4",
+      "title": "Kết quả thực hiện/Lệ phí",
+      "content": "Kết quả: Giấy đăng ký hoạt động mới của Văn phòng công chứng.\nLệ phí: Theo quy định tại Thông tư số 257/2016/TT-BTC về phí công chứng, phí chứng thực và các loại phí liên quan."
+    },
+    {
+      "chunk_id": "chunk_5",
+      "title": "Quy trình xử lý chi tiết",
+      "content": "1. Văn phòng công chứng chuẩn bị hồ sơ đề nghị cấp lại Giấy đăng ký hoạt động.\n2. Niêm yết công khai việc cấp lại Giấy đăng ký hoạt động theo quy định (trong trường hợp bị mất).\n3. Nộp hồ sơ tại Sở Tư pháp nơi đã đăng ký hoạt động ban đầu.\n4. Sở Tư pháp tiếp nhận và kiểm tra tính hợp lệ của hồ sơ.\n5. Trường hợp hồ sơ đầy đủ: Sở Tư pháp cấp lại Giấy đăng ký hoạt động trong thời hạn 05 ngày làm việc.\n6. Trường hợp hồ sơ thiếu: Thông báo bổ sung hoặc sửa đổi.\n7. Văn phòng công chứng nhận Giấy đăng ký hoạt động mới và tiếp tục hoạt động công chứng."
+    }
+  ]
+}

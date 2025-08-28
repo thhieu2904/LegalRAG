@@ -9,8 +9,19 @@
     "applicant_type": ["Cá nhân", "Pháp nhân"],
     "processing_time_text": "02 ngày làm việc.",
     "fee_vnd": 0,
-    "fee_text": "Miễn lệ phí. Phí cấp bản sao Trích lục (nếu có yêu cầu): 8.000 đồng/bản.",
+    "fee_text": "Miễn lệ phí. Phí cấp bản sao Trích lục đăng ký chấm dứt giám hộ (nếu có yêu cầu): 8.000 đồng/bản.",
     "has_form": true,
+    "fee_structure": {
+      "main_fee": {
+        "registration_fee": 0
+      },
+      "exemptions": [
+        "Miễn lệ phí cho tất cả trường hợp đăng ký chấm dứt giám hộ"
+      ],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "requirements_conditions": null,
     "legal_basis_references": [
       "Bộ luật Dân sự năm 2015",
@@ -69,12 +80,13 @@
     {
       "chunk_id": 4,
       "section_title": "Kết quả thực hiện và Lệ phí",
-      "content": "**Kết quả:**\n- Trích lục đăng ký chấm dứt giám hộ (bản chính).\n- Bản sao Trích lục (nếu có yêu cầu).\n- Bản điện tử Trích lục đăng ký chấm dứt giám hộ.\n**Lệ phí:** Miễn lệ phí. Phí cấp bản sao (nếu có yêu cầu) là 8.000 đồng/bản.",
+      "content": "**Kết quả:**\n- Trích lục đăng ký chấm dứt giám hộ (bản chính), bản sao Trích lục đăng ký chấm dứt giám hộ (trường hợp yêu cầu cấp bản sao Trích lục đăng ký chấm dứt giám hộ).\n- Bản điện tử Trích lục đăng ký chấm dứt giám hộ (Bản điện tử sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu sau khi đã hoàn tất thủ tục đăng ký chấm dứt giám hộ tại cơ quan đăng ký hộ tịch).\n**Lệ phí:** Miễn lệ phí. Phí cấp bản sao Trích lục đăng ký chấm dứt giám hộ (nếu có yêu cầu): 8.000 đồng/bản sao Trích lục/sự kiện hộ tịch đã đăng ký.",
       "source_reference": "Mục 5.e, 5.g",
       "keywords": [
         "kết quả",
         "trích lục giám hộ",
         "bản sao",
+        "bản điện tử",
         "lệ phí",
         "miễn phí"
       ]

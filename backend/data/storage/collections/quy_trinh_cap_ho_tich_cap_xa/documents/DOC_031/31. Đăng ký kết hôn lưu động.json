@@ -10,6 +10,15 @@
     "processing_time_text": "05 ngày làm việc.",
     "fee_vnd": 0,
     "fee_text": "Miễn lệ phí.",
+    "fee_structure": {
+      "main_fee": {
+        "direct": "0đ",
+        "description": "Miễn lệ phí hoàn toàn"
+      },
+      "regional_fees": [],
+      "exemptions": ["Miễn lệ phí cho tất cả trường hợp"],
+      "additional_fees": {}
+    },
     "has_form": true,
     "requirements_conditions": "- Hai bên nam, nữ phải cùng thường trú trên địa bàn một xã.\n- Một hoặc cả hai bên nam, nữ là người khuyết tật, ốm bệnh không thể đi đăng ký kết hôn được.\n- Phải đáp ứng đủ các điều kiện kết hôn thông thường: Nam từ đủ 20 tuổi, nữ từ đủ 18 tuổi; tự nguyện; không mất năng lực hành vi dân sự và không thuộc các trường hợp cấm kết hôn.",
     "legal_basis_references": [
@@ -67,7 +76,7 @@
     {
       "chunk_id": 4,
       "section_title": "Quy trình xử lý công việc",
-      "content": "**Thời gian:** 05 ngày làm việc.\n**Các bước thực hiện:**\n1. Công chức Tư pháp - Hộ tịch tiếp nhận, kiểm tra hồ sơ (3 ngày).\n2. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (1 ngày).\n3. Văn thư UBND đóng dấu văn bản (½ ngày).\n4. Công chức Tư pháp - Hộ tịch ghi sổ và trả kết quả (½ ngày).",
+      "content": "**Thời gian:** 05 ngày làm việc.\n**Các bước thực hiện:**\n1. **Tiếp nhận hồ sơ và kiểm tra tính pháp lý:** Công chức Tư pháp - Hộ tịch tiếp nhận, kiểm tra hồ sơ (3 ngày). Nếu chưa phù hợp thì hướng dẫn làm lại hồ sơ.\n2. **Xem xét hồ sơ:** Công chức Tư pháp - Hộ tịch xem xét hồ sơ (1 ngày).\n3. **Ký duyệt hồ sơ:** Lãnh đạo UBND ký duyệt (½ ngày).\n4. **Đóng dấu văn bản:** Văn thư UBND đóng dấu (½ ngày).\n5. **Ghi sổ và trả kết quả:** Công chức Tư pháp - Hộ tịch ghi sổ và trả kết quả (½ ngày).\n\n*Ghi chú: Các bước có thể tăng hoặc giảm tùy theo đặc điểm của thủ tục nhưng đảm bảo tổng thời gian không quá quy định pháp luật.",
       "source_reference": "Mục 5.l",
       "keywords": [
         "quy trình",
@@ -76,6 +85,8 @@
         "tiếp nhận",
         "thẩm tra",
         "ký duyệt",
+        "đóng dấu",
+        "ghi sổ",
         "trả kết quả"
       ]
     }

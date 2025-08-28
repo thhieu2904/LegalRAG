@@ -1,1 +1,116 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "9. Công nhận hoàn thành tập sự hành nghề công chứng.doc",
+    "title": "Công nhận hoàn thành tập sự hành nghề công chứng",
+    "code": "QT 09/CC",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "15/05/2025",
+    "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương",
+    "applicant_type": "Người tập sự hành nghề công chứng",
+    "processing_time_text": "Thời hạn giải quyết: 10 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ",
+    "fee_vnd": 0,
+    "fee_text": "Không có phí",
+    "has_form": true,
+    "requirements_conditions": [
+      "Đã hoàn thành thời gian tập sự theo quy định",
+      "Công chứng viên hướng dẫn tập sự đủ điều kiện và không thuộc trường hợp phải thay đổi",
+      "Có Báo cáo kết quả tập sự và Sổ nhật ký tập sự đáp ứng yêu cầu",
+      "Không sao chép của người khác và nộp đúng thời hạn",
+      "Trường hợp nộp sau thời hạn phải do sự kiện bất khả kháng"
+    ],
+    "legal_basis_references": [
+      "Thông tư số 06/2025/TT-BTP ngày 15/5/2025 của Bộ trưởng Bộ Tư pháp quy định về tập sự hành nghề công chứng",
+      "Luật Công chứng số 53/2014/QH13",
+      "Nghị định số 29/2015/NĐ-CP quy định chi tiết và hướng dẫn thi hành Luật Công chứng"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "amount_vnd": 0,
+      "description": "Không có phí cho thủ tục công nhận hoàn thành tập sự",
+      "payment_method": "Không áp dụng",
+      "exemption_conditions": [
+        "Thủ tục hành chính này không thu phí theo quy định"
+      ]
+    },
+    "exemptions": [
+      {
+        "condition": "Tất cả trường hợp",
+        "description": "Không thu phí cho thủ tục công nhận hoàn thành tập sự hành nghề công chứng"
+      }
+    ],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "QT_09_CC_01",
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Văn bản đề nghị công nhận hoàn thành tập sự hành nghề công chứng\n2. Báo cáo kết quả tập sự hành nghề công chứng\n3. Sổ nhật ký tập sự hành nghề công chứng\n4. Văn bản xác nhận của tổ chức hành nghề công chứng về việc hoàn thành tập sự\n5. Các tài liệu chứng minh hoàn thành các yêu cầu về tập sự\n\nLưu ý: Hồ sơ có thể nộp trực tiếp, qua dịch vụ bưu chính hoặc trực tuyến. Trường hợp nộp trực tuyến, các thông tin được khai thác từ Cơ sở dữ liệu quốc gia về dân cư.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "hồ sơ",
+        "báo cáo kết quả",
+        "sổ nhật ký",
+        "đề nghị công nhận",
+        "hoàn thành tập sự"
+      ]
+    },
+    {
+      "chunk_id": "QT_09_CC_02",
+      "section_title": "Thời hạn giải quyết",
+      "content": "- Tiếp nhận hồ sơ: Trong ngày làm việc\n- Thụ lý hồ sơ: 02 ngày làm việc\n- Xác minh điều kiện hoàn thành tập sự: 05 ngày làm việc\n- Phê duyệt và cấp giấy công nhận: 03 ngày làm việc\n\nTổng thời gian giải quyết: 10 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bổ sung trong 03 ngày làm việc.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "thời hạn",
+        "10 ngày",
+        "tiếp nhận",
+        "thụ lý",
+        "xác minh",
+        "phê duyệt"
+      ]
+    },
+    {
+      "chunk_id": "QT_09_CC_03",
+      "section_title": "Đối tượng thực hiện và Cơ quan có thẩm quyền",
+      "content": "Đối tượng thực hiện thủ tục:\n- Người tập sự hành nghề công chứng đã hoàn thành thời gian tập sự\n- Công chứng viên hướng dẫn tập sự đủ điều kiện\n- Có báo cáo kết quả tập sự và sổ nhật ký đạt yêu cầu\n- Nộp hồ sơ đúng thời hạn hoặc có lý do bất khả kháng nếu nộp muộn\n\nCơ quan có thẩm quyền giải quyết:\n- Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương nơi đăng ký tập sự\n\nĐiều kiện công chứng viên hướng dẫn:\n- Đủ điều kiện hướng dẫn tập sự\n- Không thuộc trường hợp phải thay đổi công chứng viên hướng dẫn",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "đối tượng",
+        "người tập sự",
+        "công chứng viên hướng dẫn",
+        "sở tư pháp",
+        "điều kiện"
+      ]
+    },
+    {
+      "chunk_id": "QT_09_CC_04",
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "Kết quả thực hiện thủ tục:\n- Giấy công nhận hoàn thành tập sự hành nghề công chứng\n- Văn bản thông báo kết quả thẩm tra\n\nLệ phí: Không có phí cho thủ tục này\n\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn bổ sung.\n\nMẫu đơn: Văn bản đề nghị công nhận hoàn thành tập sự hành nghề công chứng.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "kết quả",
+        "giấy công nhận",
+        "không có phí",
+        "hồ sơ thiếu",
+        "mẫu đơn"
+      ]
+    },
+    {
+      "chunk_id": "QT_09_CC_05",
+      "section_title": "Quy trình xử lý chi tiết",
+      "content": "Bước 1: Người tập sự nộp hồ sơ đề nghị công nhận hoàn thành tập sự đến Sở Tư pháp\n\nBước 2: Sở Tư pháp tiếp nhận và kiểm tra hồ sơ:\n- Trường hợp hồ sơ đầy đủ: Tiếp tục xử lý\n- Trường hợp hồ sơ thiếu: Thông báo bổ sung trong 03 ngày\n\nBước 3: Thụ lý hồ sơ và phân công xử lý trong 02 ngày\n\nBước 4: Xác minh điều kiện hoàn thành tập sự:\n- Kiểm tra báo cáo kết quả tập sự\n- Kiểm tra sổ nhật ký tập sự\n- Xác minh với công chứng viên hướng dẫn\n- Thẩm tra các yêu cầu về tập sự\n\nBước 5: Lập báo cáo thẩm tra và trình lãnh đạo phê duyệt\n\nBước 6: Lãnh đạo Sở Tư pháp phê duyệt và ký giấy công nhận\n\nBước 7: Cấp giấy công nhận hoàn thành tập sự cho người đề nghị\n\nBước 8: Thông báo kết quả cho các bên liên quan\n\nLưu ý: Báo cáo kết quả tập sự và sổ nhật ký phải đáp ứng yêu cầu, không sao chép của người khác.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "quy trình",
+        "bước 1",
+        "bước 2",
+        "bước 3",
+        "bước 4",
+        "bước 5",
+        "bước 6",
+        "bước 7",
+        "bước 8"
+      ]
+    }
+  ]
+}

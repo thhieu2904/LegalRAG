@@ -1,1 +1,52 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "16. Đăng ký hoạt động Văn phòng công chứng.doc",
+    "title": "Đăng ký hoạt động Văn phòng công chứng",
+    "code": "QT 16/CC",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "",
+    "executing_agency": "Sở Tư pháp",
+    "applicant_type": "Văn phòng công chứng",
+    "processing_time_text": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 0,
+    "fee_text": "Không có lệ phí",
+    "has_form": true,
+    "requirements_conditions": "Văn phòng công chứng phải đăng ký hoạt động trong thời hạn 90 ngày kể từ ngày quyết định cho phép thành lập có hiệu lực",
+    "legal_basis_references": [
+      "Luật Công chứng 2014",
+      "Quyết định 30/QĐ-TTg của Thủ tướng Chính phủ về đơn giản hóa thủ tục hành chính"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": 0,
+    "exemptions": "Không có lệ phí cho thủ tục đăng ký hoạt động",
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "chunk_1",
+      "title": "Thành phần hồ sơ",
+      "content": "1. Đơn đề nghị đăng ký hoạt động của Văn phòng công chứng và đề nghị cấp thẻ công chứng viên theo Mẫu TP-CC-06 ban hành kèm theo quy định.\n2. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử giấy tờ chứng minh về trụ sở của Văn phòng công chứng phù hợp với nội dung đã đăng ký.\n3. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử giấy tờ chứng minh công chứng viên hợp danh đã góp vốn theo quy định của Luật Doanh nghiệp đối với Văn phòng công chứng theo loại hình công ty hợp danh.\n4. Giấy tờ chứng minh về vốn đầu tư của Trưởng Văn phòng công chứng đối với Văn phòng công chứng theo loại hình doanh nghiệp tư nhân.\n5. Hợp đồng lao động, quyết định bổ nhiệm của công chứng viên làm việc tại Văn phòng công chứng."
+    },
+    {
+      "chunk_id": "chunk_2",
+      "title": "Thời hạn giải quyết",
+      "content": "Trong thời hạn 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ. Trường hợp từ chối phải thông báo bằng văn bản có nêu rõ lý do.\nVăn phòng công chứng phải đăng ký hoạt động tại Sở Tư pháp trong thời hạn 90 ngày kể từ ngày quyết định cho phép thành lập có hiệu lực thi hành."
+    },
+    {
+      "chunk_id": "chunk_3",
+      "title": "Đối tượng thực hiện/Cơ quan thực hiện",
+      "content": "Đối tượng thực hiện: Văn phòng công chứng đã được cho phép thành lập.\nCơ quan thực hiện: Sở Tư pháp tỉnh/thành phố trực thuộc trung ương."
+    },
+    {
+      "chunk_id": "chunk_4",
+      "title": "Kết quả thực hiện/Lệ phí",
+      "content": "Kết quả: Giấy chứng nhận đăng ký hoạt động của Văn phòng công chứng.\nLệ phí: Không có lệ phí cho thủ tục đăng ký hoạt động."
+    },
+    {
+      "chunk_id": "chunk_5",
+      "title": "Quy trình xử lý chi tiết",
+      "content": "1. Văn phòng công chứng nộp hồ sơ đăng ký hoạt động tại Sở Tư pháp trong thời hạn 90 ngày kể từ ngày quyết định cho phép thành lập có hiệu lực.\n2. Sở Tư pháp tiếp nhận và kiểm tra tính hợp lệ của hồ sơ.\n3. Trường hợp hồ sơ đầy đủ, chính xác: Sở Tư pháp cấp Giấy chứng nhận đăng ký hoạt động trong thời hạn 05 ngày làm việc.\n4. Trường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục.\n5. Văn phòng công chứng nhận kết quả và bắt đầu hoạt động công chứng theo quy định của pháp luật."
+    }
+  ]
+}

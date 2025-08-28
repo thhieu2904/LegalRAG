@@ -11,6 +11,29 @@
     "fee_vnd": null,
     "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 1.500.000đ, 1.200.000đ, 1.000.000đ, 800.000đ, 750.000đ. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...). Phí cấp bản sao: 8.000đ/bản.",
     "has_form": true,
+    "fee_structure": {
+      "main_fee": {
+        "registration_fee": {
+          "direct": 1500000,
+          "online": 750000
+        },
+        "extract_fee": {
+          "direct": 1000000,
+          "online": 800000,
+          "special_case_online": 1200000
+        }
+      },
+      "exemptions": [
+        "Gia đình có công với cách mạng",
+        "Hộ nghèo",
+        "Người khuyết tật nặng",
+        "Người dân tộc thiểu số ở vùng có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+        "Trường hợp khác theo quy định pháp luật"
+      ],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "requirements_conditions": "Nam từ đủ 20 tuổi trở lên, nữ từ đủ 18 tuổi trở lên; Việc kết hôn do nam và nữ tự nguyện quyết định; Các bên không bị mất năng lực hành vi dân sự; Công dân Việt Nam định cư ở nước ngoài phải có giấy tờ cho phép cư trú hợp lệ; Việc kết hôn không thuộc các trường hợp cấm theo Luật Hôn nhân và gia đình. Nhà nước không thừa nhận hôn nhân giữa những người cùng giới tính.",
     "legal_basis_references": [
       "Luật Hôn nhân và gia đình năm 2014",
@@ -61,6 +84,21 @@
     },
     {
       "chunk_id": 3,
+      "section_title": "Lệ phí và các trường hợp miễn lệ phí",
+      "content": "**LỆ PHÍ ĐĂNG KÝ KẾT HÔN:**\n- Nộp trực tiếp: 1.500.000đ\n- Nộp trực tuyến: 750.000đ\n\n**LỆ PHÍ CẤP BẢN SAO TRÍCH LỤC:**\n- Nộp trực tiếp: 1.000.000đ\n- Nộp trực tuyến: 800.000đ\n- Trường hợp đặc biệt (nộp trực tuyến): 1.200.000đ\n\n**CÁC TRƯỜNG HỢP ĐƯỢC MIỄN LỆ PHÍ:**\n- Gia đình có công với cách mạng\n- Hộ nghèo\n- Người khuyết tật nặng\n- Người dân tộc thiểu số ở vùng có điều kiện kinh tế - xã hội đặc biệt khó khăn\n- Trường hợp khác theo quy định pháp luật\n\n**PHÍ CẤP BẢN SAO:** 8.000đ/bản",
+      "source_reference": "Mục 5.g",
+      "keywords": [
+        "lệ phí",
+        "miễn lệ phí",
+        "gia đình có công",
+        "hộ nghèo",
+        "khuyết tật",
+        "dân tộc thiểu số",
+        "phí bản sao"
+      ]
+    },
+    {
+      "chunk_id": 4,
       "section_title": "Yêu cầu, điều kiện thực hiện",
       "content": "Các bên kết hôn phải đáp ứng các điều kiện sau:\n- **Độ tuổi:** Nam từ đủ 20 tuổi trở lên, nữ từ đủ 18 tuổi trở lên.\n- **Sự tự nguyện:** Việc kết hôn do nam và nữ tự nguyện quyết định.\n- **Năng lực hành vi dân sự:** Các bên không bị mất năng lực hành vi dân sự.\n- **Cư trú:** Công dân Việt Nam định cư ở nước ngoài phải có giấy tờ cho phép cư trú hợp lệ.\n- **Các trường hợp cấm:** Không thuộc các trường hợp cấm kết hôn theo Luật Hôn nhân và gia đình (kết hôn giả tạo, tảo hôn, đang có vợ/chồng, cùng dòng máu trực hệ...).\n- **Lưu ý:** Nhà nước không thừa nhận hôn nhân giữa những người cùng giới tính.",
       "source_reference": "Mục 5.i",
@@ -71,6 +109,22 @@
         "tự nguyện",
         "cấm kết hôn",
         "Việt kiều"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 05 ngày làm việc (không xác minh) hoặc 10 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận hồ sơ (1 ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ và tiến hành xác minh nếu cần (2 ngày - 7 ngày).\n3. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (1 ngày).\n4. Văn thư UBND đóng dấu văn bản (½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).",
+      "source_reference": "Mục 5.l",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "thẩm tra",
+        "xác minh",
+        "ký duyệt",
+        "trả kết quả"
       ]
     },
     {

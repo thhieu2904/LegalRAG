@@ -10,6 +10,35 @@
     "processing_time_text": "05 ngày làm việc. Trường hợp cần xác minh thì không quá 08 ngày làm việc.",
     "fee_vnd": null,
     "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 75.000đ, 60.000đ, 50.000đ, 40.000đ, 37.500đ. Có các trường hợp được miễn lệ phí. Phí cấp bản sao: 8.000đ/bản.",
+    "fee_structure": {
+      "main_fee": {
+        "direct": "75.000đ",
+        "online": "37.500đ",
+        "description": "Áp dụng tại 32 xã, phường tại Phụ lục 1"
+      },
+      "regional_fees": [
+        {
+          "area": "Tại tỉnh Sóc Trăng cũ",
+          "direct": null,
+          "online": "60.000đ"
+        },
+        {
+          "area": "Tại 28 xã, phường",
+          "direct": "50.000đ",
+          "online": "40.000đ"
+        }
+      ],
+      "exemptions": [
+        "Người thuộc gia đình có công với cách mạng",
+        "Người thuộc hộ nghèo",
+        "Người khuyết tật",
+        "Người cao tuổi (tại tỉnh Sóc Trăng cũ)",
+        "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tại tỉnh Sóc Trăng cũ)"
+      ],
+      "additional_fees": {
+        "copy_fee": "8.000đ/bản sao"
+      }
+    },
     "has_form": true,
     "requirements_conditions": "- Bản án, quyết định ly hôn, hủy kết hôn hoặc văn bản thỏa thuận ly hôn do cơ quan nước ngoài cấp phải có hiệu lực pháp luật và không vi phạm quy định của Luật Hôn nhân và gia đình Việt Nam.\n- Việc ly hôn/hủy kết hôn không thuộc trường hợp có đơn yêu cầu thi hành hoặc không công nhận tại Việt Nam.\n- Công dân Việt Nam đã ly hôn/hủy kết hôn ở nước ngoài, sau đó về nước thường trú hoặc đăng ký kết hôn mới tại Việt Nam thì bắt buộc phải thực hiện ghi chú này. Nếu có nhiều lần ly hôn, chỉ ghi chú lần gần nhất.",
     "legal_basis_references": [
@@ -75,7 +104,7 @@
     {
       "chunk_id": 4,
       "section_title": "Quy trình xử lý công việc",
-      "content": "**Thời gian:** 05 ngày làm việc (không xác minh) hoặc 08 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (1 ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ và tiến hành xác minh nếu cần (2 ngày - 5 ngày).\n3. Lãnh đạo UBND ký Trích lục ghi chú ly hôn (1 ngày).\n4. Văn thư UBND đóng dấu văn bản (½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).",
+      "content": "**Thời gian:** 05 ngày làm việc (không xác minh) hoặc 08 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. **Tiếp nhận hồ sơ và kiểm tra tính pháp lý:** Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (1 ngày). Nếu chưa phù hợp thì hướng dẫn làm lại hồ sơ.\n2. **Thẩm tra hồ sơ:** Công chức Tư pháp - Hộ tịch thẩm tra tính thống nhất, hợp lệ của các thông tin trong hồ sơ, giấy tờ, tài liệu (2 ngày không xác minh, 5 ngày có xác minh).\n3. **Ký Trích lục ghi chú ly hôn:** Lãnh đạo UBND ký duyệt (1 ngày).\n4. **Đóng dấu văn bản:** Văn thư UBND đóng dấu (½ ngày).\n5. **Ghi sổ và hoàn trả kết quả:** Cán bộ tại Trung tâm Phục vụ hành chính công ghi vào Sổ ghi chú ly hôn, người yêu cầu ký tên vào sổ, hoàn trả kết quả và thu phí (½ ngày).\n\n*Ghi chú: Các bước có thể tăng hoặc giảm tùy theo đặc điểm của thủ tục nhưng đảm bảo tổng thời gian không quá quy định pháp luật.",
       "source_reference": "Mục 5.l",
       "keywords": [
         "quy trình",
@@ -84,7 +113,10 @@
         "tiếp nhận",
         "thẩm tra",
         "xác minh",
-        "ký duyệt"
+        "ký duyệt",
+        "đóng dấu",
+        "ghi sổ",
+        "thu phí"
       ]
     }
   ]

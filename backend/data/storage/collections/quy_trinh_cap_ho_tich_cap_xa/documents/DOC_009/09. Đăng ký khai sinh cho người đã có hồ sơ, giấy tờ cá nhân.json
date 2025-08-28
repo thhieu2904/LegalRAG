@@ -9,7 +9,145 @@
     "applicant_type": ["Cá nhân"],
     "processing_time_text": "05 ngày làm việc. Trường hợp cần xác minh thì không quá 25 ngày.",
     "fee_vnd": null,
-    "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 50.000đ, 8.000đ, 5.000đ, 4.000đ. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...).",
+    "fee_text": "Nộp trực tiếp: 8.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 4.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Giấy khai sinh (nếu có yêu cầu): 8.000 đồng/bản sao. Phí cấp Trích lục/sự kiện hộ tịch đã đăng ký: 50.000 đồng/trường hợp (nộp trực tiếp), 40.000 đồng/trường hợp (nộp trực tuyến). Miễn lệ phí đối với các trường hợp sau: Đăng ký hộ tịch cho người thuộc hộ nghèo; người cao tuổi; người khuyết tật; người có công với cách mạng; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo). Đối với trường hợp đăng ký khai sinh không đúng hạn nộp trực tiếp: 5.000 đồng; nộp trực tuyến 4.000 đồng (áp dụng tại 43 xã, phường tại Phụ lục 3 kèm theo). Miễn lệ phí đối với trường hợp đăng ký cho trẻ em, người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người cao tuổi, người khuyết tật, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (áp dụng tại 43 xã, phường tại Phụ lục 3 kèm theo).",
+    "fee_structure": {
+      "main_fee": {
+        "type": "registration_fee",
+        "description": "Lệ phí đăng ký khai sinh cho người đã có hồ sơ, giấy tờ cá nhân",
+        "fee_amounts": [
+          {
+            "condition": "nộp trực tiếp",
+            "amount": 8000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký khai sinh"
+          },
+          {
+            "condition": "nộp trực tuyến (đến 31/12/2025)",
+            "amount": 4000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký khai sinh"
+          },
+          {
+            "condition": "đăng ký khai sinh không đúng hạn nộp trực tiếp",
+            "amount": 5000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký khai sinh không đúng hạn"
+          },
+          {
+            "condition": "đăng ký khai sinh không đúng hạn nộp trực tuyến",
+            "amount": 4000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký khai sinh không đúng hạn"
+          }
+        ],
+        "exemptions": [
+          {
+            "condition": "người thuộc gia đình có công với cách mạng",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người thuộc hộ nghèo",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người khuyết tật",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "đăng ký cho trẻ em",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người cao tuổi",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          }
+        ]
+      },
+      "additional_fees": [
+        {
+          "type": "copy_fee",
+          "description": "Phí cấp bản sao Giấy khai sinh",
+          "amount": 8000,
+          "currency": "VND",
+          "unit": "bản sao",
+          "optional": true,
+          "exemptions": [
+            {
+              "condition": "đăng ký hộ tịch cho người thuộc hộ nghèo",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người cao tuổi",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người khuyết tật",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người có công với cách mạng",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+              "description": "Miễn lệ phí"
+            }
+          ]
+        },
+        {
+          "type": "extract_fee",
+          "description": "Phí cấp Trích lục/sự kiện hộ tịch đã đăng ký",
+          "fee_amounts": [
+            {
+              "condition": "nộp trực tiếp",
+              "amount": 50000,
+              "currency": "VND",
+              "unit": "trường hợp"
+            },
+            {
+              "condition": "nộp trực tuyến",
+              "amount": 40000,
+              "currency": "VND",
+              "unit": "trường hợp"
+            }
+          ],
+          "note": "Áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo Thông tư số 85/2019/TT-BTC",
+          "optional": true,
+          "exemptions": [
+            {
+              "condition": "đăng ký hộ tịch cho người thuộc hộ nghèo",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người cao tuổi",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người khuyết tật",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người có công với cách mạng",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+              "description": "Miễn lệ phí"
+            }
+          ]
+        }
+      ]
+    },
     "has_form": true,
     "requirements_conditions": "Công dân Việt Nam cư trú trong nước, sinh trước ngày 01/01/2016, chưa được đăng ký khai sinh, nhưng đã có hồ sơ, giấy tờ cá nhân (bản chính hoặc bản sao hợp lệ) như giấy tờ tùy thân hoặc các giấy tờ khác do cơ quan nhà nước Việt Nam cấp.",
     "legal_basis_references": [

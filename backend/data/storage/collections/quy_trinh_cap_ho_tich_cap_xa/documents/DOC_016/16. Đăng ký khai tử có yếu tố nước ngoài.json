@@ -9,8 +9,33 @@
     "applicant_type": ["Cá nhân", "Tổ chức"],
     "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu. Trường hợp cần xác minh thì không quá 03 ngày làm việc.",
     "fee_vnd": null,
-    "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 75.000đ, 60.000đ, 50.000đ, 40.000đ, 37.500đ. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...). Phí cấp bản sao: 8.000đ/bản.",
+    "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Đăng ký khai tử có yếu tố nước ngoài: 75.000đ (trực tiếp), 37.500đ (trực tuyến). Đăng ký lại/quá hạn: 50.000đ (trực tiếp), 40.000đ (trực tuyến), 60.000đ (trực tuyến tại 43 xã/phường). Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật, người cao tuổi, đồng bào dân tộc thiểu số...). Phí cấp bản sao: 8.000đ/bản.",
     "has_form": true,
+    "fee_structure": {
+      "main_fee": {
+        "registration_fee": {
+          "direct": 75000,
+          "online": 37500
+        },
+        "re_registration_fee": {
+          "direct": 50000,
+          "online": 40000,
+          "special_case_online": 60000
+        }
+      },
+      "exemptions": [
+        "Gia đình có công với cách mạng",
+        "Hộ nghèo",
+        "Người khuyết tật",
+        "Người cao tuổi",
+        "Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+        "Trẻ em",
+        "Đăng ký khai tử đúng hạn"
+      ],
+      "additional_fees": {
+        "copy_fee": 8000
+      }
+    },
     "requirements_conditions": null,
     "legal_basis_references": [
       "Luật Hộ tịch năm 2014",
@@ -73,7 +98,24 @@
       "keywords": ["kết quả", "trích lục khai tử", "lệ phí", "miễn phí"]
     },
     {
-      "chunk_id": 5,
+      "chunk_id": 4,
+      "section_title": "Lệ phí và các trường hợp miễn lệ phí",
+      "content": "**LỆ PHÍ ĐĂNG KÝ KHAI TỬ CÓ YẾU TỐ NƯỚC NGOÀI:**\n- Nộp trực tiếp: 75.000đ\n- Nộp trực tuyến (đến 31/12/2025): 37.500đ\n\n**LỆ PHÍ ĐĂNG KÝ LẠI/QUÁ HẠN:**\n- Nộp trực tiếp: 50.000đ/trường hợp\n- Nộp trực tuyến: 40.000đ/trường hợp\n- Trường hợp đặc biệt (nộp trực tuyến tại 43 xã/phường): 60.000đ\n\n**PHÍ CẤP BẢN SAO TRÍCH LỤC KHAI TỬ:**\n- 8.000đ/bản sao\n\n**CÁC TRƯỜNG HỢP ĐƯỢC MIỄN LỆ PHÍ:**\n- Gia đình có công với cách mạng\n- Hộ nghèo\n- Người khuyết tật\n- Người cao tuổi\n- Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn\n- Trẻ em\n- Đăng ký khai tử đúng hạn\n\n**LƯU Ý:** Mức lệ phí có thể thay đổi tùy theo khu vực áp dụng (32 xã/phường, 28 xã/phường, hoặc 43 xã/phường khác nhau).",
+      "source_reference": "Mục 5.g",
+      "keywords": [
+        "lệ phí",
+        "miễn lệ phí",
+        "gia đình có công",
+        "hộ nghèo",
+        "khuyết tật",
+        "người cao tuổi",
+        "dân tộc thiểu số",
+        "đăng ký khai tử",
+        "yếu tố nước ngoài"
+      ]
+    },
+    {
+      "chunk_id": 6,
       "section_title": "Quy trình xử lý công việc",
       "content": "**Thời gian:** 01 ngày làm việc (không xác minh) hoặc 03 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (1 ngày hoặc ½ ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ (nếu cần xác minh, ½ ngày).\n3. Lãnh đạo UBND ký Trích lục khai tử (nếu cần xác minh, ½ ngày).\n4. Văn thư UBND đóng dấu văn bản (nếu cần xác minh, ½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).",
       "source_reference": "Mục 5.l",

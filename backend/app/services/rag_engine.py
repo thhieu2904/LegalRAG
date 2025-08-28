@@ -25,6 +25,10 @@ from .clarification import ClarificationService
 from .router import QueryRouter, RouterBasedQueryService
 from .context import ContextExpander
 from .simple_form_detection import SimpleFormDetectionService
+from .fee_service import FeeService
+from .form_service import FormService
+from .fee_service import FeeService
+from .form_service import FormService
 from .prompt_service import prompt_service, PromptType
 from ..core.config import settings
 
@@ -422,7 +426,23 @@ class RAGService:
             
             # Simple Form Detection Service - NEW  
             self.form_detection_service = SimpleFormDetectionService()
-            logger.info("✅ Simple Form Detection Service initialized")
+            logger.info("Simple Form Detection Service initialized")
+            
+            # Fee Service - NEW
+            self.fee_service = FeeService()
+            logger.info("Fee Service initialized")
+            
+            # Form Service - NEW
+            self.form_service = FormService()
+            logger.info("Form Service initialized")
+            
+            # Fee Service - NEW
+            self.fee_service = FeeService()
+            logger.info("✅ Fee Service initialized")
+            
+            # Form Service - NEW
+            self.form_service = FormService()
+            logger.info("✅ Form Service initialized")
             
         except Exception as e:
             logger.error(f"Error initializing services: {e}")
@@ -1344,6 +1364,51 @@ class RAGService:
             except Exception as e:
                 logger.error(f"Error in form detection: {e}")
                 # Continue without forms if error occurs
+            
+            # 💰 ENHANCED FEE INFORMATION: Integrate with FeeService
+            try:
+                # Get document metadata for fee information
+                doc_metadata = {}
+                if response.get("source_documents"):
+                    # Try to get metadata from the first source document
+                    first_doc = response["source_documents"][0]
+                    if isinstance(first_doc, dict) and "metadata" in first_doc:
+                        doc_metadata = first_doc["metadata"]
+                    elif isinstance(first_doc, str):
+                        # If it's a document path, we might need to load metadata
+                        # For now, skip if we can't get metadata easily
+                        pass
+                
+                if doc_metadata:
+                    # Use FeeService to enhance response with fee information
+                    response = self.fee_service.enhance_rag_response_with_fee_info(response, doc_metadata)
+                    
+                    logger.info("💰 Enhanced response with fee information")
+                    
+            except Exception as e:
+                logger.error(f"Error in fee service: {e}")
+                # Continue without fee info if error occurs
+            
+            # 📋 ENHANCED FORM SUGGESTION: Integrate with FormService
+            try:
+                # Get collection and metadata for form suggestion
+                collection = response.get("collection", "")
+                doc_metadata = {}
+                
+                if response.get("source_documents"):
+                    first_doc = response["source_documents"][0]
+                    if isinstance(first_doc, dict) and "metadata" in first_doc:
+                        doc_metadata = first_doc["metadata"]
+                
+                if collection and doc_metadata:
+                    # Use FormService to suggest relevant forms
+                    response = self.form_service.enhance_rag_response_with_forms(response, collection, doc_metadata)
+                    
+                    logger.info("📋 Enhanced response with form suggestions")
+                    
+            except Exception as e:
+                logger.error(f"Error in form service: {e}")
+                # Continue without form suggestions if error occurs
             
             return response
             

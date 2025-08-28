@@ -7,11 +7,135 @@
     "effective_date": "2025-07-07",
     "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của người nhận hoặc người được nhận là cha, mẹ, con.",
     "applicant_type": ["Cá nhân"],
-    "processing_time_text": "03 ngày làm việc. Trường hợp cần xác minh thì không quá 08 ngày làm việc.",
+    "processing_time_text": "05 ngày làm việc.",
+    "fee_structure": {
+      "main_fee": {
+        "type": "registration_fee",
+        "description": "Lệ phí đăng ký nhận cha, mẹ, con",
+        "fee_amounts": [
+          {
+            "condition": "nộp trực tiếp",
+            "amount": 15000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký nhận cha, mẹ, con"
+          },
+          {
+            "condition": "nộp trực tuyến (đến 31/12/2025)",
+            "amount": 7500,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký nhận cha, mẹ, con"
+          }
+        ],
+        "exemptions": [
+          {
+            "condition": "người thuộc gia đình có công với cách mạng",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người thuộc hộ nghèo",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người khuyết tật",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          }
+        ]
+      },
+      "additional_fees": [
+        {
+          "type": "copy_fee",
+          "description": "Phí cấp bản sao Trích lục đăng ký nhận cha, mẹ, con",
+          "amount": 8000,
+          "currency": "VND",
+          "unit": "bản sao",
+          "optional": true,
+          "exemptions": [
+            {
+              "condition": "đăng ký hộ tịch cho người thuộc hộ nghèo",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người cao tuổi",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người khuyết tật",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người có công với cách mạng",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đăng ký hộ tịch cho trẻ em",
+              "description": "Miễn lệ phí"
+            }
+          ]
+        },
+        {
+          "type": "extract_fee",
+          "description": "Phí cấp Trích lục/sự kiện hộ tịch đã đăng ký",
+          "fee_amounts": [
+            {
+              "condition": "nộp trực tiếp",
+              "amount": 10000,
+              "currency": "VND",
+              "unit": "trường hợp"
+            },
+            {
+              "condition": "nộp trực tuyến",
+              "amount": 8000,
+              "currency": "VND",
+              "unit": "trường hợp"
+            }
+          ],
+          "note": "Áp dụng tại 32 xã, phường tại Phụ lục 1 kèm theo Thông tư số 85/2019/TT-BTC",
+          "optional": true,
+          "exemptions": [
+            {
+              "condition": "đăng ký hộ tịch cho người thuộc hộ nghèo",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người cao tuổi",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người khuyết tật",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người có công với cách mạng",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đăng ký hộ tịch cho trẻ em",
+              "description": "Miễn lệ phí"
+            }
+          ]
+        }
+      ]
+    },
     "fee_vnd": null,
-    "fee_text": "Lệ phí thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng. Có các mức phí 15.000đ, 10.000đ, 8.000đ, 7.500đ. Có các trường hợp được miễn lệ phí (gia đình có công, hộ nghèo, khuyết tật...). Phí cấp bản sao: 8.000đ/bản.",
+    "fee_text": "Đối với trường hợp đăng ký nhận cha, mẹ, con: Nộp trực tiếp 15.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 7.500 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật; đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn. Phí cấp bản sao Trích lục đăng ký nhận cha, mẹ, con (nếu có yêu cầu): 8.000 đồng/bản sao. Phí cấp Trích lục/sự kiện hộ tịch đã đăng ký (áp dụng tại 32 xã, phường tại Phụ lục 1 kèm theo Thông tư số 85/2019/TT-BTC): 10.000 đồng/trường hợp (nộp trực tiếp), 8.000 đồng/trường hợp (nộp trực tuyến). Miễn lệ phí đối với các trường hợp sau: Đăng ký hộ tịch cho người thuộc hộ nghèo; người cao tuổi; người khuyết tật; người có công với cách mạng; đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn; đăng ký hộ tịch cho trẻ em.",
     "has_form": true,
-    "requirements_conditions": "Bên nhận và bên được nhận là cha, mẹ, con đều phải còn sống tại thời điểm đăng ký. Việc nhận cha, mẹ, con không có tranh chấp. Có quy định riêng cho trường hợp người cha nhận con mà không liên hệ được với người mẹ.",
+    "requirements_conditions": "Trường hợp nam, nữ chung sống với nhau như vợ chồng, không đăng ký kết hôn, sinh con, người con sống cùng với người cha, khi người cha làm thủ tục nhận con mà không có mẹ tham gia thì không cần văn bản cam đoan của mẹ.",
     "legal_basis_references": [
       "Luật Hôn nhân và gia đình năm 2014",
       "Luật Hộ tịch năm 2014",
@@ -50,14 +174,16 @@
         "cam đoan",
         "người làm chứng",
         "xuất trình"
-      ]
+      ],
+      "chunk_type": "documents"
     },
     {
       "chunk_id": 2,
       "section_title": "Thời hạn giải quyết",
       "content": "03 ngày làm việc. Trường hợp cần phải xác minh thì thời hạn giải quyết không quá 08 ngày làm việc.",
       "source_reference": "Mục 5.b",
-      "keywords": ["thời hạn", "giải quyết", "xác minh"]
+      "keywords": ["thời hạn", "giải quyết", "xác minh"],
+      "chunk_type": "process"
     },
     {
       "chunk_id": 3,
@@ -70,7 +196,8 @@
         "còn sống",
         "không tranh chấp",
         "nhận con ngoài giá thú"
-      ]
+      ],
+      "chunk_type": "eligibility"
     },
     {
       "chunk_id": 4,
@@ -83,17 +210,33 @@
         "thẩm quyền",
         "UBND cấp xã",
         "nơi cư trú"
-      ]
+      ],
+      "chunk_type": "authority"
     },
     {
       "chunk_id": 5,
       "section_title": "Kết quả thực hiện thủ tục hành chính",
       "content": "- Trích lục đăng ký nhận cha, mẹ, con (bản chính).\n- Bản sao Trích lục (nếu có yêu cầu).\n- Bản điện tử Trích lục đăng ký nhận cha, mẹ, con.",
       "source_reference": "Mục 5.e",
-      "keywords": ["kết quả", "trích lục", "bản sao"]
+      "keywords": ["kết quả", "trích lục", "bản sao"],
+      "chunk_type": "result"
     },
     {
       "chunk_id": 6,
+      "section_title": "Phí, lệ phí",
+      "content": "- Lệ phí đăng ký nhận cha, mẹ, con thay đổi tùy theo hình thức nộp (trực tiếp/trực tuyến) và khu vực áp dụng.\n- Các mức phí: 15.000đ (trực tiếp), 7.500đ (trực tuyến), 10.000đ (trực tiếp khu vực khác), 8.000đ (trực tuyến khu vực khác).\n- Miễn lệ phí: Gia đình có công với cách mạng, hộ nghèo, khuyết tật.\n- Phí cấp bản sao Trích lục: 8.000đ/bản.",
+      "source_reference": "Mục 5.g",
+      "keywords": [
+        "phí",
+        "lệ phí",
+        "miễn lệ phí",
+        "nhận cha mẹ con",
+        "khu vực áp dụng"
+      ],
+      "chunk_type": "fees"
+    },
+    {
+      "chunk_id": 7,
       "section_title": "Quy trình xử lý công việc",
       "content": "**Thời gian:** 03 ngày làm việc (không xác minh) hoặc 08 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận hồ sơ (½ ngày - 1 ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ và tiến hành xác minh nếu cần (1 ngày - 5 ngày).\n3. Lãnh đạo UBND xem xét, ký duyệt hồ sơ (½ ngày - 1 ngày).\n4. Văn thư UBND đóng dấu văn bản (½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi sổ và trả kết quả (½ ngày).",
       "source_reference": "Mục 5.l",
@@ -106,7 +249,8 @@
         "xác minh",
         "ký duyệt",
         "trả kết quả"
-      ]
+      ],
+      "chunk_type": "process"
     }
   ]
 }
