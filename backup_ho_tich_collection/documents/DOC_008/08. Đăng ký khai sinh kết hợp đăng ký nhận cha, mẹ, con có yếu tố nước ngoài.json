@@ -1,0 +1,257 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/08. Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con có yếu tố nước ngoài.doc",
+    "title": "Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con có yếu tố nước ngoài",
+    "code": "QT 08/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "10 ngày",
+    "fee_vnd": null,
+    "fee_text": "Khai sinh nộp trực tiếp: 75.000 đồng; khai sinh nộp trực tuyến (áp dụng đến 31/12/2025): 37.500 đồng (áp dụng tại 32 xã, phường tại Phụ lục 1 kèm theo). Nhận cha, mẹ, con nộp trực tiếp: 1.500.000 đồng; nhận cha, mẹ, con nộp trực tuyến (áp dụng đến 31/12/2025): 750.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Giấy khai sinh, bản sao Trích lục đăng ký nhận cha, mẹ, con (nếu có yêu cầu): 8.000 đồng/bản sao. Phí cấp Trích lục/sự kiện hộ tịch đã đăng ký: 50.000 đồng/trường hợp (nộp trực tiếp), 40.000 đồng/trường hợp (nộp trực tuyến). Miễn lệ phí đối với các trường hợp sau: Đăng ký hộ tịch cho người thuộc hộ nghèo; người cao tuổi; người khuyết tật; người có công với cách mạng; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo). Đối với trường hợp đăng ký khai sinh không đúng hạn nộp trực tuyến 60.000 đồng (áp dụng tại 43 xã, phường tại Phụ lục 3 kèm theo). Đối với trường hợp đăng ký nhận cha, mẹ, con có yếu tố nước ngoài nộp trực tiếp 1.000.000 đồng/trường hợp, nộp trực tuyến 800.000 đồng/trường hợp. Nộp trực tuyến 1.200.000 đồng (áp dụng tại 43 xã, phường tại Phụ lục 3 kèm theo). Miễn lệ phí đối với trường hợp đăng ký cho trẻ em, người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người cao tuổi, người khuyết tật, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (áp dụng tại 43 xã, phường tại Phụ lục 3 kèm theo).",
+    "fee_structure": {
+      "main_fee": {
+        "type": "registration_fee",
+        "description": "Lệ phí đăng ký khai sinh kết hợp nhận cha, mẹ, con có yếu tố nước ngoài",
+        "fee_amounts": [
+          {
+            "condition": "khai sinh nộp trực tiếp",
+            "amount": 75000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký khai sinh có yếu tố nước ngoài"
+          },
+          {
+            "condition": "khai sinh nộp trực tuyến (đến 31/12/2025)",
+            "amount": 37500,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký khai sinh có yếu tố nước ngoài"
+          },
+          {
+            "condition": "nhận cha, mẹ, con nộp trực tiếp",
+            "amount": 1500000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký nhận cha, mẹ, con có yếu tố nước ngoài"
+          },
+          {
+            "condition": "nhận cha, mẹ, con nộp trực tuyến (đến 31/12/2025)",
+            "amount": 750000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký nhận cha, mẹ, con có yếu tố nước ngoài"
+          },
+          {
+            "condition": "đăng ký khai sinh không đúng hạn nộp trực tuyến",
+            "amount": 60000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký khai sinh không đúng hạn có yếu tố nước ngoài"
+          },
+          {
+            "condition": "đăng ký nhận cha, mẹ, con có yếu tố nước ngoài nộp trực tiếp",
+            "amount": 1000000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký nhận cha, mẹ, con có yếu tố nước ngoài"
+          },
+          {
+            "condition": "đăng ký nhận cha, mẹ, con có yếu tố nước ngoài nộp trực tuyến",
+            "amount": 800000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký nhận cha, mẹ, con có yếu tố nước ngoài"
+          },
+          {
+            "condition": "đăng ký nhận cha, mẹ, con có yếu tố nước ngoài nộp trực tuyến (áp dụng tại 43 xã, phường)",
+            "amount": 1200000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký nhận cha, mẹ, con có yếu tố nước ngoài"
+          }
+        ],
+        "exemptions": [
+          {
+            "condition": "người thuộc gia đình có công với cách mạng",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người thuộc hộ nghèo",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người khuyết tật",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "đăng ký cho trẻ em",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          }
+        ]
+      },
+      "additional_fees": [
+        {
+          "type": "copy_fee",
+          "description": "Phí cấp bản sao Giấy khai sinh, bản sao Trích lục đăng ký nhận cha, mẹ, con",
+          "amount": 8000,
+          "currency": "VND",
+          "unit": "bản sao",
+          "optional": true,
+          "exemptions": [
+            {
+              "condition": "đăng ký hộ tịch cho người thuộc hộ nghèo",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người cao tuổi",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người khuyết tật",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người có công với cách mạng",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+              "description": "Miễn lệ phí"
+            }
+          ]
+        },
+        {
+          "type": "extract_fee",
+          "description": "Phí cấp Trích lục/sự kiện hộ tịch đã đăng ký",
+          "fee_amounts": [
+            {
+              "condition": "nộp trực tiếp",
+              "amount": 50000,
+              "currency": "VND",
+              "unit": "trường hợp"
+            },
+            {
+              "condition": "nộp trực tuyến",
+              "amount": 40000,
+              "currency": "VND",
+              "unit": "trường hợp"
+            }
+          ],
+          "note": "Áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo Thông tư số 85/2019/TT-BTC",
+          "optional": true,
+          "exemptions": [
+            {
+              "condition": "đăng ký hộ tịch cho người thuộc hộ nghèo",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người cao tuổi",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người khuyết tật",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người có công với cách mạng",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+              "description": "Miễn lệ phí"
+            }
+          ]
+        }
+      ]
+    },
+    "has_form": true,
+    "requirements_conditions": "Bên nhận và bên được nhận là cha, mẹ, con đều phải còn sống tại thời điểm đăng ký. Việc nhận cha, mẹ, con không có tranh chấp.",
+    "legal_basis_references": [
+      "Luật Hôn nhân và gia đình năm 2014",
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Nghị định số 104/2022/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP",
+      "Thông tư số 281/2016/TT-BTC",
+      "Thông tư số 85/2019/TT-BTC",
+      "Thông tư số 106/2021/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND",
+      "Nghị quyết số 06/2024/NQ-HĐND",
+      "Nghị quyết số 12/2023/NQ-HĐND",
+      "Nghị quyết số 04/2024/NQ-HĐND",
+      "Nghị quyết số 04/2023/NQ-HĐND"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ và các lưu ý quan trọng",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- Tờ khai đăng ký khai sinh theo mẫu.\n- Tờ khai đăng ký nhận cha, mẹ, con theo mẫu.\n\n**B. GIẤY TỜ PHẢI NỘP:**\n1. **Đối với việc khai sinh:**\n   - Giấy chứng sinh hoặc giấy tờ thay thế (văn bản của người làm chứng/giấy cam đoan).\n   - Nếu trẻ sinh ra ở nước ngoài: Nộp Giấy chứng sinh hoặc giấy tờ tương đương do cơ quan nước ngoài cấp.\n   - Nếu có cha/mẹ là người nước ngoài: Nộp văn bản thỏa thuận lựa chọn quốc tịch cho con và giấy xác nhận của cơ quan có thẩm quyền nước ngoài nếu chọn quốc tịch nước ngoài.\n2. **Đối với việc nhận cha, mẹ, con:**\n   - Chứng cứ chứng minh quan hệ cha/mẹ/con (văn bản giám định hoặc văn bản cam đoan có 2 người làm chứng).\n   - Nếu có người nước ngoài tham gia: Nộp bản sao hộ chiếu hoặc giấy tờ có giá trị thay thế.\n\n**C. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng (Hộ chiếu, Căn cước công dân...).\n2. Giấy tờ chứng minh thông tin về nơi cư trú (nếu CSDLQGVDC không có).\n3. Giấy tờ chứng minh trẻ nhập cảnh hợp pháp vào Việt Nam và xác nhận của công an về việc trẻ đang cư trú tại Việt Nam (đối với trẻ sinh ra ở nước ngoài, có quốc tịch Việt Nam, chưa đăng ký khai sinh ở nước ngoài).\n\n**D. CÁC LƯU Ý QUAN TRỌNG:**\n- **Giấy tờ nước ngoài:** Phải được hợp pháp hóa lãnh sự, trừ trường hợp được miễn theo điều ước quốc tế.\n- **Hình thức giấy tờ:** Chấp nhận nộp bản sao chứng thực, bản sao từ sổ gốc, hoặc bản chụp kèm theo bản chính để đối chiếu. Giấy tờ trên ứng dụng VneID được chấp nhận.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "khai sinh kết hợp",
+        "nhận cha mẹ con",
+        "yếu tố nước ngoài",
+        "tờ khai",
+        "giấy chứng sinh",
+        "chứng cứ",
+        "hộ chiếu",
+        "hợp pháp hóa lãnh sự",
+        "quốc tịch"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "10 ngày.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "10 ngày"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Yêu cầu, điều kiện thực hiện",
+      "content": "Việc nhận cha, mẹ, con phải đáp ứng các điều kiện sau:\n- Bên nhận và bên được nhận là cha, mẹ, con đều còn sống.\n- Việc nhận cha, mẹ, con không có tranh chấp.",
+      "source_reference": "Mục 5.i",
+      "keywords": ["điều kiện", "yêu cầu", "còn sống", "không tranh chấp"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Cá nhân.\n**Cơ quan thực hiện:** Công chức tư pháp - hộ tịch tiếp nhận hồ sơ và tham mưu Lãnh đạo Ủy ban nhân dân cấp xã xem xét, quyết định.\n**Cơ quan phối hợp:** Ủy ban nhân dân cấp xã nơi cư trú của người được nhận là cha, mẹ, con; Cơ quan quản lý CSDLQGVDC.",
+      "source_reference": "Mục 5.c, 5.d, 5.đ",
+      "keywords": ["đối tượng", "cơ quan", "thẩm quyền", "UBND cấp xã"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục hành chính",
+      "content": "Giấy khai sinh và Trích lục đăng ký nhận cha, mẹ, con (bản chính). Cấp bản sao của hai loại giấy tờ trên nếu có yêu cầu.",
+      "source_reference": "Mục 5.e",
+      "keywords": ["kết quả", "giấy khai sinh", "trích lục"]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian:** 10 ngày.\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận hồ sơ (1 ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ, tiến hành xác minh và niêm yết (7 ngày).\n3. Lãnh đạo UBND ký Giấy khai sinh và Trích lục nhận cha, mẹ, con (1 ngày).\n4. Văn thư UBND đóng dấu văn bản (½ ngày).\n5. Cán bộ tại Trung tâm Phục vụ hành chính công ghi vào các Sổ đăng ký tương ứng và trả kết quả (½ ngày).",
+      "source_reference": "Mục 5.l",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "thẩm tra",
+        "xác minh",
+        "niêm yết",
+        "ký duyệt",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

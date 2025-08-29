@@ -1,52 +1,112 @@
 {
   "metadata": {
-    "source": "16. Đăng ký hoạt động Văn phòng công chứng.doc",
+    "source": "data/documents/quy_trinh_cong_chung/documents/DOC_016/16. Đăng ký hoạt động Văn phòng công chứng.doc",
     "title": "Đăng ký hoạt động Văn phòng công chứng",
     "code": "QT 16/CC",
     "issuing_authority": "Sở Tư pháp",
-    "effective_date": "",
-    "executing_agency": "Sở Tư pháp",
-    "applicant_type": "Văn phòng công chứng",
+    "effective_date": "2025-01-01",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Văn phòng công chứng đã được cho phép thành lập"
+    ],
     "processing_time_text": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
     "fee_vnd": 0,
-    "fee_text": "Không có lệ phí",
+    "fee_text": "Không có lệ phí cho thủ tục đăng ký hoạt động",
     "has_form": true,
-    "requirements_conditions": "Văn phòng công chứng phải đăng ký hoạt động trong thời hạn 90 ngày kể từ ngày quyết định cho phép thành lập có hiệu lực",
+    "requirements_conditions": "Văn phòng công chứng phải đăng ký hoạt động tại Sở Tư pháp trong thời hạn 90 ngày kể từ ngày quyết định cho phép thành lập có hiệu lực thi hành. Văn phòng công chứng phải đáp ứng đầy đủ các điều kiện về trụ sở, vốn đầu tư và nhân sự theo quy định.",
     "legal_basis_references": [
       "Luật Công chứng 2014",
-      "Quyết định 30/QĐ-TTg của Thủ tướng Chính phủ về đơn giản hóa thủ tục hành chính"
+      "Nghị định số 23/2015/NĐ-CP",
+      "Thông tư số 01/2015/TT-BTP",
+      "Thông tư số 05/2025/TT-BTP",
+      "Quyết định 30/QĐ-TTg của Thủ tướng Chính phủ"
     ]
   },
   "fee_structure": {
-    "main_fee": 0,
-    "exemptions": "Không có lệ phí cho thủ tục đăng ký hoạt động",
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không có lệ phí cho thủ tục đăng ký hoạt động"
+    },
+    "exemptions": [
+      "Tất cả các trường hợp đăng ký hoạt động Văn phòng công chứng"
+    ],
     "additional_fees": []
   },
   "content_chunks": [
     {
-      "chunk_id": "chunk_1",
-      "title": "Thành phần hồ sơ",
-      "content": "1. Đơn đề nghị đăng ký hoạt động của Văn phòng công chứng và đề nghị cấp thẻ công chứng viên theo Mẫu TP-CC-06 ban hành kèm theo quy định.\n2. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử giấy tờ chứng minh về trụ sở của Văn phòng công chứng phù hợp với nội dung đã đăng ký.\n3. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử giấy tờ chứng minh công chứng viên hợp danh đã góp vốn theo quy định của Luật Doanh nghiệp đối với Văn phòng công chứng theo loại hình công ty hợp danh.\n4. Giấy tờ chứng minh về vốn đầu tư của Trưởng Văn phòng công chứng đối với Văn phòng công chứng theo loại hình doanh nghiệp tư nhân.\n5. Hợp đồng lao động, quyết định bổ nhiệm của công chứng viên làm việc tại Văn phòng công chứng."
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ yêu cầu",
+      "content": "Hồ sơ đăng ký hoạt động của Văn phòng công chứng bao gồm:\\n1. Đơn đề nghị đăng ký hoạt động của Văn phòng công chứng và đề nghị cấp thẻ công chứng viên theo Mẫu TP-CC-06.\\n2. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử giấy tờ chứng minh về trụ sở của Văn phòng công chứng phù hợp với nội dung đã đăng ký.\\n3. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử giấy tờ chứng minh công chứng viên hợp danh đã góp vốn theo quy định của Luật Doanh nghiệp (đối với Văn phòng công chứng theo loại hình công ty hợp danh).\\n4. Giấy tờ chứng minh về vốn đầu tư của Trưởng Văn phòng công chứng (đối với Văn phòng công chứng theo loại hình doanh nghiệp tư nhân).\\n5. Hợp đồng lao động, quyết định bổ nhiệm của công chứng viên làm việc tại Văn phòng công chứng.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "đăng ký hoạt động",
+        "văn phòng công chứng",
+        "đơn đề nghị",
+        "trụ sở",
+        "vốn đầu tư",
+        "công chứng viên",
+        "hợp đồng lao động"
+      ]
     },
     {
-      "chunk_id": "chunk_2",
-      "title": "Thời hạn giải quyết",
-      "content": "Trong thời hạn 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ. Trường hợp từ chối phải thông báo bằng văn bản có nêu rõ lý do.\nVăn phòng công chứng phải đăng ký hoạt động tại Sở Tư pháp trong thời hạn 90 ngày kể từ ngày quyết định cho phép thành lập có hiệu lực thi hành."
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ. Trường hợp từ chối phải thông báo bằng văn bản có nêu rõ lý do.\\n\\nVăn phòng công chứng phải đăng ký hoạt động tại Sở Tư pháp trong thời hạn 90 ngày kể từ ngày quyết định cho phép thành lập có hiệu lực thi hành.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "05 ngày",
+        "90 ngày",
+        "hồ sơ hợp lệ",
+        "thông báo từ chối",
+        "quyết định thành lập"
+      ]
     },
     {
-      "chunk_id": "chunk_3",
-      "title": "Đối tượng thực hiện/Cơ quan thực hiện",
-      "content": "Đối tượng thực hiện: Văn phòng công chứng đã được cho phép thành lập.\nCơ quan thực hiện: Sở Tư pháp tỉnh/thành phố trực thuộc trung ương."
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng thực hiện: Văn phòng công chứng đã được UBND cấp tỉnh ra quyết định cho phép thành lập và cần đăng ký hoạt động để chính thức bắt đầu hoạt động công chứng.\\n\\nCơ quan thực hiện: Sở Tư pháp tỉnh, thành phố trực thuộc Trung ương nơi Văn phòng công chứng đặt trụ sở.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "văn phòng công chứng",
+        "được phép thành lập",
+        "sở tư pháp",
+        "cấp tỉnh",
+        "trụ sở"
+      ]
     },
     {
-      "chunk_id": "chunk_4",
-      "title": "Kết quả thực hiện/Lệ phí",
-      "content": "Kết quả: Giấy chứng nhận đăng ký hoạt động của Văn phòng công chứng.\nLệ phí: Không có lệ phí cho thủ tục đăng ký hoạt động."
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "Kết quả thực hiện: Giấy chứng nhận đăng ký hoạt động của Văn phòng công chứng, cho phép Văn phòng công chứng chính thức bắt đầu hoạt động công chứng theo quy định của pháp luật.\\n\\nLệ phí: Không có lệ phí cho thủ tục đăng ký hoạt động của Văn phòng công chứng.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "giấy chứng nhận",
+        "đăng ký hoạt động",
+        "bắt đầu hoạt động",
+        "lệ phí",
+        "miễn phí"
+      ]
     },
     {
-      "chunk_id": "chunk_5",
-      "title": "Quy trình xử lý chi tiết",
-      "content": "1. Văn phòng công chứng nộp hồ sơ đăng ký hoạt động tại Sở Tư pháp trong thời hạn 90 ngày kể từ ngày quyết định cho phép thành lập có hiệu lực.\n2. Sở Tư pháp tiếp nhận và kiểm tra tính hợp lệ của hồ sơ.\n3. Trường hợp hồ sơ đầy đủ, chính xác: Sở Tư pháp cấp Giấy chứng nhận đăng ký hoạt động trong thời hạn 05 ngày làm việc.\n4. Trường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục.\n5. Văn phòng công chứng nhận kết quả và bắt đầu hoạt động công chứng theo quy định của pháp luật."
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Các bước thực hiện:\\n1. Văn phòng công chứng nộp hồ sơ đăng ký hoạt động tại Sở Tư pháp trong thời hạn 90 ngày kể từ ngày quyết định cho phép thành lập có hiệu lực.\\n2. Sở Tư pháp tiếp nhận và kiểm tra tính đầy đủ, hợp lệ của hồ sơ.\\n3. Trường hợp hồ sơ đầy đủ và chính xác: Sở Tư pháp cấp Giấy chứng nhận đăng ký hoạt động trong thời hạn 05 ngày làm việc.\\n4. Trường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục.\\n5. Văn phòng công chứng nhận Giấy chứng nhận và chính thức bắt đầu hoạt động công chứng theo quy định của pháp luật.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "nộp hồ sơ",
+        "tiếp nhận",
+        "kiểm tra",
+        "cấp giấy chứng nhận",
+        "thông báo",
+        "bắt đầu hoạt động"
+      ]
     }
   ]
 }

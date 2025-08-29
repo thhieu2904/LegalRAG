@@ -1,52 +1,95 @@
 {
   "metadata": {
-    "source": "26. Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng được bán.doc",
-    "title": "Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng được bán",
+    "source": "data/documents/quy_trinh_cong_chung/documents/DOC_026/[filename].doc",
+    "title": "Document 26",
     "code": "QT 26/CC",
     "issuing_authority": "Sở Tư pháp",
-    "effective_date": "",
-    "executing_agency": "Sở Tư pháp",
-    "applicant_type": "Văn phòng công chứng được bán",
-    "processing_time_text": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "effective_date": "2025-01-01",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Văn phòng công chứng"
+    ],
+    "processing_time_text": "05 ngày làm việc",
     "fee_vnd": 0,
-    "fee_text": "Không có lệ phí",
+    "fee_text": "Không quy định lệ phí",
     "has_form": true,
-    "requirements_conditions": "Văn phòng công chứng đã được bán và công chứng viên mua có nhu cầu thay đổi nội dung đăng ký hoạt động",
+    "requirements_conditions": "Thủ tục được thực hiện theo quy định của pháp luật về công chứng.",
     "legal_basis_references": [
       "Luật Công chứng 2014",
-      "Quyết định 30/QĐ-TTg của Thủ tướng Chính phủ về đơn giản hóa thủ tục hành chính"
+      "Nghị định số 23/2015/NĐ-CP",
+      "Thông tư số 01/2015/TT-BTP",
+      "Thông tư số 05/2025/TT-BTP"
     ]
   },
   "fee_structure": {
-    "main_fee": 0,
-    "exemptions": "Không có lệ phí cho thủ tục thay đổi nội dung đăng ký hoạt động Văn phòng công chứng",
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không quy định lệ phí"
+    },
+    "exemptions": [],
     "additional_fees": []
   },
   "content_chunks": [
     {
-      "chunk_id": "chunk_1",
-      "title": "Thành phần hồ sơ",
-      "content": "1. Đơn đề nghị thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng được bán theo mẫu do Bộ trưởng Bộ Tư pháp ban hành.\n2. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử giấy tờ chứng minh điều kiện về trụ sở của Văn phòng công chứng theo quy định.\n3. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử giấy tờ chứng minh công chứng viên mua Văn phòng công chứng đã góp vốn theo quy định của Luật Doanh nghiệp.\n4. Hợp đồng lao động, quyết định bổ nhiệm của công chứng viên làm việc tại Văn phòng công chứng được bán.\n5. Quyết định cho phép bán Văn phòng công chứng của Ủy ban nhân dân cấp tỉnh.\n6. Hợp đồng bán Văn phòng công chứng và các giấy tờ chứng minh việc chuyển nhượng.\n7. Các giấy tờ khác liên quan đến nội dung đề nghị thay đổi theo quy định tại khoản 2 Điều 25 của Luật Công chứng."
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ yêu cầu",
+      "content": "Hồ sơ bao gồm các giấy tờ và tài liệu được quy định chi tiết theo quy trình thủ tục.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "tài liệu",
+        "văn phòng công chứng"
+      ]
     },
     {
-      "chunk_id": "chunk_2",
-      "title": "Thời hạn giải quyết",
-      "content": "Trong thời hạn 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ, Sở Tư pháp cấp lại giấy đăng ký hoạt động cho Văn phòng công chứng, thu hồi giấy đăng ký hoạt động cũ của Văn phòng công chứng, đồng thời cấp thẻ công chứng viên cho công chứng viên mua Văn phòng công chứng.\nTrường hợp từ chối phải thông báo bằng văn bản có nêu rõ lý do.\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền giải quyết: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục."
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "hồ sơ hợp lệ"
+      ]
     },
     {
-      "chunk_id": "chunk_3",
-      "title": "Đối tượng thực hiện/Cơ quan thực hiện",
-      "content": "Đối tượng thực hiện: Văn phòng công chứng đã được bán, trong đó công chứng viên mua có nhu cầu thay đổi nội dung đăng ký hoạt động.\nCơ quan thực hiện: Sở Tư pháp tỉnh/thành phố trực thuộc trung ương."
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng: Văn phòng công chứng. Cơ quan thực hiện: Sở Tư pháp cấp tỉnh.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "văn phòng công chứng",
+        "sở tư pháp",
+        "cấp tỉnh"
+      ]
     },
     {
-      "chunk_id": "chunk_4",
-      "title": "Kết quả thực hiện/Lệ phí",
-      "content": "Kết quả: Giấy đăng ký hoạt động mới của Văn phòng công chứng và thẻ công chứng viên cho công chứng viên mua.\nLệ phí: Không có lệ phí cho thủ tục thay đổi nội dung đăng ký hoạt động Văn phòng công chứng."
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "Kết quả: Hoàn tất thủ tục theo quy định. Lệ phí: Không quy định lệ phí.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "lệ phí",
+        "miễn phí",
+        "hoàn tất"
+      ]
     },
     {
-      "chunk_id": "chunk_5",
-      "title": "Quy trình xử lý chi tiết",
-      "content": "1. Công chứng viên mua Văn phòng công chứng chuẩn bị hồ sơ đề nghị thay đổi nội dung đăng ký hoạt động.\n2. Nộp hồ sơ tại Sở Tư pháp nơi Văn phòng công chứng có trụ sở.\n3. Sở Tư pháp tiếp nhận và kiểm tra tính hợp lệ của hồ sơ.\n4. Trường hợp hồ sơ đầy đủ, chính xác: Sở Tư pháp cấp lại giấy đăng ký hoạt động trong thời hạn 05 ngày làm việc.\n5. Sở Tư pháp thu hồi giấy đăng ký hoạt động cũ của Văn phòng công chứng.\n6. Sở Tư pháp cấp thẻ công chứng viên cho công chứng viên mua Văn phòng công chứng.\n7. Trường hợp hồ sơ thiếu hoặc không hợp lệ: Thông báo bổ sung hoặc từ chối.\n8. Văn phòng công chứng bắt đầu hoạt động theo giấy đăng ký hoạt động mới.\n9. Công chứng viên mua kế thừa toàn bộ quyền, nghĩa vụ của Văn phòng công chứng.\n10. Văn phòng công chứng tiếp tục hoạt động công chứng theo quy định pháp luật."
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Quy trình thực hiện theo các bước: tiếp nhận hồ sơ, thẩm định, ra quyết định và thông báo kết quả.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "tiếp nhận",
+        "thẩm định",
+        "quyết định",
+        "thông báo"
+      ]
     }
   ]
 }

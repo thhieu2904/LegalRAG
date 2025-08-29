@@ -1,1 +1,112 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_pbgdpl_htpldn/DOC_001/01. Quy trinh hỗ trợ hòa giải viên.doc",
+    "title": "Quy trình hỗ trợ hòa giải viên",
+    "code": "QT 01/PBGDPL-HTPLDN",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ],
+    "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ, có thể gia hạn thêm 15 ngày",
+    "fee_vnd": null,
+    "fee_text": "",
+    "has_form": true,
+    "requirements_conditions": "",
+    "legal_basis_references": [
+      "Luật Hòa giải ở cơ sở năm 2020",
+      "Nghị định số 15/2014/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 09/2025/TT-BTP"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không thu lệ phí"
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Đối tượng và điều kiện thực hiện",
+      "content": "Đối tượng thực hiện thủ tục hành chính: Hòa giải viên hoặc gia đình hòa giải viên (trong trường hợp hòa giải viên bị thiệt hại về tính mạng).\n\nYêu cầu, điều kiện thực hiện thủ tục hành chính: Hòa giải viên gặp tai nạn hoặc rủi ro ảnh hưởng đến sức khỏe, tính mạng trong khi thực hiện nhiệm vụ hòa giải.\n\nCơ quan có thẩm quyền giải quyết: Sở Tư pháp cấp tỉnh, thành phố trực thuộc Trung ương.",
+      "source_reference": "Luật Hòa giải ở cơ sở năm 2020",
+      "keywords": [
+        "hòa giải viên",
+        "đối tượng",
+        "điều kiện",
+        "tai nạn",
+        "rủi ro",
+        "sở tư pháp"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thành phần hồ sơ",
+      "content": "Hồ sơ gồm các giấy tờ sau:\n\n1. Văn bản đề nghị hỗ trợ của hòa giải viên hoặc gia đình hòa giải viên có xác nhận của tổ trưởng tổ hòa giải hoặc Trưởng ban công tác Mặt trận.\n\n2. Biên bản xác nhận tình trạng của hòa giải viên bị tai nạn có xác nhận của Ủy ban nhân dân cấp xã nơi xảy ra tai nạn.\n\n3. Giấy ra viện hoặc giấy tờ tương đương xác nhận về thương tật, mức độ ảnh hưởng đến sức khỏe.\n\n4. Văn bản, giấy tờ hợp lệ về thu nhập thực tế theo tiền lương, tiền công hằng tháng của người bị tai nạn có xác nhận của tổ chức hoặc cá nhân sử dụng lao động.\n\n5. Giấy chứng nhận hoặc các giấy tờ khác chứng minh hòa giải viên đang tham gia hoạt động hòa giải.\n\nSố lượng hồ sơ: 01 bộ bản chính.",
+      "source_reference": "Nghị định số 15/2014/NĐ-CP",
+      "keywords": [
+        "hồ sơ",
+        "đơn đề nghị",
+        "biên bản",
+        "giấy ra viện",
+        "thu nhập",
+        "giấy tờ chứng minh"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Quy trình xử lý và thời hạn",
+      "content": "Quy trình xử lý hồ sơ:\n\n1. Tiếp nhận hồ sơ: Kiểm tra tính đầy đủ, hợp lệ của hồ sơ.\n\n2. Thẩm tra hồ sơ: Thẩm tra tính thống nhất, hợp lệ của các thông tin trong hồ sơ.\n\n3. Xử lý hồ sơ: Xác định mức độ thiệt hại, tính toán số tiền hỗ trợ.\n\n4. Ra quyết định: Ban hành quyết định phê duyệt hỗ trợ.\n\n5. Chi trả hỗ trợ: Thực hiện chi trả theo quyết định phê duyệt.\n\nThời hạn giải quyết: 30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ. Trường hợp phức tạp có thể gia hạn thêm 15 ngày.\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bằng văn bản nêu rõ nội dung cần bổ sung trong thời hạn 03 ngày làm việc.",
+      "source_reference": "Thông tư số 09/2025/TT-BTP",
+      "keywords": [
+        "quy trình",
+        "thời hạn",
+        "thẩm tra",
+        "xử lý",
+        "gia hạn",
+        "bổ sung"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Mức hỗ trợ và phương thức chi trả",
+      "content": "Mức hỗ trợ được xác định dựa trên:\n\n- Mức độ thương tật, ảnh hưởng đến sức khỏe, tính mạng\n- Thu nhập thực tế bị mất hoặc giảm sút\n- Các chi phí điều trị y tế, phục hồi sức khỏe\n\nPhương thức chi trả:\n- Chuyển khoản vào tài khoản của hòa giải viên hoặc gia đình\n- Chi trả bằng tiền mặt tại cơ quan có thẩm quyền\n\nNguồn kinh phí: Ngân sách nhà nước cấp tỉnh, thành phố.\n\nLệ phí: Không thu lệ phí đối với thủ tục này.",
+      "source_reference": "Nghị định số 120/2025/NĐ-CP",
+      "keywords": [
+        "mức hỗ trợ",
+        "phương thức chi trả",
+        "thu nhập",
+        "chi phí",
+        "ngân sách",
+        "không thu phí"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả và quyền khiếu nại",
+      "content": "Kết quả thực hiện thủ tục hành chính:\n\n- Quyết định phê duyệt hỗ trợ của Sở Tư pháp\n- Giấy chi trả hoặc ủy nhiệm chi chuyển khoản\n- Biên lai thu tiền (nếu chi trả bằng tiền mặt)\n\nQuyền khiếu nại:\n- Khiếu nại quyết định hành chính theo quy định của Luật Khiếu nại\n- Thời hạn khiếu nại: 90 ngày kể từ ngày nhận được quyết định\n- Cơ quan có thẩm quyền giải quyết khiếu nại: Chủ tịch Ủy ban nhân dân cấp tỉnh\n\nHiệu lực pháp lý: Quyết định hỗ trợ có hiệu lực kể từ ngày ban hành.",
+      "source_reference": "Luật Hòa giải ở cơ sở năm 2020",
+      "keywords": [
+        "kết quả",
+        "quyết định",
+        "khiếu nại",
+        "hiệu lực",
+        "quyền lợi",
+        "thời hạn"
+      ]
+    }
+  ],
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu điện tử tương tác (được sử dụng khi nộp hồ sơ theo hình thức trực tuyến)",
+    "has_paper_form": true,
+    "paper_form_description": "Mẫu giấy theo quy định (được sử dụng khi nộp hồ sơ theo hình thức trực tiếp)"
+  }
+}

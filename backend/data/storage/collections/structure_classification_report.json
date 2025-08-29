@@ -1,0 +1,123 @@
+[
+  {
+    "collection": "quy_trinh_boi_thuong_nn",
+    "status": "analyzed",
+    "total_files": 4,
+    "structure_types": {
+      "full_metadata": 4
+    },
+    "sample_files": {
+      "full_metadata": "1. Thủ tục xác định cơ quan giải quyết bồi thường.json"
+    }
+  },
+  {
+    "collection": "quy_trinh_cap_ho_tich_cap_xa",
+    "status": "analyzed",
+    "total_files": 35,
+    "structure_types": {
+      "simple_structure": 35
+    },
+    "sample_files": {
+      "simple_structure": "01. Đăng ký khai sinh.json"
+    }
+  },
+  {
+    "collection": "quy_trinh_dau_gia_tai_san",
+    "status": "analyzed",
+    "total_files": 10,
+    "structure_types": {
+      "full_metadata": 10
+    },
+    "sample_files": {
+      "full_metadata": "1. Đăng ký hoạt động của doanh nghiệp đấu giá tài sản.json"
+    }
+  },
+  {
+    "collection": "quy_trinh_ho_tich_cap_tp",
+    "status": "analyzed",
+    "total_files": 2,
+    "structure_types": {
+      "full_metadata": 2
+    },
+    "sample_files": {
+      "full_metadata": "01. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.json"
+    }
+  },
+  {
+    "collection": "quy_trinh_luat_su",
+    "status": "analyzed",
+    "total_files": 20,
+    "structure_types": {
+      "full_metadata": 20
+    },
+    "sample_files": {
+      "full_metadata": "1. Cấp chứng chỉ HNLS đối với người đạt yêu cầu kiểm tra KQTS HN.json"
+    }
+  },
+  {
+    "collection": "quy_trinh_nuoi_con_nuoi",
+    "status": "analyzed",
+    "total_files": 6,
+    "structure_types": {
+      "full_metadata": 6
+    },
+    "sample_files": {
+      "full_metadata": "1. Cấp xã - Đăng ký việc nuôi con nuôi trong nước (1).json"
+    }
+  },
+  {
+    "collection": "quy_trinh_pbgdpl_htpldn",
+    "status": "analyzed",
+    "total_files": 3,
+    "structure_types": {
+      "basic_with_fee": 3
+    },
+    "sample_files": {
+      "basic_with_fee": "01. Quy trinh hỗ trợ hòa giải viên.json"
+    }
+  },
+  {
+    "collection": "quy_trinh_quan_tai_vien",
+    "status": "analyzed",
+    "total_files": 8,
+    "structure_types": {
+      "basic_with_fee": 8
+    },
+    "sample_files": {
+      "basic_with_fee": "QTV - QT 01 -Cấp chứng chỉ hành nghề Quản tài viên đối với luật sư, kiểm toán viên, người có trình độ cử nhân luật, kinh tế, tài chính, ngân hàng...5 năm trở lên .json"
+    }
+  },
+  {
+    "collection": "quy_trinh_thua_phat_lai",
+    "status": "analyzed",
+    "total_files": 17,
+    "structure_types": {
+      "basic_with_fee": 17
+    },
+    "sample_files": {
+      "basic_with_fee": "QT 01 - Công nhận tương đương đào tạo nghề Thừa phát lại ở nước ngoài.json"
+    }
+  },
+  {
+    "collection": "quy_trinh_trong_tai_thuong_mai",
+    "status": "analyzed",
+    "total_files": 13,
+    "structure_types": {
+      "basic_with_fee": 13
+    },
+    "sample_files": {
+      "basic_with_fee": "1 Thành lập, đăng ký hoạt động TTTT.json"
+    }
+  },
+  {
+    "collection": "quy_trinh_tu_van_phap_luat",
+    "status": "analyzed",
+    "total_files": 6,
+    "structure_types": {
+      "basic_with_fee": 6
+    },
+    "sample_files": {
+      "basic_with_fee": "1 Đăng ký hoạt động của Trung tâm tư vấn pháp luật.json"
+    }
+  }
+]

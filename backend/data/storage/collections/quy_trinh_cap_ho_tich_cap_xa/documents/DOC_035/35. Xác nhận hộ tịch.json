@@ -1,17 +1,17 @@
 {
   "metadata": {
-    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/35. Xác nhận hộ tịch.doc",
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_035/35. Xác nhận hộ tịch.doc",
     "title": "Xác nhận thông tin hộ tịch",
-    "code": "QT 35/CX-HCTP",
-    "issuing_authority": "Sở Tư pháp",
+    "code": "QT 35/CX-HT",
+    "issuing_authority": "Ủy ban nhân dân cấp xã",
     "effective_date": "2025-07-07",
-    "executing_agency": "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã).",
+    "executing_agency": "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã)",
     "applicant_type": ["Cá nhân", "Cơ quan", "Tổ chức"],
-    "processing_time_text": "03 ngày làm việc. Trường hợp phải kiểm tra, xác minh thì thời hạn có thể kéo dài nhưng không quá 10 ngày làm việc.",
-    "fee_vnd": null,
-    "fee_text": "8.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 32 xã, phường tại Phụ lục 1 kèm theo); 5.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo); Nộp trực tiếp: 5.000 đồng; trực tuyến 4.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 43 xã, phường tại Phụ lục 2 kèm theo). Miễn lệ phí đối với trường hợp đăng ký cho trẻ em, người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người cao tuổi, người khuyết tật, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tỉnh Sóc Trăng cũ).",
+    "processing_time_text": "03 ngày làm việc. Trường hợp phải kiểm tra, xác minh thì thời hạn có thể kéo dài nhưng không quá 10 ngày làm việc",
+    "fee_vnd": 8000,
+    "fee_text": "8.000 đồng/Văn bản xác nhận (32 xã, phường); 5.000 đồng/Văn bản xác nhận (28 xã, phường); 5.000 đồng trực tiếp/4.000 đồng trực tuyến (43 xã, phường)",
     "has_form": true,
-    "requirements_conditions": null,
+    "requirements_conditions": "Không có yêu cầu, điều kiện đặc biệt. Người yêu cầu phải cung cấp đầy đủ thông tin để tra cứu được sự kiện hộ tịch đã đăng ký",
     "legal_basis_references": [
       "Luật Hộ tịch năm 2014",
       "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
@@ -19,24 +19,37 @@
       "Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy khi thực hiện thủ tục hành chính, cung cấp dịch vụ công",
       "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực",
       "Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp",
-      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
-      "Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch trực tuyến",
-      "Thông tư số 03/2023/TT-BTP ngày 02/8/2023 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch trực tuyến",
-      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp",
-      "Thông tư số 281/2016/TT-BTC ngày 14/11/2016 của Bộ trưởng Bộ Tài chính quy định mức thu, chế độ thu, nộp, quản lý và sử dụng phí khai thác, sử dụng thông tin trong cơ sở dữ liệu hộ tịch, phí xác nhận có quốc tịch Việt Nam, phí xác nhận là người gốc Việt Nam, lệ phí quốc tịch",
-      "Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc Trung ương",
-      "Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc Trung ương",
+      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP",
+      "Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP",
+      "Thông tư số 03/2023/TT-BTP ngày 02/8/2023 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch",
+      "Thông tư số 281/2016/TT-BTC ngày 14/11/2016 của Bộ trưởng Bộ Tài chính quy định mức thu, chế độ thu, nộp, quản lý và sử dụng phí khai thác, sử dụng thông tin trong cơ sở dữ liệu hộ tịch",
+      "Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương",
+      "Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC",
       "Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng",
       "Nghị quyết số 04/2024/NQ-HĐND ngày 17 tháng 4 năm 2024 của Hội đồng nhân dân tỉnh Sóc Trăng quy định mức thu một số loại phí, lệ phí trong thực hiện thủ tục hành chính thông qua dịch vụ công trực tuyến thuộc thẩm quyền quyết định của hội đồng nhân dân tỉnh Sóc Trăng",
       "Nghị quyết số 04/2023/NQ-HĐND ngày 14 tháng 7 năm 2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang"
     ]
   },
   "fee_structure": {
-    "main_fee": {
-      "direct": "8.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 32 xã, phường tại Phụ lục 1 kèm theo)",
-      "online": "4.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 43 xã, phường tại Phụ lục 2 kèm theo)",
-      "other": "5.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo); Nộp trực tiếp: 5.000 đồng (áp dụng tại 43 xã, phường tại Phụ lục 2 kèm theo)"
-    },
+    "base_fee": 8000,
+    "additional_fees": [
+      {
+        "condition": "Tại 28 xã, phường theo Phụ lục 2",
+        "amount": 5000,
+        "description": "Phí xác nhận thông tin hộ tịch"
+      },
+      {
+        "condition": "Tại 43 xã, phường theo Phụ lục 2 - nộp trực tiếp",
+        "amount": 5000,
+        "description": "Phí xác nhận thông tin hộ tịch"
+      },
+      {
+        "condition": "Tại 43 xã, phường theo Phụ lục 2 - nộp trực tuyến",
+        "amount": 4000,
+        "description": "Phí xác nhận thông tin hộ tịch"
+      }
+    ],
     "exemptions": [
       "Trẻ em",
       "Người thuộc gia đình có công với cách mạng",
@@ -44,67 +57,96 @@
       "Người cao tuổi",
       "Người khuyết tật",
       "Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tỉnh Sóc Trăng cũ)"
-    ],
-    "additional_fees": []
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu điện tử tương tác đề nghị xác nhận thông tin hộ tịch (được sử dụng khi nộp hồ sơ theo hình thức trực tuyến)",
+    "has_paper_form": true,
+    "paper_form_description": "Tờ khai đề nghị xác nhận thông tin hộ tịch theo mẫu (được sử dụng khi nộp hồ sơ theo hình thức trực tiếp hoặc gửi qua hệ thống bưu chính)"
   },
   "content_chunks": [
     {
       "chunk_id": 1,
-      "section_title": "Thành phần, số lượng hồ sơ và các lưu ý quan trọng",
-      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- Tờ khai đề nghị xác nhận thông tin hộ tịch theo mẫu (nếu người yêu cầu lựa chọn nộp hồ sơ theo hình thức trực tiếp hoặc gửi hồ sơ qua hệ thống bưu chính).\n- Mẫu điện tử tương tác đề nghị xác nhận thông tin hộ tịch (do người yêu cầu cung cấp thông tin theo hướng dẫn trên Cổng dịch vụ công, nếu người yêu cầu lựa chọn nộp hồ sơ theo hình thức trực tuyến).\n\n**B. GIẤY TỜ PHẢI NỘP:**\n1. Giấy tờ, tài liệu có liên quan đến nội dung đề nghị xác nhận thông tin hộ tịch.\n2. Văn bản ủy quyền (được chứng thực) theo quy định của pháp luật trong trường hợp ủy quyền thực hiện việc xin cấp xác nhận thông tin hộ tịch. Trường hợp người được ủy quyền là ông, bà, cha, mẹ, con, vợ, chồng, anh, chị, em ruột của người ủy quyền thì văn bản ủy quyền không phải chứng thực.\n\n**C. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu cấp xác nhận thông tin hộ tịch.\n2. Giấy tờ có giá trị chứng minh thông tin về cư trú trong trường hợp cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử không thể khai thác được thông tin về nơi cư trú của công dân theo các phương thức quy định tại khoản 2 Điều 14 Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ.\n\n**D. CÁC LƯU Ý QUAN TRỌNG:**\n- Cá nhân có quyền lựa chọn thực hiện thủ tục hành chính về hộ tịch tại cơ quan đăng ký hộ tịch nơi cư trú; nơi cư trú của cá nhân được xác định theo quy định của pháp luật về cư trú.\n- Trường hợp cá nhân lựa chọn thực hiện thủ tục hành chính về hộ tịch không phải tại Ủy ban nhân dân cấp xã nơi thường trú hoặc nơi tạm trú thì Ủy ban nhân dân cấp xã nơi tiếp nhận yêu cầu có trách nhiệm hỗ trợ người dân nộp hồ sơ đăng ký hộ tịch trực tuyến đến đúng cơ quan có thẩm quyền theo quy định.\n- Trường hợp gửi hồ sơ qua hệ thống bưu chính thì phải gửi kèm theo bản sao có chứng thực các giấy tờ phải xuất trình nêu trên.\n- Người yêu cầu có thể nộp bản sao được chứng thực từ bản chính hoặc bản sao được cấp từ sổ gốc (sau đây gọi là bản sao) hoặc bản chụp kèm theo bản chính, bản điện tử các giấy tờ này, bao gồm cả giấy tờ được tích hợp, hiển thị trên Ứng dụng định danh điện tử (VneID).\n- Trường hợp người yêu cầu nộp bản chụp kèm theo bản chính giấy tờ thì người tiếp nhận có trách nhiệm kiểm tra, đối chiếu bản chụp với bản chính và ký xác nhận, không được yêu cầu nộp bản sao giấy tờ đó.\n- Đối với giấy tờ xuất trình khi đăng ký hộ tịch, người tiếp nhận có trách nhiệm kiểm tra, đối chiếu, ghi lại thông tin hoặc chụp lại, ký xác nhận để lưu trong hồ sơ và trả lại cho người xuất trình, không được yêu cầu nộp bản sao hoặc bản chụp giấy tờ đó.\n- Người tiếp nhận có trách nhiệm tiếp nhận đúng, đủ hồ sơ đăng ký hộ tịch theo quy định của pháp luật hộ tịch, không được yêu cầu người đăng ký hộ tịch nộp thêm giấy tờ mà pháp luật hộ tịch không quy định phải nộp.\n- Trường hợp người yêu cầu đăng ký hộ tịch cung cấp thông tin về giấy tờ hộ tịch của cá nhân đã được đăng ký, cơ quan đăng ký hộ tịch có trách nhiệm tra cứu thông tin trên Hệ thống thông tin giải quyết thủ tục hành chính cấp tỉnh thông qua kết nối với Cơ sở dữ liệu hộ tịch điện tử, CSDLQGVDC.\n- Trường hợp không tra cứu được do không có thông tin trong Cơ sở dữ liệu hộ tịch điện tử, CSDLQGVDC thì cơ quan đăng ký hộ tịch yêu cầu người đi đăng ký hộ tịch nộp/xuất trình giấy tờ liên quan để chứng minh.\n- Đối với giấy tờ gửi kèm theo nếu người yêu cầu nộp hồ sơ theo hình thức trực tuyến: Bản chụp các giấy tờ gửi kèm theo hồ sơ cấp xác nhận thông tin hộ tịch trực tuyến phải bảo đảm rõ nét, đầy đủ, toàn vẹn về nội dung, là bản chụp bằng máy ảnh, điện thoại hoặc được chụp, được quét bằng thiết bị điện tử, từ giấy tờ được cấp hợp lệ, còn giá trị sử dụng.\n- Trường hợp giấy tờ, tài liệu phải gửi kèm trong hồ sơ cấp xác nhận thông tin hộ tịch trực tuyến đã có bản sao điện tử hoặc bản điện tử giấy tờ hộ tịch thì người yêu cầu được sử dụng bản điện tử này.\n- Trường hợp người yêu cầu cấp xác nhận thông tin hộ tịch không cung cấp đầy đủ hoặc cung cấp các thông tin không chính xác, không thể tra cứu được thông tin thì cơ quan đăng ký hộ tịch từ chối giải quyết.\n- Giấy tờ do cơ quan có thẩm quyền của nước ngoài cấp, công chứng hoặc xác nhận để sử dụng cho việc đăng ký hộ tịch tại Việt Nam phải được hợp pháp hóa lãnh sự theo quy định của pháp luật, trừ trường hợp được miễn theo điều ước quốc tế mà Việt Nam là thành viên.\n- Trường hợp người yêu cầu đăng ký hộ tịch lựa chọn nhận kết quả tại Trung tâm Phục vụ hành chính công thì người yêu cầu đăng ký hộ tịch phải xuất trình giấy tờ tùy thân, nộp các giấy tờ là thành phần hồ sơ theo quy định.\n- Trường hợp người yêu cầu đăng ký hộ tịch không lựa chọn nhận kết quả tại Trung tâm Phục vụ hành chính công thì người yêu cầu đăng ký hộ tịch nộp các giấy tờ là thành phần hồ sơ theo quy định trước khi nhận kết quả.",
-      "source_reference": "Mục 5.a",
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Tờ khai đề nghị xác nhận thông tin hộ tịch theo mẫu (đối với cá nhân) hoặc Văn bản yêu cầu xác nhận thông tin hộ tịch (đối với cơ quan, tổ chức)\n2. Mẫu điện tử tương tác đề nghị xác nhận thông tin hộ tịch (nếu nộp trực tuyến)\n3. Giấy tờ, tài liệu có liên quan đến nội dung đề nghị xác nhận thông tin hộ tịch\n4. Văn bản ủy quyền theo quy định của pháp luật trong trường hợp ủy quyền (trường hợp người được ủy quyền là ông, bà, cha, mẹ, con, vợ, chồng, anh, chị, em ruột của người ủy quyền thì văn bản ủy quyền không phải chứng thực)\n5. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu\n6. Giấy tờ có giá trị chứng minh thông tin về cư trú (trong trường hợp cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử không thể khai thác được thông tin về nơi cư trú của công dân)\nSố lượng hồ sơ: 01 bộ",
+      "source_reference": "QT 35/CX-HT - Chunk 1",
       "keywords": [
         "hồ sơ",
-        "giấy tờ",
-        "xác nhận thông tin hộ tịch",
         "tờ khai",
-        "ủy quyền",
-        "chứng minh",
-        "VneID",
-        "CSDLQGVDC",
-        "Cơ sở dữ liệu hộ tịch điện tử"
+        "mẫu điện tử",
+        "giấy tờ nhân thân",
+        "văn bản ủy quyền",
+        "xác nhận thông tin hộ tịch",
+        "trực tuyến",
+        "trực tiếp",
+        "giấy tờ cư trú"
       ]
     },
     {
       "chunk_id": 2,
-      "section_title": "Thời hạn giải quyết",
-      "content": "03 ngày làm việc. Trường hợp phải kiểm tra, xác minh thì thời hạn có thể kéo dài nhưng không quá 10 ngày làm việc.",
-      "source_reference": "Mục 5.b",
-      "keywords": ["thời hạn", "giải quyết", "xác minh"]
+      "section_title": "Cơ quan thực hiện thủ tục",
+      "content": "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã) có thẩm quyền xác nhận thông tin hộ tịch. Công chức tư pháp - hộ tịch tiếp nhận hồ sơ và tham mưu cho lãnh đạo Ủy ban nhân dân cấp xã quyết định. Trường hợp cá nhân lựa chọn thực hiện thủ tục không phải tại UBND cấp xã nơi thường trú hoặc tạm trú thì UBND cấp xã nơi tiếp nhận có trách nhiệm hỗ trợ nộp hồ sơ trực tuyến đến cơ quan có thẩm quyền.",
+      "source_reference": "QT 35/CX-HT - Chunk 2",
+      "keywords": [
+        "cơ quan",
+        "Ủy ban nhân dân cấp xã",
+        "công chức tư pháp",
+        "thẩm quyền",
+        "Cơ sở dữ liệu hộ tịch điện tử",
+        "xác nhận thông tin hộ tịch"
+      ]
     },
     {
       "chunk_id": 3,
-      "section_title": "Đối tượng và Cơ quan thực hiện",
-      "content": "**Đối tượng thực hiện:** Cá nhân, cơ quan, tổ chức.\n**Cơ quan thực hiện:** Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã).\n**Cơ quan phối hợp:** Cơ quan công an, các cơ quan khác có liên quan.",
-      "source_reference": "Mục 5.c, 5.d, 5.đ",
-      "keywords": ["đối tượng", "cá nhân", "tổ chức", "cơ quan", "UBND cấp xã"]
+      "section_title": "Thời hạn giải quyết",
+      "content": "03 ngày làm việc. Trường hợp phải kiểm tra, xác minh thì thời hạn có thể kéo dài nhưng không quá 10 ngày làm việc.",
+      "source_reference": "QT 35/CX-HT - Chunk 3",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "kiểm tra",
+        "xác minh",
+        "xác nhận thông tin hộ tịch"
+      ]
     },
     {
       "chunk_id": 4,
-      "section_title": "Kết quả thực hiện và Lệ phí",
-      "content": "**Kết quả thực hiện thủ tục hành chính:**\n- Văn bản xác nhận thông tin hộ tịch.\n- Bản điện tử Xác nhận thông tin hộ tịch (Bản điện tử sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu sau khi đã hoàn tất thủ tục xác nhận thông tin hộ tịch tại cơ quan đăng ký hộ tịch).\n\n**Lệ phí:**\n- 8.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 32 xã, phường tại Phụ lục 1 kèm theo).\n- 5.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo).\n- Nộp trực tiếp: 5.000 đồng; trực tuyến 4.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 43 xã, phường tại Phụ lục 2 kèm theo).\n- Miễn lệ phí đối với trường hợp đăng ký cho trẻ em, người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người cao tuổi, người khuyết tật, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tỉnh Sóc Trăng cũ).",
-      "source_reference": "Mục 5.e, 5.g",
+      "section_title": "Phí",
+      "content": "8.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 32 xã, phường theo Phụ lục 1); 5.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 28 xã, phường theo Phụ lục 2); Nộp trực tiếp: 5.000 đồng; trực tuyến 4.000 đồng/Văn bản xác nhận về một việc hộ tịch của cá nhân đã đăng ký (áp dụng tại 43 xã, phường theo Phụ lục 2).",
+      "source_reference": "QT 35/CX-HT - Chunk 4",
       "keywords": [
-        "kết quả",
+        "phí",
+        "xác nhận thông tin hộ tịch",
         "văn bản xác nhận",
-        "lệ phí",
-        "miễn phí",
-        "bản điện tử"
+        "trực tuyến",
+        "trực tiếp"
       ]
     },
     {
       "chunk_id": 5,
-      "section_title": "Quy trình xử lý công việc",
-      "content": "**Thời gian:** 03 ngày làm việc (không xác minh) hoặc 10 ngày làm việc (có xác minh).\n**Các bước thực hiện:**\n1. Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận, kiểm tra hồ sơ (1 ngày).\n2. Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ và tiến hành xác minh nếu cần (1 ngày - 8 ngày).\n3. Văn thư đóng dấu văn bản (½ ngày).\n4. Cán bộ tại Trung tâm Phục vụ hành chính công trả kết quả (½ ngày).",
-      "source_reference": "Mục 5.l",
+      "section_title": "Kết quả thực hiện thủ tục",
+      "content": "Văn bản xác nhận thông tin hộ tịch (bản chính) và Bản điện tử Xác nhận thông tin hộ tịch (tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu).",
+      "source_reference": "QT 35/CX-HT - Chunk 5",
       "keywords": [
-        "quy trình",
-        "các bước",
-        "thời gian",
-        "tiếp nhận",
-        "thẩm tra",
-        "xác minh",
-        "trả kết quả"
+        "kết quả",
+        "văn bản xác nhận thông tin hộ tịch",
+        "bản điện tử",
+        "bản chính"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Văn bản pháp luật viện dẫn",
+      "content": "Luật Hộ tịch năm 2014; Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch; Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch trực tuyến; Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy khi thực hiện thủ tục hành chính, cung cấp dịch vụ công; Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực; Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp; Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP; Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP; Thông tư số 03/2023/TT-BTP ngày 02/8/2023 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP; Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch; Thông tư số 281/2016/TT-BTC ngày 14/11/2016 của Bộ trưởng Bộ Tài chính quy định mức thu, chế độ thu, nộp, quản lý và sử dụng phí khai thác, sử dụng thông tin trong cơ sở dữ liệu hộ tịch; Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương; Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC; Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng; Nghị quyết số 04/2024/NQ-HĐND ngày 17 tháng 4 năm 2024 của Hội đồng nhân dân tỉnh Sóc Trăng quy định mức thu một số loại phí, lệ phí trong thực hiện thủ tục hành chính thông qua dịch vụ công trực tuyến thuộc thẩm quyền quyết định của hội đồng nhân dân tỉnh Sóc Trăng; Nghị quyết số 04/2023/NQ-HĐND ngày 14 tháng 7 năm 2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang.",
+      "source_reference": "QT 35/CX-HT - Chunk 6",
+      "keywords": [
+        "pháp luật",
+        "luật",
+        "nghị định",
+        "thông tư",
+        "hộ tịch",
+        "xác nhận thông tin hộ tịch"
       ]
     }
   ]

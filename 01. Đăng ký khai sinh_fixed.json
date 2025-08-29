@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_001/01. Đăng ký khai sinh.doc",
+    "title": "Đăng ký khai sinh",
+    "code": "QT 01/CX-HT",
+    "issuing_authority": "UBND cấp xã",
+    "effective_date": "2025-08-29",
+    "executing_agency": "UBND cấp xã",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "Ngay trong ngày nếu hồ sơ hợp lệ, chậm nhất 03 ngày làm việc",
+    "fee_vnd": 0,
+    "fee_text": "Miễn phí đăng ký khai sinh",
+    "has_form": true,
+    "requirements_conditions": "Công dân Việt Nam có con đẻ, con nuôi cần đăng ký khai sinh. Trẻ em được sinh ra phải được đăng ký khai sinh trong thời hạn 60 ngày kể từ ngày sinh.",
+    "legal_basis_references": [
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết Luật Hộ tịch",
+      "Thông tư số 04/2025/TT-BTP ngày 12/6/2025 của Bộ Tư pháp hướng dẫn Luật Hộ tịch"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Miễn phí theo quy định"
+    },
+    "exemptions": ["Tất cả trường hợp đăng ký khai sinh"],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "Thành phần hồ sơ gồm:\n\n**1. Tờ khai đăng ký khai sinh** (theo mẫu)\n**2. Giấy chứng sinh** (bản chính)\n**3. Giấy tờ chứng minh nơi cư trú của cha, mẹ** (nếu đăng ký tại nơi tạm trú)\n**4. Giấy tờ chứng minh quan hệ cha, con hoặc mẹ, con** (trong trường hợp cha, mẹ không đăng ký cùng lúc)\n**5. Giấy tờ khác** (nếu có)\n\n**Số lượng hồ sơ:** 01 bộ",
+      "source_reference": "Điều 16 Luật Hộ tịch năm 2014",
+      "keywords": [
+        "hồ sơ",
+        "tờ khai",
+        "giấy chứng sinh",
+        "giấy tờ",
+        "đăng ký khai sinh"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "**Thời hạn giải quyết:**\n- Ngay trong ngày nếu hồ sơ hợp lệ\n- Chậm nhất 03 ngày làm việc kể từ ngày nhận hồ sơ\n\n**Thời hạn đăng ký:**\n- Trong 60 ngày kể từ ngày sinh\n- Quá thời hạn: Phải có lý do chính đáng và được UBND cấp xã xác nhận",
+      "source_reference": "Điều 17 Luật Hộ tịch năm 2014",
+      "keywords": ["thời hạn", "giải quyết", "đăng ký", "ngày", "hồ sơ hợp lệ"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Cơ quan thực hiện",
+      "content": "**Cơ quan có thẩm quyền:** UBND cấp xã nơi cư trú của cha, mẹ hoặc con\n\n**Đối tượng thực hiện:**\n- Cha, mẹ hoặc người giám hộ của trẻ em\n- Người phát hiện trẻ bị bỏ rơi\n- Cá nhân, tổ chức nhận nuôi con nuôi",
+      "source_reference": "Điều 14, 15 Luật Hộ tịch năm 2014",
+      "keywords": [
+        "cơ quan",
+        "UBND",
+        "ủy ban nhân dân",
+        "đối tượng",
+        "thẩm quyền"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện",
+      "content": "**Kết quả:** Giấy khai sinh (bản chính)\n\n**Hình thức trả kết quả:**\n- Trả trực tiếp tại UBND cấp xã\n- Gửi qua đường bưu điện (nếu có yêu cầu)",
+      "source_reference": "Điều 18 Luật Hộ tịch năm 2014",
+      "keywords": ["kết quả", "giấy khai sinh", "trả kết quả", "bản chính"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Lệ phí",
+      "content": "**Mức thu:** 0 đồng (miễn phí)\n\n**Đối tượng miễn phí:** Tất cả trường hợp đăng ký khai sinh\n\n**Căn cứ pháp lý:** Quyết định của UBND cấp tỉnh về mức thu lệ phí hộ tịch",
+      "source_reference": "Phụ lục II Nghị định số 123/2015/NĐ-CP",
+      "keywords": ["lệ phí", "miễn phí", "0 đồng", "phí"]
+    }
+  ]
+}

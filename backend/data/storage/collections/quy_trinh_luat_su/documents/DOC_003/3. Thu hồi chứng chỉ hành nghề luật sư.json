@@ -1,1 +1,129 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_luat_su/documents/DOC_003/3. Thu hồi chứng chỉ hành nghề luật sư.doc",
+    "title": "Thu hồi chứng chỉ hành nghề luật sư",
+    "code": "QT 03/LS",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "Theo Luật Luật sư 2006, sửa đổi 2012",
+    "executing_agency": "Bộ Tư pháp",
+    "applicant_type": [
+      "Cơ quan có thẩm quyền",
+      "Tổ chức, cá nhân có căn cứ tố cáo"
+    ],
+    "processing_time_text": "60 ngày làm việc kể từ ngày phát hiện vi phạm hoặc nhận tố cáo",
+    "fee_vnd": 0,
+    "fee_text": "Không thu phí (thủ tục hành chính do cơ quan nhà nước thực hiện)",
+    "has_form": false,
+    "requirements_conditions": "Luật sư có hành vi vi phạm nghiêm trọng theo quy định tại Điều 18 Luật Luật sư, đã được xác minh đầy đủ.",
+    "legal_basis_references": [
+      "Luật Luật sư 2006, sửa đổi 2012",
+      "Nghị định 123/2013/NĐ-CP quy định chi tiết Luật Luật sư",
+      "Thông tư 09/2013/TT-BTP hướng dẫn Luật Luật sư",
+      "Luật Khiếu nại 2011"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không thu phí thu hồi chứng chỉ (thủ tục hành chính)"
+    },
+    "exemptions": [
+      "Tất cả các trường hợp"
+    ],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Các trường hợp bị thu hồi chứng chỉ",
+      "content": "Chứng chỉ hành nghề luật sư bị thu hồi trong các trường hợp:\\n1. **Vi phạm đạo đức nghề nghiệp:** Vi phạm nghiêm trọng quy tắc đạo đức và ứng xử nghề nghiệp luật sư.\\n2. **Bị kết án hình sự:** Bị Tòa án kết án về tội phạm và bản án đã có hiệu lực pháp luật.\\n3. **Mất năng lực hành vi:** Bị hạn chế hoặc mất năng lực hành vi dân sự.\\n4. **Lừa dối khi xin cấp:** Có hành vi gian dối, giả mạo hồ sơ, tài liệu để được cấp chứng chỉ.\\n5. **Vi phạm quy định hành nghề:** Vi phạm nghiêm trọng các quy định về điều kiện, phạm vi hành nghề luật sư.",
+      "source_reference": "Điều 18 Luật Luật sư",
+      "keywords": [
+        "thu hồi chứng chỉ",
+        "vi phạm đạo đức",
+        "quy tắc nghề nghiệp",
+        "kết án hình sự",
+        "tội phạm",
+        "năng lực hành vi",
+        "gian dối",
+        "giả mạo hồ sơ",
+        "vi phạm hành nghề",
+        "điều kiện phạm vi"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thẩm quyền và thủ tục thu hồi",
+      "content": "Thẩm quyền: Bộ trưởng Bộ Tư pháp có thẩm quyền thu hồi chứng chỉ hành nghề luật sư.\\n\\nThủ tục thu hồi:\\n1. **Lập hồ sơ:** Thu thập đầy đủ tài liệu, chứng cứ về vi phạm.\\n2. **Thông báo:** Gửi thông báo bằng văn bản cho luật sư về việc bị đề nghị thu hồi chứng chỉ.\\n3. **Giải trình:** Cho luật sư có thời gian để trình bày, giải trình, bào chữa (tối thiểu 15 ngày).\\n4. **Xem xét:** Hội đồng thẩm định xem xét, đánh giá mức độ vi phạm.\\n5. **Quyết định:** Ban hành quyết định thu hồi hoặc không thu hồi chứng chỉ.",
+      "source_reference": "Nghị định 123/2013/NĐ-CP",
+      "keywords": [
+        "thẩm quyền",
+        "Bộ trưởng Bộ Tư pháp",
+        "thủ tục thu hồi",
+        "lập hồ sơ",
+        "tài liệu chứng cứ",
+        "thông báo văn bản",
+        "giải trình bào chữa",
+        "15 ngày",
+        "hội đồng thẩm định",
+        "quyết định thu hồi"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thời hạn và hiệu lực quyết định",
+      "content": "Thời hạn xử lý: 60 ngày làm việc kể từ ngày phát hiện vi phạm hoặc nhận được tố cáo có căn cứ.\\n\\nHiệu lực quyết định:\\n- Quyết định thu hồi có hiệu lực ngay sau khi ban hành\\n- Được thông báo công khai trên website Bộ Tư pháp\\n- Gửi thông báo đến Đoàn luật sư nơi luật sư đăng ký hành nghề\\n- Thông báo đến các cơ quan tư pháp có liên quan\\n\\nLuật sư phải nộp lại chứng chỉ trong 15 ngày kể từ ngày nhận quyết định.",
+      "source_reference": "Thông tư 09/2013/TT-BTP",
+      "keywords": [
+        "thời hạn xử lý",
+        "60 ngày làm việc",
+        "phát hiện vi phạm",
+        "tố cáo có căn cứ",
+        "hiệu lực ngay",
+        "thông báo công khai",
+        "website Bộ Tư pháp",
+        "Đoàn luật sư",
+        "cơ quan tư pháp",
+        "nộp lại chứng chỉ",
+        "15 ngày"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Quyền khiếu nại và cứu chữa",
+      "content": "Quyền khiếu nại của luật sư bị thu hồi chứng chỉ:\\n1. **Khiếu nại hành chính:** Có quyền khiếu nại lên Bộ trưởng Bộ Tư pháp hoặc Thủ tướng Chính phủ trong 90 ngày.\\n2. **Khởi kiện hành chính:** Có quyền khởi kiện ra Tòa án hành chính trong 03 tháng kể từ ngày nhận quyết định.\\n3. **Yêu cầu bồi thường:** Nếu quyết định thu hồi không đúng, có quyền yêu cầu bồi thường thiệt hại.\\n4. **Đề nghị phúc hồi:** Sau khi hết thời hạn bị thu hồi (nếu có quy định), có thể đề nghị phúc hồi quyền hành nghề.",
+      "source_reference": "Luật Khiếu nại 2011, Luật Tố tụng hành chính",
+      "keywords": [
+        "quyền khiếu nại",
+        "cứu chữa",
+        "khiếu nại hành chính",
+        "Thủ tướng Chính phủ",
+        "90 ngày",
+        "khởi kiện hành chính",
+        "Tòa án hành chính",
+        "03 tháng",
+        "bồi thường thiệt hại",
+        "phúc hồi quyền"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Hậu quả và các hạn chế sau khi thu hồi",
+      "content": "Sau khi bị thu hồi chứng chỉ, luật sư bị áp dụng các hạn chế:\\n1. **Ngừng hành nghề:** Không được tiếp tục thực hiện các hoạt động hành nghề luật sư.\\n2. **Chấm dứt vụ việc:** Phải chấm dứt ngay các vụ việc pháp lý đang thực hiện, bàn giao cho luật sư khác.\\n3. **Cấm sử dụng danh nghĩa:** Không được sử dụng danh nghĩa, chức danh luật sư trong mọi hoạt động.\\n4. **Giá trị văn bằng khác:** Các bằng cấp, chứng chỉ khác vẫn giữ nguyên giá trị pháp lý.\\n5. **Điều kiện tái cấp:** Chỉ được xem xét tái cấp chứng chỉ khi đã khắc phục hậu quả vi phạm và đáp ứng điều kiện theo quy định.",
+      "source_reference": "Điều 18 Luật Luật sư, Nghị định 123/2013/NĐ-CP",
+      "keywords": [
+        "hậu quả thu hồi",
+        "hạn chế",
+        "ngừng hành nghề",
+        "chấm dứt vụ việc",
+        "bàn giao luật sư khác",
+        "cấm danh nghĩa",
+        "chức danh luật sư",
+        "giá trị văn bằng",
+        "điều kiện tái cấp",
+        "khắc phục hậu quả"
+      ]
+    }
+  ]
+}

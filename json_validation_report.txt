@@ -1,0 +1,438 @@
+================================================================================
+LEGALRAG JSON VALIDATION REPORT
+================================================================================
+Generated on: The current date is: 29/08/2025 
+Enter the new date: (dd-mm-yy) The system cannot accept the date entered.
+Enter the new date: (dd-mm-yy) The system cannot accept the date entered.
+Enter the new date: (dd-mm-yy) The system cannot accept the date entered.
+Enter the new date: (dd-mm-yy)
+
+📊 OVERALL SUMMARY:
+Total files scanned: 305
+Valid files: 17
+Invalid files: 288
+Overall validity rate: 5.6%
+
+📁 COLLECTION BREAKDOWN:
+  quy_trinh_boi_thuong_nn:
+    Total: 8
+    Valid: 0
+    Invalid: 8
+    Validity rate: 0.0%
+
+  quy_trinh_cap_ho_tich_cap_xa:
+    Total: 73
+    Valid: 17
+    Invalid: 56
+    Validity rate: 23.3%
+
+  quy_trinh_cong_chung:
+    Total: 54
+    Valid: 0
+    Invalid: 54
+    Validity rate: 0.0%
+
+  quy_trinh_dau_gia_tai_san:
+    Total: 20
+    Valid: 0
+    Invalid: 20
+    Validity rate: 0.0%
+
+  quy_trinh_ho_tich_cap_tp:
+    Total: 4
+    Valid: 0
+    Invalid: 4
+    Validity rate: 0.0%
+
+  quy_trinh_luat_su:
+    Total: 40
+    Valid: 0
+    Invalid: 40
+    Validity rate: 0.0%
+
+  quy_trinh_nuoi_con_nuoi:
+    Total: 12
+    Valid: 0
+    Invalid: 12
+    Validity rate: 0.0%
+
+  quy_trinh_pbgdpl_htpldn:
+    Total: 6
+    Valid: 0
+    Invalid: 6
+    Validity rate: 0.0%
+
+  quy_trinh_quan_tai_vien:
+    Total: 16
+    Valid: 0
+    Invalid: 16
+    Validity rate: 0.0%
+
+  quy_trinh_thua_phat_lai:
+    Total: 34
+    Valid: 0
+    Invalid: 34
+    Validity rate: 0.0%
+
+  quy_trinh_trong_tai_thuong_mai:
+    Total: 26
+    Valid: 0
+    Invalid: 26
+    Validity rate: 0.0%
+
+  quy_trinh_tu_van_phap_luat:
+    Total: 12
+    Valid: 0
+    Invalid: 12
+    Validity rate: 0.0%
+
+❌ DETAILED ERRORS:
+  • DOC_001/1. Thủ tục xác định cơ quan giải quyết bồi thường.json: Empty metadata field: fee_vnd
+  • DOC_001/1. Thủ tục xác định cơ quan giải quyết bồi thường.json: Missing 'base_fee' in fee_structure
+  • DOC_001/1. Thủ tục xác định cơ quan giải quyết bồi thường.json: Missing 'form_logic' section
+  • DOC_001/1. Thủ tục xác định cơ quan giải quyết bồi thường.json: Expected 6 content chunks, found 5
+  • DOC_001/questions.json: Missing 'metadata' section
+  • DOC_001/questions.json: Missing 'fee_structure' section
+  • DOC_001/questions.json: Missing 'form_logic' section
+  • DOC_001/questions.json: Missing 'content_chunks' section
+  • DOC_002/2. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại.json: Empty metadata field: fee_vnd
+  • DOC_002/2. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại.json: Missing 'base_fee' in fee_structure
+  • DOC_002/2. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại.json: Missing 'form_logic' section
+  • DOC_002/2. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại.json: Expected 6 content chunks, found 5
+  • DOC_002/questions.json: Missing 'metadata' section
+  • DOC_002/questions.json: Missing 'fee_structure' section
+  • DOC_002/questions.json: Missing 'form_logic' section
+  • DOC_002/questions.json: Missing 'content_chunks' section
+  • DOC_003/3. Thủ tục phục hồi danh dự.json: Empty metadata field: fee_vnd
+  • DOC_003/3. Thủ tục phục hồi danh dự.json: Missing 'base_fee' in fee_structure
+  • DOC_003/3. Thủ tục phục hồi danh dự.json: Missing 'form_logic' section
+  • DOC_003/3. Thủ tục phục hồi danh dự.json: Expected 6 content chunks, found 5
+  • DOC_003/questions.json: Missing 'metadata' section
+  • DOC_003/questions.json: Missing 'fee_structure' section
+  • DOC_003/questions.json: Missing 'form_logic' section
+  • DOC_003/questions.json: Missing 'content_chunks' section
+  • DOC_004/4. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại cấp xã.json: Empty metadata field: fee_vnd
+  • DOC_004/4. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại cấp xã.json: Missing 'base_fee' in fee_structure
+  • DOC_004/4. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại cấp xã.json: Missing 'form_logic' section
+  • DOC_004/4. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại cấp xã.json: Expected 6 content chunks, found 5
+  • DOC_004/questions.json: Missing 'metadata' section
+  • DOC_004/questions.json: Missing 'fee_structure' section
+  • DOC_004/questions.json: Missing 'form_logic' section
+  • DOC_004/questions.json: Missing 'content_chunks' section
+  • DOC_001/01. Đăng ký khai sinh_old.json: Empty metadata field: fee_vnd
+  • DOC_001/01. Đăng ký khai sinh_old.json: Missing 'fee_structure' section
+  • DOC_001/01. Đăng ký khai sinh_old.json: Missing 'form_logic' section
+  • DOC_001/01. Đăng ký khai sinh_old.json: Expected 6 content chunks, found 7
+  • DOC_001/questions.json: Missing 'metadata' section
+  • DOC_001/questions.json: Missing 'fee_structure' section
+  • DOC_001/questions.json: Missing 'form_logic' section
+  • DOC_001/questions.json: Missing 'content_chunks' section
+  • DOC_002/02. ĐKKS có yếu tố nước ngoài_old.json: Empty metadata field: fee_vnd
+  • DOC_002/02. ĐKKS có yếu tố nước ngoài_old.json: Missing 'fee_structure' section
+  • DOC_002/02. ĐKKS có yếu tố nước ngoài_old.json: Missing 'form_logic' section
+  • DOC_002/02. ĐKKS có yếu tố nước ngoài_old.json: Expected 6 content chunks, found 7
+  • DOC_002/02. ĐKKS có yếu tố nước ngoài_old.json: Chunk 3: Content too short (< 10 chars)
+  • DOC_002/02. ĐKKS có yếu tố nước ngoài_old.json: Chunk 3: Too few keywords (< 3)
+  • DOC_002/questions.json: Missing 'metadata' section
+  • DOC_002/questions.json: Missing 'fee_structure' section
+  • DOC_002/questions.json: Missing 'form_logic' section
+  • DOC_002/questions.json: Missing 'content_chunks' section
+  ... and 1038 more errors
+
+📋 FILES WITH ISSUES:
+  • quy_trinh_boi_thuong_nn/DOC_001/1. Thủ tục xác định cơ quan giải quyết bồi thường.json
+  • quy_trinh_boi_thuong_nn/DOC_001/questions.json
+  • quy_trinh_boi_thuong_nn/DOC_002/2. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại.json
+  • quy_trinh_boi_thuong_nn/DOC_002/questions.json
+  • quy_trinh_boi_thuong_nn/DOC_003/3. Thủ tục phục hồi danh dự.json
+  • quy_trinh_boi_thuong_nn/DOC_003/questions.json
+  • quy_trinh_boi_thuong_nn/DOC_004/4. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại cấp xã.json
+  • quy_trinh_boi_thuong_nn/DOC_004/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_001/01. Đăng ký khai sinh_old.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_001/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_002/02. ĐKKS có yếu tố nước ngoài_old.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_002/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_003/03. Đăng ký lại khai sinh_old.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_003/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_004/04. Đăng ký lại khai sinh có yếu tố nước ngoài.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_004/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_005/05. Đăng ký nhận cha mẹ con.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_005/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_006/06. Đăng ký nhận cha mẹ con có yếu tố nước ngoài.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_006/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_007/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_008/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_009/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_010/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_011/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_012/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_013/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_014/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_015/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_016/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_017/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_018/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_019/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_020/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_021/21. Đăng ký chấm dứt giám hộ.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_021/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_022/22. Đăng ký chấm dứt giám hộ có yếu tố nước ngoài.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_022/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_023/23. Đăng ký giám sát việc giám hộ.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_023/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_024/24. Đăng ký chấm dứt giám sát việc giám hộ.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_024/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_025/25. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_025/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_026/26. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc có yếu tố nước ngoài.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_026/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_027/27. Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_027/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_028/28. Ghi vào Sổ hộ tịch việc ly hôn, hủy việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_028/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_029/29. Ghi vào Sổ hộ tịch việc hộ tịch khác của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_029/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_030/30. Đăng ký khai sinh lưu động.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_030/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_031/31. Đăng ký kết hôn lưu động.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_031/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_032/32. Đăng ký khai tử lưu động.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_032/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_033/33. Cấp Giấy xác nhận tình trạng hôn nhân.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_033/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_034/34. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_034/questions.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_035/35. Xác nhận hộ tịch.json
+  • quy_trinh_cap_ho_tich_cap_xa/DOC_035/questions.json
+  • quy_trinh_cong_chung/DOC_001/1. Bổ nhiệm công chứng viên.json
+  • quy_trinh_cong_chung/DOC_001/questions.json
+  • quy_trinh_cong_chung/DOC_002/2. Bổ nhiệm lại công chứng viên.json
+  • quy_trinh_cong_chung/DOC_002/questions.json
+  • quy_trinh_cong_chung/DOC_003/3. Miễn nhiệm công chứng viên (trường hợp được miễn nhiệm).json
+  • quy_trinh_cong_chung/DOC_003/questions.json
+  • quy_trinh_cong_chung/DOC_004/4. Công nhận tương đương đối với người được đào tạo nghề công chứng ở nước ngoài.json
+  • quy_trinh_cong_chung/DOC_004/questions.json
+  • quy_trinh_cong_chung/DOC_005/5. Đăng ký tập sự hành nghề công chứng.json
+  • quy_trinh_cong_chung/DOC_005/questions.json
+  • quy_trinh_cong_chung/DOC_006/6. Đăng ký tập sự lại hành nghề công chứng sau khi chấm dứt tập sự hành nghề công chứng.json
+  • quy_trinh_cong_chung/DOC_006/questions.json
+  • quy_trinh_cong_chung/DOC_007/7. Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng này sang tổ chức hành nghề công chứng khác trong cùng một tỉnh, thành phố trực thuộc Trung ương.json
+  • quy_trinh_cong_chung/DOC_007/questions.json
+  • quy_trinh_cong_chung/DOC_008/8. Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng tại tỉnh, thành phôd này sang tỉnh, thành phố khác .json
+  • quy_trinh_cong_chung/DOC_008/questions.json
+  • quy_trinh_cong_chung/DOC_009/9. Công nhận hoàn thành tập sự hành nghề công chứng.json
+  • quy_trinh_cong_chung/DOC_009/questions.json
+  • quy_trinh_cong_chung/DOC_010/10. Chấm dứt tập sự hành nghề công chứng.json
+  • quy_trinh_cong_chung/DOC_010/questions.json
+  • quy_trinh_cong_chung/DOC_011/11. Đăng ký tham dự kiểm tra kết quả tập sự hành nghề công chứng.json
+  • quy_trinh_cong_chung/DOC_011/questions.json
+  • quy_trinh_cong_chung/DOC_012/12. Cấp thẻ công chứng viên.json
+  • quy_trinh_cong_chung/DOC_012/questions.json
+  • quy_trinh_cong_chung/DOC_013/13. Cấp lại Thẻ công chứng viên.json
+  • quy_trinh_cong_chung/DOC_013/questions.json
+  • quy_trinh_cong_chung/DOC_014/14. Thu hồi Thẻ công chứng viên.json
+  • quy_trinh_cong_chung/DOC_014/questions.json
+  • quy_trinh_cong_chung/DOC_015/15. Thành lập Văn phòng công chứng.json
+  • quy_trinh_cong_chung/DOC_015/questions.json
+  • quy_trinh_cong_chung/DOC_016/16. Đăng ký hoạt động Văn phòng công chứng.json
+  • quy_trinh_cong_chung/DOC_016/questions.json
+  • quy_trinh_cong_chung/DOC_017/17. Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng.json
+  • quy_trinh_cong_chung/DOC_017/questions.json
+  • quy_trinh_cong_chung/DOC_018/18. Cấp lại Giấy đăng ký hoạt động cho Văn phòng công chứng do bị mất, hỏng.json
+  • quy_trinh_cong_chung/DOC_018/questions.json
+  • quy_trinh_cong_chung/DOC_019/19. Hợp nhất Văn phòng công chứng theo loại hình công ty hợp danh.json
+  • quy_trinh_cong_chung/DOC_019/questions.json
+  • quy_trinh_cong_chung/DOC_020/20. Đăng ký hoạt động Văn phòng công chứng hợp nhất.json
+  • quy_trinh_cong_chung/DOC_020/questions.json
+  • quy_trinh_cong_chung/DOC_021/21. Sáp nhập Văn phòng công chứng theo loại hình công ty hợp danh.json
+  • quy_trinh_cong_chung/DOC_021/questions.json
+  • quy_trinh_cong_chung/DOC_022/22. Chuyển nhượng toàn bộ phần vốn góp của toàn bộ thành viên hợp danh của Văn phòng công chứng.json
+  • quy_trinh_cong_chung/DOC_022/questions.json
+  • quy_trinh_cong_chung/DOC_023/23. Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng nhận chuyển nhượng vốn góp.json
+  • quy_trinh_cong_chung/DOC_023/questions.json
+  • quy_trinh_cong_chung/DOC_024/24. Chuyển đổi Văn phòng công chứng theo loại hình doanh nghiệp tư nhân thành Văn phòng công chứng theo loại hình công ty hợp danh.json
+  • quy_trinh_cong_chung/DOC_024/questions.json
+  • quy_trinh_cong_chung/DOC_025/25. Bán Văn phòng công chứng theo loại hình doanh nghiệp tư nhân.json
+  • quy_trinh_cong_chung/DOC_025/questions.json
+  • quy_trinh_cong_chung/DOC_026/26. Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng được bán.json
+  • quy_trinh_cong_chung/DOC_026/questions.json
+  • quy_trinh_cong_chung/DOC_027/27. Công nhận Điều lệ của Văn phòng công chứng được thành lập trước ngày 01.7.2025.json
+  • quy_trinh_cong_chung/DOC_027/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_001/1. Đăng ký hoạt động của doanh nghiệp đấu giá tài sản.json
+  • quy_trinh_dau_gia_tai_san/DOC_001/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_002/2. Thay đổi nội dung đăng ký hoạt động của doanh nghiệp đấu giá tài sản.json
+  • quy_trinh_dau_gia_tai_san/DOC_002/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_003/3. Cấp lại Giấy đăng ký hoạt động của doanh nghiệp đấu giá tài sản.json
+  • quy_trinh_dau_gia_tai_san/DOC_003/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_004/4. Đăng ký hoạt động của Chi nhánh doanh nghiệp đấu giá tài sản.json
+  • quy_trinh_dau_gia_tai_san/DOC_004/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_005/5. Phê duyệt Trang thông tin đấu giá trực tuyến.json
+  • quy_trinh_dau_gia_tai_san/DOC_005/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_006/6. Đăng ký tham dự kiểm tra kết quả tập sự hành nghề đấu giá.json
+  • quy_trinh_dau_gia_tai_san/DOC_006/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_007/7. Thay đổi nội dung đăng ký hoạt động của chi nhánh doanh nghiệp đấu giá tài sản.json
+  • quy_trinh_dau_gia_tai_san/DOC_007/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_008/8. Cấp lại Giấy đăng ký hoạt động của chi nhánh doanh nghiệp đấu giá tài sản.json
+  • quy_trinh_dau_gia_tai_san/DOC_008/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_009/9. Cấp Chứng chỉ hành nghề đấu giá.json
+  • quy_trinh_dau_gia_tai_san/DOC_009/questions.json
+  • quy_trinh_dau_gia_tai_san/DOC_010/10. Cấp lại Chứng chỉ hành nghề đấu giá.json
+  • quy_trinh_dau_gia_tai_san/DOC_010/questions.json
+  • quy_trinh_ho_tich_cap_tp/DOC_001/01. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.json
+  • quy_trinh_ho_tich_cap_tp/DOC_001/questions.json
+  • quy_trinh_ho_tich_cap_tp/DOC_002/02. Xác nhận hộ tịch.json
+  • quy_trinh_ho_tich_cap_tp/DOC_002/questions.json
+  • quy_trinh_luat_su/DOC_001/1. Cấp chứng chỉ HNLS đối với người đạt yêu cầu kiểm tra KQTS HN.json
+  • quy_trinh_luat_su/DOC_001/questions.json
+  • quy_trinh_luat_su/DOC_002/2. Cấp Chứng chỉ HNLS đối với người được miễn đào tạo nghề luật sư, miễn tập sự hành nghề luật sư - Copy.json
+  • quy_trinh_luat_su/DOC_002/questions.json
+  • quy_trinh_luat_su/DOC_003/3. Thu hồi chứng chỉ hành nghề luật sư.json
+  • quy_trinh_luat_su/DOC_003/questions.json
+  • quy_trinh_luat_su/DOC_004/4. Cấp lại CCHNLS trong trường hợp bị thu hồi Chứng chỉ hành nghề luật sư theo quy định tại Điều 18 của Luật Luật sư - Copy - Copy.json
+  • quy_trinh_luat_su/DOC_004/questions.json
+  • quy_trinh_luat_su/DOC_005/5. Cấp lại CCHNLS trong trường hợp bị mất, bị rách, bị cháy hoặc vì lý do khác không cố ý.json
+  • quy_trinh_luat_su/DOC_005/questions.json
+  • quy_trinh_luat_su/DOC_006/6. Công nhận đào tạo nghề luật sư ở nước ngoài.json
+  • quy_trinh_luat_su/DOC_006/questions.json
+  • quy_trinh_luat_su/DOC_007/7 Dang ky hoat dong cua TCHNLS.json
+  • quy_trinh_luat_su/DOC_007/questions.json
+  • quy_trinh_luat_su/DOC_008/8 Thay doi noi dung dang ky hoat dong cua TCHNLS.json
+  • quy_trinh_luat_su/DOC_008/questions.json
+  • quy_trinh_luat_su/DOC_009/9 Thay doi nguoi dai dien theo phap luat cua VPLS  cong ty luat TNHH MTV.json
+  • quy_trinh_luat_su/DOC_009/questions.json
+  • quy_trinh_luat_su/DOC_010/10 Thay doi nguoi dai dien theo phap luat cua cong ty THNHH 2 TV tro len cong ty luat hop danh.json
+  • quy_trinh_luat_su/DOC_010/questions.json
+  • quy_trinh_luat_su/DOC_011/11 Dang ky hoat hoat dong chi nhanh cua TCHNLS.json
+  • quy_trinh_luat_su/DOC_011/questions.json
+  • quy_trinh_luat_su/DOC_012/12 Dang ky hanh nghe luat su voi tu cach ca nhan.json
+  • quy_trinh_luat_su/DOC_012/questions.json
+  • quy_trinh_luat_su/DOC_013/13 Dang ky hoat dong cua chi nhanh cong ty luat nuoc ngoai.json
+  • quy_trinh_luat_su/DOC_013/questions.json
+  • quy_trinh_luat_su/DOC_014/14 Thay doi noi GDKH cua chi nhanh cong ty luat nuoc ngoai.json
+  • quy_trinh_luat_su/DOC_014/questions.json
+  • quy_trinh_luat_su/DOC_015/15 Hop nhat cong ty luat.json
+  • quy_trinh_luat_su/DOC_015/questions.json
+  • quy_trinh_luat_su/DOC_016/16 Sap nhap cong ty luat.json
+  • quy_trinh_luat_su/DOC_016/questions.json
+  • quy_trinh_luat_su/DOC_017/17 Chuyen doi cong ty luat TNHH va cong ty luat hop danh.json
+  • quy_trinh_luat_su/DOC_017/questions.json
+  • quy_trinh_luat_su/DOC_018/18 Đăng ký hoạt động của công ty luật Việt Nam chuyển đổi từ công ty luật nước ngoài.json
+  • quy_trinh_luat_su/DOC_018/questions.json
+  • quy_trinh_luat_su/DOC_019/19 Đăng ký hoạt động của chi nhánh của công ty luật nước ngoài tại Việt Nam.json
+  • quy_trinh_luat_su/DOC_019/questions.json
+  • quy_trinh_luat_su/DOC_020/20 Cấp lại Giấy đăng ký hoạt động của chi nhánh, công ty luật nước ngoài.json
+  • quy_trinh_luat_su/DOC_020/questions.json
+  • quy_trinh_nuoi_con_nuoi/DOC_001/1. Cấp xã - Đăng ký việc nuôi con nuôi trong nước (1).json
+  • quy_trinh_nuoi_con_nuoi/DOC_001/questions.json
+  • quy_trinh_nuoi_con_nuoi/DOC_002/1. STP -Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng (1).json
+  • quy_trinh_nuoi_con_nuoi/DOC_002/questions.json
+  • quy_trinh_nuoi_con_nuoi/DOC_003/2. Cấp xã - Đăng ký lại việc nuôi con nuôi trong nước.json
+  • quy_trinh_nuoi_con_nuoi/DOC_003/questions.json
+  • quy_trinh_nuoi_con_nuoi/DOC_004/4. STP -Giải quyết việc người nước ngoài thường trú ở Việt Nam nhận trẻ em Việt Nam làm con nuôi.json
+  • quy_trinh_nuoi_con_nuoi/DOC_004/questions.json
+  • quy_trinh_nuoi_con_nuoi/DOC_005/5. STP -Thủ tục Cấp giấy xác nhận công dân Việt Nam ở trong nước đủ điều kiện nhận trẻ em nước ngoài làm con nuôi.json
+  • quy_trinh_nuoi_con_nuoi/DOC_005/questions.json
+  • quy_trinh_nuoi_con_nuoi/DOC_006/3. STP -Đăng ký lại việc nuôi con nuôi có yếu tố nước ngoài.json
+  • quy_trinh_nuoi_con_nuoi/DOC_006/questions.json
+  • quy_trinh_pbgdpl_htpldn/DOC_001/01. Quy trinh hỗ trợ hòa giải viên.json
+  • quy_trinh_pbgdpl_htpldn/DOC_001/questions.json
+  • quy_trinh_pbgdpl_htpldn/DOC_002/2. Quy trinh  ĐỀ NGHỊ HỖ TRỢ CHI PHÍ TƯ VẤN PHÁP LUẬT CHO DOANH NGHIỆP NHỎ VÀ VỪA.json
+  • quy_trinh_pbgdpl_htpldn/DOC_002/questions.json
+  • quy_trinh_pbgdpl_htpldn/DOC_003/3. Quy trình ĐỀ NGHỊ THANH TOÁN CHI PHÍ TƯ VẤN PHÁP LUẬT CHO DOANH NGHIỆP NHỎ VÀ VỪA.json
+  • quy_trinh_pbgdpl_htpldn/DOC_003/questions.json
+  • quy_trinh_quan_tai_vien/DOC_001/QTV - QT 01 -Cấp chứng chỉ hành nghề Quản tài viên đối với luật sư, kiểm toán viên, người có trình độ cử nhân luật, kinh tế, tài chính, ngân hàng...5 năm trở lên .json
+  • quy_trinh_quan_tai_vien/DOC_001/questions.json
+  • quy_trinh_quan_tai_vien/DOC_002/QTV - QT 02 - Cấp chứng chỉ hành nghề Quản tài viên đối với luật sư nước ngoài đã được cấp Giấy phép hành nghề luật sư tại Việt Nam.json
+  • quy_trinh_quan_tai_vien/DOC_002/questions.json
+  • quy_trinh_quan_tai_vien/DOC_003/QTV - QT 03 - Cấp lại chứng chỉ hành nghề Quản tài viên .json
+  • quy_trinh_quan_tai_vien/DOC_003/questions.json
+  • quy_trinh_quan_tai_vien/DOC_004/QTV - QT 04 - Đăng ký hành nghề quản lý, thanh lý tài sản với tư cách cá nhân .json
+  • quy_trinh_quan_tai_vien/DOC_004/questions.json
+  • quy_trinh_quan_tai_vien/DOC_005/QTV - QT 05 - Đăng ký hành nghề quản lý, thanh lý tài sản đối với doanh nghiệp quản lý, thanh lý tài sản .json
+  • quy_trinh_quan_tai_vien/DOC_005/questions.json
+  • quy_trinh_quan_tai_vien/DOC_006/QTV - QT 06 - Thay đổi thành viên hợp danh của công ty hợp danh hoặc thay đổi chủ doanh nghiệp tư nhân của doanh nghiệp quản lý, thanh lý tài sản  .json
+  • quy_trinh_quan_tai_vien/DOC_006/questions.json
+  • quy_trinh_quan_tai_vien/DOC_007/QTV - QT 07 - Thay đổi tên, địa chỉ trụ sở, văn phòng đại diện, chi nhanh, người đại diện theo pháp luật, danh sách Quản tài viên hành nghề trong DNQLTLTS .json
+  • quy_trinh_quan_tai_vien/DOC_007/questions.json
+  • quy_trinh_quan_tai_vien/DOC_008/QTV - QT 08 - Thay đổi thông tin đăng ký hành nghề của Quản tài viên .json
+  • quy_trinh_quan_tai_vien/DOC_008/questions.json
+  • quy_trinh_thua_phat_lai/DOC_001/QT 01 - Công nhận tương đương đào tạo nghề Thừa phát lại ở nước ngoài.json
+  • quy_trinh_thua_phat_lai/DOC_001/questions.json
+  • quy_trinh_thua_phat_lai/DOC_002/QT 02 - Bổ nhiệm Thừa phát lại .json
+  • quy_trinh_thua_phat_lai/DOC_002/questions.json
+  • quy_trinh_thua_phat_lai/DOC_003/QT 03 - Miễn nhiệm Thừa phát lại (trường hợp được miễn nhiệm) .json
+  • quy_trinh_thua_phat_lai/DOC_003/questions.json
+  • quy_trinh_thua_phat_lai/DOC_004/QT 04 - Bổ nhiệm lại Thừa phát lại .json
+  • quy_trinh_thua_phat_lai/DOC_004/questions.json
+  • quy_trinh_thua_phat_lai/DOC_005/QT 05 - Đk tập sự hành nghề Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_005/questions.json
+  • quy_trinh_thua_phat_lai/DOC_006/QT 06 - Thay đổi nơi tập sự hành nghề Thừa phát lại .json
+  • quy_trinh_thua_phat_lai/DOC_006/questions.json
+  • quy_trinh_thua_phat_lai/DOC_007/QT 07 - Đăng ký hành nghề và cấp Thẻ Thừa phát lại .json
+  • quy_trinh_thua_phat_lai/DOC_007/questions.json
+  • quy_trinh_thua_phat_lai/DOC_008/QT 08 - Cấp lại Thẻ Thừa phát lại .json
+  • quy_trinh_thua_phat_lai/DOC_008/questions.json
+  • quy_trinh_thua_phat_lai/DOC_009/QT 09 - Thành lập Văn phòng Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_009/questions.json
+  • quy_trinh_thua_phat_lai/DOC_010/QT 10- Đăng ký hoạt động Văn phòng Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_010/questions.json
+  • quy_trinh_thua_phat_lai/DOC_011/QT 11 - Thay đổi nội dung đăng ký hoạt động của Văn phòng Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_011/questions.json
+  • quy_trinh_thua_phat_lai/DOC_012/QT 12 - Chuyển đổi loại hình hoạt động Văn phòng Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_012/questions.json
+  • quy_trinh_thua_phat_lai/DOC_013/QT 13 - Đăng ký hoạt động sau khi chuyển đổi loại hình hoạt động Văn phòng Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_013/questions.json
+  • quy_trinh_thua_phat_lai/DOC_014/QT 14 - Hợp nhất, sáp nhập Văn phòng Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_014/questions.json
+  • quy_trinh_thua_phat_lai/DOC_015/QT 15 - Đăng ký hoạt động, thay đổi nội dung đăng ký hoạt động sau khi hợp nhất, sáp nhập Văn phòng Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_015/questions.json
+  • quy_trinh_thua_phat_lai/DOC_016/QT 16- Chuyển nhượng Văn phòng Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_016/questions.json
+  • quy_trinh_thua_phat_lai/DOC_017/QT 17- Thay đổi nội dung đăng ký hoạt động sau khi chuyển nhượng Văn phòng Thừa phát lại.json
+  • quy_trinh_thua_phat_lai/DOC_017/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_001/1 Thành lập, đăng ký hoạt động TTTT.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_001/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_002/2 Thay đổi nội dung Giấy phép thành lập của TTTT.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_002/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_003/3 Chấm dứt hoạt động TTTT theo Điều lệ của TTTT.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_003/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_004/4 Cấp Giấy phép thành lập CN, VPDD của Tổ chức trọng tài nước ngoài tại Việt Nam.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_004/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_005/5 Thay đổi nội dung Giấy phép thành lập của CN TT nước ngoài tại Việt Nam.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_005/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_006/6 Chấm dứt hoạt động CN, VPĐDcủa Tổ chức TT nước ngoài tại Việt Nam.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_006/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_007/7 Cấp lại Giấy phép thành lập của TTTT, CN, VPĐD của Tc TT nước ngoài tại Việt Nam.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_007/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_008/8 ĐKHĐ TTTT  khi thay đổi địa điểm đặt trụ sở sang tỉnh, thành phố trực thuộc trung ương khác.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_008/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_009/9 ĐKHĐ Chi nhánh TTTT.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_009/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_010/10 Thay đổi nội dung Giấy đăng ký hoạt động của Trung tâm trọng tài; thay đổi nội dung Giấy đăng ký hoạt động của Chi nhánh Tổ chức trọng tài nước ngoài tại Việt Nam.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_010/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_011/11 Thay đổi nội dung Giấy ĐKHĐ của CN TTTT  khi thay đổi Trưởng Chi nhánh, địa điểm đặt trụ sở của Chi nhánh trong phạm vi tỉnh, thành phố trực thuộc trung ương.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_011/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_012/12 Đăng ký hoạt động Chi nhánh của Tổ chức trọng tài nước ngoài tại Việt Nam sau khi được cấp Giấy phép thành lập.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_012/questions.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_013/13 Cấp lại Giấy đăng ký hoạt động của Trung tâm trọng tài, Chi nhánh Trung tâm trọng tài, Chi nhánh của Tổ chức trọng tài nước ngoài tại Việt Nam.json
+  • quy_trinh_trong_tai_thuong_mai/DOC_013/questions.json
+  • quy_trinh_tu_van_phap_luat/DOC_001/1 Đăng ký hoạt động của Trung tâm tư vấn pháp luật.json
+  • quy_trinh_tu_van_phap_luat/DOC_001/questions.json
+  • quy_trinh_tu_van_phap_luat/DOC_002/2 Đăng ký hoạt động cho chi nhánh của Trung tâm tư vấn pháp luật.json
+  • quy_trinh_tu_van_phap_luat/DOC_002/questions.json
+  • quy_trinh_tu_van_phap_luat/DOC_003/3 Thay đổi nội dung đăng ký hoạt động của Trung tâm tư vấn pháp luật, chi nhánh.json
+  • quy_trinh_tu_van_phap_luat/DOC_003/questions.json
+  • quy_trinh_tu_van_phap_luat/DOC_004/4 Cấp Thẻ tư vấn viên pháp luật.json
+  • quy_trinh_tu_van_phap_luat/DOC_004/questions.json
+  • quy_trinh_tu_van_phap_luat/DOC_005/5 Thu hồi Thẻ tư vấn viên pháp luật.json
+  • quy_trinh_tu_van_phap_luat/DOC_005/questions.json
+  • quy_trinh_tu_van_phap_luat/DOC_006/6 Cấp lại Thẻ tư vấn viên pháp luật.json
+  • quy_trinh_tu_van_phap_luat/DOC_006/questions.json
+
+💡 RECOMMENDATIONS:
+  • Review and fix the invalid files listed above
+  • Ensure all JSON files have exactly 6 content chunks
+  • Verify all required fields are present and not empty
+  • Check that keywords are meaningful and relevant
+
+================================================================================

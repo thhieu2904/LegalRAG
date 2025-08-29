@@ -1,52 +1,95 @@
 {
   "metadata": {
-    "source": "21. Sáp nhập Văn phòng công chứng theo loại hình công ty hợp danh.doc",
+    "source": "data/documents/quy_trinh_cong_chung/documents/DOC_021/21. Sáp nhập Văn phòng công chứng theo loại hình công ty hợp danh.doc",
     "title": "Sáp nhập Văn phòng công chứng theo loại hình công ty hợp danh",
     "code": "QT 21/CC",
-    "issuing_authority": "Ủy ban nhân dân cấp tỉnh",
-    "effective_date": "",
-    "executing_agency": "Sở Tư pháp",
-    "applicant_type": "Văn phòng công chứng",
-    "processing_time_text": "05 ngày làm việc (Sở Tư pháp) + 10 ngày làm việc (UBND cấp tỉnh)",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-01-01",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Văn phòng công chứng"
+    ],
+    "processing_time_text": "05 ngày làm việc",
     "fee_vnd": 0,
-    "fee_text": "Không có lệ phí",
+    "fee_text": "Không quy định lệ phí",
     "has_form": true,
-    "requirements_conditions": "Một hoặc một số Văn phòng công chứng có thể sáp nhập vào 01 Văn phòng công chứng khác có trụ sở trong cùng 01 tỉnh, thành phố trực thuộc trung ương",
+    "requirements_conditions": "Thủ tục được thực hiện theo quy định của pháp luật về công chứng.",
     "legal_basis_references": [
       "Luật Công chứng 2014",
-      "Quyết định 30/QĐ-TTg của Thủ tướng Chính phủ về đơn giản hóa thủ tục hành chính"
+      "Nghị định số 23/2015/NĐ-CP",
+      "Thông tư số 01/2015/TT-BTP",
+      "Thông tư số 05/2025/TT-BTP"
     ]
   },
   "fee_structure": {
-    "main_fee": 0,
-    "exemptions": "Không có lệ phí cho thủ tục sáp nhập Văn phòng công chứng",
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không quy định lệ phí"
+    },
+    "exemptions": [],
     "additional_fees": []
   },
   "content_chunks": [
     {
-      "chunk_id": "chunk_1",
-      "title": "Thành phần hồ sơ",
-      "content": "1. Hợp đồng sáp nhập Văn phòng công chứng, trong đó có các nội dung chủ yếu:\n   - Tên, địa chỉ trụ sở của các Văn phòng công chứng bị sáp nhập\n   - Tên, địa chỉ trụ sở của Văn phòng công chứng nhận sáp nhập\n   - Danh sách các công chứng viên hợp danh và công chứng viên làm việc theo chế độ hợp đồng lao động\n   - Số lượng và phân loại hồ sơ công chứng của các Văn phòng công chứng bị sáp nhập\n   - Thời gian thực hiện sáp nhập\n   - Phương án sử dụng lao động của Văn phòng công chứng nhận sáp nhập\n   - Phương án chuyển tài sản của các Văn phòng công chứng bị sáp nhập\n   - Việc kế thừa toàn bộ quyền, nghĩa vụ và lợi ích hợp pháp của các Văn phòng công chứng bị sáp nhập.\n2. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử kê khai thuế, báo cáo tài chính trong 03 năm gần nhất đã được kiểm toán của các Văn phòng công chứng bị sáp nhập.\n3. Các giấy tờ chứng minh về việc chuyển giao tài sản, hồ sơ công chứng và các quyền, nghĩa vụ khác."
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ yêu cầu",
+      "content": "Hồ sơ bao gồm các giấy tờ và tài liệu được quy định chi tiết theo quy trình thủ tục.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "tài liệu",
+        "văn phòng công chứng"
+      ]
     },
     {
-      "chunk_id": "chunk_2",
-      "title": "Thời hạn giải quyết",
-      "content": "1. Trong thời hạn 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ, Sở Tư pháp có văn bản trình Ủy ban nhân dân cấp tỉnh xem xét, quyết định.\n2. Trong thời hạn 10 ngày làm việc kể từ ngày nhận được văn bản đề nghị của Sở Tư pháp kèm theo hồ sơ hợp lệ, Ủy ban nhân dân cấp tỉnh xem xét, quyết định cho phép sáp nhập.\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền giải quyết: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục."
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "hồ sơ hợp lệ"
+      ]
     },
     {
-      "chunk_id": "chunk_3",
-      "title": "Đối tượng thực hiện/Cơ quan thực hiện",
-      "content": "Đối tượng thực hiện: Một hoặc một số Văn phòng công chứng muốn sáp nhập vào 01 Văn phòng công chứng khác có trụ sở trong cùng 01 tỉnh, thành phố trực thuộc trung ương.\nCơ quan thực hiện: Sở Tư pháp trình Ủy ban nhân dân cấp tỉnh quyết định."
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng: Văn phòng công chứng. Cơ quan thực hiện: Sở Tư pháp cấp tỉnh.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "văn phòng công chứng",
+        "sở tư pháp",
+        "cấp tỉnh"
+      ]
     },
     {
-      "chunk_id": "chunk_4",
-      "title": "Kết quả thực hiện/Lệ phí",
-      "content": "Kết quả: Quyết định cho phép sáp nhập Văn phòng công chứng của Ủy ban nhân dân cấp tỉnh.\nLệ phí: Không có lệ phí cho thủ tục sáp nhập Văn phòng công chứng."
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "Kết quả: Hoàn tất thủ tục theo quy định. Lệ phí: Không quy định lệ phí.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "lệ phí",
+        "miễn phí",
+        "hoàn tất"
+      ]
     },
     {
-      "chunk_id": "chunk_5",
-      "title": "Quy trình xử lý chi tiết",
-      "content": "1. Các Văn phòng công chứng chuẩn bị hợp đồng sáp nhập và các giấy tờ cần thiết.\n2. Nộp hồ sơ tại Sở Tư pháp nơi các Văn phòng công chứng có trụ sở.\n3. Sở Tư pháp tiếp nhận và kiểm tra tính hợp lệ của hồ sơ trong thời hạn 05 ngày làm việc.\n4. Sở Tư pháp trình Ủy ban nhân dân cấp tỉnh kèm theo hồ sơ hợp lệ.\n5. Ủy ban nhân dân cấp tỉnh xem xét, quyết định trong thời hạn 10 ngày làm việc.\n6. Trường hợp hồ sơ thiếu hoặc không hợp lệ: Thông báo bổ sung hoặc từ chối.\n7. Sau khi có quyết định cho phép sáp nhập: Các Văn phòng công chứng bị sáp nhập chuyển toàn bộ tài sản, quyền, nghĩa vụ và lợi ích hợp pháp sang Văn phòng công chứng nhận sáp nhập.\n8. Văn phòng công chứng nhận sáp nhập kế thừa toàn bộ quyền, nghĩa vụ của các Văn phòng bị sáp nhập.\n9. Các Văn phòng công chứng bị sáp nhập chấm dứt hoạt động theo quy định pháp luật."
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Quy trình thực hiện theo các bước: tiếp nhận hồ sơ, thẩm định, ra quyết định và thông báo kết quả.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "tiếp nhận",
+        "thẩm định",
+        "quyết định",
+        "thông báo"
+      ]
     }
   ]
 }

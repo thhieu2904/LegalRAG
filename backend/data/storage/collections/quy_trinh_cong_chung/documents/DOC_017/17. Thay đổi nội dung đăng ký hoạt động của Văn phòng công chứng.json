@@ -1,53 +1,103 @@
 {
   "metadata": {
-    "source": "17. Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng.doc",
+    "source": "data/documents/quy_trinh_cong_chung/documents/DOC_017/17. Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng.doc",
     "title": "Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng",
     "code": "QT 17/CC",
     "issuing_authority": "Sở Tư pháp",
-    "effective_date": "",
-    "executing_agency": "Sở Tư pháp",
-    "applicant_type": "Văn phòng công chứng",
+    "effective_date": "2025-01-01",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Văn phòng công chứng"
+    ],
     "processing_time_text": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
     "fee_vnd": 0,
-    "fee_text": "Không thu phí đối với trường hợp ghi nhận nội dung thay đổi đăng ký hoạt động khi thay đổi công chứng viên hợp danh hoặc công chứng viên",
+    "fee_text": "Không quy định lệ phí",
     "has_form": true,
-    "requirements_conditions": "Văn phòng công chứng đã đăng ký hoạt động và có nhu cầu thay đổi nội dung đăng ký theo quy định tại khoản 2 Điều 25 của Luật Công chứng",
+    "requirements_conditions": "Văn phòng công chứng cần thay đổi nội dung đăng ký hoạt động khi có sự thay đổi về địa điểm trụ sở, nhân sự hoặc các nội dung khác đã đăng ký.",
     "legal_basis_references": [
       "Luật Công chứng 2014",
-      "Quyết định 30/QĐ-TTg của Thủ tướng Chính phủ về đơn giản hóa thủ tục hành chính",
-      "Thông tư số 257/2016/TT-BTC của Bộ Tài chính"
+      "Nghị định số 23/2015/NĐ-CP",
+      "Thông tư số 01/2015/TT-BTP",
+      "Thông tư số 05/2025/TT-BTP"
     ]
   },
   "fee_structure": {
-    "main_fee": 0,
-    "exemptions": "Không thu phí đối với trường hợp ghi nhận nội dung thay đổi đăng ký hoạt động khi thay đổi công chứng viên hợp danh hoặc công chứng viên",
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không quy định lệ phí"
+    },
+    "exemptions": [],
     "additional_fees": []
   },
   "content_chunks": [
     {
-      "chunk_id": "chunk_1",
-      "title": "Thành phần hồ sơ",
-      "content": "1. Bản chính hoặc bản sao có chứng thực hoặc bản sao điện tử giấy tờ chứng minh nội dung đề nghị thay đổi.\n2. Trường hợp bổ sung công chứng viên hợp danh: Các giấy tờ chứng minh công chứng viên hợp danh đã góp vốn theo quy định của Luật Doanh nghiệp.\n3. Trường hợp thay đổi công chứng viên không còn làm việc tại Văn phòng công chứng: Các giấy tờ chứng minh việc chấm dứt hợp đồng lao động hoặc quyết định bổ nhiệm.\n4. Các giấy tờ khác liên quan đến nội dung đề nghị thay đổi theo quy định tại khoản 2 Điều 25 của Luật Công chứng."
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ thay đổi đăng ký",
+      "content": "Hồ sơ thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng bao gồm:\\n1. Đơn đề nghị thay đổi nội dung đăng ký hoạt động.\\n2. Giấy tờ chứng minh về nội dung thay đổi (thay đổi trụ sở, nhân sự, v.v.).\\n3. Bản sao Giấy chứng nhận đăng ký hoạt động hiện tại.\\n4. Các tài liệu khác liên quan đến nội dung thay đổi.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "thay đổi",
+        "đăng ký hoạt động",
+        "văn phòng công chứng",
+        "đơn đề nghị",
+        "trụ sở",
+        "nhân sự"
+      ]
     },
     {
-      "chunk_id": "chunk_2",
-      "title": "Thời hạn giải quyết",
-      "content": "Trong thời hạn 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ, Sở Tư pháp ghi nhận nội dung thay đổi vào giấy đăng ký hoạt động của Văn phòng công chứng.\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền giải quyết: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục."
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "05 ngày",
+        "hồ sơ hợp lệ",
+        "giải quyết"
+      ]
     },
     {
-      "chunk_id": "chunk_3",
-      "title": "Đối tượng thực hiện/Cơ quan thực hiện",
-      "content": "Đối tượng thực hiện: Văn phòng công chứng đã đăng ký hoạt động và có nhu cầu thay đổi nội dung đăng ký theo quy định pháp luật.\nCơ quan thực hiện: Sở Tư pháp tỉnh/thành phố trực thuộc trung ương."
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng: Văn phòng công chứng đã được cấp Giấy chứng nhận đăng ký hoạt động và cần thay đổi nội dung đăng ký.\\nCơ quan thực hiện: Sở Tư pháp cấp tỉnh nơi Văn phòng công chứng đặt trụ sở.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "văn phòng công chứng",
+        "giấy chứng nhận",
+        "sở tư pháp",
+        "cấp tỉnh"
+      ]
     },
     {
-      "chunk_id": "chunk_4",
-      "title": "Kết quả thực hiện/Lệ phí",
-      "content": "Kết quả: Sở Tư pháp ghi nhận nội dung thay đổi vào giấy đăng ký hoạt động của Văn phòng công chứng.\nLệ phí: Không thu phí đối với trường hợp ghi nhận nội dung thay đổi đăng ký hoạt động khi thay đổi công chứng viên hợp danh hoặc công chứng viên."
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "Kết quả: Giấy chứng nhận đăng ký hoạt động mới hoặc văn bản xác nhận thay đổi nội dung đăng ký.\\nLệ phí: Không quy định lệ phí cho thủ tục này.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "giấy chứng nhận",
+        "văn bản xác nhận",
+        "lệ phí",
+        "miễn phí"
+      ]
     },
     {
-      "chunk_id": "chunk_5",
-      "title": "Quy trình xử lý chi tiết",
-      "content": "1. Văn phòng công chứng chuẩn bị hồ sơ đề nghị thay đổi nội dung đăng ký hoạt động theo quy định.\n2. Nộp hồ sơ tại Sở Tư pháp nơi đã đăng ký hoạt động.\n3. Sở Tư pháp tiếp nhận và kiểm tra tính hợp lệ của hồ sơ.\n4. Trường hợp hồ sơ đầy đủ, chính xác: Sở Tư pháp ghi nhận nội dung thay đổi vào giấy đăng ký hoạt động trong thời hạn 05 ngày làm việc.\n5. Trường hợp hồ sơ chưa đầy đủ: Thông báo bằng văn bản nêu rõ nội dung cần bổ sung hoặc sửa đổi.\n6. Văn phòng công chứng nhận kết quả và hoạt động theo nội dung đăng ký đã thay đổi."
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Các bước thực hiện:\\n1. Văn phòng công chứng nộp hồ sơ thay đổi tại Sở Tư pháp.\\n2. Sở Tư pháp tiếp nhận và kiểm tra hồ sơ.\\n3. Thẩm định nội dung thay đổi và tính hợp lệ.\\n4. Cấp Giấy chứng nhận mới hoặc xác nhận thay đổi.\\n5. Thông báo kết quả cho Văn phòng công chứng.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "nộp hồ sơ",
+        "tiếp nhận",
+        "thẩm định",
+        "cấp giấy chứng nhận",
+        "thông báo"
+      ]
     }
   ]
 }

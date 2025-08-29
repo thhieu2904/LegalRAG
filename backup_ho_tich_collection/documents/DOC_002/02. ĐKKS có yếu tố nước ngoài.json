@@ -1,0 +1,244 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/02. Đăng ký khai sinh có yếu tố nước ngoài.doc",
+    "title": "Đăng ký khai sinh có yếu tố nước ngoài",
+    "code": "QT 02/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu, trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp theo.",
+    "fee_structure": {
+      "main_fee": {
+        "type": "registration_fee",
+        "description": "Lệ phí đăng ký khai sinh có yếu tố nước ngoài",
+        "fee_amounts": [
+          {
+            "condition": "nộp trực tiếp",
+            "amount": 75000,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký khai sinh có yếu tố nước ngoài"
+          },
+          {
+            "condition": "nộp trực tuyến (đến 31/12/2025)",
+            "amount": 37500,
+            "currency": "VND",
+            "note": "Lệ phí đăng ký khai sinh có yếu tố nước ngoài"
+          }
+        ],
+        "exemptions": [
+          {
+            "condition": "người thuộc gia đình có công với cách mạng",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người thuộc hộ nghèo",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "người khuyết tật",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          },
+          {
+            "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+            "description": "Miễn lệ phí",
+            "applicable_to": ["registration_fee"]
+          }
+        ]
+      },
+      "additional_fees": [
+        {
+          "type": "copy_fee",
+          "description": "Phí cấp bản sao Giấy khai sinh",
+          "fee_amounts": [
+            {
+              "condition": "nộp trực tiếp",
+              "amount": 50000,
+              "currency": "VND",
+              "unit": "trường hợp"
+            },
+            {
+              "condition": "nộp trực tuyến",
+              "amount": 40000,
+              "currency": "VND",
+              "unit": "trường hợp"
+            }
+          ],
+          "optional": true,
+          "exemptions": [
+            {
+              "condition": "đăng ký hộ tịch cho người thuộc hộ nghèo",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người cao tuổi",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người khuyết tật",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "người có công với cách mạng",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đăng ký khai sinh đúng hạn",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "đăng ký khai tử đúng hạn",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "giám hộ",
+              "description": "Miễn lệ phí"
+            },
+            {
+              "condition": "khai nhận con nuôi",
+              "description": "Miễn lệ phí"
+            }
+          ]
+        }
+      ]
+    },
+    "fee_vnd": null,
+    "fee_text": "Đối với trường hợp đăng ký khai sinh có yếu tố nước ngoài: Nộp trực tiếp 75.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 37.500 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao: 50.000 đồng/trường hợp (nộp trực tiếp), 40.000 đồng/trường hợp (nộp trực tuyến). Miễn lệ phí đối với các trường hợp sau: Đăng ký hộ tịch cho người thuộc hộ nghèo; người cao tuổi; người khuyết tật; người có công với cách mạng; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn; Đăng ký khai sinh, khai tử đúng hạn; giám hộ, khai nhận con nuôi.",
+    "has_form": true,
+    "requirements_conditions": null,
+    "legal_basis_references": [
+      "Luật Hôn nhân và gia đình năm 2014",
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Nghị định số 87/2020/NĐ-CP",
+      "Nghị định số 104/2022/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Nghị định số 120/2025/NĐ-CP",
+      "Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 01/2022/TT-BTP",
+      "Thông tư số 03/2023/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP",
+      "Thông tư số 281/2016/TT-BTC",
+      "Thông tư số 85/2019/TT-BTC",
+      "Thông tư số 106/2021/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND",
+      "Nghị quyết số 06/2024/NQ-HĐND",
+      "Nghị quyết số 12/2023/NQ-HĐND",
+      "Nghị quyết số 04/2024/NQ-HĐND",
+      "Nghị quyết số 04/2023/NQ-HĐND"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ và các lưu ý quan trọng",
+      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. CÁC MẪU KÊ KHAI:**\n- Tờ khai đăng ký khai sinh theo mẫu.\n- Mẫu hộ tịch điện tử tương tác đăng ký khai sinh (nếu nộp trực tuyến).\n\n**B. GIẤY TỜ PHẢI NỘP:**\n1. Giấy chứng sinh. Trường hợp không có Giấy chứng sinh thì thay bằng văn bản của người làm chứng xác nhận về việc sinh, nếu không có văn bản của người làm chứng thì thay thế bằng văn bản cam đoan về việc sinh.\n2. Trường hợp trẻ em sinh ra tại nước ngoài thì nộp Giấy chứng sinh hoặc giấy tờ khác do cơ quan có thẩm quyền nước ngoài cấp xác nhận về việc trẻ em được sinh ra ở nước ngoài và quan hệ mẹ - con, cha - con.\n3. Trường hợp cha hoặc mẹ hoặc cả cha, mẹ là người nước ngoài thì phải nộp văn bản thỏa thuận của cha, mẹ về việc lựa chọn quốc tịch cho con. Trường hợp cha, mẹ lựa chọn quốc tịch nước ngoài cho con, thì ngoài văn bản thỏa thuận lựa chọn quốc tịch còn phải có xác nhận của cơ quan có thẩm quyền của nước mà trẻ được lựa chọn mang quốc tịch về việc trẻ có quốc tịch là phù hợp.\n4. Văn bản ủy quyền (được chứng thực) theo quy định của pháp luật trong trường hợp ủy quyền thực hiện việc đăng ký khai sinh. Trường hợp người đi đăng ký khai sinh cho trẻ em là ông, bà, người thân thích khác thì không cần văn bản ủy quyền nhưng phải thống nhất với cha, mẹ trẻ.\n\n**C. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu đăng ký khai sinh.\n2. Giấy tờ có giá trị chứng minh thông tin về cư trú trong trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin về nơi cư trú của công dân.\n3. Giấy tờ chứng minh việc trẻ em nhập cảnh hợp pháp vào Việt Nam (như: hộ chiếu, giấy tờ có giá trị đi lại quốc tế, có dấu xác nhận nhập cảnh của cơ quan quản lý xuất, nhập cảnh) và văn bản xác nhận của cơ quan công an có thẩm quyền về việc trẻ em đang cư trú tại Việt Nam trong trường hợp trẻ em sinh ra ở nước ngoài, có cha hoặc mẹ là công dân Việt Nam hoặc cha và mẹ đều là công dân Việt Nam.\n\n**D. CÁC LƯU Ý ĐẶC BIỆT QUAN TRỌNG:**\n- **Quyền lựa chọn nơi đăng ký:** Cá nhân có quyền lựa chọn thực hiện thủ tục hành chính về hộ tịch tại cơ quan đăng ký hộ tịch nơi cư trú.\n- **Hình thức nộp hồ sơ:** Người yêu cầu có thể nộp bản sao được chứng thực từ bản chính, bản sao được cấp từ sổ gốc, hoặc bản chụp kèm theo bản chính để đối chiếu.\n- **Trách nhiệm của người tiếp nhận:** Phải tiếp nhận đúng, đủ hồ sơ theo quy định, không được yêu cầu thêm giấy tờ ngoài luật định.\n- **Khai thác thông tin từ CSDLQGVDC:** Người tiếp nhận có trách nhiệm khai thác thông tin trong Cơ sở dữ liệu quốc gia về dân cư.\n- **Hồ sơ trực tuyến:** Bản chụp các giấy tờ phải rõ nét, đầy đủ, toàn vẹn; có thể sử dụng bản điện tử giấy tờ hộ tịch nếu có.\n- **Giấy tờ nước ngoài:** Phải được hợp pháp hóa lãnh sự theo quy định của pháp luật.\n- **Xác định thông tin cho trẻ:** Việc xác định họ, dân tộc, đặt tên phải phù hợp pháp luật, giữ gìn bản sắc dân tộc. Nếu cha mẹ không thỏa thuận được thì xác định theo tập quán nhưng phải theo họ, dân tộc của cha hoặc mẹ.\n- **Cam đoan:** Trường hợp lập văn bản cam đoan, người cam đoan phải chịu trách nhiệm về nội dung cam đoan. Nếu cam đoan sai sự thật, kết quả đăng ký sẽ bị hủy bỏ.\n- **Bản điện tử:** Sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu.\n- **Tra cứu thông tin hôn nhân:** Đối với yêu cầu đăng ký khai sinh mà cha, mẹ trẻ đã đăng ký kết hôn, cơ quan đăng ký hộ tịch có trách nhiệm tra cứu thông tin về tình trạng hôn nhân của cha, mẹ trẻ trên Hệ thống thông tin giải quyết thủ tục hành chính cấp tỉnh thông qua kết nối với CSDLHTĐT, CSQGVDC. Trường hợp không tra cứu được tình trạng hôn nhân do chưa có thông tin trong CSDLHTĐT, CSQGVDC, thì cơ quan đăng ký hộ tịch đề nghị Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú/nơi đã đăng ký kết hôn xác minh, cung cấp thông tin (trong thời hạn 03 ngày làm việc).\n- **Xác minh thông tin:** Trường hợp không tra cứu được tình trạng hôn nhân do chưa có thông tin trong CSDLHTĐT, CSQGVDC, thì cơ quan đăng ký hộ tịch đề nghị Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú/nơi đã đăng ký kết hôn xác minh, cung cấp thông tin (trong thời hạn 03 ngày làm việc).",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "tờ khai",
+        "giấy chứng sinh",
+        "cam đoan",
+        "ủy quyền",
+        "xuất trình",
+        "lưu ý",
+        "CSDLQGVDC",
+        "hợp pháp hóa lãnh sự",
+        "quốc tịch",
+        "nước ngoài",
+        "tra cứu",
+        "xác minh"
+      ],
+      "chunk_type": "documents"
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Ngay trong ngày tiếp nhận yêu cầu, trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp theo.",
+      "source_reference": "Mục 5.b",
+      "keywords": ["thời hạn", "giải quyết", "trong ngày", "ngày làm việc"],
+      "chunk_type": "process"
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện thủ tục hành chính",
+      "content": "Cá nhân, tổ chức có nhu cầu đăng ký khai sinh cho trẻ em có yếu tố nước ngoài (cha hoặc mẹ là người nước ngoài, trẻ em sinh ra tại nước ngoài, v.v.).",
+      "source_reference": "Mục 5.c",
+      "keywords": [
+        "đối tượng",
+        "cá nhân",
+        "tổ chức",
+        "trẻ em",
+        "nước ngoài",
+        "quốc tịch"
+      ],
+      "chunk_type": "eligibility"
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Cơ quan thực hiện và phối hợp",
+      "content": "**Cơ quan thực hiện:**\n- Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ.\n- Ủy ban nhân dân cấp xã nơi lập biên bản về việc trẻ bị bỏ rơi.\n- Ủy ban nhân dân cấp xã nơi trẻ đang cư trú (nếu chưa xác định được cha, mẹ).\n**Cơ quan phối hợp:** Cơ quan quản lý CSDLQGVDC, cơ quan quản lý xuất nhập cảnh.",
+      "source_reference": "Mục 5.d",
+      "keywords": [
+        "cơ quan",
+        "thẩm quyền",
+        "ủy ban nhân dân",
+        "UBND cấp xã",
+        "nơi cư trú",
+        "CSDLQGVDC",
+        "xuất nhập cảnh"
+      ],
+      "chunk_type": "authority"
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục hành chính",
+      "content": "- Giấy khai sinh (bản chính).\n- Bản sao Giấy khai sinh (trường hợp yêu cầu cấp bản sao).\n- Bản điện tử Giấy khai sinh (sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu).",
+      "source_reference": "Mục 5.đ",
+      "keywords": ["kết quả", "giấy khai sinh", "bản sao", "bản điện tử"],
+      "chunk_type": "result"
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Phí, lệ phí",
+      "content": "- Đăng ký khai sinh có yếu tố nước ngoài: Nộp trực tiếp 75.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 37.500 đồng.\n- Miễn lệ phí: Áp dụng cho người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người khuyết tật, đồng bào dân tộc thiểu số ở xã khó khăn.\n- Phí cấp bản sao Giấy khai sinh: 50.000 đồng/trường hợp (nộp trực tiếp), 40.000 đồng/trường hợp (nộp trực tuyến).\n- Miễn lệ phí cấp bản sao: Áp dụng cho đăng ký hộ tịch cho người thuộc hộ nghèo, người cao tuổi, người khuyết tật, người có công với cách mạng, đồng bào dân tộc thiểu số ở xã khó khăn, đăng ký khai sinh đúng hạn, đăng ký khai tử đúng hạn, giám hộ, khai nhận con nuôi.",
+      "source_reference": "Mục 5.e",
+      "keywords": [
+        "phí",
+        "lệ phí",
+        "miễn lệ phí",
+        "nộp trực tiếp",
+        "nộp trực tuyến",
+        "bản sao"
+      ],
+      "chunk_type": "fees"
+    },
+    {
+      "chunk_id": 7,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Bước 1: Cán bộ tại Trung tâm Phục vụ hành chính công tiếp nhận hồ sơ, kiểm tra tính pháp lý và nội dung.\nBước 2: Công chức Tư pháp - Hộ tịch thẩm tra hồ sơ.\nBước 3: Lãnh đạo UBND xem xét, ký duyệt hồ sơ.\nBước 4: Văn thư UBND đóng dấu văn bản.\nBước 5: Cán bộ tại Trung tâm Phục vụ hành chính công ghi vào Sổ đăng ký khai sinh và hoàn trả kết quả.\n\n**Lưu ý:** Một số thủ tục hành chính giải quyết trong ngày hoặc ít hơn 2 ngày; hoặc được xử lý bởi 1 người, 1 nhóm người trong cùng 1 phòng hay đơn vị thì không nhất thiết phải sử dụng phiếu theo dõi quá trình.\n\n**Tra cứu thông tin hôn nhân:** Đối với trường hợp cha, mẹ trẻ đã đăng ký kết hôn, cơ quan đăng ký hộ tịch phải tra cứu thông tin về tình trạng hôn nhân trên Hệ thống thông tin giải quyết thủ tục hành chính cấp tỉnh thông qua kết nối với CSDLHTĐT, CSQGVDC. Trường hợp không tra cứu được, đề nghị UBND cấp xã nơi thường trú/nơi đã đăng ký kết hôn xác minh trong thời hạn 03 ngày làm việc.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "tiếp nhận",
+        "thẩm tra",
+        "ký duyệt",
+        "trả kết quả",
+        "thời gian",
+        "tra cứu",
+        "xác minh"
+      ],
+      "chunk_type": "process"
+    }
+  ]
+}

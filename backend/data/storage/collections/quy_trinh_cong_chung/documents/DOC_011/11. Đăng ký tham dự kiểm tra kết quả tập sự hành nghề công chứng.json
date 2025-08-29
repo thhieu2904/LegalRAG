@@ -31,7 +31,9 @@
       "amount_vnd": 0,
       "description": "Không có phí cho thủ tục đăng ký tham dự kiểm tra",
       "payment_method": "Không áp dụng",
-      "exemption_conditions": ["Thủ tục đăng ký tham dự kiểm tra không thu phí"]
+      "exemption_conditions": [
+        "Thủ tục đăng ký tham dự kiểm tra không thu phí"
+      ]
     },
     "exemptions": [
       {
@@ -51,7 +53,7 @@
   },
   "content_chunks": [
     {
-      "chunk_id": "QT_11_CC_01",
+      "chunk_id": 1,
       "section_title": "Thành phần hồ sơ",
       "content": "1. Văn bản đề nghị đăng ký tham dự kiểm tra kết quả tập sự hành nghề công chứng\n2. Báo cáo kết quả tập sự hành nghề công chứng\n3. Sổ nhật ký tập sự hành nghề công chứng\n4. Bản chính hoặc bản sao có chứng thực giấy tờ chứng minh đã nộp phí thẩm định tiêu chuẩn, điều kiện hành nghề công chứng\n5. Quyết định đăng ký tập sự hành nghề công chứng (bản sao)\n6. Văn bản xác nhận của tổ chức hành nghề công chứng về việc hoàn thành tập sự\n7. Các tài liệu khác chứng minh đủ điều kiện tham dự kiểm tra\n\nLưu ý: Hồ sơ có thể nộp trực tiếp, qua dịch vụ bưu chính hoặc trực tuyến. Báo cáo và sổ nhật ký không được sao chép của người khác.",
       "source_reference": "Thông tư số 06/2025/TT-BTP",
@@ -65,7 +67,7 @@
       ]
     },
     {
-      "chunk_id": "QT_11_CC_02",
+      "chunk_id": 2,
       "section_title": "Thời hạn giải quyết",
       "content": "- Tiếp nhận hồ sơ: Trong ngày làm việc\n- Thụ lý hồ sơ: 02 ngày làm việc\n- Xác minh điều kiện tham dự: 02 ngày làm việc\n- Thông báo kết quả: 01 ngày làm việc\n\nTổng thời gian giải quyết: 05 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bổ sung trong 03 ngày làm việc.\n\nKết quả: Sở Tư pháp thông báo bằng văn bản cho người đăng ký về việc đủ điều kiện đề nghị Bộ Tư pháp tổ chức kiểm tra.",
       "source_reference": "Thông tư số 06/2025/TT-BTP",
@@ -79,7 +81,7 @@
       ]
     },
     {
-      "chunk_id": "QT_11_CC_03",
+      "chunk_id": 3,
       "section_title": "Đối tượng thực hiện và Cơ quan có thẩm quyền",
       "content": "Đối tượng thực hiện thủ tục:\n- Người tập sự hành nghề công chứng đã hoàn thành thời gian tập sự\n- Có báo cáo kết quả tập sự và sổ nhật ký tập sự đạt yêu cầu\n- Đã nộp phí thẩm định tiêu chuẩn, điều kiện hành nghề công chứng\n- Không thuộc các trường hợp bị cấm tham dự kiểm tra\n\nCơ quan có thẩm quyền giải quyết:\n- Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương nơi đăng ký tập sự\n\nCác trường hợp không được tham dự kiểm tra:\n- Sao chép báo cáo, sổ nhật ký của người khác\n- Có hành vi gian dối, không trung thực\n- Đã tham dự 03 kỳ kiểm tra không đạt mà chưa tập sự thêm\n- Thuộc các trường hợp bị cấm hành nghề",
       "source_reference": "Điều 9 Thông tư số 06/2025/TT-BTP",
@@ -92,7 +94,7 @@
       ]
     },
     {
-      "chunk_id": "QT_11_CC_04",
+      "chunk_id": 4,
       "section_title": "Kết quả thực hiện và Lệ phí",
       "content": "Kết quả thực hiện thủ tục:\n- Văn bản thông báo của Sở Tư pháp về việc đủ điều kiện tham dự kiểm tra\n- Hồ sơ được chuyển cho Bộ Tư pháp để tổ chức kiểm tra\n\nLệ phí:\n- Phí đăng ký tham dự kiểm tra: Không có\n- Phí thẩm định tiêu chuẩn, điều kiện hành nghề công chứng: Theo quy định của Bộ Tài chính\n\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn bổ sung.\n\nMẫu đơn: Văn bản đề nghị đăng ký tham dự kiểm tra kết quả tập sự hành nghề công chứng.",
       "source_reference": "Thông tư số 06/2025/TT-BTP và Thông tư số 257/2016/TT-BTC",
@@ -105,7 +107,7 @@
       ]
     },
     {
-      "chunk_id": "QT_11_CC_05",
+      "chunk_id": 5,
       "section_title": "Quy trình xử lý chi tiết",
       "content": "Bước 1: Người tập sự nộp hồ sơ đề nghị đăng ký tham dự kiểm tra đến Sở Tư pháp\n\nBước 2: Sở Tư pháp tiếp nhận và kiểm tra hồ sơ:\n- Trường hợp hồ sơ đầy đủ: Tiếp tục xử lý\n- Trường hợp hồ sơ thiếu: Thông báo bổ sung trong 03 ngày\n\nBước 3: Thụ lý hồ sơ và phân công xử lý trong 02 ngày\n\nBước 4: Xác minh điều kiện tham dự kiểm tra:\n- Kiểm tra báo cáo kết quả tập sự và sổ nhật ký\n- Xác minh việc nộp phí thẩm định\n- Kiểm tra các điều kiện không bị cấm tham dự\n- Thẩm tra tính chính xác của hồ sơ\n\nBước 5: Lập báo cáo thẩm tra và trình lãnh đạo phê duyệt\n\nBước 6: Lãnh đạo Sở Tư pháp ký văn bản thông báo đủ điều kiện\n\nBước 7: Chuyển hồ sơ cho Bộ Tư pháp để tổ chức kiểm tra\n\nBước 8: Thông báo kết quả cho người đăng ký\n\nLưu ý: Báo cáo và sổ nhật ký phải là bản gốc, không sao chép của người khác.",
       "source_reference": "Thông tư số 06/2025/TT-BTP",

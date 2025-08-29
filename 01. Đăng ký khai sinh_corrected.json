@@ -1,0 +1,121 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_001/01. Đăng ký khai sinh.doc",
+    "title": "Đăng ký khai sinh kết hợp nhận cha, mẹ, con",
+    "code": "QT 01/CX-HT",
+    "issuing_authority": "UBND cấp xã",
+    "effective_date": "2025-08-29",
+    "executing_agency": "UBND cấp xã nơi cư trú của người cha hoặc người mẹ",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "03 ngày làm việc, trường hợp phải xác minh thì thời hạn giải quyết không quá 08 ngày làm việc",
+    "fee_vnd": 0,
+    "fee_text": "Miễn phí đăng ký khai sinh; lệ phí nhận cha, mẹ, con theo quy định của UBND cấp tỉnh",
+    "has_form": true,
+    "requirements_conditions": "Công dân Việt Nam có con đẻ cần đăng ký khai sinh kết hợp nhận cha, mẹ, con. Trẻ em được sinh ra phải được đăng ký khai sinh trong thời hạn 60 ngày kể từ ngày sinh. Các bên nhận cha, mẹ, con phải thỏa thuận thống nhất.",
+    "legal_basis_references": [
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
+      "Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến Luật Hộ tịch",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch",
+      "Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương cấp tỉnh và cấp huyện trong lĩnh vực hộ tịch",
+      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch",
+      "Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của các Thông tư trong lĩnh vực hộ tịch",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương cấp tỉnh và cấp huyện trong lĩnh vực hộ tịch",
+      "Thông tư số 281/2016/TT-BTC ngày 14/11/2016 của Bộ trưởng Bộ Tài chính quy định mức thu, chế độ thu, nộp, quản lý và sử dụng phí khai thác, sử dụng thông tin trong cơ sở dữ liệu hộ tịch",
+      "Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân cấp tỉnh",
+      "Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ (miễn phí)",
+      "online": "0đ (miễn phí)",
+      "description": "Đăng ký khai sinh được miễn phí theo quy định"
+    },
+    "exemptions": [
+      "Đăng ký khai sinh đúng hạn",
+      "Người thuộc hộ nghèo",
+      "Người cao tuổi",
+      "Người khuyết tật",
+      "Người có công với cách mạng",
+      "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn"
+    ],
+    "additional_fees": [
+      {
+        "name": "Nhận cha, mẹ, con",
+        "direct": "15.000đ",
+        "online": "7.500đ",
+        "description": "Lệ phí đăng ký nhận cha, mẹ, con"
+      },
+      {
+        "name": "Cấp bản sao",
+        "direct": "8.000đ/bản",
+        "online": "8.000đ/bản",
+        "description": "Phí cấp bản sao Giấy khai sinh, Trích lục"
+      }
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "**Thành phần hồ sơ gồm:**\n\n**1. Tờ khai đăng ký khai sinh theo mẫu quy định**\n\n**2. Bản chính Giấy chứng sinh**\n- Trường hợp không có Giấy chứng sinh thì nộp văn bản của người làm chứng xác nhận về việc sinh\n- Trường hợp người yêu cầu đã nộp bản điện tử Giấy chứng sinh hoặc cơ quan đăng ký hộ tịch đã khai thác được dữ liệu thì không cần nộp\n\n**3. Văn bản của cơ quan y tế, cơ quan giám định hoặc cơ quan khác có thẩm quyền xác nhận quan hệ cha con, quan hệ mẹ con**\n- Trường hợp không có văn bản nêu trên thì các bên nhận cha, mẹ, con lập văn bản cam đoan về mối quan hệ cha, mẹ, con theo quy định\n\n**4. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu**\n\n**5. Giấy tờ có giá trị chứng minh thông tin về cư trú trong trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin về nơi cư trú của công dân theo các phương thức quy định**\n\n**Số lượng hồ sơ:** 01 bộ",
+      "source_reference": "Điều 16 Luật Hộ tịch năm 2014 và Điều 4 Thông tư số 04/2020/TT-BTP",
+      "keywords": [
+        "hồ sơ",
+        "tờ khai",
+        "giấy chứng sinh",
+        "giấy tờ tùy thân",
+        "nhận cha mẹ con",
+        "đăng ký khai sinh"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "**Thời hạn giải quyết:**\n- 03 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ\n- Trường hợp phải xác minh thì thời hạn giải quyết không quá 08 ngày làm việc\n\n**Thời hạn đăng ký:**\n- Trong 60 ngày kể từ ngày sinh\n- Quá thời hạn: Phải có lý do chính đáng và được UBND cấp xã xác nhận\n\n**Thời hạn nhận cha, mẹ, con:**\n- Có thể thực hiện cùng lúc với đăng ký khai sinh hoặc sau khi đã đăng ký khai sinh",
+      "source_reference": "Điều 17 Luật Hộ tịch năm 2014",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "đăng ký",
+        "xác minh",
+        "ngày làm việc"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Cơ quan thực hiện",
+      "content": "**Cơ quan có thẩm quyền:**\n- UBND cấp xã nơi cư trú của người cha hoặc người mẹ thực hiện đăng ký khai sinh kết hợp nhận cha, mẹ, con\n\n**Đối tượng thực hiện:**\n- Cha, mẹ hoặc người giám hộ của trẻ em\n- Người phát hiện trẻ bị bỏ rơi\n- Cá nhân, tổ chức nhận nuôi con nuôi\n\n**Người tiếp nhận hồ sơ:**\n- Công chức Tư pháp - Hộ tịch cấp xã\n- Công chức được ủy quyền tiếp nhận hồ sơ tại Bộ phận Một cửa hoặc Trung tâm Phục vụ hành chính công",
+      "source_reference": "Điều 14, 15 Luật Hộ tịch năm 2014",
+      "keywords": [
+        "cơ quan",
+        "UBND cấp xã",
+        "đối tượng",
+        "thẩm quyền",
+        "công chức tư pháp"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Trình tự thực hiện",
+      "content": "**Các bước thực hiện:**\n\n**1. Tiếp nhận hồ sơ:**\n- Người yêu cầu nộp hồ sơ trực tiếp tại UBND cấp xã hoặc qua dịch vụ công trực tuyến\n- Công chức kiểm tra tính đầy đủ, hợp lệ của hồ sơ\n- Khai thác thông tin từ Cơ sở dữ liệu quốc gia về dân cư (CSDLQGVDC)\n\n**2. Xử lý hồ sơ:**\n- Thẩm tra, xác minh thông tin (nếu cần thiết)\n- Ghi vào Sổ đăng ký khai sinh và Sổ đăng ký nhận cha, mẹ, con\n- Cấp Giấy khai sinh và Trích lục đăng ký nhận cha, mẹ, con\n\n**3. Trả kết quả:**\n- Trả trực tiếp tại UBND cấp xã hoặc gửi qua đường bưu điện\n- Thông báo kết quả qua tin nhắn, email (nếu có yêu cầu)",
+      "source_reference": "Điều 5 Thông tư số 04/2020/TT-BTP",
+      "keywords": ["trình tự", "tiếp nhận", "xử lý", "trả kết quả", "các bước"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Lệ phí và kết quả",
+      "content": "**Kết quả thực hiện:**\n- Giấy khai sinh (bản chính)\n- Trích lục đăng ký nhận cha, mẹ, con (bản chính)\n- Bản sao Giấy khai sinh và Trích lục (nếu có yêu cầu)\n\n**Mức thu lệ phí:**\n- **Đăng ký khai sinh:** Miễn phí\n- **Nhận cha, mẹ, con:** 15.000 đồng (trực tiếp), 7.500 đồng (trực tuyến)\n- **Cấp bản sao:** 8.000 đồng/bản\n\n**Các trường hợp miễn, giảm lệ phí:**\n- Người thuộc hộ nghèo, người cao tuổi, người khuyết tật\n- Người có công với cách mạng\n- Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn\n- Đăng ký khai sinh đúng hạn",
+      "source_reference": "Điều 5 Luật Phí và lệ phí năm 2015 và Thông tư số 85/2019/TT-BTC",
+      "keywords": [
+        "kết quả",
+        "lệ phí",
+        "giấy khai sinh",
+        "trích lục",
+        "miễn phí",
+        "phí"
+      ]
+    }
+  ]
+}

@@ -37,7 +37,7 @@
   },
   "content_chunks": [
     {
-      "chunk_id": "QT_12_CC_01",
+      "chunk_id": 1,
       "section_title": "Thành phần hồ sơ",
       "content": "1. Văn bản đề nghị cấp thẻ công chứng viên\n2. Bản chính hoặc bản sao có chứng thực Quyết định bổ nhiệm hoặc bổ nhiệm lại công chứng viên kèm theo 02 ảnh chân dung\n3. Bản chính hoặc bản sao có chứng thực Giấy tờ chứng minh công chứng viên là hội viên Hội công chứng viên Việt Nam\n4. Đối với công chứng viên của Văn phòng công chứng: Hồ sơ đề nghị cấp thẻ được bao gồm trong hồ sơ đề nghị đăng ký hoạt động hoặc hồ sơ đề nghị thay đổi nội dung đăng ký hoạt động\n5. Các tài liệu khác chứng minh đủ điều kiện cấp thẻ\n\nLưu ý: Hồ sơ có thể nộp trực tiếp, qua dịch vụ bưu chính hoặc trực tuyến. Trường hợp nộp trực tuyến, các thông tin được khai thác từ Cơ sở dữ liệu quốc gia về dân cư.",
       "source_reference": "Thông tư số 06/2025/TT-BTP",
@@ -50,7 +50,7 @@
       ]
     },
     {
-      "chunk_id": "QT_12_CC_02",
+      "chunk_id": 2,
       "section_title": "Thời hạn giải quyết",
       "content": "- Tiếp nhận hồ sơ: Trong ngày làm việc\n- Thụ lý hồ sơ: 01 ngày làm việc\n- Xác minh điều kiện: 02 ngày làm việc\n- Cấp thẻ: 02 ngày làm việc\n\nTổng thời gian giải quyết: 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bổ sung trong 03 ngày làm việc.\n\nKết quả: Sở Tư pháp ra quyết định và cấp thẻ cho công chứng viên.",
       "source_reference": "Thông tư số 06/2025/TT-BTP",
@@ -64,7 +64,7 @@
       ]
     },
     {
-      "chunk_id": "QT_12_CC_03",
+      "chunk_id": 3,
       "section_title": "Đối tượng thực hiện và Cơ quan có thẩm quyền",
       "content": "Đối tượng thực hiện thủ tục:\n- Công chứng viên được bổ nhiệm hoặc bổ nhiệm lại theo quy định\n- Công chứng viên của Phòng công chứng hoặc Văn phòng công chứng\n- Phải là hội viên của Hội công chứng viên Việt Nam\n- Đáp ứng các điều kiện về nhân thân và phẩm chất đạo đức\n\nCơ quan có thẩm quyền giải quyết:\n- Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương nơi công chứng viên hành nghề\n\nĐiều kiện cấp thẻ:\n- Đã được bổ nhiệm công chứng viên theo quy định\n- Có quyết định thành lập Văn phòng công chứng (đối với công chứng viên Văn phòng)\n- Là hội viên Hội công chứng viên Việt Nam\n- Không thuộc trường hợp bị cấm hành nghề",
       "source_reference": "Điều 25 Luật Công chứng",
@@ -77,7 +77,7 @@
       ]
     },
     {
-      "chunk_id": "QT_12_CC_04",
+      "chunk_id": 4,
       "section_title": "Kết quả thực hiện và Lệ phí",
       "content": "Kết quả thực hiện thủ tục:\n- Thẻ công chứng viên\n- Quyết định cấp thẻ công chứng viên\n\nLệ phí:\n- Phí cấp thẻ công chứng viên theo quy định của Bộ Tài chính\n- Mức phí cụ thể theo Thông tư số 257/2016/TT-BTC\n\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn bổ sung.\n\nMẫu đơn: Văn bản đề nghị cấp thẻ công chứng viên.",
       "source_reference": "Thông tư số 257/2016/TT-BTC",
@@ -90,7 +90,7 @@
       ]
     },
     {
-      "chunk_id": "QT_12_CC_05",
+      "chunk_id": 5,
       "section_title": "Quy trình xử lý chi tiết",
       "content": "Bước 1: Công chứng viên nộp hồ sơ đề nghị cấp thẻ đến Sở Tư pháp\n\nBước 2: Sở Tư pháp tiếp nhận và kiểm tra hồ sơ:\n- Trường hợp hồ sơ đầy đủ: Tiếp tục xử lý\n- Trường hợp hồ sơ thiếu: Thông báo bổ sung trong 03 ngày\n\nBước 3: Thụ lý hồ sơ và phân công xử lý trong 01 ngày\n\nBước 4: Xác minh điều kiện cấp thẻ:\n- Kiểm tra quyết định bổ nhiệm công chứng viên\n- Xác minh tư cách hội viên Hội công chứng viên\n- Kiểm tra các điều kiện về nhân thân, phẩm chất\n- Thẩm tra tính chính xác của hồ sơ\n\nBước 5: Lập báo cáo thẩm tra và trình lãnh đạo phê duyệt\n\nBước 6: Lãnh đạo Sở Tư pháp ký quyết định cấp thẻ\n\nBước 7: In thẻ công chứng viên và trao cho công chứng viên\n\nBước 8: Thông báo kết quả và lưu hồ sơ\n\nLưu ý: Thẻ công chứng viên có giá trị sử dụng trong phạm vi cả nước.",
       "source_reference": "Thông tư số 06/2025/TT-BTP",

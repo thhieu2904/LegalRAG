@@ -1,114 +1,169 @@
 {
   "metadata": {
-    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/ho_tich_cap_xa_moi_nhat/30. Đăng ký khai sinh lưu động.doc",
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_030/30. Đăng ký khai sinh lưu động.doc",
     "title": "Đăng ký khai sinh lưu động",
-    "code": "QT 30/CX-HCTP",
-    "issuing_authority": "Sở Tư pháp",
+    "code": "QT 30/CX-HT",
+    "issuing_authority": "Ủy ban nhân dân cấp xã",
     "effective_date": "2025-07-07",
-    "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ.",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ",
     "applicant_type": ["Cá nhân"],
-    "processing_time_text": "05 ngày làm việc.",
-    "fee_vnd": null,
-    "fee_text": "Miễn lệ phí đối với trường hợp đăng ký khai sinh đúng hạn. Trường hợp không đúng hạn, lệ phí là 8.000đ hoặc 5.000đ tùy khu vực. Phí cấp bản sao: 5.000đ/bản. Có các trường hợp được miễn lệ phí khác.",
-    "fee_structure": {
-      "main_fee": {
-        "direct": "8.000đ",
-        "description": "Đăng ký khai sinh không đúng hạn (áp dụng tại 32 xã, phường tại Phụ lục 1). Miễn lệ phí cho đăng ký đúng hạn."
-      },
-      "regional_fees": [
-        {
-          "area": "Tại tỉnh Sóc Trăng cũ",
-          "direct": "5.000đ",
-          "description": "Đăng ký khai sinh không đúng hạn"
-        },
-        {
-          "area": "Tại 28 xã, phường",
-          "direct": "5.000đ/bản sao",
-          "description": "Phí cấp bản sao/sự kiện hộ tịch đã đăng ký"
-        }
-      ],
-      "exemptions": [
-        "Đăng ký khai sinh đúng hạn",
-        "Người thuộc gia đình có công với cách mạng",
-        "Người thuộc hộ nghèo",
-        "Người khuyết tật",
-        "Trẻ em (tại tỉnh Sóc Trăng cũ)",
-        "Người cao tuổi (tại tỉnh Sóc Trăng cũ)",
-        "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tại tỉnh Sóc Trăng cũ)",
-        "Người có công với cách mạng (tại 28 xã, phường)",
-        "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tại 28 xã, phường)"
-      ],
-      "additional_fees": {}
-    },
+    "processing_time_text": "05 ngày làm việc",
+    "fee_vnd": 8000,
+    "fee_text": "8.000 đồng (đăng ký khai sinh không đúng hạn); 5.000 đồng (tỉnh Sóc Trăng cũ). Miễn lệ phí đối với trường hợp khai sinh đúng hạn, người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật; trẻ em; người cao tuổi; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
     "has_form": true,
-    "requirements_conditions": "Áp dụng cho trẻ em sinh ra mà cha mẹ thuộc một trong các trường hợp sau:\n- Bị khuyết tật, ốm bệnh không thể đi đăng ký khai sinh cho con.\n- Bị bắt, tạm giam hoặc đang thi hành án phạt tù mà không còn ông bà nội, ngoại và người thân thích khác, hoặc những người này không có điều kiện đi đăng ký khai sinh cho trẻ.",
+    "requirements_conditions": "Trẻ em sinh ra mà cha mẹ bị khuyết tật, ốm bệnh không thể đi đăng ký khai sinh cho con; cha mẹ bị bắt, tạm giam hoặc đang thi hành án phạt tù mà không còn ông bà nội, ngoại và người thân thích khác hoặc những người này không có điều kiện đi đăng ký khai sinh cho trẻ",
     "legal_basis_references": [
       "Luật Hộ tịch năm 2014",
-      "Nghị định số 123/2015/NĐ-CP",
-      "Nghị định số 104/2022/NĐ-CP",
-      "Nghị định số 07/2025/NĐ-CP",
-      "Nghị định số 120/2025/NĐ-CP",
-      "Thông tư số 04/2020/TT-BTP",
-      "Thông tư số 04/2024/TT-BTP",
-      "Thông tư số 08/2025/TT-BTP",
-      "Thông tư số 85/2019/TT-BTC",
-      "Thông tư số 106/2021/TT-BTC",
-      "Nghị quyết số 10/2022/NQ-HĐND",
-      "Nghị quyết số 12/2023/NQ-HĐND",
-      "Nghị quyết số 04/2023/NQ-HĐND"
+      "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
+      "Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy chứng nhận",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực",
+      "Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp",
+      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP",
+      "Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP và Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch",
+      "Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương",
+      "Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND ngày 09/12/2022 của Hội đồng nhân dân thành phố Cần Thơ sửa đổi, bổ sung một số điều của Nghị quyết số 03/2017/NQ-HĐND",
+      "Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng",
+      "Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang"
     ]
+  },
+  "fee_structure": {
+    "base_fee": 8000,
+    "additional_fees": [
+      {
+        "name": "Phí cấp bản sao Giấy khai sinh",
+        "amount": 5000,
+        "description": "5.000 đồng/bản sao/sự kiện hộ tịch đã đăng ký"
+      }
+    ],
+    "exemptions": [
+      {
+        "condition": "Đăng ký khai sinh đúng hạn",
+        "description": "Miễn lệ phí hoàn toàn"
+      },
+      {
+        "condition": "Người thuộc gia đình có công với cách mạng",
+        "description": "Miễn lệ phí hoàn toàn"
+      },
+      {
+        "condition": "Người thuộc hộ nghèo",
+        "description": "Miễn lệ phí hoàn toàn"
+      },
+      {
+        "condition": "Người khuyết tật",
+        "description": "Miễn lệ phí hoàn toàn"
+      },
+      {
+        "condition": "Trẻ em",
+        "description": "Miễn lệ phí đối với trường hợp đăng ký hộ tịch cho trẻ em"
+      },
+      {
+        "condition": "Người cao tuổi",
+        "description": "Miễn lệ phí"
+      },
+      {
+        "condition": "Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+        "description": "Miễn lệ phí"
+      }
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": false,
+    "electronic_form_description": "",
+    "has_paper_form": true,
+    "paper_form_description": "Tờ khai đăng ký khai sinh theo mẫu (nộp trực tiếp tại Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ)"
   },
   "content_chunks": [
     {
       "chunk_id": 1,
-      "section_title": "Thành phần, số lượng hồ sơ",
-      "content": "Người yêu cầu cần chuẩn bị 01 bộ hồ sơ, bao gồm:\n\n**A. GIẤY TỜ PHẢI NỘP:**\n1. Tờ khai đăng ký khai sinh theo mẫu.\n2. Bản chính Giấy chứng sinh. Nếu không có, nộp văn bản của người làm chứng hoặc giấy cam đoan về việc sinh.\n3. Văn bản xác nhận của cơ sở y tế (trường hợp khai sinh cho trẻ sinh ra do mang thai hộ).\n\n**B. GIẤY TỜ PHẢI XUẤT TRÌNH:**\n1. Giấy tờ tùy thân còn giá trị sử dụng của người yêu cầu (Hộ chiếu, Căn cước công dân...).\n2. Giấy tờ chứng minh thông tin về nơi cư trú (nếu CSDLQGVDC không có).\n3. Giấy chứng nhận kết hôn của cha, mẹ (nếu đã đăng ký kết hôn và thông tin chưa có trên CSDL).",
-      "source_reference": "Mục 5.a",
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Tờ khai đăng ký khai sinh theo mẫu\n2. Bản chính Giấy chứng sinh; trường hợp không có Giấy chứng sinh thì nộp văn bản của người làm chứng xác nhận về việc sinh; nếu không có người làm chứng thì phải có giấy cam đoan về việc sinh. Trường hợp người yêu cầu đã nộp bản điện tử Giấy chứng sinh hoặc cơ quan đăng ký hộ tịch đã khai thác được dữ liệu điện tử có ký số của Giấy chứng sinh thì không phải nộp bản giấy\n3. Trường hợp khai sinh cho trẻ em sinh ra do mang thai hộ phải có văn bản xác nhận của cơ sở y tế đã thực hiện kỹ thuật hỗ trợ sinh sản cho việc mang thai hộ\n4. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu đăng ký khai sinh\n5. Giấy tờ có giá trị chứng minh thông tin về cư trú trong trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin về nơi cư trú của công dân theo các phương thức quy định tại khoản 2 Điều 14 Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ. Trường hợp các thông tin về giấy tờ chứng minh nơi cư trú đã được khai thác từ CSDLQGVDC bằng các phương thức này thì người yêu cầu không phải xuất trình\n6. Giấy chứng nhận kết hôn nếu cha, mẹ đã đăng ký kết hôn. Trường hợp đã có thông tin về việc kết hôn của cha, mẹ trong CSDLHTĐT, CSDLQGVDC thì không phải xuất trình",
+      "source_reference": "QT 30/CX-HT - Chunk 1",
       "keywords": [
         "hồ sơ",
-        "giấy tờ",
-        "khai sinh lưu động",
         "tờ khai",
         "giấy chứng sinh",
-        "cam đoan"
+        "văn bản xác nhận",
+        "giấy cam đoan",
+        "mang thai hộ",
+        "giấy tờ nhân thân",
+        "giấy tờ cư trú",
+        "giấy chứng nhận kết hôn",
+        "đăng ký khai sinh lưu động",
+        "khuyết tật",
+        "ốm bệnh",
+        "bị bắt",
+        "tạm giam",
+        "thi hành án"
       ]
     },
     {
       "chunk_id": 2,
-      "section_title": "Thời hạn giải quyết",
-      "content": "05 ngày làm việc.",
-      "source_reference": "Mục 5.b",
-      "keywords": ["thời hạn", "giải quyết", "5 ngày"]
+      "section_title": "Cơ quan thực hiện thủ tục",
+      "content": "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ có thẩm quyền đăng ký khai sinh lưu động. Công chức tư pháp - hộ tịch tiếp nhận hồ sơ và tham mưu cho lãnh đạo Ủy ban nhân dân cấp xã quyết định. Cơ quan quản lý Cơ sở dữ liệu quốc gia về dân cư phối hợp cung cấp thông tin.",
+      "source_reference": "QT 30/CX-HT - Chunk 2",
+      "keywords": [
+        "cơ quan",
+        "Ủy ban nhân dân cấp xã",
+        "công chức tư pháp",
+        "thẩm quyền",
+        "đăng ký khai sinh lưu động",
+        "Cơ sở dữ liệu quốc gia về dân cư"
+      ]
     },
     {
       "chunk_id": 3,
-      "section_title": "Yêu cầu, điều kiện thực hiện",
-      "content": "Thủ tục này áp dụng cho trẻ em sinh ra mà cha mẹ bị khuyết tật, ốm bệnh không thể đi đăng ký khai sinh cho con; hoặc trường hợp cha mẹ bị bắt, tạm giam hoặc đang thi hành án phạt tù mà không còn ông bà nội, ngoại và người thân thích khác (hoặc những người này không có điều kiện) để đi đăng ký khai sinh cho trẻ.",
-      "source_reference": "Mục 5.i",
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc.",
+      "source_reference": "QT 30/CX-HT - Chunk 3",
       "keywords": [
-        "điều kiện",
-        "yêu cầu",
-        "lưu động",
-        "khuyết tật",
-        "ốm bệnh",
-        "thi hành án phạt tù"
+        "thời hạn",
+        "giải quyết",
+        "ngày làm việc",
+        "đăng ký khai sinh lưu động"
       ]
     },
     {
       "chunk_id": 4,
-      "section_title": "Quy trình xử lý công việc",
-      "content": "**Thời gian:** 05 ngày làm việc.\n**Các bước thực hiện:**\n1. **Tiếp nhận hồ sơ và kiểm tra tính pháp lý:** Công chức Tư pháp - Hộ tịch tiếp nhận, kiểm tra hồ sơ (3 ngày). Nếu chưa phù hợp thì hướng dẫn làm lại hồ sơ.\n2. **Xem xét hồ sơ:** Công chức Tư pháp - Hộ tịch xem xét hồ sơ (1 ngày).\n3. **Ký duyệt hồ sơ:** Lãnh đạo UBND ký duyệt (½ ngày).\n4. **Đóng dấu văn bản:** Văn thư UBND đóng dấu (½ ngày).\n5. **Ghi sổ và trả kết quả:** Công chức Tư pháp - Hộ tịch ghi sổ và trả kết quả (½ ngày).\n\n*Ghi chú: Các bước có thể tăng hoặc giảm tùy theo đặc điểm của thủ tục nhưng đảm bảo tổng thời gian không quá quy định pháp luật.",
-      "source_reference": "Mục 5.l",
+      "section_title": "Lệ phí",
+      "content": "8.000 đồng (đăng ký khai sinh không đúng hạn); 5.000 đồng (tỉnh Sóc Trăng cũ). Miễn lệ phí đối với trường hợp khai sinh đúng hạn, người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật; trẻ em; người cao tuổi; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn. Phí cấp bản sao Giấy khai sinh: 5.000 đồng/bản sao/sự kiện hộ tịch đã đăng ký.",
+      "source_reference": "QT 30/CX-HT - Chunk 4",
       "keywords": [
-        "quy trình",
-        "các bước",
-        "thời gian",
-        "tiếp nhận",
-        "thẩm tra",
-        "ký duyệt",
-        "đóng dấu",
-        "ghi sổ",
-        "trả kết quả"
+        "phí",
+        "lệ phí",
+        "miễn phí",
+        "bản sao",
+        "đăng ký khai sinh lưu động",
+        "không đúng hạn",
+        "đúng hạn"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục",
+      "content": "Giấy khai sinh (bản chính).",
+      "source_reference": "QT 30/CX-HT - Chunk 5",
+      "keywords": [
+        "kết quả",
+        "giấy khai sinh",
+        "bản chính",
+        "đăng ký khai sinh lưu động"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Văn bản pháp luật viện dẫn",
+      "content": "Luật Hộ tịch năm 2014; Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch; Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy chứng nhận; Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực; Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp; Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP; Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP và Thông tư số 04/2020/TT-BTP; Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch; Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương; Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC; Nghị quyết số 10/2022/NQ-HĐND ngày 09/12/2022 của Hội đồng nhân dân thành phố Cần Thơ sửa đổi, bổ sung một số điều của Nghị quyết số 03/2017/NQ-HĐND; Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng; Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang.",
+      "source_reference": "QT 30/CX-HT - Chunk 6",
+      "keywords": [
+        "pháp luật",
+        "luật",
+        "nghị định",
+        "thông tư",
+        "nghị quyết",
+        "hộ tịch",
+        "đăng ký khai sinh lưu động"
       ]
     }
   ]

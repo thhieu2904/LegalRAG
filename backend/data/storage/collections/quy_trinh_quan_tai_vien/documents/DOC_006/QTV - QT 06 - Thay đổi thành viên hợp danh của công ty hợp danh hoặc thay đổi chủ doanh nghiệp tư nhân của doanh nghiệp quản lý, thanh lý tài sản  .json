@@ -1,1 +1,112 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_quan_tai_vien/DOC_006/QTV - QT 06 - Thay đổi thành viên hợp danh của công ty hợp danh hoặc thay đổi chủ doanh nghiệp tư nhân của doanh nghiệp quản lý, thanh lý tài sản  .doc",
+    "title": "Thay đổi thành viên hợp danh của công ty hợp danh hoặc thay đổi chủ doanh nghiệp tư nhân của doanh nghiệp quản lý, thanh lý tài sản",
+    "code": "QT 06/QTV",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ],
+    "processing_time_text": "15 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 1000000,
+    "fee_text": "1.000.000đ (theo quy định)",
+    "has_form": true,
+    "requirements_conditions": "",
+    "legal_basis_references": [
+      "Luật Phá sản năm 2014",
+      "Luật Doanh nghiệp năm 2020",
+      "Nghị định số 22/2015/NĐ-CP",
+      "Nghị định số 112/2025/NĐ-CP"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "1.000.000đ",
+      "online": "1.000.000đ",
+      "description": "Lệ phí thay đổi thành viên/chủ doanh nghiệp"
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Điều kiện và trường hợp thay đổi",
+      "content": "Trường hợp được thay đổi:\n\n1. Thay đổi thành viên hợp danh của công ty hợp danh quản lý, thanh lý tài sản\n\n2. Thay đổi chủ doanh nghiệp tư nhân quản lý, thanh lý tài sản\n\n3. Thành viên hợp danh mới hoặc chủ doanh nghiệp mới phải đáp ứng các điều kiện:\n   - Có chứng chỉ hành nghề quản tài viên còn hiệu lực\n   - Có năng lực hành vi dân sự đầy đủ\n   - Không thuộc trường hợp bị cấm hành nghề\n   - Có phẩm chất đạo đức tốt, liêm khiết\n\nĐiều kiện thay đổi:\n- Phải có quyết định của doanh nghiệp về việc thay đổi\n- Thành viên/chủ mới phải đáp ứng đầy đủ điều kiện hành nghề\n- Không làm thay đổi vốn điều lệ tối thiểu 5 tỷ đồng\n- Vẫn đảm bảo có ít nhất 3 thành viên hợp danh hoặc 1 chủ doanh nghiệp\n\nCơ quan có thẩm quyền: Sở Tư pháp nơi doanh nghiệp đăng ký hành nghề",
+      "source_reference": "Điều 26 Luật Phá sản năm 2014",
+      "keywords": [
+        "thành viên hợp danh",
+        "chủ doanh nghiệp",
+        "điều kiện",
+        "quyết định",
+        "vốn điều lệ",
+        "sở tư pháp"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thành phần hồ sơ thay đổi",
+      "content": "Hồ sơ gồm các giấy tờ sau:\n\n1. Đơn đề nghị thay đổi thành viên/chủ doanh nghiệp theo mẫu TP-QTV-06\n\n2. Quyết định của doanh nghiệp về việc thay đổi thành viên/chủ doanh nghiệp\n\n3. Biên bản họp của Hội đồng thành viên (đối với công ty hợp danh)\n\n4. Giấy tờ chứng minh thành viên/chủ mới đáp ứng điều kiện:\n   - Bản sao chứng chỉ hành nghề quản tài viên\n   - Lý lịch tư pháp (trong thời hạn 6 tháng)\n   - Giấy khám sức khỏe (trong thời hạn 6 tháng)\n   - Giấy tờ chứng minh không thuộc trường hợp bị cấm\n\n5. Giấy chứng nhận đăng ký thuế của thành viên/chủ mới\n\n6. Giấy tờ chứng minh vốn góp (đối với thành viên hợp danh mới)\n\n7. Danh sách quản tài viên hành nghề sau khi thay đổi\n\n8. Văn bản xác nhận của Sở Kế hoạch và Đầu tư về thay đổi đăng ký doanh nghiệp\n\nSố lượng hồ sơ: 01 bộ bản chính",
+      "source_reference": "Điều 27 Nghị định số 112/2025/NĐ-CP",
+      "keywords": [
+        "đơn đề nghị",
+        "quyết định",
+        "biên bản họp",
+        "chứng chỉ",
+        "lý lịch tư pháp",
+        "vốn góp"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Quy trình xét duyệt thay đổi",
+      "content": "Quy trình xử lý hồ sơ:\n\n1. Tiếp nhận hồ sơ: Kiểm tra tính đầy đủ, hợp lệ của hồ sơ\n\n2. Thẩm định hồ sơ: Xác minh thông tin về thành viên/chủ mới\n\n3. Xem xét điều kiện: Kiểm tra đáp ứng điều kiện hành nghề\n\n4. Thông báo kết quả: Thông báo bằng văn bản về việc chấp thuận hoặc từ chối\n\n5. Cấp quyết định thay đổi: Ban hành quyết định phê duyệt thay đổi\n\n6. Cập nhật giấy đăng ký: Cấp giấy đăng ký hành nghề mới\n\n7. Đăng tải thông tin: Cập nhật thông tin trên Cổng thông tin điện tử\n\nThời hạn xử lý: 15 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ\n\nTrường hợp từ chối: Thông báo bằng văn bản và nêu rõ lý do\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bổ sung trong thời hạn 05 ngày làm việc\n\nLưu ý: Có thể yêu cầu xác minh thông tin tại Sở Kế hoạch và Đầu tư",
+      "source_reference": "Điều 28 Thông tư số 06/2016/TT-BTP",
+      "keywords": [
+        "thẩm định",
+        "thông báo",
+        "quyết định",
+        "cập nhật",
+        "thời hạn",
+        "bổ sung"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Hiệu lực và quyền lợi sau thay đổi",
+      "content": "Hiệu lực của thay đổi:\n\n- Quyết định thay đổi có hiệu lực kể từ ngày ký\n- Giấy đăng ký hành nghề mới có hiệu lực kể từ ngày cấp\n- Thông tin được cập nhật trên Cổng thông tin điện tử\n\nQuyền lợi của doanh nghiệp sau thay đổi:\n\n- Tiếp tục được hành nghề quản lý, thanh lý tài sản\n- Được chỉ định làm doanh nghiệp quản lý, thanh lý trong các vụ việc\n- Được hưởng đầy đủ quyền lợi theo quy định pháp luật\n- Thành viên/chủ mới được tham gia hoạt động hành nghề\n\nNghĩa vụ sau thay đổi:\n\n- Tuân thủ quy định pháp luật về hành nghề\n- Báo cáo hoạt động định kỳ\n- Tham gia đào tạo, bồi dưỡng kiến thức\n- Chấp hành quy định về thuế, bảo hiểm\n- Bảo mật thông tin trong quá trình hành nghề\n\nLưu ý: Thành viên/chủ cũ vẫn chịu trách nhiệm về các hành vi đã thực hiện trước khi thay đổi",
+      "source_reference": "Điều 29 Nghị định số 22/2015/NĐ-CP",
+      "keywords": [
+        "hiệu lực",
+        "quyền lợi",
+        "nghĩa vụ",
+        "báo cáo",
+        "đào tạo",
+        "trách nhiệm"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Giám sát và xử lý vi phạm",
+      "content": "Chế độ giám sát sau thay đổi:\n\n1. Báo cáo hoạt động định kỳ 6 tháng/lần\n\n2. Báo cáo về việc thay đổi thành viên/chủ doanh nghiệp\n\n3. Có thể bị kiểm tra, thanh tra hoạt động hành nghề\n\n4. Phải tuân thủ quy tắc đạo đức nghề nghiệp\n\nXử lý vi phạm:\n\n1. Cảnh cáo đối với vi phạm nhẹ\n\n2. Tạm ngừng hành nghề từ 1-12 tháng\n\n3. Thu hồi giấy đăng ký hành nghề\n\n4. Xử phạt vi phạm hành chính theo quy định\n\nCác trường hợp bị xử lý:\n\n- Thành viên/chủ mới không đáp ứng điều kiện\n- Vi phạm quy định pháp luật trong quá trình hành nghề\n- Không báo cáo thay đổi theo quy định\n- Làm ảnh hưởng đến uy tín của nghề nghiệp\n\nQuyền khiếu nại: Theo quy định của Luật Khiếu nại, thời hạn 90 ngày\n\nLưu ý: Việc thay đổi phải được thực hiện công khai, minh bạch",
+      "source_reference": "Điều 30 Luật Phá sản năm 2014",
+      "keywords": [
+        "giám sát",
+        "xử lý vi phạm",
+        "cảnh cáo",
+        "thu hồi",
+        "khiếu nại",
+        "công khai"
+      ]
+    }
+  ],
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu điện tử tương tác (được sử dụng khi nộp hồ sơ theo hình thức trực tuyến)",
+    "has_paper_form": true,
+    "paper_form_description": "Mẫu giấy theo quy định (được sử dụng khi nộp hồ sơ theo hình thức trực tiếp)"
+  }
+}

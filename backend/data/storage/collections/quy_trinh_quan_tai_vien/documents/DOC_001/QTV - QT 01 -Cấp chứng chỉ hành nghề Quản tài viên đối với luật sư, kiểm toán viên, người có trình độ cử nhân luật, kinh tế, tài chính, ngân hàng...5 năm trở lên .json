@@ -1,1 +1,112 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_quan_tai_vien/DOC_001/QTV - QT 01 -Cấp chứng chỉ hành nghề Quản tài viên đối với luật sư, kiểm toán viên, người có trình độ cử nhân luật, kinh tế, tài chính, ngân hàng...5 năm trở lên .doc",
+    "title": "Cấp chứng chỉ hành nghề Quản tài viên đối với luật sư, kiểm toán viên, người có trình độ cử nhân luật, kinh tế, tài chính, ngân hàng từ 5 năm trở lên",
+    "code": "QT 01/QTV",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ],
+    "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 3000000,
+    "fee_text": "3.000.000đ (theo quy định)",
+    "has_form": true,
+    "requirements_conditions": "",
+    "legal_basis_references": [
+      "Luật Phá sản năm 2014",
+      "Nghị định số 22/2015/NĐ-CP",
+      "Thông tư số 06/2016/TT-BTP",
+      "Luật Luật sư năm 2006"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "3.000.000đ",
+      "online": "3.000.000đ",
+      "description": "Lệ phí cấp chứng chỉ hành nghề quản tài viên"
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Đối tượng và điều kiện được cấp chứng chỉ",
+      "content": "Đối tượng được cấp chứng chỉ hành nghề quản tài viên:\n\n1. Luật sư đang hành nghề tại Việt Nam\n2. Kiểm toán viên có chứng chỉ kiểm toán viên còn hiệu lực\n3. Người có trình độ cử nhân luật, kinh tế, tài chính, ngân hàng trở lên\n4. Có kinh nghiệm công tác trong lĩnh vực pháp luật, tài chính, ngân hàng từ 5 năm trở lên\n\nĐiều kiện chung:\n- Có năng lực hành vi dân sự đầy đủ\n- Có phẩm chất đạo đức tốt, liêm khiết\n- Không thuộc các trường hợp bị cấm hành nghề luật sư, hành nghề quản tài viên\n- Có địa chỉ liên lạc rõ ràng\n\nCơ quan có thẩm quyền: Sở Tư pháp cấp tỉnh, thành phố trực thuộc Trung ương",
+      "source_reference": "Điều 9 Luật Phá sản năm 2014",
+      "keywords": [
+        "luật sư",
+        "kiểm toán viên",
+        "cử nhân luật",
+        "kinh nghiệm",
+        "điều kiện",
+        "sở tư pháp"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thành phần hồ sơ đề nghị cấp chứng chỉ",
+      "content": "Hồ sơ gồm các giấy tờ sau:\n\n1. Đơn đề nghị cấp chứng chỉ hành nghề quản tài viên theo mẫu quy định\n\n2. Bản sao có chứng thực bằng cấp chuyên môn (luật, kinh tế, tài chính, ngân hàng)\n\n3. Bản sao có chứng thực chứng chỉ hành nghề luật sư hoặc chứng chỉ kiểm toán viên (đối với luật sư, kiểm toán viên)\n\n4. Bản sao có chứng thực quyết định tuyển dụng, hợp đồng lao động hoặc các giấy tờ chứng minh kinh nghiệm công tác từ 5 năm trở lên\n\n5. Giấy khám sức khỏe do cơ sở y tế có thẩm quyền cấp (trong thời hạn 6 tháng)\n\n6. Bản sao có chứng thực giấy tờ chứng minh không thuộc trường hợp bị cấm hành nghề\n\n7. Lý lịch tư pháp do cơ quan có thẩm quyền cấp\n\n8. 02 ảnh chân dung 4x6cm nền trắng, chụp trong 6 tháng gần nhất\n\nSố lượng hồ sơ: 01 bộ bản chính",
+      "source_reference": "Điều 10 Nghị định số 22/2015/NĐ-CP",
+      "keywords": [
+        "đơn đề nghị",
+        "bằng cấp",
+        "chứng chỉ",
+        "kinh nghiệm",
+        "giấy khám sức khỏe",
+        "lý lịch tư pháp"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Quy trình xét duyệt hồ sơ",
+      "content": "Quy trình xử lý hồ sơ:\n\n1. Tiếp nhận hồ sơ: Kiểm tra tính đầy đủ, hợp lệ của hồ sơ theo quy định\n\n2. Thẩm định hồ sơ: Thẩm định các điều kiện về trình độ chuyên môn, kinh nghiệm, phẩm chất đạo đức\n\n3. Xem xét hồ sơ: Hội đồng xét cấp chứng chỉ hành nghề quản tài viên xem xét, đánh giá hồ sơ\n\n4. Thông báo kết quả: Thông báo bằng văn bản về việc đủ điều kiện dự thi sát hạch hoặc từ chối cấp chứng chỉ\n\n5. Tổ chức sát hạch: Thi sát hạch kiến thức pháp luật về phá sản, quản tài viên (đối với trường hợp yêu cầu)\n\n6. Ra quyết định: Ban hành quyết định cấp hoặc không cấp chứng chỉ hành nghề\n\nThời hạn xử lý: 30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bằng văn bản nêu rõ nội dung cần bổ sung trong thời hạn 05 ngày làm việc",
+      "source_reference": "Điều 11 Thông tư số 06/2016/TT-BTP",
+      "keywords": [
+        "thẩm định",
+        "hội đồng xét",
+        "sát hạch",
+        "quyết định",
+        "thời hạn",
+        "bổ sung"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Lệ phí và chế độ quản lý chứng chỉ",
+      "content": "Lệ phí cấp chứng chỉ:\n- 3.000.000 đồng/chứng chỉ\n- Nộp tại thời điểm nộp hồ sơ hoặc sau khi có thông báo nộp lệ phí\n\nChế độ quản lý chứng chỉ:\n- Chứng chỉ hành nghề quản tài viên có thời hạn 5 năm\n- Phải gia hạn trước khi hết hạn 3 tháng\n- Có thể bị thu hồi nếu vi phạm quy định pháp luật\n- Phải tham gia đào tạo, bồi dưỡng kiến thức hàng năm\n\nQuyền của quản tài viên:\n- Được đăng ký hành nghề quản lý, thanh lý tài sản\n- Được chỉ định làm quản tài viên trong các vụ việc phá sản\n- Được hưởng thù lao theo quy định pháp luật\n\nNghĩa vụ của quản tài viên:\n- Tuân thủ quy định pháp luật về hành nghề\n- Tham gia đào tạo, bồi dưỡng kiến thức\n- Thực hiện đúng nhiệm vụ được giao",
+      "source_reference": "Điều 12 Nghị định số 22/2015/NĐ-CP",
+      "keywords": [
+        "lệ phí",
+        "chứng chỉ",
+        "gia hạn",
+        "quyền",
+        "nghĩa vụ",
+        "đào tạo"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả và quyền khiếu nại",
+      "content": "Kết quả thực hiện thủ tục:\n\n- Quyết định cấp chứng chỉ hành nghề quản tài viên\n- Chứng chỉ hành nghề quản tài viên (có ảnh, mã số, thời hạn)\n- Thông báo về việc không cấp chứng chỉ (nêu rõ lý do)\n\nQuyền khiếu nại:\n- Khiếu nại quyết định hành chính theo quy định của Luật Khiếu nại\n- Thời hạn khiếu nại: 90 ngày kể từ ngày nhận được quyết định\n- Cơ quan có thẩm quyền giải quyết: Chủ tịch Ủy ban nhân dân cấp tỉnh\n\nHiệu lực của chứng chỉ:\n- Chứng chỉ có hiệu lực kể từ ngày ký quyết định cấp\n- Thời hạn hiệu lực: 5 năm kể từ ngày cấp\n- Gia hạn theo quy định nếu đáp ứng điều kiện\n\nLưu ý: Chứng chỉ hành nghề quản tài viên là điều kiện cần thiết để đăng ký hành nghề quản lý, thanh lý tài sản",
+      "source_reference": "Điều 13 Luật Phá sản năm 2014",
+      "keywords": [
+        "quyết định",
+        "chứng chỉ",
+        "khiếu nại",
+        "hiệu lực",
+        "gia hạn",
+        "đăng ký hành nghề"
+      ]
+    }
+  ],
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu điện tử tương tác (được sử dụng khi nộp hồ sơ theo hình thức trực tuyến)",
+    "has_paper_form": true,
+    "paper_form_description": "Mẫu giấy theo quy định (được sử dụng khi nộp hồ sơ theo hình thức trực tiếp)"
+  }
+}

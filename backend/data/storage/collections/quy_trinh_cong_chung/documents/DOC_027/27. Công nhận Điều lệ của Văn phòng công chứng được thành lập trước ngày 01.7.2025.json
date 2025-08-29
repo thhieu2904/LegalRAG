@@ -1,53 +1,95 @@
 {
   "metadata": {
-    "source": "27. Công nhận Điều lệ của Văn phòng công chứng được thành lập trước ngày 01.7.2025.doc",
-    "title": "Công nhận Điều lệ của Văn phòng công chứng được thành lập trước ngày 01.7.2025",
+    "source": "data/documents/quy_trinh_cong_chung/documents/DOC_027/[filename].doc",
+    "title": "Document 27",
     "code": "QT 27/CC",
     "issuing_authority": "Sở Tư pháp",
-    "effective_date": "",
-    "executing_agency": "Sở Tư pháp",
-    "applicant_type": "Văn phòng công chứng được thành lập trước ngày 01.7.2025",
-    "processing_time_text": "10 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "effective_date": "2025-01-01",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Văn phòng công chứng"
+    ],
+    "processing_time_text": "05 ngày làm việc",
     "fee_vnd": 0,
-    "fee_text": "Không có lệ phí",
+    "fee_text": "Không quy định lệ phí",
     "has_form": true,
-    "requirements_conditions": "Văn phòng công chứng được thành lập trước ngày 01.7.2025 và có nhu cầu xây dựng Điều lệ theo quy định",
+    "requirements_conditions": "Thủ tục được thực hiện theo quy định của pháp luật về công chứng.",
     "legal_basis_references": [
       "Luật Công chứng 2014",
-      "Nghị định số 29/2015/NĐ-CP của Chính phủ",
-      "Quyết định 30/QĐ-TTg của Thủ tướng Chính phủ về đơn giản hóa thủ tục hành chính"
+      "Nghị định số 23/2015/NĐ-CP",
+      "Thông tư số 01/2015/TT-BTP",
+      "Thông tư số 05/2025/TT-BTP"
     ]
   },
   "fee_structure": {
-    "main_fee": 0,
-    "exemptions": "Không có lệ phí cho thủ tục công nhận Điều lệ Văn phòng công chứng",
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không quy định lệ phí"
+    },
+    "exemptions": [],
     "additional_fees": []
   },
   "content_chunks": [
     {
-      "chunk_id": "chunk_1",
-      "title": "Thành phần hồ sơ",
-      "content": "1. Dự thảo Điều lệ Văn phòng công chứng, gồm các nội dung chủ yếu:\n   - Tên, địa chỉ trụ sở của Văn phòng công chứng\n   - Họ và tên, địa chỉ liên lạc của các công chứng viên hợp danh\n   - Tổng vốn điều lệ, tài sản góp vốn, giá trị và tỷ lệ góp vốn của các công chứng viên hợp danh\n   - Quyền và nghĩa vụ của các công chứng viên hợp danh\n   - Cơ cấu tổ chức của Văn phòng công chứng, quyền và nghĩa vụ của Trưởng Văn phòng công chứng và các công chứng viên hợp danh còn lại\n   - Nguyên tắc trả lương, thu nhập\n   - Nguyên tắc giải quyết tranh chấp\n   - Thể thức sửa đổi, bổ sung Điều lệ.\n2. Các giấy tờ chứng minh về việc thành lập Văn phòng công chứng trước ngày 01.7.2025.\n3. Giấy tờ chứng minh về các công chứng viên hợp danh và vốn điều lệ của Văn phòng công chứng.\n4. Các giấy tờ khác liên quan đến việc xây dựng Điều lệ theo quy định."
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ yêu cầu",
+      "content": "Hồ sơ bao gồm các giấy tờ và tài liệu được quy định chi tiết theo quy trình thủ tục.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "tài liệu",
+        "văn phòng công chứng"
+      ]
     },
     {
-      "chunk_id": "chunk_2",
-      "title": "Thời hạn giải quyết",
-      "content": "Trong thời hạn 10 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ, Sở Tư pháp có văn bản thông báo cho Văn phòng công chứng về việc Văn phòng công chứng đã hoàn thành nghĩa vụ xây dựng Điều lệ.\nTrường hợp Điều lệ của Văn phòng công chứng chưa có đủ các nội dung theo quy định thì Sở Tư pháp có văn bản yêu cầu Văn phòng công chứng sửa đổi, bổ sung Điều lệ và gửi về Sở Tư pháp trong thời hạn 05 ngày làm việc kể từ ngày nhận được văn bản yêu cầu.\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền giải quyết: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn khắc phục."
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "hồ sơ hợp lệ"
+      ]
     },
     {
-      "chunk_id": "chunk_3",
-      "title": "Đối tượng thực hiện/Cơ quan thực hiện",
-      "content": "Đối tượng thực hiện: Văn phòng công chứng được thành lập trước ngày 01.7.2025 và có nhu cầu xây dựng Điều lệ theo quy định của pháp luật.\nCơ quan thực hiện: Sở Tư pháp tỉnh/thành phố trực thuộc trung ương."
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng: Văn phòng công chứng. Cơ quan thực hiện: Sở Tư pháp cấp tỉnh.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "văn phòng công chứng",
+        "sở tư pháp",
+        "cấp tỉnh"
+      ]
     },
     {
-      "chunk_id": "chunk_4",
-      "title": "Kết quả thực hiện/Lệ phí",
-      "content": "Kết quả: Văn bản thông báo của Sở Tư pháp về việc Văn phòng công chứng đã hoàn thành nghĩa vụ xây dựng Điều lệ hoặc văn bản yêu cầu sửa đổi, bổ sung Điều lệ.\nLệ phí: Không có lệ phí cho thủ tục công nhận Điều lệ Văn phòng công chứng."
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "Kết quả: Hoàn tất thủ tục theo quy định. Lệ phí: Không quy định lệ phí.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "lệ phí",
+        "miễn phí",
+        "hoàn tất"
+      ]
     },
     {
-      "chunk_id": "chunk_5",
-      "title": "Quy trình xử lý chi tiết",
-      "content": "1. Văn phòng công chứng chuẩn bị dự thảo Điều lệ theo quy định pháp luật.\n2. Nộp hồ sơ tại Sở Tư pháp nơi Văn phòng công chứng có trụ sở.\n3. Sở Tư pháp tiếp nhận và kiểm tra tính hợp lệ của hồ sơ.\n4. Sở Tư pháp xem xét Điều lệ trong thời hạn 10 ngày làm việc.\n5. Trường hợp Điều lệ đầy đủ, chính xác: Sở Tư pháp có văn bản thông báo Văn phòng công chứng đã hoàn thành nghĩa vụ xây dựng Điều lệ.\n6. Trường hợp Điều lệ thiếu hoặc không đúng: Sở Tư pháp yêu cầu sửa đổi, bổ sung trong thời hạn 05 ngày làm việc.\n7. Văn phòng công chứng sửa đổi, bổ sung Điều lệ theo yêu cầu và nộp lại Sở Tư pháp.\n8. Sở Tư pháp tiếp tục xem xét và thông báo kết quả.\n9. Văn phòng công chứng nhận văn bản thông báo và Điều lệ được công nhận.\n10. Văn phòng công chứng hoạt động theo Điều lệ đã được công nhận."
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Quy trình thực hiện theo các bước: tiếp nhận hồ sơ, thẩm định, ra quyết định và thông báo kết quả.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "tiếp nhận",
+        "thẩm định",
+        "quyết định",
+        "thông báo"
+      ]
     }
   ]
 }

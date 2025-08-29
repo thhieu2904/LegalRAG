@@ -1,1 +1,114 @@
-{"metadata":{},"content_chunks":[]}
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_thua_phat_lai/DOC_002/QT 02 - Bổ nhiệm Thừa phát lại .doc",
+    "title": "Bổ nhiệm Thừa phát lại",
+    "code": "QT 02/TPL",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ],
+    "processing_time_text": "27 ngày làm việc (07 ngày Sở Tư pháp + 20 ngày UBND cấp tỉnh)",
+    "fee_vnd": 800000,
+    "fee_text": "800.000đ (theo quy định)",
+    "has_form": true,
+    "requirements_conditions": "",
+    "legal_basis_references": [
+      "Nghị định số 08/2020/NĐ-CP",
+      "Nghị định 121/2025/NĐ-CP",
+      "Thông tư số 05/2020/TT-BTP",
+      "Thông tư số 223/2016/TT-BTC",
+      "Thông tư số 08/2025/TT-BTP",
+      "Thông tư số 09/2025/TT-BTP"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "800.000đ",
+      "online": "800.000đ",
+      "description": "Phí thẩm định tiêu chuẩn, điều kiện hành nghề Thừa phát lại"
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Điều kiện bổ nhiệm Thừa phát lại",
+      "content": "Tiêu chuẩn bổ nhiệm Thừa phát lại:\n\n1. Công dân Việt Nam không quá 65 tuổi\n2. Thường trú tại Việt Nam\n3. Chấp hành tốt Hiến pháp và pháp luật\n4. Có phẩm chất đạo đức tốt\n5. Có bằng tốt nghiệp đại học hoặc sau đại học chuyên ngành luật\n6. Có thời gian công tác pháp luật từ 03 năm trở lên\n7. Tốt nghiệp khóa đào tạo hoặc được công nhận tương đương\n8. Đạt yêu cầu kiểm tra kết quả tập sự hành nghề\n\nCác trường hợp không được bổ nhiệm:\n- Người bị mất hoặc hạn chế năng lực hành vi dân sự\n- Đã được bổ nhiệm công chứng viên, luật sư, đấu giá viên, quản tài viên\n- Đang là cán bộ, công chức, viên chức trong Quân đội, Công an\n- Đang bị truy cứu trách nhiệm hình sự hoặc đã bị kết án\n- Bị xử lý kỷ luật cách chức, buộc thôi việc\n- Bị xóa tên khỏi danh sách luật sư do vi phạm\n- Bị tước quyền sử dụng thẻ công chứng viên, luật sư trong 03 năm\n- Đang bị áp dụng biện pháp đưa vào cơ sở cai nghiện\n\nCơ quan có thẩm quyền: UBND cấp tỉnh",
+      "source_reference": "Điều 6, 11 Nghị định số 08/2020/NĐ-CP",
+      "keywords": [
+        "tiêu chuẩn",
+        "điều kiện",
+        "bổ nhiệm",
+        "thừa phát lại",
+        "đạo đức",
+        "trình độ"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thành phần hồ sơ bổ nhiệm",
+      "content": "Hồ sơ gồm các giấy tờ sau:\n\n1. Văn bản đề nghị bổ nhiệm Thừa phát lại (theo mẫu 01-PLIII-TPL)\n\n2. Bản sao có chứng thực bằng tốt nghiệp đại học/sau đại học chuyên ngành luật\n\n3. Giấy tờ chứng minh thời gian công tác pháp luật:\n   - Quyết định tuyển dụng, hợp đồng làm việc\n   - Giấy tờ chứng minh đóng bảo hiểm xã hội\n   - Giấy tờ chứng minh miễn nhiệm, thu hồi chứng chỉ\n   - Giấy tờ chứng minh nghỉ hưu hoặc thôi việc\n\n4. Giấy chứng nhận kết quả kiểm tra tập sự hành nghề Thừa phát lại\n\nSố lượng hồ sơ: 01 bộ\n\nLưu ý:\n- Tất cả bản sao phải có chứng thực hoặc kèm bản chính đối chiếu\n- Có thể nộp bản sao điện tử nếu có xác thực điện tử\n- Hồ sơ phải đầy đủ theo quy định\n\nTrường hợp hồ sơ thiếu: Thông báo bổ sung trong thời hạn quy định",
+      "source_reference": "Điều 12 Thông tư số 05/2020/TT-BTP",
+      "keywords": [
+        "hồ sơ",
+        "văn bản đề nghị",
+        "bằng tốt nghiệp",
+        "thời gian công tác",
+        "giấy chứng nhận",
+        "bản sao"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Quy trình bổ nhiệm Thừa phát lại",
+      "content": "Quy trình xử lý hồ sơ:\n\n1. Tiếp nhận hồ sơ (0.5 ngày):\n   - Kiểm tra tính chính xác, đầy đủ của hồ sơ\n   - Thông báo bổ sung nếu hồ sơ thiếu\n   - Chuyển bộ phận chuyên môn nếu đầy đủ\n\n2. Thẩm định hồ sơ (5 ngày):\n   - Kiểm tra tính hợp pháp của hồ sơ\n   - Xác minh các điều kiện bổ nhiệm\n   - Dự thảo công văn trả lời nếu không đủ điều kiện\n\n3. Ký văn bản đề nghị (1 ngày):\n   - Lãnh đạo Sở Tư pháp ký văn bản đề nghị\n   - Gửi UBND cấp tỉnh kèm hồ sơ\n\n4. UBND cấp tỉnh quyết định (20 ngày):\n   - Xem xét hồ sơ và quyết định bổ nhiệm\n   - Thông báo từ chối nếu không đủ điều kiện\n\n5. Hoàn trả kết quả (0.5 ngày):\n   - Trả quyết định bổ nhiệm cho người đề nghị\n   - Ghi sổ theo dõi\n\nTổng thời gian: 27 ngày làm việc\n\nLưu ý: Thời gian xác minh lý lịch tư pháp không tính vào thời gian xử lý",
+      "source_reference": "Điều 13 Thông tư số 08/2025/TT-BTP",
+      "keywords": [
+        "quy trình",
+        "thẩm định",
+        "tiếp nhận",
+        "quyết định",
+        "thời gian",
+        "xác minh"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Quyền lợi và nghĩa vụ sau bổ nhiệm",
+      "content": "Quyền lợi của Thừa phát lại:\n- Được cấp thẻ Thừa phát lại\n- Được thành lập Văn phòng Thừa phát lại\n- Được thực hiện các hoạt động theo quy định pháp luật\n- Được hưởng quyền lợi theo chế độ\n- Được tham gia các hội nghề nghiệp\n\nNghĩa vụ của Thừa phát lại:\n- Tuân thủ Hiến pháp và pháp luật\n- Chấp hành quy tắc đạo đức nghề nghiệp\n- Tham gia đào tạo, bồi dưỡng kiến thức\n- Báo cáo hoạt động định kỳ\n- Chấp hành quyết định của cơ quan quản lý\n- Bảo mật thông tin trong quá trình thực hiện nhiệm vụ\n\nHiệu lực của quyết định bổ nhiệm:\n- Có hiệu lực kể từ ngày ký\n- Có giá trị trong phạm vi toàn quốc\n- Chấm dứt khi miễn nhiệm hoặc thu hồi\n\nLưu ý: Thừa phát lại phải hoạt động độc lập, khách quan, công bằng",
+      "source_reference": "Điều 14 Nghị định số 08/2020/NĐ-CP",
+      "keywords": [
+        "quyền lợi",
+        "nghĩa vụ",
+        "thẻ thừa phát lại",
+        "văn phòng",
+        "độc lập",
+        "khách quan"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Giám sát và chế độ báo cáo",
+      "content": "Chế độ giám sát hoạt động:\n- Theo dõi quá trình xử lý hồ sơ theo ISO 9001:2015\n- Ghi sổ hoặc nhập máy theo dõi\n- Báo cáo định kỳ về tình hình bổ nhiệm\n\nXử lý vi phạm:\n- Trường hợp hồ sơ không đầy đủ: Thông báo bổ sung\n- Trường hợp không đủ điều kiện: Từ chối và nêu lý do\n- Trường hợp vi phạm quy định: Xử phạt hành chính\n\nCác trường hợp bị xử lý:\n- Nộp hồ sơ không đúng quy định\n- Cung cấp thông tin sai lệch\n- Vi phạm thời hạn quy định\n- Không đáp ứng tiêu chuẩn bổ nhiệm\n\nQuyền khiếu nại:\n- Khiếu nại quyết định từ chối bổ nhiệm\n- Thời hạn: 90 ngày kể từ ngày nhận quyết định\n- Cơ quan giải quyết: UBND cấp tỉnh\n\nChế độ báo cáo:\n- Báo cáo hoạt động định kỳ 6 tháng/lần\n- Báo cáo về việc bổ nhiệm, miễn nhiệm\n- Báo cáo đột xuất khi có yêu cầu\n\nLưu ý: Việc bổ nhiệm phải đảm bảo công khai, minh bạch, đúng quy định",
+      "source_reference": "Điều 15 Thông tư số 09/2025/TT-BTP",
+      "keywords": [
+        "giám sát",
+        "báo cáo",
+        "xử lý vi phạm",
+        "khiếu nại",
+        "công khai",
+        "định kỳ"
+      ]
+    }
+  ],
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu điện tử tương tác (được sử dụng khi nộp hồ sơ theo hình thức trực tuyến)",
+    "has_paper_form": true,
+    "paper_form_description": "Mẫu giấy theo quy định (được sử dụng khi nộp hồ sơ theo hình thức trực tiếp)"
+  }
+}
