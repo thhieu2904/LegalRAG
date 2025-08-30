@@ -1,22 +1,164 @@
 {
-  "collection_id": "quy_trinh_dau_gia_tai_san",
-  "collection_name": "Quy Trinh Dau Gia Tai San",
-  "description": "Legal documents for quy_trinh_dau_gia_tai_san",
-  "document_count": 10,
-  "created_at": "2025-08-27T00:00:00.000000",
-  "has_forms": true,
-  "status": "active",
-  "structure": {
-    "documents/DOC_XXX/": {
-      "original_name.json": "RAG content processed from original document",
-      "original_name.doc": "Original document from government agency",
-      "router_questions.json": "Questions for document classification/routing",
-      "forms/": "Directory for future form uploads (empty initially)"
+  "documents": [
+    {
+      "title": "Đăng ký hoạt động của doanh nghiệp đấu giá tài sản",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản đã thành lập theo quy định"
+      ],
+      "has_form": true,
+      "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_001",
+      "fee_text": "Không thu lệ phí (thủ tục hành chính)",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_001/1. Đăng ký hoạt động của doanh nghiệp đấu giá tài sản.doc",
+      "code": "QT 01/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
+    },
+    {
+      "title": "Thay đổi nội dung đăng ký hoạt động của doanh nghiệp đấu giá tài sản",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản",
+        "Chi nhánh doanh nghiệp đấu giá"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_002",
+      "fee_text": "500,000đ",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_002/2. Thay đổi nội dung đăng ký hoạt động của doanh nghiệp đấu giá tài sản.doc",
+      "code": "QT 002/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
+    },
+    {
+      "title": "Cấp lại Giấy đăng ký hoạt động của doanh nghiệp đấu giá tài sản",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản",
+        "Chi nhánh doanh nghiệp đấu giá"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_003",
+      "fee_text": "200,000đ",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_003/3. Cấp lại Giấy đăng ký hoạt động của doanh nghiệp đấu giá tài sản.doc",
+      "code": "QT 003/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
+    },
+    {
+      "title": "Đăng ký hoạt động của Chi nhánh doanh nghiệp đấu giá tài sản",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản",
+        "Chi nhánh doanh nghiệp đấu giá"
+      ],
+      "has_form": true,
+      "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_004",
+      "fee_text": "Không thu lệ phí",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_004/4. Đăng ký hoạt động của Chi nhánh doanh nghiệp đấu giá tài sản.doc",
+      "code": "QT 004/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
+    },
+    {
+      "title": "Phê duyệt Trang thông tin đấu giá trực tuyến",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản",
+        "Chi nhánh doanh nghiệp đấu giá"
+      ],
+      "has_form": true,
+      "processing_time_text": "45 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_005",
+      "fee_text": "1,000,000đ",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_005/5. Phê duyệt Trang thông tin đấu giá trực tuyến.doc",
+      "code": "QT 005/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
+    },
+    {
+      "title": "Đăng ký tham dự kiểm tra kết quả tập sự hành nghề đấu giá",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản",
+        "Đấu giá viên",
+        "Chi nhánh doanh nghiệp đấu giá"
+      ],
+      "has_form": true,
+      "processing_time_text": "10 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_006",
+      "fee_text": "300,000đ",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_006/6. Đăng ký tham dự kiểm tra kết quả tập sự hành nghề đấu giá.doc",
+      "code": "QT 006/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
+    },
+    {
+      "title": "Thay đổi nội dung đăng ký hoạt động của chi nhánh doanh nghiệp đấu giá tài sản",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản",
+        "Đấu giá viên",
+        "Chi nhánh doanh nghiệp đấu giá"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_007",
+      "fee_text": "300,000đ",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_007/7. Thay đổi nội dung đăng ký hoạt động của chi nhánh doanh nghiệp đấu giá tài sản.doc",
+      "code": "QT 007/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
+    },
+    {
+      "title": "Cấp lại Giấy đăng ký hoạt động của chi nhánh doanh nghiệp đấu giá tài sản",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản",
+        "Đấu giá viên",
+        "Chi nhánh doanh nghiệp đấu giá"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_008",
+      "fee_text": "150,000đ",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_008/8. Cấp lại Giấy đăng ký hoạt động của chi nhánh doanh nghiệp đấu giá tài sản.doc",
+      "code": "QT 008/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
+    },
+    {
+      "title": "Cấp Chứng chỉ hành nghề đấu giá",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản",
+        "Đấu giá viên",
+        "Chi nhánh doanh nghiệp đấu giá"
+      ],
+      "has_form": true,
+      "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_009",
+      "fee_text": "500,000đ",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_009/9. Cấp Chứng chỉ hành nghề đấu giá.doc",
+      "code": "QT 009/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
+    },
+    {
+      "title": "Cấp lại Chứng chỉ hành nghề đấu giá",
+      "effective_date": "Theo Luật Đấu giá tài sản 2016",
+      "applicant_type": [
+        "Doanh nghiệp đấu giá tài sản",
+        "Đấu giá viên",
+        "Chi nhánh doanh nghiệp đấu giá"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_010",
+      "fee_text": "250,000đ",
+      "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_010/10. Cấp lại Chứng chỉ hành nghề đấu giá.doc",
+      "code": "QT 010/ĐGTS",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương"
     }
-  },
-  "migration_info": {
-    "migrated_from": "data_moi_tu_co_quan/QUY TRINH ĐẤU GIÁ TÀI SẢN",
-    "migration_date": "2025-08-27T00:00:00.000000",
-    "migration_type": "initial_structure_v1"
-  }
+  ],
+  "issuing_authority": "Sở Tư pháp",
+  "collection_type": "quy_trinh_dau_gia_tai_san",
+  "collection_name": "quy_trinh_dau_gia_tai_san",
+  "created_date": "2025-08-30",
+  "last_updated": "2025-08-30",
+  "description": "Bộ sưu tập các quy trình đấu giá tài sản"
 }

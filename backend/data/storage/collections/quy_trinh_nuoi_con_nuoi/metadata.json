@@ -1,22 +1,103 @@
 {
-  "collection_id": "quy_trinh_nuoi_con_nuoi",
-  "collection_name": "Quy Trinh Nuoi Con Nuoi",
-  "description": "Legal documents for quy_trinh_nuoi_con_nuoi",
-  "document_count": 3,
-  "created_at": "2025-08-21T15:58:00.958101",
-  "has_forms": true,
-  "status": "active",
-  "structure": {
-    "documents/DOC_XXX/": {
-      "original_name.json": "RAG content processed from original document",
-      "original_name.doc": "Original document from government agency",
-      "router_questions.json": "Questions for document classification/routing",
-      "forms/": "Directory for future form uploads (empty initially)"
+  "documents": [
+    {
+      "title": "Đăng ký việc nuôi con nuôi trong nước",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Công dân Việt Nam"
+      ],
+      "has_form": true,
+      "processing_time_text": "30 ngày làm việc (có thể kéo dài đến 45 ngày nếu cần xác minh)",
+      "id": "DOC_001",
+      "fee_text": "Miễn phí",
+      "source": "data/documents/quy_trinh_nuoi_con_nuoi/documents/DOC_001/1. Cấp xã - Đăng ký việc nuôi con nuôi trong nước (1).doc",
+      "code": "QT 01/NCN",
+      "executing_agency": "UBND cấp xã"
+    },
+    {
+      "title": "Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng con nuôi nước ngoài",
+        "Người nước ngoài thường trú ở nước ngoài",
+        "Người Việt Nam định cư ở nước ngoài",
+        "Người nước ngoài đang làm việc, học tập tại Việt Nam",
+        "Cơ sở nuôi dưỡng trẻ em"
+      ],
+      "has_form": true,
+      "processing_time_text": "Quy trình có nhiều giai đoạn phức tạp với các thời hạn khác nhau, tổng thời gian có thể kéo dài 4-6 tháng, bao gồm: lấy ý kiến (20 ngày), xác minh (30 ngày), thẩm định (15 ngày), giới thiệu trẻ (30 ngày), quyết định (15 ngày), và thời gian người nhận con nuôi có mặt tại Việt Nam (60-90 ngày)",
+      "id": "DOC_002",
+      "fee_text": "Lệ phí: 9.000.000 VND/trường hợp (giảm 50% cho trẻ thứ hai trở đi là anh chị em ruột). Chi phí giải quyết: 50.000.000 VND/trường hợp (miễn chi phí cho trẻ em khuyết tật, mắc bệnh hiểm nghèo)",
+      "source": "data/documents/quy_trinh_nuoi_con_nuoi/documents/DOC_002/1. STP -Giải quyết việc nuôi con nuôi có yếu tố nước ngoài đối với trẻ em sống ở cơ sở nuôi dưỡng (1).doc",
+      "code": "QT 02/NCN",
+      "executing_agency": "Cục Hành chính tư pháp; UBND cấp tỉnh; Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký lại việc nuôi con nuôi trong nước",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Người nuôi con nuôi",
+        "Con nuôi",
+        "Người có liên quan"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ",
+      "id": "DOC_003",
+      "fee_text": "Miễn phí",
+      "source": "data/documents/quy_trinh_nuoi_con_nuoi/documents/DOC_003/2. Cấp xã - Đăng ký lại việc nuôi con nuôi trong nước.doc",
+      "code": "QT 03/NCN",
+      "executing_agency": "UBND cấp xã"
+    },
+    {
+      "title": "Giải quyết việc người nước ngoài thường trú ở Việt Nam nhận trẻ em Việt Nam làm con nuôi",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Người nước ngoài thường trú ở Việt Nam",
+        "Người Việt Nam định cư ở nước ngoài nhưng đang thường trú ở Việt Nam"
+      ],
+      "has_form": true,
+      "processing_time_text": "45 ngày làm việc từ khi có đủ hồ sơ hợp lệ (có thể kéo dài đến 60 ngày trong trường hợp phức tạp)",
+      "id": "DOC_004",
+      "fee_text": "Lệ phí: 3.000.000 VND/trường hợp. Chi phí giải quyết: 25.000.000 VND/trường hợp",
+      "source": "data/documents/quy_trinh_nuoi_con_nuoi/documents/DOC_004/4. STP -Giải quyết việc người nước ngoài thường trú ở Việt Nam nhận trẻ em Việt Nam làm con nuôi.doc",
+      "code": "QT 04/NCN",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Cấp giấy xác nhận công dân Việt Nam ở trong nước đủ điều kiện nhận trẻ em nước ngoài làm con nuôi",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Công dân Việt Nam thường trú tại Việt Nam"
+      ],
+      "has_form": true,
+      "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_005",
+      "fee_text": "Lệ phí: 1.500.000 VND/trường hợp",
+      "source": "data/documents/quy_trinh_nuoi_con_nuoi/documents/DOC_005/5. STP -Thủ tục Cấp giấy xác nhận công dân Việt Nam ở trong nước đủ điều kiện nhận trẻ em nước ngoài làm con nuôi.doc",
+      "code": "QT 05/NCN",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký lại việc nuôi con nuôi có yếu tố nước ngoài",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Người nuôi con nuôi có yếu tố nước ngoài",
+        "Con nuôi có yếu tố nước ngoài",
+        "Người đại diện hợp pháp"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_006",
+      "fee_text": "Lệ phí: 500.000 VND/trường hợp",
+      "source": "data/documents/quy_trinh_nuoi_con_nuoi/documents/DOC_006/3. STP -Đăng ký lại việc nuôi con nuôi có yếu tố nước ngoài.doc",
+      "code": "QT 06/NCN",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
     }
-  },
-  "migration_info": {
-    "migrated_from": "data/documents/quy_trinh_nuoi_con_nuoi",
-    "migration_date": "2025-08-21T15:58:00.958101",
-    "migration_type": "final_structure_v1"
-  }
+  ],
+  "issuing_authority": "Ủy ban nhân dân cấp xã, Sở Tư pháp",
+  "collection_type": "quy_trinh_nuoi_con_nuoi",
+  "collection_name": "quy_trinh_nuoi_con_nuoi",
+  "created_date": "2025-08-30",
+  "last_updated": "2025-08-30",
+  "description": "Bộ sưu tập các quy trình nuôi con nuôi"
 }

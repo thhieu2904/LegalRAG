@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/DOC_012/12. Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản.doc",
+    "title": "Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản",
+    "code": "QT 12/CTCK",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-30",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Ngay trong ngày hoặc trong ngày làm việc tiếp theo nếu tiếp nhận sau 15 giờ",
+    "fee_vnd": 10000,
+    "fee_text": "10.000 đồng/trường hợp",
+    "has_form": false,
+    "requirements_conditions": "Người yêu cầu chứng thực xuất trình bản chính hoặc bản sao chứng thực giấy tờ tùy thân. Giấy tờ, văn bản cần chứng thực chữ ký phải có nội dung hợp pháp. Trường hợp bằng tiếng nước ngoài, nộp kèm bản dịch tiếng Việt.",
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP ngày 16/02/2015 của Chính phủ về cấp bản sao từ bản chính, chứng thực chữ ký và chứng thực hợp đồng, giao dịch",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực",
+      "Thông tư số 01/2020/TT-BTP ngày 03/3/2020 của Bộ trưởng Bộ Tư pháp",
+      "Thông tư số 226/2016/TT-BTC ngày 11/11/2016 của Bộ trưởng Bộ Tài chính",
+      "Thông tư số 264/2016/TT-BTC ngày 14/11/2016 của Bộ trưởng Bộ Tài chính",
+      "Thông tư số 257/2016/TT-BTC ngày 11/11/2016 của Bộ trưởng Bộ Tài chính",
+      "Quyết định số 101/QĐ-BKHCN ngày 21 tháng 01 năm 2019 của Bộ Khoa học và Công nghệ"
+    ],
+    "last_updated": "2025-08-30",
+    "version": "1.0",
+    "collection_type": "quy_trinh_chung_thuc"
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "10.000đ",
+      "online": "10.000đ",
+      "description": "Phí chứng thực chữ ký"
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "- Bản chính hoặc bản sao có chứng thực Giấy chứng minh nhân dân/Thẻ căn cước công dân/Thẻ căn cước/Giấy chứng nhận căn cước/Hộ chiếu/giấy tờ xuất nhập cảnh. - Giấy tờ, văn bản mà mình sẽ yêu cầu chứng thực chữ ký. Trường hợp bằng tiếng nước ngoài, nộp kèm bản dịch ra tiếng Việt.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["hồ sơ", "giấy tờ tùy thân", "giấy tờ văn bản", "bản dịch"]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Thời hạn thực hiện yêu cầu chứng thực là ngay trong ngày hoặc trong ngày làm việc tiếp theo nếu tiếp nhận sau 15 giờ. Trường hợp trả kết quả trong ngày tiếp theo hoặc kéo dài theo thỏa thuận thì người tiếp nhận hồ sơ phải có phiếu hẹn ghi rõ thời gian.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["thời hạn", "ngay trong ngày", "phiếu hẹn"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện",
+      "content": "Cá nhân, tổ chức có nhu cầu chứng thực chữ ký trong giấy tờ, văn bản.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["đối tượng", "cá nhân", "tổ chức"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Cơ quan thực hiện",
+      "content": "Ủy ban nhân dân cấp xã hoặc cơ quan có thẩm quyền chứng thực.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["cơ quan", "ủy ban nhân dân cấp xã"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả & Lệ phí",
+      "content": "Kết quả: Giấy tờ, văn bản được chứng thực chữ ký. Lệ phí: 10.000 đồng/trường hợp.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["kết quả", "chứng thực chữ ký", "lệ phí", "10.000 đồng"]
+    }
+  ]
+}

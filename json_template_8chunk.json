@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/DOC_[number]/[filename].doc",
+    "title": "[Tên đầy đủ của thủ tục chứng thực]",
+    "code": "[Mã hiệu thủ tục - ví dụ: QT 01/CX-HCTP]",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-30",
+    "executing_agency": "[Cơ quan trực tiếp thực hiện - ví dụ: Phòng Công chứng]",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "[Thời hạn giải quyết - ví dụ: Trong ngày hoặc 02 ngày làm việc]",
+    "fee_vnd": 0,
+    "fee_text": "[Mô tả lệ phí chi tiết - ví dụ: 10.000đ/trường hợp]",
+    "has_form": false,
+    "requirements_conditions": "[Các yêu cầu và điều kiện thực hiện thủ tục]",
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP ngày 16/02/2015 của Chính phủ",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ",
+      "Thông tư số 01/2020/TT-BTP ngày 03/3/2020 của Bộ trưởng Bộ Tư pháp",
+      "Thông tư số 226/2016/TT-BTC ngày 11/11/2016 của Bộ trưởng Bộ Tài chính"
+    ],
+    "last_updated": "2025-08-30",
+    "version": "1.0",
+    "collection_type": "quy_trinh_chung_thuc"
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "[Mô tả lệ phí chính theo thủ tục]"
+    },
+    "exemptions": ["[Các trường hợp miễn phí nếu có]"],
+    "additional_fees": [
+      {
+        "description": "[Phí bổ sung nếu có]",
+        "amount_vnd": 0,
+        "unit": "[Đơn vị tính]"
+      }
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": false,
+    "electronic_form_description": "[Mô tả biểu mẫu điện tử nếu có]",
+    "has_paper_form": true,
+    "paper_form_description": "[Mô tả biểu mẫu giấy]"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thông tin cơ bản và tiêu đề",
+      "content": "[Nội dung về tiêu đề thủ tục, mã hiệu, ngày ban hành, cơ quan ban hành, mục đích và phạm vi áp dụng]",
+      "source_reference": "Trang đầu tài liệu",
+      "keywords": [
+        "tiêu đề",
+        "mã hiệu",
+        "ngày ban hành",
+        "cơ quan ban hành",
+        "mục đích",
+        "phạm vi"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Định nghĩa và viết tắt",
+      "content": "[Danh sách các từ viết tắt và định nghĩa sử dụng trong tài liệu như UBND, TTHC, GCN, ISO, v.v.]",
+      "source_reference": "Phần Định nghĩa và Viết tắt",
+      "keywords": [
+        "định nghĩa",
+        "viết tắt",
+        "UBND",
+        "TTHC",
+        "GCN",
+        "ISO",
+        "CCHC"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thành phần và số lượng hồ sơ",
+      "content": "[Danh sách các giấy tờ cần nộp, số lượng bộ hồ sơ, yêu cầu về bản chính/sao y, các giấy tờ kèm theo]",
+      "source_reference": "Mục 4 - Nội dung quy trình",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "bản chính",
+        "bản sao",
+        "số lượng",
+        "yêu cầu nộp"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Thời hạn giải quyết",
+      "content": "[Thời gian xử lý hồ sơ, các trường hợp đặc biệt, thời gian trả kết quả, phiếu hẹn]",
+      "source_reference": "Mục 4.b - Thời hạn giải quyết",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "trả kết quả",
+        "phiếu hẹn",
+        "ngày làm việc"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "[Đối tượng được thực hiện thủ tục (cá nhân/tổ chức), cơ quan có thẩm quyền thực hiện, địa điểm thực hiện]",
+      "source_reference": "Mục 4.c,d - Đối tượng và Cơ quan thực hiện",
+      "keywords": [
+        "đối tượng",
+        "cơ quan",
+        "thẩm quyền",
+        "địa điểm",
+        "cá nhân",
+        "tổ chức"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "[Kết quả của thủ tục, hình thức trả kết quả, mức lệ phí, cách thức thu phí, các trường hợp miễn/giảm phí]",
+      "source_reference": "Mục 4.d,e - Kết quả và Phí",
+      "keywords": [
+        "kết quả",
+        "lệ phí",
+        "thu phí",
+        "trả kết quả",
+        "miễn phí",
+        "giảm phí"
+      ]
+    },
+    {
+      "chunk_id": 7,
+      "section_title": "Yêu cầu và điều kiện thực hiện",
+      "content": "[Các điều kiện tiên quyết, trường hợp không được thực hiện, yêu cầu về năng lực hành vi, giấy tờ tùy thân]",
+      "source_reference": "Mục 4.h - Yêu cầu và điều kiện",
+      "keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "không được thực hiện",
+        "năng lực",
+        "giấy tờ tùy thân"
+      ]
+    },
+    {
+      "chunk_id": 8,
+      "section_title": "Căn cứ pháp lý và quy trình chi tiết",
+      "content": "[Danh sách văn bản pháp lý, quy trình xử lý công việc chi tiết theo từng bước, biểu mẫu sử dụng, hồ sơ lưu trữ]",
+      "source_reference": "Mục 4.i, 5, 6, 7 - Căn cứ pháp lý, Quy trình, Biểu mẫu, Hồ sơ lưu",
+      "keywords": [
+        "căn cứ pháp lý",
+        "quy trình",
+        "biểu mẫu",
+        "hồ sơ lưu",
+        "bước thực hiện",
+        "trách nhiệm"
+      ]
+    }
+  ]
+}

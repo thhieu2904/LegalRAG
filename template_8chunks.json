@@ -1,0 +1,216 @@
+{
+  "metadata": {
+    "document_id": "DOC_XX_CHUNG",
+    "document_code": "QT XX/CT-HCTP",
+    "title": "Tên thủ tục chứng thực",
+    "version": "01",
+    "issue_date": "DD/MM/YYYY",
+    "document_type": "Quy trình hành chính",
+    "issuing_authority": "Sở Tư pháp",
+    "applicable_scope": "Áp dụng cho các trường hợp chứng thực theo quy định của pháp luật",
+    "purpose": "Quy định trình tự, thủ tục, thời hạn và lệ phí thực hiện thủ tục chứng thực",
+    "keywords": [
+      "chứng thực",
+      "bản sao",
+      "chữ ký",
+      "hợp đồng",
+      "di chúc",
+      "sở tư pháp",
+      "ủy ban nhân dân"
+    ],
+    "references": [
+      "Nghị định số 23/2015/NĐ-CP",
+      "Nghị định số 07/2025/NĐ-CP",
+      "Thông tư số 01/2020/TT-BTP"
+    ],
+    "created_at": "2025-08-30T01:35:00Z",
+    "updated_at": "2025-08-30T01:35:00Z",
+    "status": "active"
+  },
+  "fee_structure": {
+    "base_fee": 0,
+    "additional_fees": [
+      {
+        "description": "Lệ phí chứng thực",
+        "amount_vnd": 2000,
+        "unit": "đồng/trang"
+      }
+    ],
+    "exemptions": ["Trường hợp được miễn phí theo quy định"],
+    "payment_methods": ["Tiền mặt", "Chuyển khoản"],
+    "fee_notes": "Mức thu theo quy định hiện hành"
+  },
+  "form_logic": {
+    "required_forms": [
+      "Giấy tờ, văn bản cần chứng thực",
+      "Giấy tờ chứng minh nhân thân"
+    ],
+    "optional_forms": ["Giấy ủy quyền (nếu có)"],
+    "form_requirements": [
+      "Giấy tờ phải hợp lệ, không tẩy xóa",
+      "Có đầy đủ chữ ký, đóng dấu"
+    ],
+    "submission_methods": [
+      "Nộp trực tiếp tại cơ quan",
+      "Gửi qua bưu điện",
+      "Nộp hồ sơ điện tử"
+    ],
+    "form_notes": "Hồ sơ phải đầy đủ, chính xác theo quy định"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": "chunk_01_header",
+      "title": "Thông tin cơ bản và tiêu đề",
+      "content": "SỞ TƯ PHÁP\nQUY TRÌNH\nMã hiệu: QT XX/CT-HCTP\n\n[Tên thủ tục chứng thực]\nLần ban hành: 01\n\nNgày ban hành: DD/MM/YYYY\n\nMỤC LỤC\n1. Mục đích và phạm vi áp dụng\n2. Tài liệu viện dẫn và định nghĩa\n3. Thành phần hồ sơ\n4. Thời hạn giải quyết\n5. Đối tượng và cơ quan thực hiện\n6. Lệ phí\n7. Quy trình thực hiện\n8. Biểu mẫu và lưu trữ\n\nTrách nhiệm\n- Soạn thảo: [Tên]\n- Xem xét: [Tên]\n- Phê duyệt: [Tên]\n\nChức vụ\n- Chuyên viên\n- Trưởng phòng\n- Phó Giám đốc Sở Tư pháp",
+      "keywords": [
+        "sở tư pháp",
+        "quy trình",
+        "mã hiệu",
+        "lần ban hành",
+        "ngày ban hành",
+        "mục lục",
+        "trách nhiệm",
+        "soạn thảo",
+        "phê duyệt"
+      ],
+      "source_reference": "DOC_XX_CHUNG - Trang đầu",
+      "chunk_type": "header",
+      "importance_score": 0.9
+    },
+    {
+      "chunk_id": "chunk_02_purpose_scope",
+      "title": "Mục đích và phạm vi áp dụng",
+      "content": "MỤC ĐÍCH\nQuy định thành phần hồ sơ, lệ phí (nếu có), trình tự, cách thức và thời gian giải quyết hồ sơ hành chính của cơ quan theo tiêu chuẩn TCVN ISO 9001:2015 nhằm đảm bảo phù hợp với quy định của pháp luật và yêu cầu của cá nhân, tổ chức.\n\nPHẠM VI ÁP DỤNG\nÁp dụng đối với các trường hợp chứng thực [đối tượng cụ thể] theo quy định của pháp luật về chứng thực.",
+      "keywords": [
+        "mục đích",
+        "phạm vi áp dụng",
+        "hành chính công",
+        "TCVN ISO 9001:2015",
+        "cá nhân",
+        "tổ chức",
+        "chứng thực"
+      ],
+      "source_reference": "DOC_XX_CHUNG - Mục đích và phạm vi",
+      "chunk_type": "purpose_scope",
+      "importance_score": 0.95
+    },
+    {
+      "chunk_id": "chunk_03_references_definitions",
+      "title": "Tài liệu viện dẫn và định nghĩa",
+      "content": "TÀI LIỆU VIỆN DẪN\n- Nghị định số 23/2015/NĐ-CP ngày 16/02/2015 của Chính phủ về cấp bản sao từ bản chính, chứng thực chữ ký và chứng thực hợp đồng, giao dịch\n- Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực\n- Các văn bản pháp quy liên quan được cập nhật tại mục 8 của Quy trình này\n\nĐỊNH NGHĨA VÀ VIẾT TẮT\n- UBND: Ủy ban nhân dân\n- TTHC: Thủ tục hành chính\n- GCN: Giấy chứng nhận\n- ISO: Hệ thống quản lý chất lượng - TCVN ISO 9001:2015\n- BPTN&HT: Bộ phận tiếp nhận và hỗ trợ kết quả\n- CN & TC: Cá nhân và tổ chức\n- CQHCNN: Cơ quan hành chính nhà nước",
+      "keywords": [
+        "tài liệu viện dẫn",
+        "định nghĩa",
+        "viết tắt",
+        "nghị định",
+        "thông tư",
+        "UBND",
+        "TTHC",
+        "GCN",
+        "ISO",
+        "BPTN&HT",
+        "CN & TC",
+        "CQHCNN"
+      ],
+      "source_reference": "DOC_XX_CHUNG - Tài liệu viện dẫn",
+      "chunk_type": "references_definitions",
+      "importance_score": 0.85
+    },
+    {
+      "chunk_id": "chunk_04_documents_required",
+      "title": "Thành phần hồ sơ",
+      "content": "THÀNH PHẦN HỒ SƠ\n\n1. [Giấy tờ chính]\n2. [Giấy tờ chứng minh nhân thân của người yêu cầu]\n3. [Giấy tờ liên quan khác]\n4. [Giấy ủy quyền (nếu có)]\n\nCác trường hợp hồ sơ không được tiếp nhận:\n- Hồ sơ không đầy đủ thành phần\n- Giấy tờ không hợp lệ, bị tẩy xóa, sửa chữa\n- Chưa có chữ ký, đóng dấu theo quy định\n- Thuộc trường hợp không được chứng thực",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "bản chính",
+        "bản sao",
+        "ủy quyền",
+        "nhân thân",
+        "tẩy xóa",
+        "sửa chữa",
+        "hợp lệ"
+      ],
+      "source_reference": "DOC_XX_CHUNG - Thành phần hồ sơ",
+      "chunk_type": "procedure_details",
+      "importance_score": 1.0
+    },
+    {
+      "chunk_id": "chunk_05_timeline",
+      "title": "Thời hạn giải quyết",
+      "content": "THỜI HẠN GIẢI QUYẾT\n\n- Thời hạn tiếp nhận và kiểm tra hồ sơ: Ngay trong ngày\n- Thời hạn thực hiện chứng thực: Ngay trong ngày hoặc ngày làm việc tiếp theo\n- Trường hợp phức tạp: Tối đa 02 ngày làm việc\n- Trường hợp cần xác minh: Theo thỏa thuận với người yêu cầu\n\nTrường hợp trả kết quả muộn hơn phải có phiếu hẹn ghi rõ thời gian.",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "ngay trong ngày",
+        "ngày làm việc",
+        "phiếu hẹn",
+        "xác minh",
+        "thỏa thuận"
+      ],
+      "source_reference": "DOC_XX_CHUNG - Thời hạn",
+      "chunk_type": "procedure_details",
+      "importance_score": 0.95
+    },
+    {
+      "chunk_id": "chunk_06_authority_subjects",
+      "title": "Đối tượng và cơ quan thực hiện",
+      "content": "ĐỐI TƯỢNG THỰC HIỆN\n- Cá nhân có nhu cầu chứng thực\n- Tổ chức có nhu cầu chứng thực\n- Người đại diện theo pháp luật hoặc ủy quyền\n\nCƠ QUAN THỰC HIỆN\n- Sở Tư pháp cấp tỉnh\n- Phòng Tư pháp cấp huyện\n- Ủy ban nhân dân cấp xã (đối với một số trường hợp)\n\nTHẨM QUYỀN\n- Theo phân cấp quản lý nhà nước về chứng thực\n- Theo địa bàn cư trú của người yêu cầu",
+      "keywords": [
+        "đối tượng",
+        "cơ quan thực hiện",
+        "thẩm quyền",
+        "cá nhân",
+        "tổ chức",
+        "người đại diện",
+        "ủy quyền",
+        "sở tư pháp",
+        "phòng tư pháp",
+        "ủy ban nhân dân",
+        "địa bàn",
+        "cư trú"
+      ],
+      "source_reference": "DOC_XX_CHUNG - Đối tượng và cơ quan",
+      "chunk_type": "procedure_details",
+      "importance_score": 0.9
+    },
+    {
+      "chunk_id": "chunk_07_fees_outcome",
+      "title": "Lệ phí và kết quả",
+      "content": "LỆ PHÍ\n- [Mức phí cụ thể theo quy định]\n- [Phương thức thu phí]\n- [Trường hợp miễn, giảm phí]\n\nKẾT QUẢ THỰC HIỆN\n- [Tên giấy tờ kết quả]\n- [Hình thức trả kết quả]\n- [Thời hạn nhận kết quả]\n\nHÌNH THỨC TRẢ KẾT QUẢ\n- Trả trực tiếp tại cơ quan\n- Gửi qua bưu điện\n- Chuyển giao điện tử (nếu có)",
+      "keywords": [
+        "lệ phí",
+        "kết quả",
+        "miễn phí",
+        "giảm phí",
+        "trả kết quả",
+        "bưu điện",
+        "điện tử",
+        "trực tiếp"
+      ],
+      "source_reference": "DOC_XX_CHUNG - Lệ phí và kết quả",
+      "chunk_type": "procedure_details",
+      "importance_score": 0.95
+    },
+    {
+      "chunk_id": "chunk_08_procedure_legal_basis",
+      "title": "Quy trình thực hiện và căn cứ pháp lý",
+      "content": "QUY TRÌNH THỰC HIỆN\n\nBước 1: Tiếp nhận hồ sơ\n- Kiểm tra thành phần hồ sơ\n- Kiểm tra tính hợp lệ của giấy tờ\n\nBước 2: Xem xét và chứng thực\n- Kiểm tra nội dung\n- Thực hiện chứng thực\n- Thu lệ phí\n\nBước 3: Trả kết quả\n- Đóng dấu, ký chứng thực\n- Trả hồ sơ cho người yêu cầu\n\nCĂN CỨ PHÁP LÝ\n- Luật Công chứng 2014\n- Nghị định số 23/2015/NĐ-CP\n- Nghị định số 07/2025/NĐ-CP\n- Thông tư số 01/2020/TT-BTP\n- Các văn bản pháp quy liên quan\n\nBIỂU MẪU\n- Mẫu sổ theo dõi chứng thực\n- Mẫu phiếu hẹn (nếu có)\n\nHỒ SƠ LƯU\n- Lưu tại cơ quan chứng thực: 05 năm\n- Lưu tại Sở Tư pháp: 10 năm",
+      "keywords": [
+        "quy trình",
+        "bước thực hiện",
+        "căn cứ pháp lý",
+        "luật",
+        "nghị định",
+        "thông tư",
+        "biểu mẫu",
+        "hồ sơ lưu",
+        "sổ theo dõi",
+        "phiếu hẹn"
+      ],
+      "source_reference": "DOC_XX_CHUNG - Quy trình và căn cứ pháp lý",
+      "chunk_type": "procedure_details",
+      "importance_score": 0.9
+    }
+  ]
+}

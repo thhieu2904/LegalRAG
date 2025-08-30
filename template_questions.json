@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Thủ tục này áp dụng cho đối tượng nào?",
+      "category": "eligibility",
+      "priority": "high"
+    },
+    {
+      "id": "q2",
+      "question": "Hồ sơ cần những giấy tờ gì?",
+      "category": "documents",
+      "priority": "high"
+    },
+    {
+      "id": "q3",
+      "question": "Thời hạn giải quyết là bao lâu?",
+      "category": "timeline",
+      "priority": "high"
+    },
+    {
+      "id": "q4",
+      "question": "Lệ phí thực hiện thủ tục?",
+      "category": "fees",
+      "priority": "high"
+    },
+    {
+      "id": "q5",
+      "question": "Cơ quan nào có thẩm quyền giải quyết?",
+      "category": "authority",
+      "priority": "medium"
+    },
+    {
+      "id": "q6",
+      "question": "Kết quả của thủ tục là gì?",
+      "category": "outcome",
+      "priority": "medium"
+    },
+    {
+      "id": "q7",
+      "question": "Cách thức nộp hồ sơ?",
+      "category": "submission",
+      "priority": "medium"
+    },
+    {
+      "id": "q8",
+      "question": "Căn cứ pháp lý của thủ tục?",
+      "category": "legal_basis",
+      "priority": "low"
+    }
+  ],
+  "routing_keywords": [
+    "chứng thực",
+    "bản sao",
+    "chữ ký",
+    "hợp đồng",
+    "di chúc",
+    "di sản",
+    "sở tư pháp",
+    "ủy ban nhân dân"
+  ],
+  "document_type": "quy_trinh_chung_thuc",
+  "version": "1.0"
+}

@@ -1,0 +1,163 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/DOC_002/[filename].doc",
+    "title": "",
+    "code": "",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-30",
+    "executing_agency": "",
+    "applicant_type": [
+      "Cá nhân"
+    ],
+    "processing_time_text": "",
+    "fee_vnd": 0,
+    "fee_text": "2.000 d?ng/trang; t? trang th? 3 tr? ln thu 1.000 d?ng/trang, t?i da thu khng qu 200.000 d?ng/b?n. Trang l can c? d? thu ph du?c tnh theo trang c?a b?n chnh.",
+    "has_form": false,
+    "requirements_conditions": "[Các yêu cầu và điều kiện thực hiện thủ tục]",
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP ngày 16/02/2015 của Chính phủ",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ",
+      "Thông tư số 01/2020/TT-BTP ngày 03/3/2020 của Bộ trưởng Bộ Tư pháp",
+      "Thông tư số 226/2016/TT-BTC ngày 11/11/2016 của Bộ trưởng Bộ Tài chính"
+    ],
+    "last_updated": "2025-08-30",
+    "version": "1.0",
+    "collection_type": "quy_trinh_chung_thuc"
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "[Mô tả lệ phí chính theo thủ tục]"
+    },
+    "exemptions": [
+      "[Các trường hợp miễn phí nếu có]"
+    ],
+    "additional_fees": [
+      {
+        "description": "[Phí bổ sung nếu có]",
+        "amount_vnd": 0,
+        "unit": "[Đơn vị tính]"
+      }
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": false,
+    "electronic_form_description": "[Mô tả biểu mẫu điện tử nếu có]",
+    "has_paper_form": true,
+    "paper_form_description": "[Mô tả biểu mẫu giấy]"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thông tin cơ bản và tiêu đề",
+      "content": "Không có thông tin tiêu đề",
+      "source_reference": "Trang đầu tài liệu",
+      "keywords": [
+        "tiêu đề",
+        "mã hiệu",
+        "ngày ban hành",
+        "cơ quan ban hành",
+        "mục đích",
+        "phạm vi"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Định nghĩa và viết tắt",
+      "content": "Không có định nghĩa cụ thể trong tài liệu",
+      "source_reference": "Phần Định nghĩa và Viết tắt",
+      "keywords": [
+        "định nghĩa",
+        "viết tắt",
+        "UBND",
+        "TTHC",
+        "GCN",
+        "ISO",
+        "CCHC"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thành phần và số lượng hồ sơ",
+      "content": "Không có thông tin cụ thể về thành phần hồ sơ",
+      "source_reference": "Mục 4 - Nội dung quy trình",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "bản chính",
+        "bản sao",
+        "số lượng",
+        "yêu cầu nộp"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Không có thông tin cụ thể về thời hạn",
+      "source_reference": "Mục 4.b - Thời hạn giải quyết",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "trả kết quả",
+        "phiếu hẹn",
+        "ngày làm việc"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Không có thông tin cụ thể về đối tượng và cơ quan",
+      "source_reference": "Mục 4.c,d - Đối tượng và Cơ quan thực hiện",
+      "keywords": [
+        "đối tượng",
+        "cơ quan",
+        "thẩm quyền",
+        "địa điểm",
+        "cá nhân",
+        "tổ chức"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "e. Ph:  2.000 d?ng/trang; t? trang th? 3 tr? ln thu 1.000 d?ng/trang, t?i da thu khng qu 200.000 d?ng/b?n. Trang l can c? d? thu ph du?c tnh theo trang c?a b?n chnh.",
+      "source_reference": "Mục 4.d,e - Kết quả và Phí",
+      "keywords": [
+        "kết quả",
+        "lệ phí",
+        "thu phí",
+        "trả kết quả",
+        "miễn phí",
+        "giảm phí"
+      ]
+    },
+    {
+      "chunk_id": 7,
+      "section_title": "Yêu cầu và điều kiện thực hiện",
+      "content": "Không có thông tin cụ thể về yêu cầu và điều kiện",
+      "source_reference": "Mục 4.h - Yêu cầu và điều kiện",
+      "keywords": [
+        "điều kiện",
+        "yêu cầu",
+        "không được thực hiện",
+        "năng lực",
+        "giấy tờ tùy thân"
+      ]
+    },
+    {
+      "chunk_id": 8,
+      "section_title": "Căn cứ pháp lý và quy trình chi tiết",
+      "content": "Không có thông tin cụ thể về căn cứ pháp lý và quy trình",
+      "source_reference": "Mục 4.i, 5, 6, 7 - Căn cứ pháp lý, Quy trình, Biểu mẫu, Hồ sơ lưu",
+      "keywords": [
+        "căn cứ pháp lý",
+        "quy trình",
+        "biểu mẫu",
+        "hồ sơ lưu",
+        "bước thực hiện",
+        "trách nhiệm"
+      ]
+    }
+  ]
+}

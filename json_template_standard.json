@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "source": "data/documents/[collection_name]/DOC_[number]/[filename].doc",
+    "title": "[Tên đầy đủ của thủ tục]",
+    "code": "[Mã hiệu thủ tục]",
+    "issuing_authority": "[Cơ quan ban hành]",
+    "effective_date": "2025-08-30",
+    "executing_agency": "[Cơ quan trực tiếp thực hiện]",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "[Mô tả thời hạn giải quyết]",
+    "fee_vnd": 0,
+    "fee_text": "[Mô tả lệ phí chi tiết]",
+    "has_form": false,
+    "requirements_conditions": "[Yêu cầu và điều kiện thực hiện]",
+    "legal_basis_references": [
+      "[Văn bản pháp luật 1]",
+      "[Văn bản pháp luật 2]"
+    ],
+    "last_updated": "2025-08-30",
+    "version": "1.0",
+    "collection_type": "[tên collection]"
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "[mô tả lệ phí chính]"
+    },
+    "exemptions": ["[điều kiện miễn phí 1]"],
+    "additional_fees": [
+      {
+        "description": "[mô tả phí bổ sung]",
+        "amount_vnd": 0,
+        "unit": "[đơn vị]"
+      }
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": false,
+    "electronic_form_description": "[mô tả biểu mẫu điện tử]",
+    "has_paper_form": true,
+    "paper_form_description": "[mô tả biểu mẫu giấy]"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "[Tên phần 1 - tùy theo cấu trúc văn bản]",
+      "content": "[Nội dung chi tiết của phần này]",
+      "source_reference": "[nguồn tham khảo - Mục X.Y]",
+      "keywords": ["[keyword 1]", "[keyword 2]"]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "[Tên phần 2 - tùy theo cấu trúc văn bản]",
+      "content": "[Nội dung chi tiết của phần này]",
+      "source_reference": "[nguồn tham khảo - Mục X.Y]",
+      "keywords": ["[keyword 1]", "[keyword 2]"]
+    }
+  ]
+}

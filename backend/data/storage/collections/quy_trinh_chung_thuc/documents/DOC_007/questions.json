@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Thủ tục này áp dụng trong trường hợp nào?",
+    "answer": "Thủ tục này áp dụng cho [mô tả trường hợp cụ thể]",
+    "category": "applicability",
+    "priority": "high"
+  },
+  {
+    "question": "Thành phần hồ sơ cần những giấy tờ gì?",
+    "answer": "Hồ sơ cần bao gồm: [liệt kê các giấy tờ cần thiết]",
+    "category": "documents",
+    "priority": "high"
+  },
+  {
+    "question": "Thời hạn giải quyết hồ sơ là bao lâu?",
+    "answer": "Thời hạn giải quyết là [số ngày] ngày làm việc",
+    "category": "timeline",
+    "priority": "medium"
+  },
+  {
+    "question": "Lệ phí cho thủ tục này là bao nhiêu?",
+    "answer": "Lệ phí là [số tiền] đồng",
+    "category": "fees",
+    "priority": "medium"
+  },
+  {
+    "question": "Cơ quan nào có thẩm quyền thực hiện?",
+    "answer": "Cơ quan có thẩm quyền: [tên cơ quan]",
+    "category": "authority",
+    "priority": "medium"
+  }
+]

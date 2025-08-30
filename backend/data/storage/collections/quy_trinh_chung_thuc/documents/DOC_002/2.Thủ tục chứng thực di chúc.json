@@ -1,0 +1,72 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/DOC_002/2.Thủ tục chứng thực di chúc.doc",
+    "title": "Thủ tục chứng thực di chúc",
+    "code": "QT 02/CT-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-30",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Không quá 02 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 0,
+    "fee_text": "Không quy định lệ phí cụ thể",
+    "has_form": true,
+    "requirements_conditions": "Người yêu cầu chứng thực nộp 01 bộ hồ sơ yêu cầu chứng thực hợp lệ. Áp dụng đối với cá nhân lập di chúc, trừ trường hợp người lập di chúc đang bị cái chết đe dọa đến tính mạng.",
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP ngày 16/02/2015 của Chính phủ về cấp bản sao từ bản chính, chứng thực chữ ký và chứng thực hợp đồng, giao dịch",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực",
+      "Thông tư số 01/2020/TT-BTP ngày 03/3/2020 của Bộ trưởng Bộ Tư pháp",
+      "Thông tư số 226/2016/TT-BTC ngày 11/11/2016 của Bộ trưởng Bộ Tài chính",
+      "Quyết định số 101/QĐ-BKHCN ngày 21 tháng 01 năm 2019 của Bộ Khoa học và Công nghệ"
+    ],
+    "last_updated": "2025-08-30",
+    "version": "1.0",
+    "collection_type": "quy_trinh_chung_thuc"
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không quy định lệ phí cụ thể"
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "Người yêu cầu chứng thực nộp 01 bộ hồ sơ yêu cầu chứng thực hợp lệ, bao gồm: + Bản sao giấy chứng nhận quyền sở hữu, quyền sử dụng hoặc bản sao giấy tờ thay thế được pháp luật quy định đối với tài sản mà pháp luật quy định phải đăng ký quyền sở hữu, quyền sử dụng trong trường hợp di chúc liên quan đến tài sản đó; trừ trường hợp người lập di chúc đang bị cái chết đe dọa đến tính mạng.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["hồ sơ", "di chúc", "bản sao giấy chứng nhận", "tài sản"]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Không quá 02 ngày làm việc, kể từ ngày nhận đủ hồ sơ yêu cầu chứng thực hoặc có thể kéo dài hơn theo thỏa thuận bằng văn bản với người yêu cầu chứng thực. Trường hợp kéo dài thì người tiếp nhận hồ sơ phải có phiếu hẹn ghi rõ thời gian.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["thời hạn", "02 ngày", "phiếu hẹn"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện",
+      "content": "Cá nhân, tổ chức có nhu cầu chứng thực di chúc.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["đối tượng", "cá nhân", "tổ chức", "di chúc"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Cơ quan thực hiện",
+      "content": "Ủy ban nhân dân cấp xã hoặc cơ quan có thẩm quyền chứng thực.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["cơ quan", "ủy ban nhân dân cấp xã"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả & Lệ phí",
+      "content": "Kết quả: Di chúc được chứng thực. Lệ phí: Không quy định lệ phí cụ thể, theo quy định của pháp luật.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["kết quả", "di chúc chứng thực", "lệ phí"]
+    }
+  ]
+}

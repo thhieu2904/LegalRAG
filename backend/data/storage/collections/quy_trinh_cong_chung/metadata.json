@@ -1,22 +1,370 @@
 {
-  "collection_id": "quy_trinh_cong_chung",
-  "collection_name": "Quy Trinh Cong Chung",
-  "description": "Legal documents for quy_trinh_cong_chung",
-  "document_count": 27,
-  "created_at": "2025-08-27T00:00:00.000000",
-  "has_forms": true,
-  "status": "active",
-  "structure": {
-    "documents/DOC_XXX/": {
-      "original_name.json": "RAG content processed from original document",
-      "original_name.doc": "Original document from government agency",
-      "router_questions.json": "Questions for document classification/routing",
-      "forms/": "Directory for future form uploads (empty initially)"
+  "documents": [
+    {
+      "title": "Bổ nhiệm công chứng viên",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Thời hạn tổng thể: 30 ngày kể từ ngày nhận hồ sơ hợp lệ (có thể gia hạn tối đa 15 ngày)",
+      "id": "DOC_001",
+      "fee_text": "Không quy định lệ phí cho thủ tục bổ nhiệm công chứng viên",
+      "source": "data/documents/quy_trinh_cong_chung/QUY TRÌNH CÔNG CHỨNG/1. Bổ nhiệm công chứng viên.doc",
+      "code": "QT 01/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Bổ nhiệm lại công chứng viên",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Thời hạn tổng thể: 25 ngày kể từ ngày nhận hồ sơ hợp lệ (có thể gia hạn tối đa 10 ngày)",
+      "id": "DOC_002",
+      "fee_text": "Không quy định lệ phí cho thủ tục bổ nhiệm lại công chứng viên",
+      "source": "data/documents/quy_trinh_cong_chung/QUY TRÌNH CÔNG CHỨNG/2. Bổ nhiệm lại công chứng viên.doc",
+      "code": "QT 02/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Miễn nhiệm công chứng viên (trường hợp được miễn nhiệm)",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Thời hạn tổng thể: 20 ngày kể từ ngày nhận hồ sơ hợp lệ",
+      "id": "DOC_003",
+      "fee_text": "Không quy định lệ phí cho thủ tục miễn nhiệm công chứng viên",
+      "source": "data/documents/quy_trinh_cong_chung/QUY TRÌNH CÔNG CHỨNG/3. Miễn nhiệm công chứng viên (trường hợp được miễn nhiệm).doc",
+      "code": "QT 03/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Công nhận tương đương đối với người được đào tạo nghề công chứng ở nước ngoài",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Thời hạn tổng thể: 45 ngày kể từ ngày nhận hồ sơ hợp lệ (có thể gia hạn tối đa 30 ngày)",
+      "id": "DOC_004",
+      "fee_text": "Không quy định lệ phí cho thủ tục công nhận tương đương",
+      "source": "data/documents/quy_trinh_cong_chung/QUY TRÌNH CÔNG CHỨNG/4. Công nhận tương đương đối với người được đào tạo nghề công chứng ở nước ngoài.doc",
+      "code": "QT 04/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký tập sự hành nghề công chứng",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Thời hạn tổng thể: 15 ngày kể từ ngày nhận hồ sơ hợp lệ",
+      "id": "DOC_005",
+      "fee_text": "Không quy định lệ phí cho thủ tục đăng ký tập sự hành nghề công chứng",
+      "source": "data/documents/quy_trinh_cong_chung/QUY TRÌNH CÔNG CHỨNG/5. Đăng ký tập sự hành nghề công chứng.doc",
+      "code": "QT 05/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký tập sự lại hành nghề công chứng sau khi chấm dứt tập sự hành nghề công chứng",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Thời hạn tổng thể: 12 ngày kể từ ngày nhận hồ sơ hợp lệ",
+      "id": "DOC_006",
+      "fee_text": "Không quy định lệ phí cho thủ tục đăng ký tập sự lại hành nghề công chứng",
+      "source": "data/documents/quy_trinh_cong_chung/QUY TRÌNH CÔNG CHỨNG/6. Đăng ký tập sự lại hành nghề công chứng sau khi chấm dứt tập sự hành nghề công chứng.doc",
+      "code": "QT 06/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng này sang tổ chức hành nghề công chứng khác trong cùng một tỉnh, thành phố trực thuộc Trung ương",
+      "effective_date": "15/05/2025",
+      "applicant_type": "Người tập sự hành nghề công chứng",
+      "has_form": true,
+      "processing_time_text": "03 ngày làm việc (để nộp giấy đề nghị) + 05 ngày làm việc (để Sở Tư pháp thông báo) = Tổng thời gian 08 ngày làm việc",
+      "id": "DOC_007",
+      "fee_text": "Không có phí",
+      "source": "7. Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng này sang tổ chức hành nghề công chứng khác trong cùng một tỉnh, thành phố trực thuộc Trung ương.doc",
+      "code": "QT 07/CC",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương"
+    },
+    {
+      "title": "Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng tại tỉnh, thành phố trực thuộc Trung ương này sang tổ chức hành nghề công chứng tại tỉnh, thành phố trực thuộc Trung ương khác",
+      "effective_date": "15/05/2025",
+      "applicant_type": "Người tập sự hành nghề công chứng",
+      "has_form": true,
+      "processing_time_text": "Sở Tư pháp nơi đi: 05 ngày làm việc (xoá đăng ký) + Sở Tư pháp nơi đến: 07-10 ngày làm việc (đăng ký mới) = Tổng thời gian 12-15 ngày làm việc",
+      "id": "DOC_008",
+      "fee_text": "Không có phí",
+      "source": "8. Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng tại tỉnh, thành phôd này sang tỉnh, thành phố khác .doc",
+      "code": "QT 08/CC",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương (cả nơi đi và nơi đến)"
+    },
+    {
+      "title": "Công nhận hoàn thành tập sự hành nghề công chứng",
+      "effective_date": "15/05/2025",
+      "applicant_type": "Người tập sự hành nghề công chứng",
+      "has_form": true,
+      "processing_time_text": "Thời hạn giải quyết: 10 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ",
+      "id": "DOC_009",
+      "fee_text": "Không có phí",
+      "source": "9. Công nhận hoàn thành tập sự hành nghề công chứng.doc",
+      "code": "QT 09/CC",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương"
+    },
+    {
+      "title": "Chấm dứt tập sự hành nghề công chứng",
+      "effective_date": "15/05/2025",
+      "applicant_type": "Người tập sự hành nghề công chứng hoặc tổ chức/cá nhân có liên quan",
+      "has_form": true,
+      "processing_time_text": "Thời hạn giải quyết: 07 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ",
+      "id": "DOC_010",
+      "fee_text": "Không có phí",
+      "source": "10. Chấm dứt tập sự hành nghề công chứng.doc",
+      "code": "QT 10/CC",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương"
+    },
+    {
+      "title": "Đăng ký tham dự kiểm tra kết quả tập sự hành nghề công chứng",
+      "effective_date": "15/05/2025",
+      "applicant_type": "Người tập sự hành nghề công chứng",
+      "has_form": true,
+      "processing_time_text": "Thời hạn giải quyết: 05 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ",
+      "id": "DOC_011",
+      "fee_text": "Không có phí đăng ký, nhưng phải nộp phí thẩm định tiêu chuẩn hành nghề công chứng",
+      "source": "11. Đăng ký tham dự kiểm tra kết quả tập sự hành nghề công chứng.doc",
+      "code": "QT 11/CC",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương"
+    },
+    {
+      "title": "Cấp thẻ công chứng viên",
+      "effective_date": "15/05/2025",
+      "applicant_type": "Công chứng viên được bổ nhiệm",
+      "has_form": true,
+      "processing_time_text": "Thời hạn giải quyết: 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_012",
+      "fee_text": "Có phí cấp thẻ công chứng viên theo quy định của Bộ Tài chính",
+      "source": "12. Cấp thẻ công chứng viên.doc",
+      "code": "QT 12/CC",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương"
+    },
+    {
+      "title": "Cấp lại Thẻ công chứng viên",
+      "effective_date": "15/05/2025",
+      "applicant_type": "Công chứng viên",
+      "has_form": true,
+      "processing_time_text": "Thời hạn giải quyết: 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_013",
+      "fee_text": "Có phí cấp lại thẻ công chứng viên theo quy định của Bộ Tài chính",
+      "source": "13. Cấp lại Thẻ công chứng viên.doc",
+      "code": "QT 13/CC",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương"
+    },
+    {
+      "title": "Thu hồi Thẻ công chứng viên",
+      "effective_date": "15/05/2025",
+      "applicant_type": "Sở Tư pháp hoặc cơ quan có thẩm quyền",
+      "has_form": false,
+      "processing_time_text": "Thời hạn giải quyết: 05 ngày làm việc kể từ ngày nhận được văn bản/thông báo",
+      "id": "DOC_014",
+      "fee_text": "Không có phí",
+      "source": "14. Thu hồi Thẻ công chứng viên.doc",
+      "code": "QT 14/CC",
+      "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương"
+    },
+    {
+      "title": "Thành lập Văn phòng công chứng",
+      "effective_date": "15/05/2025",
+      "applicant_type": "Công chứng viên hoặc nhóm công chứng viên",
+      "has_form": true,
+      "processing_time_text": "Sở Tư pháp: 05 ngày làm việc + UBND tỉnh: 10 ngày làm việc = Tổng thời gian 15 ngày làm việc",
+      "id": "DOC_015",
+      "fee_text": "Có phí thẩm định điều kiện hoạt động Văn phòng công chứng theo quy định",
+      "source": "15. Thành lập Văn phòng công chứng.doc",
+      "code": "QT 15/CC",
+      "executing_agency": "Sở Tư pháp và Ủy ban nhân dân cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký hoạt động Văn phòng công chứng",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng đã được cho phép thành lập"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_016",
+      "fee_text": "Không có lệ phí cho thủ tục đăng ký hoạt động",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_016/16. Đăng ký hoạt động Văn phòng công chứng.doc",
+      "code": "QT 16/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_017",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_017/17. Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng.doc",
+      "code": "QT 17/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Cấp lại Giấy đăng ký hoạt động cho Văn phòng công chứng do bị mất, hỏng",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "03 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_018",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_018/18. Cấp lại Giấy đăng ký hoạt động cho Văn phòng công chứng do bị mất, hỏng.doc",
+      "code": "QT 18/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Hợp nhất Văn phòng công chứng theo loại hình công ty hợp danh",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_019",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_019/19. Hợp nhất Văn phòng công chứng theo loại hình công ty hợp danh.doc",
+      "code": "QT 19/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký hoạt động Văn phòng công chứng hợp nhất",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc",
+      "id": "DOC_020",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_020/20. Đăng ký hoạt động Văn phòng công chứng hợp nhất.doc",
+      "code": "QT 20/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Sáp nhập Văn phòng công chứng theo loại hình công ty hợp danh",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_021",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_021/21. Sáp nhập Văn phòng công chứng theo loại hình công ty hợp danh.doc",
+      "code": "QT 21/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Chuyển nhượng toàn bộ phần vốn góp của toàn bộ thành viên hợp danh của Văn phòng công chứng",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_022",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_022/22. Chuyển nhượng toàn bộ phần vốn góp của toàn bộ thành viên hợp danh của Văn phòng công chứng.doc",
+      "code": "QT 22/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng nhận chuyển nhượng vốn góp",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_023",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_023/23. Thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng nhận chuyển nhượng vốn góp.doc",
+      "code": "QT 23/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Document 24",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc",
+      "id": "DOC_024",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_024/[filename].doc",
+      "code": "QT 24/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Document 25",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc",
+      "id": "DOC_025",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_025/[filename].doc",
+      "code": "QT 25/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Document 26",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_026",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_026/[filename].doc",
+      "code": "QT 26/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Document 27",
+      "effective_date": "2025-01-01",
+      "applicant_type": [
+        "Văn phòng công chứng"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_027",
+      "fee_text": "Không quy định lệ phí",
+      "source": "data/documents/quy_trinh_cong_chung/documents/DOC_027/[filename].doc",
+      "code": "QT 27/CC",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
     }
-  },
-  "migration_info": {
-    "migrated_from": "data_moi_tu_co_quan/QUY TRINH CONG CHUNG",
-    "migration_date": "2025-08-27T00:00:00.000000",
-    "migration_type": "initial_structure_v1"
-  }
+  ],
+  "issuing_authority": "Sở Tư pháp",
+  "collection_type": "quy_trinh_cong_chung",
+  "collection_name": "quy_trinh_cong_chung",
+  "created_date": "2025-08-30",
+  "last_updated": "2025-08-30",
+  "description": "Bộ sưu tập các quy trình công chứng"
 }

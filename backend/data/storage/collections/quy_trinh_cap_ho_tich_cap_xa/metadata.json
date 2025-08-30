@@ -1,22 +1,508 @@
 {
-  "collection_id": "quy_trinh_cap_ho_tich_cap_xa",
-  "collection_name": "Quy Trinh Cap Ho Tich Cap Xa",
-  "description": "Legal documents for quy_trinh_cap_ho_tich_cap_xa",
-  "document_count": 35,
-  "created_at": "2025-08-21T15:58:00.908098",
-  "has_forms": true,
-  "status": "active",
-  "structure": {
-    "documents/DOC_XXX/": {
-      "original_name.json": "RAG content processed from original document",
-      "original_name.doc": "Original document from government agency",
-      "router_questions.json": "Questions for document classification/routing",
-      "forms/": "Directory for future form uploads (empty initially)"
+  "documents": [
+    {
+      "title": "Đăng ký khai sinh",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu, trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì hoàn thành trong ngày làm việc tiếp theo",
+      "id": "DOC_001",
+      "fee_text": "Miễn lệ phí đối với trường hợp khai sinh đúng hạn, người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Giấy khai sinh (nếu có yêu cầu): 8.000 đồng/bản",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_001/01. Đăng ký khai sinh.doc",
+      "code": "QT 01/CX-HT",
+      "executing_agency": "UBND cấp xã nơi cư trú của người yêu cầu"
+    },
+    {
+      "title": "Đăng ký khai sinh có yếu tố nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Ngay trong ngày tiếp nhận hồ sơ; trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì hoàn thành trong ngày làm việc tiếp theo",
+      "id": "DOC_002",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến, áp dụng đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Giấy khai sinh (nếu có yêu cầu): 8.000 đồng/bản",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_002/02. ĐKKS có yếu tố nước ngoài.doc",
+      "code": "QT 02/CX-HT",
+      "executing_agency": "UBND cấp xã nơi cư trú của người yêu cầu"
+    },
+    {
+      "title": "Đăng ký lại khai sinh",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu, trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì hoàn thành trong ngày làm việc tiếp theo",
+      "id": "DOC_003",
+      "fee_text": "5.000 đồng (nộp trực tiếp); 4.000 đồng (nộp trực tuyến, áp dụng đến 31/12/2025). Miễn lệ phí cho người thuộc hộ nghèo; người cao tuổi; người khuyết tật; người có công với cách mạng; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn. Phí cấp bản sao Giấy khai sinh (nếu có yêu cầu): 8.000 đồng/bản",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_003/03. Đăng ký lại khai sinh.doc",
+      "code": "QT 03/CX-HT",
+      "executing_agency": "UBND cấp xã nơi cư trú của người yêu cầu"
+    },
+    {
+      "title": "Đăng ký lại khai sinh có yếu tố nước ngoài",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc. Trường hợp phải xác minh thì không quá 25 ngày.",
+      "id": "DOC_004",
+      "fee_text": "75.000 VND (theo quy định)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_004/04. Đăng ký lại khai sinh có yếu tố nước ngoài.doc",
+      "code": "QT 04/CX-HT",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký nhận cha, mẹ, con",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc.",
+      "id": "DOC_005",
+      "fee_text": "15.000 VND (theo quy định)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_005/05. Đăng ký nhận cha mẹ con.doc",
+      "code": "QT 05/CX-HT",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký nhận cha, mẹ, con có yếu tố nước ngoài",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc.",
+      "id": "DOC_006",
+      "fee_text": "1.500.000 VND (theo quy định)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_006/06. Đăng ký nhận cha mẹ con có yếu tố nước ngoài.doc",
+      "code": "QT 06/CX-HT",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký khai sinh kết hợp nhận cha, mẹ, con",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "03 ngày làm việc, trường hợp phải xác minh thì thời hạn giải quyết không quá 06 ngày làm việc",
+      "id": "DOC_007",
+      "fee_text": "Đăng ký khai sinh đúng hạn nộp trực tiếp: 8.000 đồng; nộp trực tuyến: 4.000 đồng. Nhận cha, mẹ, con nộp trực tiếp: 15.000 đồng; nộp trực tuyến: 7.500 đồng. Phí cấp bản sao Giấy khai sinh, bản sao Trích lục đăng ký nhận cha, mẹ, con: 8.000 đồng/bản. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người cao tuổi; người khuyết tật; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_007/07. Đăng ký khai sinh kết hợp nhận cha, mẹ, con.doc",
+      "code": "QT 07/CX-HT",
+      "executing_agency": "UBND cấp xã nơi cư trú của người cha hoặc người mẹ thực hiện đăng ký khai sinh kết hợp nhận cha, mẹ, con"
+    },
+    {
+      "title": "Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con có yếu tố nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "03 ngày làm việc, trường hợp phải xác minh thì thời hạn giải quyết không quá 06 ngày làm việc",
+      "id": "DOC_008",
+      "fee_text": "Khai sinh nộp trực tiếp: 75.000 đồng; khai sinh nộp trực tuyến: 37.500 đồng. Nhận cha, mẹ, con nộp trực tiếp: 1.500.000 đồng; nhận cha, mẹ, con nộp trực tuyến: 750.000 đồng. Phí cấp bản sao Giấy khai sinh, bản sao Trích lục đăng ký nhận cha, mẹ, con: 8.000 đồng/bản. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_008/08. Đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con có yếu tố nước ngoài.doc",
+      "code": "QT 08/CX-HT",
+      "executing_agency": "UBND cấp xã nơi cư trú của người cha hoặc người mẹ thực hiện đăng ký khai sinh kết hợp đăng ký nhận cha, mẹ, con có yếu tố nước ngoài"
+    },
+    {
+      "title": "Đăng ký khai sinh cho người đã có hồ sơ, giấy tờ cá nhân",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc. Trường hợp phải có văn bản xác minh thì thời hạn giải quyết không quá 10 ngày làm việc",
+      "id": "DOC_009",
+      "fee_text": "Nộp trực tiếp: 8.000 đồng; nộp trực tuyến: 4.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Giấy khai sinh: 8.000 đồng/bản. Đối với trường hợp đăng ký khai sinh không đúng hạn: 50.000 đồng (trực tiếp), 40.000 đồng (trực tuyến)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_009/09. Đăng ký khai sinh cho người đã có hồ sơ, giấy tờ cá nhân.doc",
+      "code": "QT 09/CX-HT",
+      "executing_agency": "UBND cấp xã nơi cư trú của người yêu cầu đăng ký khai sinh"
+    },
+    {
+      "title": "Đăng ký khai sinh có yếu tố nước ngoài cho người đã có hồ sơ, giấy tờ cá nhân",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc. Trường hợp phải có văn bản xác minh thì thời hạn giải quyết không quá 10 ngày làm việc",
+      "id": "DOC_010",
+      "fee_text": "Nộp trực tiếp: 75.000 đồng; nộp trực tuyến: 37.500 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Giấy khai sinh: 8.000 đồng/bản. Đối với trường hợp đăng ký khai sinh không đúng hạn: 50.000 đồng (trực tiếp), 40.000 đồng (trực tuyến)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_010/10. Đăng ký khai sinh có yếu tố nước ngoài cho người đã có hồ sơ, giấy tờ cá nhân.doc",
+      "code": "QT 10/CX-HT",
+      "executing_agency": "UBND cấp xã nơi cư trú của người yêu cầu đăng ký khai sinh"
+    },
+    {
+      "title": "Đăng ký kết hôn",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Ngay trong ngày tiếp nhận hồ sơ; trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp theo. Trường hợp cần xác minh điều kiện kết hôn của hai bên nam, nữ thì thời hạn giải quyết không quá 05 ngày làm việc",
+      "id": "DOC_011",
+      "fee_text": "Miễn lệ phí. Phí cấp bản sao Trích lục kết hôn: 8.000 đồng/bản sao",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_011/11. Đăng ký kết hôn.doc",
+      "code": "QT 11/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của hai bên nam, nữ"
+    },
+    {
+      "title": "Đăng ký kết hôn có yếu tố nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc, trường hợp phải xác minh thì thời hạn giải quyết không quá 10 ngày làm việc",
+      "id": "DOC_012",
+      "fee_text": "Nộp trực tiếp: 1.500.000 đồng; nộp trực tuyến: 750.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Trích lục kết hôn: 8.000 đồng/bản",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_012/12. Đăng ký kết hôn có yếu tố nước ngoài.doc",
+      "code": "QT 12/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của công dân Việt Nam"
+    },
+    {
+      "title": "Đăng ký lại kết hôn",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc; trường hợp phải xác minh thì thời hạn giải quyết không quá 10 ngày làm việc",
+      "id": "DOC_013",
+      "fee_text": "Nộp trực tiếp: 30.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 15.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao trích lục kết hôn: 20.000 đồng/trường hợp (nộp trực tiếp), 15.000 đồng/trường hợp (nộp trực tuyến)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_013/13. Đăng ký lại kết hôn.doc",
+      "code": "QT 13/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký kết hôn trước đây hoặc Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú"
+    },
+    {
+      "title": "Đăng ký lại kết hôn có yếu tố nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc; trường hợp phải xác minh thì thời hạn giải quyết không quá 10 ngày làm việc",
+      "id": "DOC_014",
+      "fee_text": "Nộp trực tiếp: 1.500.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 750.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao trích lục kết hôn: 1.000.000 đồng/trường hợp (nộp trực tiếp), 800.000 đồng/trường hợp (nộp trực tuyến)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_014/14. Đăng ký lại kết hôn có yếu tố nước ngoài.doc",
+      "code": "QT 14/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký kết hôn trước đây hoặc Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú"
+    },
+    {
+      "title": "Đăng ký khai tử",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Ngay trong ngày tiếp nhận yêu cầu, trường hợp nhận hồ sơ sau 15 giờ thì giải quyết trong ngày làm việc tiếp theo",
+      "id": "DOC_015",
+      "fee_text": "Đối với trường hợp đăng ký khai tử không đúng hạn nộp trực tiếp: 8.000 đồng; đối với trường hợp đăng ký khai tử không đúng hạn nộp trực tuyến (áp dụng đến 31/12/2025): 4.000 đồng. Miễn lệ phí đối với trường hợp đăng ký khai tử đúng hạn, người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Trích lục khai tử: 5.000 đồng/trường hợp (đăng ký lại, đăng ký quá hạn)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_015/15. Đăng ký khai tử.doc",
+      "code": "QT 15/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết hoặc Ủy ban nhân dân cấp xã nơi người đó chết hoặc nơi phát hiện thi thể người chết"
+    },
+    {
+      "title": "Đăng ký khai tử có yếu tố nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Ngay trong ngày tiếp nhận hồ sơ; trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp theo. Trường hợp cần xác minh thì không quá 03 ngày làm việc.",
+      "id": "DOC_016",
+      "fee_text": "Nộp trực tiếp: 75.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 37.500 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Trích lục khai tử: 8.000 đồng/bản sao Trích lục/sự kiện hộ tịch đã đăng ký. Phí đăng ký lại/quá hạn: 50.000 đồng/trường hợp (nộp trực tiếp), 40.000 đồng/trường hợp (nộp trực tuyến).",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_016/16. Đăng ký khai tử có yếu tố nước ngoài.doc",
+      "code": "QT 16/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết hoặc Ủy ban nhân dân cấp xã nơi người đó chết hoặc nơi phát hiện thi thể người chết"
+    },
+    {
+      "title": "Đăng ký lại khai tử",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc; trường hợp phải xác minh thì thời hạn giải quyết không quá 10 ngày làm việc",
+      "id": "DOC_017",
+      "fee_text": "Nộp trực tiếp: 8.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 4.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao trích lục khai tử: 8.000 đồng/trường hợp (nộp trực tiếp), 5.000 đồng/trường hợp (nộp trực tuyến)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_017/17. Đăng ký lại khai tử.doc",
+      "code": "QT 17/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của người chết"
+    },
+    {
+      "title": "Đăng ký lại khai tử có yếu tố nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc; trường hợp phải tiến hành xác minh thì thời hạn không quá 10 ngày làm việc",
+      "id": "DOC_018",
+      "fee_text": "Nộp trực tiếp: 75.000 đồng; nộp trực tuyến (áp dụng đến 31/12/2025): 37.500 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Trích lục khai tử: 8.000 đồng/trường hợp (nộp trực tiếp), 5.000 đồng/trường hợp (nộp trực tuyến)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_018/18. Đăng ký lại khai tử có yếu tố nước ngoài.doc",
+      "code": "QT 18/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết"
+    },
+    {
+      "title": "Đăng ký giám hộ",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân",
+        "Pháp nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc đối với việc đăng ký giám hộ cử, 03 ngày làm việc đối với việc đăng ký giám hộ đương nhiên",
+      "id": "DOC_019",
+      "fee_text": "Miễn lệ phí. Phí cấp bản sao Trích lục đăng ký giám hộ (nếu có yêu cầu): 8.000 đồng/bản sao Trích lục/sự kiện hộ tịch đã đăng ký",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_019/19. Đăng ký giám hộ.doc",
+      "code": "QT 19/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của người được giám hộ"
+    },
+    {
+      "title": "Đăng ký giám hộ có yếu tố nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân",
+        "Pháp nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc đối với việc đăng ký giám hộ cử, 03 ngày làm việc đối với việc đăng ký giám hộ đương nhiên",
+      "id": "DOC_020",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_020/20. Đăng ký giám hộ có yếu tố nước ngoài.doc",
+      "code": "QT 20/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của người được giám hộ"
+    },
+    {
+      "title": "Đăng ký chấm dứt giám hộ",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_021",
+      "fee_text": "Miễn lệ phí. Phí cấp bản sao Trích lục đăng ký chấm dứt giám hộ (nếu có yêu cầu): 8.000 đồng/bản sao Trích lục/sự kiện hộ tịch đã đăng ký",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_021/21. Đăng ký chấm dứt giám hộ.doc",
+      "code": "QT 21/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký giám hộ"
+    },
+    {
+      "title": "Đăng ký chấm dứt giám hộ có yếu tố nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_022",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_022/22. Đăng ký chấm dứt giám hộ có yếu tố nước ngoài.doc",
+      "code": "QT 22/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký giám hộ"
+    },
+    {
+      "title": "Đăng ký giám sát việc giám hộ",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_023",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_023/23. Đăng ký giám sát việc giám hộ.doc",
+      "code": "QT 23/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký giám hộ"
+    },
+    {
+      "title": "Đăng ký chấm dứt giám sát việc giám hộ",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_024",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_024/24. Đăng ký chấm dứt giám sát việc giám hộ.doc",
+      "code": "QT 24/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký giám sát việc giám hộ"
+    },
+    {
+      "title": "Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_025",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_025/25. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc.doc",
+      "code": "QT 25/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký hộ tịch"
+    },
+    {
+      "title": "Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc có yếu tố nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_026",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_026/26. Thay đổi, cải chính, bổ sung thông tin hộ tịch, xác định lại dân tộc có yếu tố nước ngoài.doc",
+      "code": "QT 26/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi đã đăng ký hộ tịch"
+    },
+    {
+      "title": "Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_027",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_027/27. Ghi vào Sổ hộ tịch việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.doc",
+      "code": "QT 27/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi công dân Việt Nam cư trú"
+    },
+    {
+      "title": "Ghi vào Sổ hộ tịch việc ly hôn, hủy việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_028",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_028/28. Ghi vào Sổ hộ tịch việc ly hôn, hủy việc kết hôn của công dân Việt Nam đã được giải quyết tại cơ quan có thẩm quyền của nước ngoài.doc",
+      "code": "QT 28/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi công dân Việt Nam cư trú"
+    },
+    {
+      "title": "Ghi vào Sổ hộ tịch các việc hộ tịch khác",
+      "effective_date": "2025-08-29",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "Ngay trong ngày tiếp nhận hồ sơ, trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp theo. Trong trường hợp phải xác minh thì thời hạn giải quyết không quá 3 ngày làm việc",
+      "id": "DOC_029",
+      "fee_text": "75.000 đồng (nộp trực tiếp); 37.500 đồng (nộp trực tuyến đến 31/12/2025). Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật; trẻ em; người cao tuổi; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_029/29. Ghi vào Sổ hộ tịch các việc hộ tịch khác.doc",
+      "code": "QT 29/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi công dân Việt Nam cư trú"
+    },
+    {
+      "title": "Đăng ký khai sinh lưu động",
+      "effective_date": "2025-07-07",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_030",
+      "fee_text": "8.000 đồng (đăng ký khai sinh không đúng hạn); 5.000 đồng (tỉnh Sóc Trăng cũ). Miễn lệ phí đối với trường hợp khai sinh đúng hạn, người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật; trẻ em; người cao tuổi; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_030/30. Đăng ký khai sinh lưu động.doc",
+      "code": "QT 30/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ"
+    },
+    {
+      "title": "Đăng ký kết hôn lưu động",
+      "effective_date": "2025-07-07",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_031",
+      "fee_text": "Miễn lệ phí",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_031/31. Đăng ký kết hôn lưu động.doc",
+      "code": "QT 31/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của hai bên nam, nữ"
+    },
+    {
+      "title": "Đăng ký khai tử lưu động",
+      "effective_date": "2025-07-07",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "05 ngày làm việc",
+      "id": "DOC_032",
+      "fee_text": "Miễn lệ phí (đăng ký đúng hạn); 8.000 đồng (đăng ký không đúng hạn)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_032/32. Đăng ký khai tử lưu động.doc",
+      "code": "QT 32/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết hoặc nơi người đó chết hoặc nơi phát hiện thi thể người chết"
+    },
+    {
+      "title": "Cấp Giấy xác nhận tình trạng hôn nhân",
+      "effective_date": "2025-07-07",
+      "applicant_type": [
+        "Cá nhân"
+      ],
+      "has_form": true,
+      "processing_time_text": "03 ngày làm việc; trường hợp phải xác minh thì không quá 23 ngày",
+      "id": "DOC_033",
+      "fee_text": "Miễn lệ phí (32 xã, phường); 10.000 đồng (trực tiếp)/8.000 đồng (trực tuyến) tùy khu vực",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_033/33. Cấp Giấy xác nhận tình trạng hôn nhân.doc",
+      "code": "QT 33/CX-HT",
+      "executing_agency": "Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú hoặc nơi tạm trú (nếu không có nơi thường trú)"
+    },
+    {
+      "title": "Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh",
+      "effective_date": "2025-07-07",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "Ngay trong ngày tiếp nhận hồ sơ; trường hợp nhận hồ sơ sau 15 giờ mà không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp theo",
+      "id": "DOC_034",
+      "fee_text": "8.000 đồng/bản sao (32 xã, phường); 5.000 đồng/bản sao (28 xã, phường); 8.000 đồng/bản sao (43 xã, phường)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_034/34. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.doc",
+      "code": "QT 34/CX-HT",
+      "executing_agency": "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã)"
+    },
+    {
+      "title": "Xác nhận thông tin hộ tịch",
+      "effective_date": "2025-07-07",
+      "applicant_type": [
+        "Cá nhân",
+        "Cơ quan",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "03 ngày làm việc. Trường hợp phải kiểm tra, xác minh thì thời hạn có thể kéo dài nhưng không quá 10 ngày làm việc",
+      "id": "DOC_035",
+      "fee_text": "8.000 đồng/Văn bản xác nhận (32 xã, phường); 5.000 đồng/Văn bản xác nhận (28 xã, phường); 5.000 đồng trực tiếp/4.000 đồng trực tuyến (43 xã, phường)",
+      "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_035/35. Xác nhận hộ tịch.doc",
+      "code": "QT 35/CX-HT",
+      "executing_agency": "Cơ quan quản lý Cơ sở dữ liệu hộ tịch điện tử (Ủy ban nhân dân cấp xã)"
     }
-  },
-  "migration_info": {
-    "migrated_from": "data/documents/quy_trinh_cap_ho_tich_cap_xa",
-    "migration_date": "2025-08-21T15:58:00.908098",
-    "migration_type": "final_structure_v1"
-  }
+  ],
+  "issuing_authority": "Ủy ban nhân dân cấp xã",
+  "collection_type": "quy_trinh_cap_ho_tich_cap_xa",
+  "collection_name": "quy_trinh_cap_ho_tich_cap_xa",
+  "created_date": "2025-08-30",
+  "last_updated": "2025-08-30",
+  "description": "Bộ sưu tập các quy trình hộ tịch cấp xã"
 }

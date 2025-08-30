@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "source": "temp_doc_001.doc",
+    "title": "Đăng ký việc nuôi con nuôi trong nước",
+    "code": "QT 01/CX-HCTP",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-07-09",
+    "executing_agency": "Ủy ban nhân dân cấp xã",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ (bao gồm thời gian xác minh, lấy ý kiến và đăng ký)",
+    "fee_vnd": 400000,
+    "fee_text": "400.000 đồng/trường hợp (miễn lệ phí cho một số trường hợp đặc biệt)",
+    "has_form": true,
+    "requirements_conditions": "Người nhận con nuôi phải có năng lực hành vi dân sự đầy đủ, từ 20 tuổi trở lên, có điều kiện về sức khỏe, kinh tế, chỗ ở, có tư cách đạo đức tốt. Trẻ em được nhận làm con nuôi phải dưới 16 tuổi (hoặc dưới 18 tuổi trong trường hợp đặc biệt), bị bỏ rơi, mồ côi hoặc không nơi nương tựa.",
+    "legal_basis_references": [
+      "Luật Nuôi con nuôi 2010",
+      "Nghị định số 19/2011/NĐ-CP ngày 21/3/2011",
+      "Nghị định số 24/2019/NĐ-CP ngày 05/3/2019",
+      "Nghị định số 06/2025/NĐ-CP ngày 08/01/2025",
+      "Nghị định số 120/2025/NĐ-CP ngày 11/6/2025",
+      "Nghị định số 114/2016/NĐ-CP ngày 8/7/2016",
+      "Nghị định số 104/2022/NĐ-CP ngày 21/12/2022",
+      "Thông tư số 10/2025/TT-BTP ngày 20/6/2025",
+      "Thông tư số 10/2020/TT-BTP ngày 28/12/2020",
+      "Thông tư số 267/2016/TT-BTC ngày 14/11/2016",
+      "Thông tư số 07/2023/TT-BTP ngày 29/9/2023"
+    ],
+    "last_updated": "2025-08-30",
+    "version": "1.0",
+    "collection_type": "quy_trinh_chung_thuc"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "**Hồ sơ của người nhận con nuôi:**\n- Đơn xin nhận con nuôi\n- Bản sao Hộ chiếu, Thẻ căn cước hoặc giấy tờ có giá trị thay thế\n- Văn bản xác nhận tình trạng hôn nhân (Giấy chứng nhận kết hôn hoặc tra cứu thông tin)\n- Giấy khám sức khỏe (do bệnh viện đa khoa hoặc phòng khám đa khoa cấp, có giá trị 06 tháng)\n- Văn bản xác nhận hoàn cảnh gia đình, tình trạng chỗ ở, điều kiện kinh tế (do UBND cấp xã cấp, có giá trị 06 tháng)\n- Đơn đăng ký nhu cầu nhận trẻ em làm con nuôi (đối với trường hợp chưa tìm được trẻ em)\n\n**Hồ sơ của người được nhận làm con nuôi:**\n- Giấy khai sinh\n- Giấy khám sức khỏe\n- Hai ảnh toàn thân, nhìn thẳng (chụp không quá 06 tháng)\n- Biên bản xác nhận của UBND hoặc Công an cấp xã (đối với trẻ em bị bỏ rơi)\n- Giấy chứng tử của cha đẻ, mẹ đẻ hoặc quyết định của Tòa án (đối với trẻ em mồ côi)\n- Quyết định tiếp nhận đối với trẻ em ở cơ sở nuôi dưỡng\n\n**Lưu ý quan trọng:**\n- Số lượng hồ sơ: 01 bộ cho từng loại\n- Có thể tra cứu thông tin từ Cơ sở dữ liệu quốc gia về dân cư thay thế một số giấy tờ\n- Ủy ban nhân dân cấp xã có trách nhiệm tra cứu lý lịch tư pháp\n- Giấy tờ bị tẩy xóa, sửa chữa sẽ không có giá trị sử dụng",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "đơn xin nhận con nuôi",
+        "giấy khám sức khỏe",
+        "văn bản xác nhận",
+        "giấy khai sinh",
+        "ảnh",
+        "tra cứu thông tin",
+        "lý lịch tư pháp"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "**Thời gian xác minh hoàn cảnh:**\n- Xác minh hoàn cảnh gia đình, chỗ ở, điều kiện kinh tế: 05 ngày làm việc\n- Trường hợp có nơi thường trú và nơi ở hiện tại khác nhau: Thêm 02 ngày làm việc để đề nghị xác minh\n\n**Thời gian kiểm tra hồ sơ và lấy ý kiến:** 10 ngày kể từ ngày nhận đủ hồ sơ hợp lệ\n\n**Thời gian những người liên quan thay đổi ý kiến:** 15 ngày kể từ ngày được lấy ý kiến\n\n**Thời gian đăng ký và trao giấy chứng nhận:** 05 ngày kể từ ngày hết hạn thay đổi ý kiến\n\n**Tổng thời gian:** 30 ngày làm việc (có thể kéo dài tùy trường hợp)",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "xác minh",
+        "kiểm tra hồ sơ",
+        "lấy ý kiến",
+        "đăng ký",
+        "trao giấy chứng nhận",
+        "30 ngày"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện",
+      "content": "**Đối tượng thực hiện thủ tục:** Công dân Việt Nam thường trú ở Việt Nam nhận trẻ em thường trú ở Việt Nam làm con nuôi.\n\n**Người nhận con nuôi phải có đủ điều kiện:**\n- Có năng lực hành vi dân sự đầy đủ\n- Từ 20 tuổi trở lên (trừ trường hợp cha dượng, mẹ kế, cô cậu dì chú bác ruột)\n- Có điều kiện về sức khỏe, kinh tế, chỗ ở\n- Có tư cách đạo đức tốt\n\n**Các trường hợp không được nhận con nuôi:**\n- Đang bị hạn chế quyền của cha mẹ\n- Đang chấp hành xử lý hành chính tại cơ sở giáo dục, chữa bệnh\n- Đang chấp hành hình phạt tù\n- Chưa được xóa án tích về các tội nghiêm trọng\n\n**Trẻ em được nhận làm con nuôi phải có đủ điều kiện:**\n- Dưới 16 tuổi (hoặc dưới 18 tuổi trong trường hợp đặc biệt)\n- Bị bỏ rơi, mồ côi, không nơi nương tựa\n- Một người chỉ được làm con của một người độc thân hoặc cặp vợ chồng",
+      "source_reference": "Mục 5.c, 5.h",
+      "keywords": [
+        "đối tượng",
+        "người nhận con nuôi",
+        "trẻ em",
+        "điều kiện",
+        "tuổi tác",
+        "sức khỏe",
+        "đạo đức",
+        "án tích"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Cơ quan thực hiện",
+      "content": "**Cơ quan có thẩm quyền quyết định:** Ủy ban nhân dân cấp xã\n\n**Cơ quan trực tiếp thực hiện:** Ủy ban nhân dân cấp xã\n\n**Cơ quan phối hợp:**\n- UBND cấp xã nơi thường trú của người nhận con nuôi (khi nơi thường trú khác nhau)\n- UBND cấp xã nơi cư trú của người nhận con nuôi (đối với cha dượng/mẹ kế hoặc cô cậu dì chú bác ruột)\n- UBND cấp xã nơi ở hiện tại của người được nhận làm con nuôi (khi có sự khác nhau)\n\n**Cơ quan có trách nhiệm:**\n- Tiếp nhận và kiểm tra hồ sơ\n- Xác minh hoàn cảnh gia đình\n- Lấy ý kiến những người liên quan\n- Đăng ký việc nuôi con nuôi\n- Cấp Giấy chứng nhận nuôi con nuôi trong nước",
+      "source_reference": "Mục 5.d",
+      "keywords": [
+        "ủy ban nhân dân",
+        "cấp xã",
+        "thẩm quyền",
+        "phối hợp",
+        "xác minh",
+        "đăng ký",
+        "cấp giấy chứng nhận"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả và Lệ phí",
+      "content": "**Kết quả thực hiện thủ tục:** Giấy chứng nhận nuôi con nuôi trong nước\n\n**Lệ phí:**\n- Mức thu: 400.000 đồng/trường hợp\n- **Miễn lệ phí** đối với:\n  * Cha dượng hoặc mẹ kế nhận con riêng của vợ/chồng làm con nuôi\n  * Cô, cậu, dì, chú, bác ruột nhận cháu làm con nuôi\n  * Nhận trẻ em khuyết tật, nhiễm HIV/AIDS hoặc mắc bệnh hiểm nghèo\n  * Người có công với cách mạng nhận con nuôi\n\n**Thời điểm nộp lệ phí:** Khi nộp hồ sơ hoặc sau khi có thông báo nộp lệ phí",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "giấy chứng nhận",
+        "lệ phí",
+        "miễn lệ phí",
+        "400.000 đồng",
+        "trường hợp đặc biệt",
+        "người có công"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Biểu mẫu",
+      "content": "**Các mẫu đơn, tờ khai chính:**\n- Đơn xin nhận con nuôi (theo mẫu quy định)\n- Văn bản xác nhận hoàn cảnh gia đình, tình trạng chỗ ở, điều kiện kinh tế (theo mẫu của UBND cấp xã)\n- Đơn đăng ký nhu cầu nhận trẻ em làm con nuôi (đối với trường hợp chưa tìm được trẻ em)\n\n**Các mẫu sổ theo dõi:**\n- Mẫu sổ theo dõi hồ sơ\n- Sổ đăng ký nuôi con nuôi\n\n**Lưu ý:** Tất cả biểu mẫu đều theo quy định của Bộ Tư pháp và UBND cấp tỉnh",
+      "source_reference": "Mục 5.g, 6",
+      "keywords": [
+        "đơn xin nhận con nuôi",
+        "văn bản xác nhận",
+        "đơn đăng ký nhu cầu",
+        "sổ theo dõi",
+        "sổ đăng ký",
+        "mẫu quy định"
+      ]
+    },
+    {
+      "chunk_id": 7,
+      "section_title": "Quy trình thực hiện",
+      "content": "**Các bước thực hiện chi tiết:**\n\n**Bước 1: Tiếp nhận và kiểm tra hồ sơ** (½ ngày)\n- Cán bộ tiếp nhận tại Trung tâm Phục vụ hành chính công\n- Kiểm tra tính pháp lý và nội dung hồ sơ\n- Hướng dẫn bổ sung nếu hồ sơ chưa đầy đủ\n\n**Bước 2: Kiểm tra hồ sơ và lấy ý kiến** (10 ngày)\n- Công chức Tư pháp - Hộ tịch thực hiện\n- Kiểm tra các điều kiện, xác minh thông tin\n- Lấy ý kiến của những người liên quan\n\n**Bước 3: Thay đổi ý kiến đồng ý** (15 ngày)\n- Công chức Tư pháp - Hộ tịch\n- Ghi nhận ý kiến của những người liên quan\n\n**Bước 4: Dự thảo và trình duyệt** (1,5 ngày)\n- Công chức Tư pháp - Hộ tịch dự thảo Giấy chứng nhận\n- Lãnh đạo UBND cấp xã xem xét, ký duyệt (2 ngày)\n\n**Bước 5: Đóng dấu và hoàn thiện** (½ ngày)\n- Văn thư đóng dấu văn bản\n\n**Bước 6: Ghi sổ và trả kết quả** (½ ngày)\n- Ghi vào Sổ đăng ký nuôi con nuôi\n- Người yêu cầu ký tên vào sổ\n- Hoàn trả kết quả cho người dân\n\n**Ghi chú quan trọng:**\n- Các bước có thể tăng/giảm tùy đặc điểm thủ tục\n- Thời gian tính theo ngày làm việc (8 tiếng)\n- Một số thủ tục đơn giản có thể giải quyết trong ngày\n- Có thể sử dụng phần mềm tin học để kiểm soát",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "tiếp nhận",
+        "kiểm tra",
+        "lấy ý kiến",
+        "dự thảo",
+        "ký duyệt",
+        "đóng dấu",
+        "ghi sổ",
+        "trả kết quả",
+        "thời gian"
+      ]
+    }
+  ]
+}

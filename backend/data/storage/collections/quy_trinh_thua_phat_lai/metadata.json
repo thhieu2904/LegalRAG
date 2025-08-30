@@ -1,22 +1,265 @@
 {
-  "collection_id": "quy_trinh_thua_phat_lai",
-  "collection_name": "Quy Trinh Thua Phat Lai",
-  "description": "Legal documents for quy_trinh_thua_phat_lai",
-  "document_count": 17,
-  "created_at": "2025-08-27T00:00:00.000000",
-  "has_forms": true,
-  "status": "active",
-  "structure": {
-    "documents/DOC_XXX/": {
-      "original_name.json": "RAG content processed from original document",
-      "original_name.doc": "Original document from government agency",
-      "router_questions.json": "Questions for document classification/routing",
-      "forms/": "Directory for future form uploads (empty initially)"
+  "documents": [
+    {
+      "title": "Công nhận tương đương đào tạo nghề Thừa phát lại ở nước ngoài",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_001",
+      "fee_text": "",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_001/QT 01 - Công nhận tương đương đào tạo nghề Thừa phát lại ở nước ngoài.doc",
+      "code": "QT 01/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Bổ nhiệm Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "27 ngày làm việc (07 ngày Sở Tư pháp + 20 ngày UBND cấp tỉnh)",
+      "id": "DOC_002",
+      "fee_text": "800.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_002/QT 02 - Bổ nhiệm Thừa phát lại .doc",
+      "code": "QT 02/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Miễn nhiệm Thừa phát lại (trường hợp được miễn nhiệm)",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc",
+      "id": "DOC_003",
+      "fee_text": "300.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_003/QT 03 - Miễn nhiệm Thừa phát lại (trường hợp được miễn nhiệm) .doc",
+      "code": "QT 03/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Bổ nhiệm lại Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc",
+      "id": "DOC_004",
+      "fee_text": "600.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_004/QT 04 - Bổ nhiệm lại Thừa phát lại .doc",
+      "code": "QT 04/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký tập sự hành nghề Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "10 ngày làm việc",
+      "id": "DOC_005",
+      "fee_text": "200.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_005/QT 05 - Đk tập sự hành nghề Thừa phát lại.doc",
+      "code": "QT 05/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi nơi tập sự hành nghề Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "7 ngày làm việc",
+      "id": "DOC_006",
+      "fee_text": "100.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_006/QT 06 - Thay đổi nơi tập sự hành nghề Thừa phát lại .doc",
+      "code": "QT 06/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký hành nghề và cấp Thẻ Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "25 ngày làm việc",
+      "id": "DOC_007",
+      "fee_text": "1.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_007/QT 07 - Đăng ký hành nghề và cấp Thẻ Thừa phát lại .doc",
+      "code": "QT 07/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Cấp lại Thẻ Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "10 ngày làm việc",
+      "id": "DOC_008",
+      "fee_text": "500.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_008/QT 08 - Cấp lại Thẻ Thừa phát lại .doc",
+      "code": "QT 08/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thành lập Văn phòng Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "30 ngày làm việc",
+      "id": "DOC_009",
+      "fee_text": "2.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_009/QT 09 - Thành lập Văn phòng Thừa phát lại.doc",
+      "code": "QT 09/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký hoạt động Văn phòng Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc",
+      "id": "DOC_010",
+      "fee_text": "1.500.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_010/QT 10- Đăng ký hoạt động Văn phòng Thừa phát lại.doc",
+      "code": "QT 10/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi nội dung đăng ký hoạt động của Văn phòng Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "12 ngày làm việc",
+      "id": "DOC_011",
+      "fee_text": "800.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_011/QT 11 - Thay đổi nội dung đăng ký hoạt động của Văn phòng Thừa phát lại.doc",
+      "code": "QT 11/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Chuyển đổi loại hình hoạt động Văn phòng Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc",
+      "id": "DOC_012",
+      "fee_text": "1.200.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_012/QT 12 - Chuyển đổi loại hình hoạt động Văn phòng Thừa phát lại.doc",
+      "code": "QT 12/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký hoạt động sau khi chuyển đổi loại hình hoạt động Văn phòng Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc",
+      "id": "DOC_013",
+      "fee_text": "1.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_013/QT 13 - Đăng ký hoạt động sau khi chuyển đổi loại hình hoạt động Văn phòng Thừa phát lại.doc",
+      "code": "QT 13/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi trụ sở Văn phòng Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "10 ngày làm việc",
+      "id": "DOC_014",
+      "fee_text": "600.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_014/QT 14 - Hợp nhất, sáp nhập Văn phòng Thừa phát lại.doc",
+      "code": "QT 14/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi người đại diện Văn phòng Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "12 ngày làm việc",
+      "id": "DOC_015",
+      "fee_text": "700.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_015/QT 15 - Đăng ký hoạt động, thay đổi nội dung đăng ký hoạt động sau khi hợp nhất, sáp nhập Văn phòng Thừa phát lại.doc",
+      "code": "QT 15/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Tạm ngừng hoạt động Văn phòng Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "5 ngày làm việc",
+      "id": "DOC_016",
+      "fee_text": "300.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_016/QT 16- Chuyển nhượng Văn phòng Thừa phát lại.doc",
+      "code": "QT 16/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Chấm dứt hoạt động Văn phòng Thừa phát lại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc",
+      "id": "DOC_017",
+      "fee_text": "1.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_thua_phat_lai/DOC_017/QT 17- Thay đổi nội dung đăng ký hoạt động sau khi chuyển nhượng Văn phòng Thừa phát lại.doc",
+      "code": "QT 17/TPL",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
     }
-  },
-  "migration_info": {
-    "migrated_from": "data_moi_tu_co_quan/QUY TRÌNH THỪA PHÁT LẠI",
-    "migration_date": "2025-08-27T00:00:00.000000",
-    "migration_type": "initial_structure_v1"
-  }
+  ],
+  "issuing_authority": "Sở Tư pháp",
+  "collection_type": "quy_trinh_thua_phat_lai",
+  "collection_name": "quy_trinh_thua_phat_lai",
+  "created_date": "2025-08-30",
+  "last_updated": "2025-08-30",
+  "description": "Bộ sưu tập các quy trình thừa phát lại"
 }

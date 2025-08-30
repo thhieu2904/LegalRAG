@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_chung_thuc/DOC_002_CHUNG/2. Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản.doc",
+    "title": "Thủ tục chứng thực bản sao từ bản chính giấy tờ, văn bản",
+    "code": "QT 02/CTBS",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-30",
+    "executing_agency": "Phòng công chứng hoặc cơ quan có thẩm quyền",
+    "applicant_type": ["Cá nhân", "Tổ chức"],
+    "processing_time_text": "Ngay trong ngày hoặc tối đa 02 ngày làm việc, có thể kéo dài theo thỏa thuận",
+    "fee_vnd": 2000,
+    "fee_text": "2.000 đồng/trang; từ trang thứ 3 trở lên thu 1.000 đồng/trang, tối đa không quá 200.000 đồng/bản",
+    "has_form": false,
+    "requirements_conditions": "Bản chính giấy tờ, văn bản làm cơ sở để chứng thực bản sao và bản sao cần chứng thực. Bản chính không được tẩy xóa, sửa chữa, trái pháp luật, v.v. Trường hợp bản chính của nước ngoài phải hợp pháp hóa lãnh sự.",
+    "legal_basis_references": [
+      "Nghị định số 23/2015/NĐ-CP ngày 16/02/2015 của Chính phủ về cấp bản sao từ bản chính, chứng thực chữ ký và chứng thực hợp đồng, giao dịch",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực",
+      "Thông tư số 01/2020/TT-BTP ngày 03/3/2020 của Bộ trưởng Bộ Tư pháp",
+      "Thông tư số 226/2016/TT-BTC ngày 11/11/2016 của Bộ trưởng Bộ Tài chính",
+      "Thông tư số 257/2016/TT-BTC ngày 11/11/2016 của Bộ trưởng Bộ Tài chính",
+      "Quyết định số 101/QĐ-BKHCN ngày 21 tháng 01 năm 2019 của Bộ Khoa học và Công nghệ"
+    ],
+    "last_updated": "2025-08-30",
+    "version": "1.0",
+    "collection_type": "quy_trinh_chung_thuc"
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "2.000đ/trang",
+      "online": "2.000đ/trang",
+      "description": "Phí chứng thực bản sao"
+    },
+    "exemptions": [],
+    "additional_fees": [
+      {
+        "description": "Từ trang thứ 3 trở lên: 1.000đ/trang",
+        "amount": "1.000đ/trang"
+      },
+      {
+        "description": "Tối đa: 200.000đ/bản",
+        "amount": "200.000đ/bản"
+      }
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "Bản chính giấy tờ, văn bản làm cơ sở để chứng thực bản sao và bản sao cần chứng thực. Trường hợp người yêu cầu chỉ xuất trình bản chính thì cơ quan tiến hành chụp từ bản chính để thực hiện chứng thực, trừ trường hợp không có phương tiện.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["hồ sơ", "bản chính", "bản sao", "chụp bản chính"]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Thời hạn thực hiện yêu cầu chứng thực ngay trong ngày hoặc trong ngày làm việc tiếp theo nếu tiếp nhận sau 15 giờ. Trường hợp phức tạp có thể kéo dài thêm không quá 02 ngày hoặc theo thỏa thuận. Người tiếp nhận hồ sơ phải có phiếu hẹn nếu cần.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["thời hạn", "ngay trong ngày", "02 ngày", "phiếu hẹn"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện",
+      "content": "Cá nhân, tổ chức có nhu cầu chứng thực bản sao từ bản chính giấy tờ, văn bản.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["đối tượng", "cá nhân", "tổ chức"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Cơ quan thực hiện",
+      "content": "Phòng công chứng hoặc cơ quan có thẩm quyền chứng thực.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["cơ quan", "phòng công chứng"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả & Lệ phí",
+      "content": "Kết quả: Bản sao được chứng thực. Lệ phí: 2.000 đồng/trang; từ trang thứ 3 trở lên thu 1.000 đồng/trang, tối đa không quá 200.000 đồng/bản.",
+      "source_reference": "Nội dung thủ tục",
+      "keywords": ["kết quả", "bản sao chứng thực", "lệ phí", "2.000 đồng"]
+    }
+  ]
+}
