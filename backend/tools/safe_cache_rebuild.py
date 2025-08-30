@@ -162,7 +162,7 @@ def _create_fused_text_like_vectordb(questions, metadata, content_data):
             fused_text = text_content
         
         # Limit fused text length (same as vector DB)
-        if len(fused_text) > cls:
+        if len(fused_text) > 2000:
             fused_text = fused_text[:2000]
         
         logger.info(f"✅ Created fused text: {len(fused_text)} chars")

@@ -523,9 +523,11 @@ class QueryRouter:
             original_confidence = best_score
             original_confidence_level = confidence_level
             was_overridden = False
+            target_collection = best_collection if best_score >= 0.65 else None
+            inferred_filters = {}
             
             if session and hasattr(session, 'should_override_confidence'):
-                if session.should_override_confidence(best_score):
+                if session.should_override_confidence(best_score, query):
                     # Use session collection and boost confidence
                     target_collection = session.last_successful_collection
                     best_score = 0.85  # Override to high confidence 
@@ -534,7 +536,6 @@ class QueryRouter:
 
                     
                     # Add document preservation in router result
-                    inferred_filters = {}
                     if hasattr(session, 'last_successful_filters') and session.last_successful_filters:
                         if 'source_file' in session.last_successful_filters:
                             # Pass document info in routing result
@@ -542,8 +543,6 @@ class QueryRouter:
                             logger.info(f"🔒 SESSION OVERRIDE: Preserving document {session.last_successful_filters['source_file']}")
                     
                     logger.info(f"🔥 SESSION OVERRIDE: {original_confidence:.3f} → {best_score:.3f} for collection {target_collection}")
-                else:
-                    target_collection = best_collection if best_score >= 0.65 else None
             else:
                 target_collection = best_collection if best_score >= 0.65 else None
             

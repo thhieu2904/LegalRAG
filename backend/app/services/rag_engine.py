@@ -139,12 +139,13 @@ class OptimizedChatSession:
             self.cached_rag_content = rag_content
         self.consecutive_low_confidence_count = 0  # Reset counter
         
-    def should_override_confidence(self, current_confidence: float) -> bool:
+    def should_override_confidence(self, current_confidence: float, query: str = "") -> bool:
         """
-        Kiểm tra có nên ghi đè kết quả định tuyến hiện tại bằng ngữ cảnh đã lưu không.
+        Enhanced override logic with follow-up detection
         Ghi đè khi:
         1. Đang có ngữ cảnh tốt được lưu từ trước.
         2. Kết quả định tuyến mới không phải là "rất chắc chắn".
+        3. Query hiện tại là follow-up của conversation trước.
         """
         if not self.last_successful_collection:
             return False
@@ -158,12 +159,78 @@ class OptimizedChatSession:
         # Ngưỡng tối thiểu của ngữ cảnh đã lưu để được coi là "tốt"
         MIN_CONTEXT_CONFIDENCE = 0.78
 
-        # Nếu độ tin cậy hiện tại không đủ cao VÀ ngữ cảnh trước đó đủ tốt -> Ghi đè
-        if current_confidence < VERY_HIGH_CONFIDENCE_GATE and self.last_successful_confidence >= MIN_CONTEXT_CONFIDENCE:
-            logger.info(f"🔥 STATEFUL ROUTER: Ghi đè vì current_confidence ({current_confidence:.3f}) < {VERY_HIGH_CONFIDENCE_GATE} và context_confidence ({self.last_successful_confidence:.3f}) >= {MIN_CONTEXT_CONFIDENCE}")
-            return True
-
-        return False
+        # Signal 1: Low confidence (traditional approach)
+        low_confidence_signal = current_confidence < VERY_HIGH_CONFIDENCE_GATE and self.last_successful_confidence >= MIN_CONTEXT_CONFIDENCE
+        
+        # Signal 2: Follow-up question (new approach)
+        followup_signal = False
+        if query:
+            followup_signal = self.is_followup_question(query)
+        
+        # Signal 3: Recent context (within 5 minutes for follow-ups)
+        recent_context_signal = self.last_successful_timestamp and (time.time() - self.last_successful_timestamp) < 300
+        
+        # Override if:
+        # - Traditional: low confidence + good context
+        # - Follow-up: is follow-up + recent context (regardless of confidence)
+        should_override = bool(low_confidence_signal or (followup_signal and recent_context_signal))
+        
+        if should_override:
+            reason = "low_confidence" if low_confidence_signal else "followup_detection"
+            logger.info(f"🔥 ENHANCED OVERRIDE: {reason} - current_confidence ({current_confidence:.3f}) < {VERY_HIGH_CONFIDENCE_GATE}, context_confidence ({self.last_successful_confidence:.3f}) >= {MIN_CONTEXT_CONFIDENCE}, followup: {followup_signal}")
+        
+        return should_override
+        
+    def is_followup_question(self, query: str) -> bool:
+        """
+        Detect if current query is a follow-up of previous conversation
+        Based on linguistic patterns common in Vietnamese follow-up questions
+        """
+        if not self.query_history:
+            return False
+            
+        query_lower = query.lower().strip()
+        
+        # 1. Follow-up keywords (Vietnamese)
+        followup_keywords = [
+            'nó', 'đó', 'cái này', 'cái đó', 'mình', 'tôi', 'tớ',
+            'thế', 'thế nào', 'sao', 'như thế nào', 'ra sao',
+            'có cần', 'phải không', 'được không', 'có được không',
+            'bao nhiêu', 'bao lâu', 'mất bao lâu', 'thời gian',
+            'phí', 'tiền', 'chi phí', 'lệ phí'
+        ]
+        
+        # Check for followup keywords
+        has_followup_keyword = any(keyword in query_lower for keyword in followup_keywords)
+        
+        # 2. Short query (follow-ups are usually shorter)
+        is_short_query = len(query.split()) < 10
+        
+        # 3. Question marks or question patterns
+        has_question_pattern = any(word in query_lower for word in ['?', 'không', 'sao', 'thế'])
+        
+        # 4. Lack of specific legal terms (suggesting context dependency)
+        legal_terms = [
+            'đăng ký', 'khai sinh', 'hộ tịch', 'nuôi con', 'ly hôn',
+            'hôn nhân', 'kết hôn', 'chung sống', 'pháp luật', 'luật',
+            'thủ tục', 'giấy tờ', 'công chứng', 'dấu gia'
+        ]
+        has_specific_legal_terms = any(term in query_lower for term in legal_terms)
+        
+        # Scoring system
+        score = 0
+        if has_followup_keyword: score += 2
+        if is_short_query: score += 1
+        if has_question_pattern: score += 1
+        if not has_specific_legal_terms: score += 1
+        
+        # Follow-up if score >= 2
+        is_followup = score >= 2
+        
+        if is_followup:
+            logger.info(f"🔄 FOLLOW-UP DETECTED: '{query}' (score: {score})")
+        
+        return is_followup
         
     def increment_low_confidence(self):
         """Tăng counter khi gặp confidence thấp"""

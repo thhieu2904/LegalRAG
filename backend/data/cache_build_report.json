@@ -1,0 +1,28 @@
+{
+  "build_timestamp": 1756558646.9213426,
+  "configuration": {
+    "max_workers": 4,
+    "fused_text_limit": 2000,
+    "dry_run": false,
+    "force_rebuild": false,
+    "validate_json": true,
+    "progress_bar": true,
+    "embedding_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "local_model_path": "data/models/hf_cache/models--AITeamVN--Vietnamese_Embedding_v2/snapshots/18b44161e041bf1d3a333ab5144b5b7b93f914d2",
+    "log_level": "INFO"
+  },
+  "statistics": {
+    "total_collections": 13,
+    "total_documents": 166,
+    "processed_documents": 166,
+    "failed_documents": 0,
+    "success_rate": 100.0,
+    "total_size_mb": 1.5996503829956055,
+    "processing_time_seconds": 0.0,
+    "docs_per_second": 0,
+    "embeddings_generated": 166,
+    "text_only_fallbacks": 0,
+    "embedding_rate": 100.0
+  },
+  "status": "completed"
+}

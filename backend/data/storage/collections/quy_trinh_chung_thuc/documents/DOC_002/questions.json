@@ -1,32 +1,56 @@
-[
-  {
-    "question": "Thủ tục này áp dụng trong trường hợp nào?",
-    "answer": "Thủ tục này áp dụng cho [mô tả trường hợp cụ thể]",
-    "category": "applicability",
-    "priority": "high"
-  },
-  {
-    "question": "Thành phần hồ sơ cần những giấy tờ gì?",
-    "answer": "Hồ sơ cần bao gồm: [liệt kê các giấy tờ cần thiết]",
-    "category": "documents",
-    "priority": "high"
-  },
-  {
-    "question": "Thời hạn giải quyết hồ sơ là bao lâu?",
-    "answer": "Thời hạn giải quyết là [số ngày] ngày làm việc",
-    "category": "timeline",
-    "priority": "medium"
-  },
-  {
-    "question": "Lệ phí cho thủ tục này là bao nhiêu?",
-    "answer": "Lệ phí là [số tiền] đồng",
-    "category": "fees",
-    "priority": "medium"
-  },
-  {
-    "question": "Cơ quan nào có thẩm quyền thực hiện?",
-    "answer": "Cơ quan có thẩm quyền: [tên cơ quan]",
-    "category": "authority",
-    "priority": "medium"
-  }
-]
+{
+  "main_question": "Thủ tục chứng thực di chúc được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn chứng thực di chúc cần chuẩn bị hồ sơ gì?",
+    "Thủ tục chứng thực di chúc gồm những bước nào?",
+    "Tôi cần nộp những giấy tờ gì để chứng thực di chúc?",
+    "Thời hạn chứng thực di chúc là bao lâu?",
+    "Phí chứng thực di chúc là bao nhiêu?",
+    "Ủy ban nhân dân cấp xã có thẩm quyền chứng thực di chúc không?",
+    "Điều kiện để chứng thực di chúc là gì?",
+    "Tôi cần bản sao giấy chứng nhận quyền sở hữu tài sản để chứng thực di chúc không?",
+    "Thủ tục chứng thực di chúc cho người đang bị cái chết đe dọa như thế nào?",
+    "Hồ sơ chứng thực di chúc gồm những gì?",
+    "Tôi muốn chứng thực di chúc liên quan đến nhà đất cần làm gì?",
+    "Thời gian xử lý chứng thực di chúc có thể kéo dài không?",
+    "Phí chứng thực di chúc theo quy định pháp luật?",
+    "Cá nhân có thể yêu cầu chứng thực di chúc tại UBND xã không?",
+    "Tôi cần giấy tờ chứng minh quyền sử dụng tài sản để chứng thực di chúc không?",
+    "Thủ tục chứng thực di chúc cho tổ chức được thực hiện ở đâu?",
+    "Thời hạn 2 ngày làm việc cho chứng thực di chúc tính từ khi nào?",
+    "Phí chứng thực di chúc có miễn phí không?",
+    "Ủy ban nhân dân xã chứng thực di chúc cho người nước ngoài được không?",
+    "Điều kiện chứng thực di chúc liên quan đến động sản là gì?",
+    "Tôi cần bản sao giấy tờ thay thế quyền sở hữu để chứng thực di chúc không?",
+    "Thủ tục chứng thực di chúc gồm bao nhiêu bước?",
+    "Thời gian trả kết quả chứng thực di chúc là bao lâu?",
+    "Phí chứng thực di chúc theo Thông tư 226/2016/TT-BTC?",
+    "Cơ quan nào có thẩm quyền chứng thực di chúc?",
+    "Tôi muốn chứng thực di chúc cần chuẩn bị giấy tờ tài sản gì?",
+    "Hồ sơ yêu cầu chứng thực di chúc gồm những giấy tờ nào?",
+    "Thời hạn giải quyết chứng thực di chúc có thể thỏa thuận kéo dài không?",
+    "Phí chứng thực di chúc theo Nghị định 23/2015/NĐ-CP?",
+    "Cơ quan chứng thực di chúc là UBND cấp xã phải không?",
+    "Tôi muốn chứng thực di chúc liên quan đến quyền sử dụng đất cần làm gì?",
+    "Giấy tờ cần thiết để chứng thực di chúc là gì?",
+    "Thời gian xử lý chứng thực di chúc trong trường hợp bình thường?",
+    "Phí chứng thực di chúc có quy định cụ thể không?",
+    "Ủy ban nhân dân xã có thẩm quyền chứng thực di chúc cho doanh nghiệp không?",
+    "Điều kiện để chứng thực di chúc là gì?",
+    "Tôi cần bản chính hay bản sao giấy chứng nhận tài sản để chứng thực di chúc?",
+    "Thủ tục chứng thực di chúc cho cá nhân gồm những bước nào?",
+    "Hồ sơ chứng thực di chúc gồm bao nhiêu bộ?",
+    "Thời gian giải quyết chứng thực di chúc có phiếu hẹn không?",
+    "Phí chứng thực di chúc theo quy định hiện hành?",
+    "Cơ quan thực hiện chứng thực di chúc là UBND xã phải không?",
+    "Tôi muốn chứng thực di chúc cần chuẩn bị gì?",
+    "Giấy tờ chứng minh quyền sở hữu tài sản để chứng thực di chúc là gì?",
+    "Thời hạn trả kết quả chứng thực di chúc tính từ ngày nào?",
+    "Phí chứng thực di chúc theo Nghị định 07/2025/NĐ-CP?",
+    "Cơ quan nào chứng thực di chúc cho trường hợp khẩn cấp?",
+    "Điều kiện chứng thực di chúc liên quan đến nhà ở là gì?",
+    "Tôi cần giấy tờ tùy thân để chứng thực di chúc không?",
+    "Thủ tục chứng thực di chúc gửi qua bưu điện như thế nào?",
+    "Hồ sơ yêu cầu chứng thực di chúc gồm gì?"
+  ]
+}

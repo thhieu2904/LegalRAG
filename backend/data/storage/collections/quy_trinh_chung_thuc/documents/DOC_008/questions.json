@@ -1,32 +1,56 @@
-[
-  {
-    "question": "Thủ tục này áp dụng trong trường hợp nào?",
-    "answer": "Thủ tục này áp dụng cho [mô tả trường hợp cụ thể]",
-    "category": "applicability",
-    "priority": "high"
-  },
-  {
-    "question": "Thành phần hồ sơ cần những giấy tờ gì?",
-    "answer": "Hồ sơ cần bao gồm: [liệt kê các giấy tờ cần thiết]",
-    "category": "documents",
-    "priority": "high"
-  },
-  {
-    "question": "Thời hạn giải quyết hồ sơ là bao lâu?",
-    "answer": "Thời hạn giải quyết là [số ngày] ngày làm việc",
-    "category": "timeline",
-    "priority": "medium"
-  },
-  {
-    "question": "Lệ phí cho thủ tục này là bao nhiêu?",
-    "answer": "Lệ phí là [số tiền] đồng",
-    "category": "fees",
-    "priority": "medium"
-  },
-  {
-    "question": "Cơ quan nào có thẩm quyền thực hiện?",
-    "answer": "Cơ quan có thẩm quyền: [tên cơ quan]",
-    "category": "authority",
-    "priority": "medium"
-  }
-]
+{
+  "main_question": "Thủ tục cấp bản sao có chứng thực từ bản chính hợp đồng, giao dịch đã được chứng thực được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn cấp bản sao chứng thực từ hợp đồng cần chuẩn bị gì?",
+    "Thủ tục cấp bản sao từ giao dịch đã chứng thực gồm những bước nào?",
+    "Tôi cần nộp những giấy tờ gì để được cấp bản sao chứng thực hợp đồng?",
+    "Thời hạn cấp bản sao chứng thực từ hợp đồng là bao lâu?",
+    "Phí cấp bản sao chứng thực từ giao dịch là bao nhiêu?",
+    "Ủy ban nhân dân cấp xã có thẩm quyền cấp bản sao chứng thực không?",
+    "Điều kiện để cấp bản sao chứng thực từ hợp đồng là gì?",
+    "Tôi cần bản chính hợp đồng đã chứng thực để cấp bản sao không?",
+    "Thủ tục cấp bản sao chứng thực từ giao dịch như thế nào?",
+    "Hồ sơ cấp bản sao từ hợp đồng chứng thực gồm những gì?",
+    "Tôi muốn cấp bản sao chứng thực từ hợp đồng cần làm gì?",
+    "Thời gian xử lý cấp bản sao từ giao dịch có thể kéo dài không?",
+    "Phí cấp bản sao chứng thực từ hợp đồng theo quy định?",
+    "Cá nhân có thể yêu cầu cấp bản sao chứng thực tại UBND xã không?",
+    "Tôi cần giấy chứng minh nhân dân để cấp bản sao từ hợp đồng không?",
+    "Thủ tục cấp bản sao chứng thực từ giao dịch cho tổ chức được thực hiện ở đâu?",
+    "Thời hạn ngay trong ngày cho cấp bản sao hợp đồng áp dụng khi nào?",
+    "Phí cấp bản sao chứng thực từ trang thứ 3 trở lên là bao nhiêu?",
+    "Ủy ban nhân dân xã cấp bản sao chứng thực cho người nước ngoài được không?",
+    "Điều kiện cấp bản sao chứng thực từ hợp đồng đã được chứng thực là gì?",
+    "Tôi cần thẻ căn cước công dân để cấp bản sao từ giao dịch không?",
+    "Thủ tục cấp bản sao chứng thực từ hợp đồng gồm bao nhiêu bước?",
+    "Thời gian trả kết quả cấp bản sao từ giao dịch là bao lâu?",
+    "Phí cấp bản sao chứng thực tối đa 200.000 đồng/bản theo quy định?",
+    "Cơ quan nào có thẩm quyền cấp bản sao chứng thực từ hợp đồng?",
+    "Tôi muốn cấp bản sao chứng thực từ hợp đồng cần chuẩn bị giấy tờ gì?",
+    "Hồ sơ yêu cầu cấp bản sao từ giao dịch gồm những giấy tờ nào?",
+    "Thời hạn giải quyết cấp bản sao chứng thực có thể thỏa thuận kéo dài không?",
+    "Phí cấp bản sao từ hợp đồng theo Thông tư 226/2016/TT-BTC?",
+    "Cơ quan cấp bản sao chứng thực từ giao dịch là UBND cấp xã phải không?",
+    "Tôi muốn cấp bản sao từ hợp đồng đã chứng thực cần làm gì?",
+    "Giấy tờ cần thiết để cấp bản sao chứng thực từ giao dịch là gì?",
+    "Thời gian xử lý cấp bản sao từ hợp đồng trong trường hợp bình thường?",
+    "Phí cấp bản sao chứng thực có quy định cụ thể không?",
+    "Ủy ban nhân dân xã có thẩm quyền cấp bản sao chứng thực cho doanh nghiệp không?",
+    "Điều kiện để cấp bản sao chứng thực từ hợp đồng là gì?",
+    "Tôi cần bản chính hay bản sao giấy tờ tùy thân để cấp bản sao từ giao dịch?",
+    "Thủ tục cấp bản sao chứng thực từ hợp đồng cho cá nhân gồm những bước nào?",
+    "Hồ sơ cấp bản sao từ giao dịch gồm bao nhiêu bộ?",
+    "Thời gian giải quyết cấp bản sao chứng thực có phiếu hẹn không?",
+    "Phí cấp bản sao từ hợp đồng theo quy định hiện hành?",
+    "Cơ quan thực hiện cấp bản sao chứng thực từ giao dịch là UBND xã phải không?",
+    "Tôi muốn cấp bản sao từ hợp đồng đã chứng thực cần chuẩn bị gì?",
+    "Giấy tờ chứng minh bản chính hợp đồng để cấp bản sao là gì?",
+    "Thời hạn trả kết quả cấp bản sao chứng thực tính từ ngày nào?",
+    "Phí cấp bản sao từ giao dịch theo Nghị định 23/2015/NĐ-CP?",
+    "Cơ quan nào cấp bản sao chứng thực từ hợp đồng?",
+    "Điều kiện cấp bản sao chứng thực từ giao dịch đã được chứng thực là gì?",
+    "Tôi cần hộ chiếu để cấp bản sao từ hợp đồng không?",
+    "Thủ tục cấp bản sao chứng thực từ giao dịch gửi qua bưu điện như thế nào?",
+    "Hồ sơ yêu cầu cấp bản sao từ hợp đồng gồm gì?"
+  ]
+}

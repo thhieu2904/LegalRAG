@@ -1,32 +1,56 @@
-[
-  {
-    "question": "Thủ tục này áp dụng trong trường hợp nào?",
-    "answer": "Thủ tục này áp dụng cho [mô tả trường hợp cụ thể]",
-    "category": "applicability",
-    "priority": "high"
-  },
-  {
-    "question": "Thành phần hồ sơ cần những giấy tờ gì?",
-    "answer": "Hồ sơ cần bao gồm: [liệt kê các giấy tờ cần thiết]",
-    "category": "documents",
-    "priority": "high"
-  },
-  {
-    "question": "Thời hạn giải quyết hồ sơ là bao lâu?",
-    "answer": "Thời hạn giải quyết là [số ngày] ngày làm việc",
-    "category": "timeline",
-    "priority": "medium"
-  },
-  {
-    "question": "Lệ phí cho thủ tục này là bao nhiêu?",
-    "answer": "Lệ phí là [số tiền] đồng",
-    "category": "fees",
-    "priority": "medium"
-  },
-  {
-    "question": "Cơ quan nào có thẩm quyền thực hiện?",
-    "answer": "Cơ quan có thẩm quyền: [tên cơ quan]",
-    "category": "authority",
-    "priority": "medium"
-  }
-]
+{
+  "main_question": "Thủ tục chứng thực hợp đồng, giao dịch liên quan đến tài sản là động sản, quyền sử dụng đất và nhà ở được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn chứng thực hợp đồng mua bán nhà ở cần chuẩn bị hồ sơ gì?",
+    "Thủ tục chứng thực giao dịch chuyển nhượng quyền sử dụng đất gồm những bước nào?",
+    "Tôi cần nộp những giấy tờ gì để chứng thực hợp đồng thế chấp nhà đất?",
+    "Thời hạn giải quyết thủ tục chứng thực hợp đồng động sản là bao lâu?",
+    "Phí chứng thực hợp đồng liên quan đến tài sản là bao nhiêu?",
+    "Ủy ban nhân dân cấp xã có thẩm quyền chứng thực hợp đồng nhà đất không?",
+    "Điều kiện để chứng thực giao dịch mua bán quyền sử dụng đất là gì?",
+    "Tôi cần bản sao giấy chứng nhận quyền sở hữu nhà ở để chứng thực hợp đồng không?",
+    "Thủ tục chứng thực hợp đồng cho thuê nhà ở được thực hiện ở đâu?",
+    "Hồ sơ chứng thực giao dịch liên quan đến động sản gồm những gì?",
+    "Tôi muốn chứng thực hợp đồng góp vốn bằng quyền sử dụng đất cần làm gì?",
+    "Thời gian xử lý chứng thực hợp đồng nhà đất có thể kéo dài không?",
+    "Phí chứng thực giao dịch chuyển nhượng nhà ở theo quy định như thế nào?",
+    "Cá nhân có thể yêu cầu chứng thực hợp đồng động sản tại UBND xã không?",
+    "Tôi cần những giấy tờ gì để chứng thực hợp đồng bán xe ô tô?",
+    "Thủ tục chứng thực giao dịch liên quan đến tài sản phải đăng ký quyền sở hữu như thế nào?",
+    "Thời hạn 2 ngày làm việc cho chứng thực hợp đồng tính từ khi nào?",
+    "Phí chứng thực hợp đồng nhà đất có miễn phí không?",
+    "Ủy ban nhân dân cấp xã chứng thực hợp đồng cho tổ chức được không?",
+    "Điều kiện chứng thực hợp đồng liên quan đến quyền sử dụng đất là gì?",
+    "Tôi cần nộp bản chính hay bản sao giấy chứng nhận nhà đất để chứng thực?",
+    "Thủ tục chứng thực hợp đồng mua bán động sản gồm bao nhiêu bước?",
+    "Thời gian trả kết quả chứng thực giao dịch nhà ở là bao lâu?",
+    "Phí chứng thực theo quy định pháp luật về thu phí chứng thực là gì?",
+    "Cơ quan nào có thẩm quyền chứng thực hợp đồng chuyển nhượng nhà đất?",
+    "Tôi muốn chứng thực hợp đồng cho thuê quyền sử dụng đất cần chuẩn bị gì?",
+    "Hồ sơ chứng thực giao dịch liên quan đến nhà ở gồm những giấy tờ nào?",
+    "Thời hạn giải quyết chứng thực hợp đồng động sản có thể thỏa thuận kéo dài không?",
+    "Phí chứng thực hợp đồng nhà đất theo Thông tư 226/2016/TT-BTC như thế nào?",
+    "Ủy ban nhân dân xã chứng thực hợp đồng cho cá nhân nước ngoài được không?",
+    "Điều kiện để chứng thực giao dịch góp vốn bằng tài sản là nhà ở là gì?",
+    "Tôi cần giấy tờ chứng minh quyền sở hữu động sản để chứng thực hợp đồng không?",
+    "Thủ tục chứng thực hợp đồng bán nhà ở được thực hiện tại đâu?",
+    "Hồ sơ yêu cầu chứng thực giao dịch quyền sử dụng đất gồm gì?",
+    "Thời gian xử lý chứng thực hợp đồng có thể vượt quá 2 ngày không?",
+    "Phí chứng thực giao dịch chuyển nhượng động sản theo quy định hiện hành?",
+    "Cơ quan chứng thực hợp đồng nhà đất có phải là UBND cấp xã không?",
+    "Tôi muốn chứng thực hợp đồng thế chấp quyền sử dụng đất cần làm gì?",
+    "Giấy tờ cần thiết để chứng thực giao dịch liên quan đến nhà ở là gì?",
+    "Thời hạn trả kết quả chứng thực hợp đồng động sản tính từ ngày nào?",
+    "Phí chứng thực hợp đồng theo Nghị định 23/2015/NĐ-CP như thế nào?",
+    "Ủy ban nhân dân xã có thẩm quyền chứng thực hợp đồng cho doanh nghiệp không?",
+    "Điều kiện chứng thực hợp đồng mua bán nhà ở là gì?",
+    "Tôi cần bản sao giấy tờ thay thế quyền sở hữu nhà đất để chứng thực không?",
+    "Thủ tục chứng thực giao dịch cho thuê nhà ở gồm những bước nào?",
+    "Hồ sơ chứng thực hợp đồng liên quan đến tài sản gồm bao nhiêu bộ?",
+    "Thời gian giải quyết chứng thực giao dịch nhà đất có phiếu hẹn không?",
+    "Phí chứng thực theo quy định của pháp luật về thu phí là gì?",
+    "Cơ quan thực hiện chứng thực hợp đồng động sản là UBND xã phải không?",
+    "Tôi muốn chứng thực hợp đồng góp vốn bằng nhà ở cần chuẩn bị hồ sơ gì?",
+    "Giấy tờ chứng minh quyền sử dụng đất để chứng thực giao dịch là gì?"
+  ]
+}

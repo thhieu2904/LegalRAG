@@ -1,32 +1,56 @@
-[
-  {
-    "question": "Thủ tục này áp dụng trong trường hợp nào?",
-    "answer": "Thủ tục này áp dụng cho [mô tả trường hợp cụ thể]",
-    "category": "applicability",
-    "priority": "high"
-  },
-  {
-    "question": "Thành phần hồ sơ cần những giấy tờ gì?",
-    "answer": "Hồ sơ cần bao gồm: [liệt kê các giấy tờ cần thiết]",
-    "category": "documents",
-    "priority": "high"
-  },
-  {
-    "question": "Thời hạn giải quyết hồ sơ là bao lâu?",
-    "answer": "Thời hạn giải quyết là [số ngày] ngày làm việc",
-    "category": "timeline",
-    "priority": "medium"
-  },
-  {
-    "question": "Lệ phí cho thủ tục này là bao nhiêu?",
-    "answer": "Lệ phí là [số tiền] đồng",
-    "category": "fees",
-    "priority": "medium"
-  },
-  {
-    "question": "Cơ quan nào có thẩm quyền thực hiện?",
-    "answer": "Cơ quan có thẩm quyền: [tên cơ quan]",
-    "category": "authority",
-    "priority": "medium"
-  }
-]
+{
+  "main_question": "Thủ tục chứng thực chữ ký trong các giấy tờ, văn bản tại Ủy ban nhân dân cấp xã được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn chứng thực chữ ký trong giấy tờ tại UBND xã cần chuẩn bị gì?",
+    "Thủ tục chứng thực chữ ký trong văn bản ở xã gồm những bước nào?",
+    "Tôi cần nộp những giấy tờ gì để chứng thực chữ ký tại UBND xã?",
+    "Thời hạn chứng thực chữ ký trong giấy tờ tại xã là bao lâu?",
+    "Phí chứng thực chữ ký trong văn bản tại UBND xã là bao nhiêu?",
+    "Ủy ban nhân dân cấp xã có thẩm quyền chứng thực chữ ký không?",
+    "Điều kiện để chứng thực chữ ký trong giấy tờ tại xã là gì?",
+    "Tôi cần giấy chứng minh nhân dân để chứng thực chữ ký tại UBND xã không?",
+    "Thủ tục chứng thực chữ ký trong văn bản bằng tiếng nước ngoài tại xã như thế nào?",
+    "Hồ sơ chứng thực chữ ký trong giấy tờ tại UBND xã gồm những gì?",
+    "Tôi muốn chứng thực chữ ký trong văn bản tại xã cần làm gì?",
+    "Thời gian xử lý chứng thực chữ ký tại UBND xã có thể kéo dài không?",
+    "Phí chứng thực chữ ký trong giấy tờ tại xã theo quy định?",
+    "Cá nhân có thể yêu cầu chứng thực chữ ký tại UBND xã không?",
+    "Tôi cần bản dịch tiếng Việt để chứng thực chữ ký trong văn bản nước ngoài tại xã không?",
+    "Thủ tục chứng thực chữ ký trong giấy tờ cho tổ chức tại UBND xã được thực hiện ở đâu?",
+    "Thời hạn ngay trong ngày cho chứng thực chữ ký tại xã áp dụng khi nào?",
+    "Phí chứng thực chữ ký là 10.000 đồng/trường hợp tại UBND xã theo quy định?",
+    "Ủy ban nhân dân xã chứng thực chữ ký cho người nước ngoài được không?",
+    "Điều kiện chứng thực chữ ký trong giấy tờ có nội dung hợp pháp tại xã là gì?",
+    "Tôi cần thẻ căn cước công dân để chứng thực chữ ký tại UBND xã không?",
+    "Thủ tục chứng thực chữ ký trong văn bản tại xã gồm bao nhiêu bước?",
+    "Thời gian trả kết quả chứng thực chữ ký tại UBND xã là bao lâu?",
+    "Phí chứng thực chữ ký theo Thông tư 226/2016/TT-BTC tại xã?",
+    "Cơ quan nào có thẩm quyền chứng thực chữ ký trong giấy tờ tại xã?",
+    "Tôi muốn chứng thực chữ ký trong văn bản tại UBND xã cần chuẩn bị giấy tờ gì?",
+    "Hồ sơ yêu cầu chứng thực chữ ký tại xã gồm những giấy tờ nào?",
+    "Thời hạn giải quyết chứng thực chữ ký tại UBND xã có thể thỏa thuận kéo dài không?",
+    "Phí chứng thực chữ ký theo Nghị định 23/2015/NĐ-CP tại xã?",
+    "Cơ quan chứng thực chữ ký tại xã là UBND cấp xã phải không?",
+    "Tôi muốn chứng thực chữ ký trong văn bản phức tạp tại UBND xã cần làm gì?",
+    "Giấy tờ cần thiết để chứng thực chữ ký trong văn bản tại xã là gì?",
+    "Thời gian xử lý chứng thực chữ ký tại UBND xã trong trường hợp bình thường?",
+    "Phí chứng thực chữ ký có quy định cụ thể tại xã không?",
+    "Ủy ban nhân dân xã có thẩm quyền chứng thực chữ ký cho doanh nghiệp không?",
+    "Điều kiện để chứng thực chữ ký trong giấy tờ tại xã là gì?",
+    "Tôi cần bản chính hay bản sao giấy tờ tùy thân để chứng thực chữ ký tại UBND xã?",
+    "Thủ tục chứng thực chữ ký trong văn bản cho cá nhân tại xã gồm những bước nào?",
+    "Hồ sơ chứng thực chữ ký trong giấy tờ tại UBND xã gồm bao nhiêu bộ?",
+    "Thời gian giải quyết chứng thực chữ ký tại xã có phiếu hẹn không?",
+    "Phí chứng thực chữ ký theo quy định hiện hành tại UBND xã?",
+    "Cơ quan thực hiện chứng thực chữ ký tại xã là UBND cấp xã phải không?",
+    "Tôi muốn chứng thực chữ ký trong văn bản tại UBND xã cần chuẩn bị gì?",
+    "Giấy tờ chứng minh chữ ký hợp pháp để chứng thực tại xã là gì?",
+    "Thời hạn trả kết quả chứng thực chữ ký tại UBND xã tính từ ngày nào?",
+    "Phí chứng thực chữ ký theo Nghị định 07/2025/NĐ-CP tại xã?",
+    "Cơ quan nào chứng thực chữ ký trong văn bản nước ngoài tại xã?",
+    "Điều kiện chứng thực chữ ký trong giấy tờ bằng tiếng Việt tại UBND xã là gì?",
+    "Tôi cần hộ chiếu để chứng thực chữ ký tại xã không?",
+    "Thủ tục chứng thực chữ ký trong văn bản gửi qua bưu điện tại UBND xã như thế nào?",
+    "Hồ sơ yêu cầu chứng thực chữ ký tại xã gồm gì?"
+  ]
+}

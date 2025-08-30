@@ -1,32 +1,56 @@
-[
-  {
-    "question": "Thủ tục này áp dụng trong trường hợp nào?",
-    "answer": "Thủ tục này áp dụng cho [mô tả trường hợp cụ thể]",
-    "category": "applicability",
-    "priority": "high"
-  },
-  {
-    "question": "Thành phần hồ sơ cần những giấy tờ gì?",
-    "answer": "Hồ sơ cần bao gồm: [liệt kê các giấy tờ cần thiết]",
-    "category": "documents",
-    "priority": "high"
-  },
-  {
-    "question": "Thời hạn giải quyết hồ sơ là bao lâu?",
-    "answer": "Thời hạn giải quyết là [số ngày] ngày làm việc",
-    "category": "timeline",
-    "priority": "medium"
-  },
-  {
-    "question": "Lệ phí cho thủ tục này là bao nhiêu?",
-    "answer": "Lệ phí là [số tiền] đồng",
-    "category": "fees",
-    "priority": "medium"
-  },
-  {
-    "question": "Cơ quan nào có thẩm quyền thực hiện?",
-    "answer": "Cơ quan có thẩm quyền: [tên cơ quan]",
-    "category": "authority",
-    "priority": "medium"
-  }
-]
+{
+  "main_question": "Thủ tục chứng thực việc sửa đổi, bổ sung, hủy bỏ hợp đồng, giao dịch được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn chứng thực sửa đổi hợp đồng cần chuẩn bị hồ sơ gì?",
+    "Thủ tục chứng thực bổ sung hợp đồng gồm những bước nào?",
+    "Tôi cần nộp những giấy tờ gì để chứng thực hủy bỏ giao dịch?",
+    "Thời hạn chứng thực sửa đổi hợp đồng là bao lâu?",
+    "Phí chứng thực bổ sung hợp đồng là bao nhiêu?",
+    "Ủy ban nhân dân cấp xã có thẩm quyền chứng thực hủy bỏ giao dịch không?",
+    "Điều kiện để chứng thực sửa đổi hợp đồng là gì?",
+    "Tôi cần dự thảo hợp đồng sửa đổi để chứng thực không?",
+    "Thủ tục chứng thực bổ sung hợp đồng liên quan đến tài sản như thế nào?",
+    "Hồ sơ chứng thực hủy bỏ giao dịch gồm những gì?",
+    "Tôi muốn chứng thực sửa đổi hợp đồng cần làm gì?",
+    "Thời gian xử lý chứng thực bổ sung hợp đồng có thể kéo dài không?",
+    "Phí chứng thực hủy bỏ giao dịch theo quy định pháp luật?",
+    "Cá nhân có thể yêu cầu chứng thực sửa đổi hợp đồng tại UBND xã không?",
+    "Tôi cần bản sao giấy chứng nhận tài sản để chứng thực bổ sung hợp đồng không?",
+    "Thủ tục chứng thực hủy bỏ giao dịch cho tổ chức được thực hiện ở đâu?",
+    "Thời hạn ngay trong ngày cho chứng thực sửa đổi hợp đồng áp dụng khi nào?",
+    "Phí chứng thực bổ sung hợp đồng có miễn phí không?",
+    "Ủy ban nhân dân xã chứng thực hủy bỏ giao dịch cho người nước ngoài được không?",
+    "Điều kiện chứng thực sửa đổi hợp đồng liên quan đến tài sản là gì?",
+    "Tôi cần bản chính giấy chứng nhận để chứng thực bổ sung hợp đồng không?",
+    "Thủ tục chứng thực hủy bỏ giao dịch gồm bao nhiêu bước?",
+    "Thời gian trả kết quả chứng thực sửa đổi hợp đồng là bao lâu?",
+    "Phí chứng thực bổ sung hợp đồng theo Thông tư 226/2016/TT-BTC?",
+    "Cơ quan nào có thẩm quyền chứng thực hủy bỏ giao dịch?",
+    "Tôi muốn chứng thực sửa đổi hợp đồng cần chuẩn bị giấy tờ tài sản gì?",
+    "Hồ sơ yêu cầu chứng thực bổ sung hợp đồng gồm những giấy tờ nào?",
+    "Thời hạn giải quyết chứng thực hủy bỏ giao dịch có thể thỏa thuận kéo dài không?",
+    "Phí chứng thực sửa đổi hợp đồng theo Nghị định 23/2015/NĐ-CP?",
+    "Cơ quan chứng thực bổ sung hợp đồng là UBND cấp xã phải không?",
+    "Tôi muốn chứng thực hủy bỏ giao dịch liên quan đến tài sản cần làm gì?",
+    "Giấy tờ cần thiết để chứng thực sửa đổi hợp đồng là gì?",
+    "Thời gian xử lý chứng thực bổ sung hợp đồng trong trường hợp bình thường?",
+    "Phí chứng thực hủy bỏ giao dịch có quy định cụ thể không?",
+    "Ủy ban nhân dân xã có thẩm quyền chứng thực sửa đổi hợp đồng cho doanh nghiệp không?",
+    "Điều kiện để chứng thực bổ sung hợp đồng là gì?",
+    "Tôi cần bản chính hay bản sao giấy chứng nhận tài sản để chứng thực hủy bỏ giao dịch?",
+    "Thủ tục chứng thực sửa đổi hợp đồng cho cá nhân gồm những bước nào?",
+    "Hồ sơ chứng thực bổ sung hợp đồng gồm bao nhiêu bộ?",
+    "Thời gian giải quyết chứng thực hủy bỏ giao dịch có phiếu hẹn không?",
+    "Phí chứng thực sửa đổi hợp đồng theo quy định hiện hành?",
+    "Cơ quan thực hiện chứng thực bổ sung hợp đồng là UBND xã phải không?",
+    "Tôi muốn chứng thực hủy bỏ giao dịch cần chuẩn bị gì?",
+    "Giấy tờ chứng minh quyền sở hữu tài sản để chứng thực sửa đổi hợp đồng là gì?",
+    "Thời hạn trả kết quả chứng thực bổ sung hợp đồng tính từ ngày nào?",
+    "Phí chứng thực hủy bỏ giao dịch theo Nghị định 07/2025/NĐ-CP?",
+    "Cơ quan nào chứng thực sửa đổi hợp đồng?",
+    "Điều kiện chứng thực bổ sung hợp đồng liên quan đến tài sản là gì?",
+    "Tôi cần giấy tờ tùy thân để chứng thực hủy bỏ giao dịch không?",
+    "Thủ tục chứng thực sửa đổi hợp đồng gửi qua bưu điện như thế nào?",
+    "Hồ sơ yêu cầu chứng thực bổ sung hợp đồng gồm gì?"
+  ]
+}

@@ -1,32 +1,56 @@
-[
-  {
-    "question": "Thủ tục này áp dụng trong trường hợp nào?",
-    "answer": "Thủ tục này áp dụng cho [mô tả trường hợp cụ thể]",
-    "category": "applicability",
-    "priority": "high"
-  },
-  {
-    "question": "Thành phần hồ sơ cần những giấy tờ gì?",
-    "answer": "Hồ sơ cần bao gồm: [liệt kê các giấy tờ cần thiết]",
-    "category": "documents",
-    "priority": "high"
-  },
-  {
-    "question": "Thời hạn giải quyết hồ sơ là bao lâu?",
-    "answer": "Thời hạn giải quyết là [số ngày] ngày làm việc",
-    "category": "timeline",
-    "priority": "medium"
-  },
-  {
-    "question": "Lệ phí cho thủ tục này là bao nhiêu?",
-    "answer": "Lệ phí là [số tiền] đồng",
-    "category": "fees",
-    "priority": "medium"
-  },
-  {
-    "question": "Cơ quan nào có thẩm quyền thực hiện?",
-    "answer": "Cơ quan có thẩm quyền: [tên cơ quan]",
-    "category": "authority",
-    "priority": "medium"
-  }
-]
+{
+  "main_question": "Thủ tục sửa lỗi sai sót trong hợp đồng, giao dịch được thực hiện như thế nào?",
+  "question_variants": [
+    "Tôi muốn sửa lỗi sai sót trong hợp đồng cần chuẩn bị hồ sơ gì?",
+    "Thủ tục sửa lỗi trong giao dịch gồm những bước nào?",
+    "Tôi cần nộp những giấy tờ gì để sửa lỗi sai sót hợp đồng?",
+    "Thời hạn sửa lỗi sai sót trong hợp đồng là bao lâu?",
+    "Phí sửa lỗi sai sót trong giao dịch là bao nhiêu?",
+    "Ủy ban nhân dân cấp xã có thẩm quyền sửa lỗi hợp đồng không?",
+    "Điều kiện để sửa lỗi sai sót trong hợp đồng là gì?",
+    "Tôi cần văn bản thỏa thuận sửa lỗi để chứng thực không?",
+    "Thủ tục sửa lỗi sai sót trong hợp đồng liên quan đến tài sản như thế nào?",
+    "Hồ sơ sửa lỗi trong giao dịch gồm những gì?",
+    "Tôi muốn sửa lỗi sai sót trong hợp đồng cần làm gì?",
+    "Thời gian xử lý sửa lỗi trong giao dịch có thể kéo dài không?",
+    "Phí sửa lỗi sai sót trong hợp đồng theo quy định pháp luật?",
+    "Cá nhân có thể yêu cầu sửa lỗi hợp đồng tại UBND xã không?",
+    "Tôi cần bản sao giấy chứng nhận tài sản để sửa lỗi giao dịch không?",
+    "Thủ tục sửa lỗi sai sót trong hợp đồng cho tổ chức được thực hiện ở đâu?",
+    "Thời hạn ngay trong ngày cho sửa lỗi hợp đồng áp dụng khi nào?",
+    "Phí sửa lỗi sai sót trong giao dịch có miễn phí không?",
+    "Ủy ban nhân dân xã sửa lỗi hợp đồng cho người nước ngoài được không?",
+    "Điều kiện sửa lỗi sai sót trong hợp đồng liên quan đến tài sản là gì?",
+    "Tôi cần bản chính giấy chứng nhận để sửa lỗi giao dịch không?",
+    "Thủ tục sửa lỗi sai sót trong hợp đồng gồm bao nhiêu bước?",
+    "Thời gian trả kết quả sửa lỗi trong giao dịch là bao lâu?",
+    "Phí sửa lỗi sai sót trong hợp đồng theo Thông tư 226/2016/TT-BTC?",
+    "Cơ quan nào có thẩm quyền sửa lỗi trong giao dịch?",
+    "Tôi muốn sửa lỗi sai sót trong hợp đồng cần chuẩn bị giấy tờ tài sản gì?",
+    "Hồ sơ yêu cầu sửa lỗi trong giao dịch gồm những giấy tờ nào?",
+    "Thời hạn giải quyết sửa lỗi sai sót trong hợp đồng có thể thỏa thuận kéo dài không?",
+    "Phí sửa lỗi trong giao dịch theo Nghị định 23/2015/NĐ-CP?",
+    "Cơ quan sửa lỗi sai sót trong hợp đồng là UBND cấp xã phải không?",
+    "Tôi muốn sửa lỗi trong giao dịch liên quan đến tài sản cần làm gì?",
+    "Giấy tờ cần thiết để sửa lỗi sai sót trong hợp đồng là gì?",
+    "Thời gian xử lý sửa lỗi trong giao dịch trong trường hợp bình thường?",
+    "Phí sửa lỗi sai sót trong hợp đồng có quy định cụ thể không?",
+    "Ủy ban nhân dân xã có thẩm quyền sửa lỗi hợp đồng cho doanh nghiệp không?",
+    "Điều kiện để sửa lỗi sai sót trong giao dịch là gì?",
+    "Tôi cần bản chính hay bản sao giấy chứng nhận tài sản để sửa lỗi hợp đồng?",
+    "Thủ tục sửa lỗi sai sót trong hợp đồng cho cá nhân gồm những bước nào?",
+    "Hồ sơ sửa lỗi trong giao dịch gồm bao nhiêu bộ?",
+    "Thời gian giải quyết sửa lỗi sai sót trong hợp đồng có phiếu hẹn không?",
+    "Phí sửa lỗi trong giao dịch theo quy định hiện hành?",
+    "Cơ quan thực hiện sửa lỗi sai sót trong hợp đồng là UBND xã phải không?",
+    "Tôi muốn sửa lỗi trong giao dịch cần chuẩn bị gì?",
+    "Giấy tờ chứng minh quyền sở hữu tài sản để sửa lỗi hợp đồng là gì?",
+    "Thời hạn trả kết quả sửa lỗi sai sót trong giao dịch tính từ ngày nào?",
+    "Phí sửa lỗi trong hợp đồng theo Nghị định 07/2025/NĐ-CP?",
+    "Cơ quan nào sửa lỗi sai sót trong giao dịch?",
+    "Điều kiện sửa lỗi sai sót trong hợp đồng liên quan đến tài sản là gì?",
+    "Tôi cần giấy tờ tùy thân để sửa lỗi trong giao dịch không?",
+    "Thủ tục sửa lỗi sai sót trong hợp đồng gửi qua bưu điện như thế nào?",
+    "Hồ sơ yêu cầu sửa lỗi trong giao dịch gồm gì?"
+  ]
+}
