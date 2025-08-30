@@ -257,14 +257,38 @@ class ContextExpander:
             # Build complete content với CLEAN FORMATTING - PHASE 3
             complete_parts = []
             
-            # 🧹 PHASE 3: Clean metadata formatting - bỏ dấu ===
+            # 🧹 PHASE 3: NATURAL metadata formatting - tránh raw output
             if metadata:
-                complete_parts.append("Thông tin thủ tục:")
-                for key, value in metadata.items():
-                    if value:  # Chỉ loại bỏ empty values
-                        clean_key = key.replace('_', ' ').title()
-                        complete_parts.append(f"{clean_key}: {value}")
-                complete_parts.append("")  # Empty line separator
+                natural_metadata_parts = []
+                
+                # Format từng field thành câu văn tự nhiên
+                if metadata.get('fee_vnd') and metadata['fee_vnd'] != 0:
+                    fee_text = f"Thủ tục này có phí {metadata['fee_vnd']:,} đồng"
+                    if metadata.get('fee_text'):
+                        fee_text += f" ({metadata['fee_text']})"
+                    natural_metadata_parts.append(fee_text)
+                
+                if metadata.get('processing_time_text'):
+                    natural_metadata_parts.append(f"Thời gian xử lý: {metadata['processing_time_text']}")
+                
+                if metadata.get('executing_agency'):
+                    natural_metadata_parts.append(f"Cơ quan thực hiện: {metadata['executing_agency']}")
+                
+                if metadata.get('jurisdiction'):
+                    natural_metadata_parts.append(f"Thẩm quyền: {metadata['jurisdiction']}")
+                
+                if metadata.get('applicant_type'):
+                    applicant_str = ", ".join(metadata['applicant_type']) if isinstance(metadata['applicant_type'], list) else metadata['applicant_type']
+                    natural_metadata_parts.append(f"Đối tượng áp dụng: {applicant_str}")
+                
+                if metadata.get('requirements_conditions'):
+                    natural_metadata_parts.append(f"Yêu cầu: {metadata['requirements_conditions']}")
+                
+                # Join natural metadata
+                if natural_metadata_parts:
+                    complete_parts.append("Thông tin thủ tục:")
+                    complete_parts.extend(natural_metadata_parts)
+                    complete_parts.append("")  # Empty line separator
             
             # 🧹 PHASE 3: Clean content formatting - bỏ dấu ===
             if content_chunks:
@@ -313,14 +337,38 @@ class ContextExpander:
             # 🧹 PHASE 3: Build COMPLETE document content với clean formatting
             complete_parts = []
             
-            # 🧹 PHASE 3: Clean metadata formatting - bỏ dấu ===
+            # 🧹 PHASE 3: NATURAL metadata formatting - tránh raw output
             if metadata:
-                complete_parts.append("Thông tin thủ tục:")
-                for key, value in metadata.items():
-                    if value:  # Chỉ loại bỏ empty values
-                        clean_key = key.replace('_', ' ').title()
-                        complete_parts.append(f"{clean_key}: {value}")
-                complete_parts.append("")  # Empty line separator
+                natural_metadata_parts = []
+                
+                # Format từng field thành câu văn tự nhiên
+                if metadata.get('fee_vnd') and metadata['fee_vnd'] != 0:
+                    fee_text = f"Thủ tục này có phí {metadata['fee_vnd']:,} đồng"
+                    if metadata.get('fee_text'):
+                        fee_text += f" ({metadata['fee_text']})"
+                    natural_metadata_parts.append(fee_text)
+                
+                if metadata.get('processing_time_text'):
+                    natural_metadata_parts.append(f"Thời gian xử lý: {metadata['processing_time_text']}")
+                
+                if metadata.get('executing_agency'):
+                    natural_metadata_parts.append(f"Cơ quan thực hiện: {metadata['executing_agency']}")
+                
+                if metadata.get('jurisdiction'):
+                    natural_metadata_parts.append(f"Thẩm quyền: {metadata['jurisdiction']}")
+                
+                if metadata.get('applicant_type'):
+                    applicant_str = ", ".join(metadata['applicant_type']) if isinstance(metadata['applicant_type'], list) else metadata['applicant_type']
+                    natural_metadata_parts.append(f"Đối tượng áp dụng: {applicant_str}")
+                
+                if metadata.get('requirements_conditions'):
+                    natural_metadata_parts.append(f"Yêu cầu: {metadata['requirements_conditions']}")
+                
+                # Join natural metadata
+                if natural_metadata_parts:
+                    complete_parts.append("Thông tin thủ tục:")
+                    complete_parts.extend(natural_metadata_parts)
+                    complete_parts.append("")  # Empty line separator
             
             # 🧹 PHASE 3: Clean content formatting - bỏ dấu ===
             if content_chunks:

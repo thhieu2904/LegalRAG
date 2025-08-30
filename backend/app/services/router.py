@@ -676,6 +676,20 @@ class QueryRouter:
             
             actual_collection = collection_mappings.get(collection_name, collection_name)
             
+            # 🔧 FIX: Extract just the DOC_XXX part if document_name contains full path
+            if "/" in document_name and "documents" in document_name:
+                # Extract DOC_XXX from path like "quy_trinh_pbgdpl_htpldn/documents/DOC_002/questions.json"
+                parts = document_name.split("/")
+                for part in parts:
+                    if part.startswith("DOC_"):
+                        document_name = part
+                        break
+                logger.info(f"🔧 Extracted document name: {document_name}")
+            elif document_name.endswith(".json"):
+                # Remove .json extension if present
+                document_name = document_name.replace("/questions.json", "").split("/")[-1]
+                logger.info(f"🔧 Cleaned document name: {document_name}")
+            
             # Kiểm tra xem có data trong memory cache không
             if actual_collection in self.example_questions:
                 collection_docs = self.example_questions[actual_collection]
@@ -822,7 +836,7 @@ class QueryRouter:
                 if not os.path.exists(questions_file):
                     continue
                 
-                # Đếm số questions trong document này
+                # Đọc questions.json và content JSON để lấy thông tin đầy đủ
                 try:
                     with open(questions_file, 'r', encoding='utf-8') as f:
                         questions_data = json.load(f)
@@ -831,8 +845,25 @@ class QueryRouter:
                     variants = questions_data.get('question_variants', [])
                     question_count = (1 if main_question else 0) + len([v for v in variants if v.strip()])
                     
-                    # Lấy tiêu đề document từ main_question hoặc doc name
+                    # Đọc content JSON để lấy title chính xác từ metadata
+                    content_files = [f for f in os.listdir(doc_path) if f.endswith('.json') and f != 'questions.json']
                     document_title = main_question[:50] + "..." if main_question else doc_name
+                    
+                    if content_files:
+                        content_file = os.path.join(doc_path, content_files[0])
+                        try:
+                            with open(content_file, 'r', encoding='utf-8') as f:
+                                content_data = json.load(f)
+                            
+                            # Lấy title từ metadata thay vì main_question
+                            if 'metadata' in content_data and 'title' in content_data['metadata']:
+                                full_title = content_data['metadata']['title']
+                                document_title = full_title[:50] + "..." if len(full_title) > 50 else full_title
+                                logger.info(f"📄 Using metadata title for {doc_name}: {document_title}")
+                            else:
+                                logger.warning(f"📄 No metadata title found for {doc_name}, using main_question")
+                        except Exception as e:
+                            logger.warning(f"📄 Error reading content file {content_file}: {e}")
                     
                     documents_list.append({
                         'filename': doc_name,

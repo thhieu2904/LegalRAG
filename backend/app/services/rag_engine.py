@@ -1967,15 +1967,45 @@ class RAGService:
             
             if question_text and collection:
                 logger.info(f"🚀 Clarification Step 3→4: User selected question '{question_text}' in collection '{collection}'.")
-                if document_title:
-                    logger.info(f"🎯 Target document: '{document_title}' (source: {source_file})")
+                
+                # 🔧 FIX: Get the correct document title from source_file instead of using clarification document_title
+                actual_document_title = document_title
+                if source_file:
+                    # Extract DOC_XXX from source_file like "quy_trinh_pbgdpl_htpldn/documents/DOC_001/questions.json"
+                    doc_id = None
+                    if "/DOC_" in source_file:
+                        parts = source_file.split("/")
+                        for part in parts:
+                            if part.startswith("DOC_"):
+                                doc_id = part
+                                break
+                    
+                    if doc_id:
+                        # Get the actual document title from the content JSON file
+                        try:
+                            content_files = list(Path(f"data/storage/collections/{collection}/documents/{doc_id}").glob("*.json"))
+                            content_files = [f for f in content_files if f.name != "questions.json"]
+                            
+                            if content_files:
+                                with open(content_files[0], 'r', encoding='utf-8') as f:
+                                    content_data = json.load(f)
+                                
+                                if 'metadata' in content_data and 'title' in content_data['metadata']:
+                                    actual_document_title = content_data['metadata']['title']
+                                    logger.info(f"🔧 CORRECTED: Using actual document title from {doc_id}: '{actual_document_title}'")
+                                else:
+                                    logger.warning(f"🔧 No metadata title found in {doc_id}, keeping original title")
+                        except Exception as e:
+                            logger.warning(f"🔧 Error getting actual document title: {e}")
+                
+                logger.info(f"🎯 Target document: '{actual_document_title}' (source: {source_file})")
                 
                 # Chạy RAG với câu hỏi ĐÃ ĐƯỢC LÀM RÕ và collection ĐÃ CHỈ ĐỊNH
                 return self.process_query(
                     query=question_text,  # 🔥 Dùng câu hỏi cụ thể, không phải original query mơ hồ
                     session_id=session_id,
                     forced_collection=collection,  # 🔥 Force routing to selected collection
-                    forced_document_title=document_title  # 🔥 NEW: Force exact document filtering
+                    forced_document_title=actual_document_title  # 🔥 Use corrected document title
                 )
             else:
                 return {
@@ -2270,48 +2300,24 @@ class RAGService:
                 answer_preview = item['answer'][:100] + "..." if len(item['answer']) > 100 else item['answer']
                 chat_history_structured.append({"role": "assistant", "content": answer_preview})
             
-        # 🎯 PHASE 2: Use Centralized Prompt Service - Improved maintainability
-        # Use default confidence level since routing_result is not available in this context
-        system_prompt_clean = prompt_service.get_legal_rag_prompt("medium")
+        # 🎯 PHASE 2: Use Complete Prompt Generation (Single Layer)  
+        # Create complete prompt ready for LLM - no further formatting needed
+        complete_prompt = prompt_service.get_complete_rag_prompt(
+            query=query,
+            context=context,
+            confidence_level="medium",
+            chat_history=chat_history_structured
+        )
         
-        logger.info(f"📝 Using ChatML format with structured chat history: {len(chat_history_structured)} messages")
-        
-        # 🔥 TOKEN MANAGEMENT - Kiểm soát độ dài để tránh context overflow
-        from app.core.config import settings
-        
-        # Ước tính token đơn giản (1 token ≈ 3-4 ký tự tiếng Việt)
-        # Tính toán cho ChatML format với các token đặc biệt
-        chat_history_text = "\n".join([f"{item['role']}: {item['content']}" for item in chat_history_structured])
-        estimated_tokens = len(system_prompt_clean + context + query + chat_history_text + "<|im_start|><|im_end|>") // 3
-        max_context_tokens = settings.n_ctx - 500  # Để lại 500 token cho response
-        
-        if estimated_tokens > max_context_tokens:
-            # Cắt bớt context để fit trong giới hạn
-            logger.warning(f"🚨 Context overflow detected: {estimated_tokens} tokens > {max_context_tokens} max")
-            
-            # Tính toán space còn lại cho context
-            fixed_parts_length = len(system_prompt_clean + chat_history_text + query + "<|im_start|><|im_end|>")
-            remaining_space = (max_context_tokens * 3) - fixed_parts_length
-            
-            if remaining_space > 500:  # Đảm bảo có ít nhất 500 ký tự cho context
-                context = context[:remaining_space] + "\n\n[...THÔNG TIN ĐÃ ĐƯỢC RÚT GỌN ĐỂ TRÁNH QUÁ TẢI...]"
-                logger.info(f"✂️ Context truncated to {len(context)} chars")
-            else:
-                # Nếu không đủ chỗ, bỏ chat history
-                chat_history_structured = []
-                context = context[:max_context_tokens * 3 // 2] + "\n\n[...RÚT GỌN...]"
-                logger.warning("⚠️ Removed chat history due to extreme context overflow")
-        
-        logger.info(f"📝 Final context length: {len(context)} chars (~{len(context)//3} tokens)")
+        logger.info(f"� Generated complete prompt, length: {len(complete_prompt)} chars")
 
         try:
-            response_data = self.llm_service.generate_response(
-                user_query=query,
-                context=context,
+            # 🔥 SIMPLIFIED: Send complete prompt directly to LLM 
+            # NO additional formatting in language_model.py
+            response_data = self.llm_service.generate_response_direct(
+                complete_prompt=complete_prompt,
                 max_tokens=settings.max_tokens,
-                temperature=settings.temperature,
-                system_prompt=system_prompt_clean,
-                chat_history=chat_history_structured  # 🔥 THAM SỐ MỚI cho ChatML
+                temperature=settings.temperature
             )
             
             # Extract response text from dict

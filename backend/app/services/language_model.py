@@ -130,11 +130,18 @@ class LLMService:
         chat_history: Optional[List[Dict[str, str]]] = None
     ) -> str:
         """
+        ⚠️ DEPRECATED: This method is deprecated and will be removed
+        
+        Use prompt_service.get_complete_rag_prompt() instead for single-layer approach.
+        
         Format prompt theo TEMPLATE CHÍNH THỨC của PhoGPT-4B-Chat
         PROMPT_TEMPLATE = "### Câu hỏi: {instruction}\n### Trả lời:"
-        
-        Đây là format ĐÚNG theo tài liệu chính thức, không phải prompt bleeding!
         """
+        
+        logger.warning(
+            "⚠️ DEPRECATED: _format_prompt() is deprecated. "
+            "Use prompt_service.get_complete_rag_prompt() for single-layer approach."
+        )
         
         # Build instruction từ context và user query
         instruction_parts = []
@@ -184,7 +191,19 @@ class LLMService:
         system_prompt: Optional[str] = None,
         chat_history: Optional[List[Dict[str, str]]] = None  # THAM SỐ MỚI cho ChatML
     ) -> Dict[str, Any]:
-        """Sinh response từ model - VRAM optimized với on-demand loading"""
+        """
+        ⚠️ DEPRECATED: Use generate_response_direct() instead
+        
+        Sinh response từ model - VRAM optimized với on-demand loading
+        
+        This method is deprecated and will be removed in future versions.
+        Use prompt_service.get_complete_rag_prompt() + generate_response_direct() instead.
+        """
+        
+        logger.warning(
+            "⚠️ DEPRECATED: generate_response() is deprecated. "
+            "Use prompt_service.get_complete_rag_prompt() + generate_response_direct() instead."
+        )
         
         # VRAM Optimization: Ensure model is loaded
         self.ensure_loaded()
@@ -382,6 +401,91 @@ class LLMService:
                 cleaned_text = truncated[:last_sentence + 1]
         
         return cleaned_text
+    
+    def generate_response_direct(
+        self,
+        complete_prompt: str,
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None
+    ) -> Dict[str, Any]:
+        """
+        🎯 DIRECT PROMPT PROCESSING - No additional formatting
+        
+        This method accepts a complete, pre-formatted prompt and sends it directly
+        to the LLM without any additional formatting. This eliminates prompt bleeding
+        and multi-layer formatting issues.
+        
+        Args:
+            complete_prompt: Complete, ready-to-use prompt (already formatted)
+            max_tokens: Maximum tokens for response
+            temperature: Sampling temperature
+            
+        Returns:
+            Dict with response and metadata
+        """
+        # VRAM Optimization: Ensure model is loaded
+        self.ensure_loaded()
+        
+        if not self.model:
+            raise Exception("Model not loaded")
+        
+        # Use values from config
+        if max_tokens is None:
+            max_tokens = settings.max_tokens
+        if temperature is None:
+            temperature = settings.temperature
+        
+        logger.info(f"🎯 Using DIRECT prompt processing (no additional formatting)")
+        logger.debug(f"📝 Complete prompt length: {len(complete_prompt)} chars")
+        
+        # Context window management
+        prompt_tokens_estimated = len(complete_prompt) // 3
+        
+        if prompt_tokens_estimated > (self.model_kwargs['n_ctx'] - max_tokens - 50):
+            logger.warning(f"⚠️ Prompt may exceed context window: {prompt_tokens_estimated} tokens")
+        
+        try:
+            start_time = time.time()
+            
+            # Send complete prompt directly to model
+            result = self.model(
+                complete_prompt,  # NO additional formatting
+                max_tokens=max_tokens,
+                temperature=temperature,
+                top_p=0.9,
+                top_k=50,
+                repeat_penalty=1.1,
+                stop=["### Câu hỏi:", "### Question:", "<|im_end|>"],
+                echo=False,
+                stream=False
+            )
+            
+            # Extract response
+            if isinstance(result, dict) and 'choices' in result:
+                raw_text = result['choices'][0]['text']
+                
+                # Clean and process response
+                cleaned_response = self._clean_repetitive_response(raw_text)
+                
+                generation_time = time.time() - start_time
+                
+                return {
+                    "response": cleaned_response,
+                    "prompt_tokens": prompt_tokens_estimated,
+                    "generation_time": generation_time,
+                    "model_info": "PhoGPT-4B-Chat (Direct Processing)",
+                    "processing_method": "direct_prompt"
+                }
+            else:
+                raise ValueError(f"Unexpected model response format: {type(result)}")
+                
+        except Exception as e:
+            logger.error(f"Error in direct response generation: {e}")
+            return {
+                "response": f"Xin lỗi, có lỗi xảy ra khi tạo câu trả lời: {e}",
+                "error": str(e),
+                "processing_method": "direct_prompt_error"
+            }
     
     def is_loaded(self) -> bool:
         """Kiểm tra model đã được load chưa"""
