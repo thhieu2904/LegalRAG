@@ -1,326 +1,0 @@
-SỞ TƯ PHÁP
-QUY TRÌNH
-Mã hiệu: QT 30/CX-HCTP
-
-
-Đăng ký khai sinh lưu động 
-Lần ban hành:
-01
-
-
-
-Ngày ban hành: 07/7/2025
-
-MỤC LỤC
-SỬA ĐỔI TÀI LIỆU
-MỤC ĐÍCH 
-PHẠM VI
-TÀI LIỆU VIỆN DẪN
-ĐỊNH NGHĨA/VIẾT TẮT
-NỘI DUNG QUY TRÌNH
-BIỂU MẪU
-HỒ SƠ CẦN LƯU
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Trách nhiệm
-Soạn thảo
-Xem xét
-Phê duyệt
-
-Họ tên
-Võ Thị Huyền Trang
-Nguyễn Thị Phương Thu
-Hồ Minh Hải
-
-Chữ ký
-
-
-
-
-
-
-
-
-
-
-Chức vụ
-Chuyên viên
-Trưởng phòng
-Phó Giám đốc
- Sở Tư pháp
-
-TRANG THEO DÕI SỐ LẦN SỬA ĐỔI TÀI LIỆU
-
-STT
-Tóm lược nội dung
-cần sửa đổi
-Cơ sở pháp lý hoặc căn cứ
-về việc sửa đổi
-Lần sửa đổi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-MỤC ĐÍCH
-Quy định thành phần hồ sơ, lệ phí (nếu có), trình tự, cách thức và thời gian giải quyết hồ sơ hành chính của cơ quan theo tiêu chuẩn TCVN ISO 9001:2015 nhằm đảm bảo phù hợp với quy định của pháp luật và yêu cầu của cá nhân, tổ chức.
-PHẠM VI
-Áp dụng đối với các tổ chức, cá nhân có nhu cầu thực hiện dịch vụ hành chính công phù hợp với thẩm quyền giải quyết của cơ quan.
-TÀI LIỆU VIỆN DẪN
-Tiêu chuẩn quốc gia TCVN ISO 9001:2015.
-Các văn bản pháp quy liên quan đề cập tại mục 5 của Quy trình này.
-Quyết định số 101/QĐ-BKHCN ngày 21 tháng 01 năm 2019 của Bộ Khoa học và Công nghệ về việc công bố Mô hình khung Hệ thống quản lý chất lượng theo tiêu chuẩn quốc gia TCVN ISO 9001:2015 cho các loại hình cơ quan hành chính nhà nước tại địa phương.
-ĐỊNH NGHĨA VÀ VIẾT TẮT 
-UBND	: 	Ủy ban nhân dân
-TTHC	: 	Thủ tục hành chính
-GCN		: 	Giấy chứng nhận
-ISO		:	Hệ thống quản lý chất lượng – TCVN ISO 9001:2015
-BPTN&HT	:	Bộ phận tiếp nhận và hoàn trả kết quả
-CN & TC	:	Cá nhân và tổ chức 
-CQHCNN	:	Cơ quan hành chính nhà nước 
-TDQT	:	Phiếu theo dõi quá trình xử lý công việc
-CCHC	:	Cải cách hành chính
-KSTTHC	:	Kiểm soát thủ tục hành chính 
-Đề án 30	:	Đề án đơn giản hóa thủ tục hành chính theo Quyết định 				30/QĐ-TTg của Thủ tướng Chính phủ. 
-VB		:	Văn bản
-CV		:	Công văn 
-TTr		:	Tờ trình
-QĐ		:	Quyết định 
-MHK	:	Mô hình khung
-
-
-
-
-
-
-
-
-
-
-5. NỘI DUNG 
-a. Thành phần, số lượng hồ sơ:
-* Giấy tờ phải nộp:
-- Tờ khai đăng ký khai sinh theo mẫu.
-- Bản chính Giấy chứng sinh; trường hợp không có Giấy chứng sinh thì nộp văn bản của người làm chứng xác nhận về việc sinh; nếu không có người làm chứng thì phải có giấy cam đoan về việc sinh.
-Trường hợp người yêu cầu đã nộp bản điện tử Giấy chứng sinh hoặc cơ quan đăng ký hộ tịch đã khai thác được dữ liệu điện tử có ký số của Giấy chứng sinh thì không phải nộp bản giấy.  
-- Trường hợp khai sinh cho trẻ em sinh ra do mang thai hộ phải có văn bản xác nhận của cơ sở y tế đã thực hiện kỹ thuật hỗ trợ sinh sản cho việc mang thai hộ.
-* Giấy tờ phải xuất trình:
-- Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu đăng ký khai sinh;
-- Giấy tờ có giá trị chứng minh thông tin về cư trú trong trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin về nơi cư trú của công dân theo các phương thức quy định tại khoản 2 Điều 14 Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ. Trường hợp các thông tin về giấy tờ chứng minh nơi cư trú đã được khai thác từ CSDLQGVDC bằng các phương thức này thì người yêu cầu không phải xuất trình (theo hình thức trực tiếp). 
-- Giấy chứng nhận kết hôn nếu cha, mẹ đã đăng ký kết hôn. Trường hợp đã có thông tin về việc kết hôn của cha, mẹ trong CSDLHTĐT, CSDLQGVDC thì không phải xuất trình.
-Số lượng hồ sơ: 01 bộ
-b. Thời hạn giải quyết: 05 ngày làm việc.
-c. Đối tượng thực hiện thủ tục hành chính: Cá nhân
-d. Cơ quan thực hiện thủ tục hành chính: Ủy ban nhân dân cấp xã nơi cư trú của người cha hoặc người mẹ.
-đ. Cơ quan phối hợp: Cơ quan quản lý CSDLQGVDC.
-e. Kết quả thực hiện thủ tục hành chính: Giấy khai sinh (bản chính).
-g. Lệ phí:
-- Đối với trường hợp đăng ký khai sinh không đúng hạn: 8.000 đồng. Miễn lệ phí đối với trường hợp khai sinh đúng hạn, người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật (áp dụng tại 32 xã, phường tại Phụ lục 1 kèm theo).
-- Đối với trường hợp đăng ký khai sinh không đúng hạn: 5.000 đồng (tỉnh Sóc Trăng cũ).
-- Miễn lệ phí đối với trường hợp đăng ký cho trẻ em, người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người cao tuổi, người khuyết tật, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn (tỉnh Sóc Trăng cũ).
-- 5.000 đồng/bản sao/sự kiện hộ tịch đã đăng ký. Miễn lệ phí đối với các trường hợp sau: Đăng ký hộ tịch cho người thuộc hộ nghèo; người cao tuổi; người khuyết tật; người có công với cách mạng; đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn; Đăng ký khai sinh đúng hạn (áp dụng tại 28 xã, phường tại Phụ lục 2 kèm theo).
-h. Mẫu đơn, mẫu tờ khai: Tờ khai đăng ký khai sinh
-i. Yêu cầu, điều kiện thực hiện thủ tục hành chính:
-Trẻ em sinh ra mà cha mẹ bị khuyết tật, ốm bệnh không thể đi đăng ký khai sinh cho con; cha mẹ bị bắt, tạm giam hoặc đang thi hành án phạt tù mà không còn ông bà nội, ngoại và người thân thích khác hoặc những người này không có điều kiện đi đăng ký khai sinh cho trẻ.
-k. Căn cứ pháp lý của thủ tục hành chính: 
-- Luật Hộ tịch năm 2014;
-- Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch;
-- Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy khi thực hiện thủ tục hành chính, cung cấp dịch vụ công;
-- Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực; 
-- Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản l‎ý nhà nước của Bộ Tư pháp;
-- Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch;
-- Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP ngày 08/4/2020 của Bộ trưởng Bộ Tư pháp ban hành, hướng dẫn sử dụng, quản lý mẫu sổ quốc tịch và mẫu giấy tờ về quốc tịch và Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch; 
-- Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp;
-- Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc Trung ương;
-- Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc Trung ương.
-- Nghị quyết số 10/2022/NQ-HĐND ngày 09 tháng 12 năm 2022 của Hội đồng nhân dân thành phố Cần Thơ sửa đổi, bổ sung một số điều của Nghị quyết số 03/2017/NQ-HĐND ngày 07 tháng 7 năm 2017 của Hội đồng nhân dân thành phố quy định mức thu, miễn, giảm các khoản phí, lệ phí;
-- Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng.
-- Nghị quyết số 04/2023/NQ-HĐND ngày 14 tháng 7 năm 2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang;
-l. Quy trình các bước xử lý công việc:
-
-TT
-Trình tự các bước công việc*
-Trách nhiệm
-Thời gian (05 ngày làm việc)
-
-
-Tiếp nhận hồ sơ kiểm tra tính pháp lý và nội dung hồ sơ:
-- Phù hợp, thì tiến hành xử lý/giải quyết;
-- Chưa phù hợp thì hướng dẫn làm lại hồ sơ.
-Công chức Tư pháp - Hộ tịch 
-
-03 ngày
-
-
-- Xem xét hồ sơ, nếu:
-+ Không hợp lệ: chuyển trả lại cho công chức thụ lý chỉnh sửa/ bổ sung hoặc giải trình;
-+ Hợp lệ: Ký duyệt hồ sơ, chuyển cho Văn phòng - Thống kê đóng dấu.
-Lãnh đạo UBND
-
-
-01 ngày
-
-
-Đóng dấu văn bản
-Văn thư UBND 
-½ ngày
-
-
-- Ghi vào Sổ đăng ký khai sinh, người yêu cầu đăng ký khai sinh ký tên vào sổ.
-- Hoàn trả kết quả giải quyết thủ tục hành chính; yêu cầu người nhận kết quả nộp tiền.
-Công chức Tư pháp - Hộ tịch
-
-
-½ ngày
-
-
-*Ghi chú: Các bước này có thể tăng hoặc giảm tùy theo đặc điểm của mỗi thủ tục hành chính nhưng đảm bảo tổng thời gian không quá quy định của pháp luật. 
-Một số thủ tục hành chính giải quyết trong ngày hoặc ít hơn 2 ngày; hoặc được xử lý bởi 1 người, 1 nhóm người trong cùng 1 phòng hay đơn vị thì không nhất thiết phải sử dụng phiếu theo dõi quá trình tương ứng.
-Một số thủ tục hành chính quy định chỉ nhận nhưng không trả kết quả thì không cần thiết sử dụng phiếu theo dõi quá trình xử lý công việc;
-Các bước công việc này có thể được kiểm soát thông qua phần mềm tin học.
-6. BIỂU MẪU
-Mẫu sổ theo dõi hồ sơ;
-Xem mục 5 ở trên.
-7. HỒ SƠ  LƯU TRỮ
-STT
-Tên biểu mẫu/ hồ sơ
-Nơi lưu/ người lưu trữ
-Thời gian lưu trữ 
-
-01
-Bộ hồ sơ theo Mục 5.a
-Ủy ban nhân dân cấp xã/Công chức Tư pháp-Hộ tịch
-Vĩnh viễn
-
-02
-Sổ đăng ký khai sinh
-Ủy ban nhân dân cấp xã/Công chức Tư pháp-Hộ tịch
-Vĩnh viễn
-
-03
-Kết quả giải quyết thủ tục hành chính: Giấy khai sinh (bản photo)
-Ủy ban nhân dân cấp xã/Công chức Tư pháp Hộ tịch
-Vĩnh viễn
-
-
-PHỤ LỤC
-Mức thu lệ phí tại các đơn vị
-
-TT
-Tên phụ lục
-Danh sách các xã, phường phụ trách
-
-1
-Phụ lục 1
-- Phường: Ninh Kiều; Cái Khế; Tân An; An Bình; Thới An Đông; Bình Thủy; Long Tuyền; Cái Răng; Hưng Phú;  Ô Môn; Phước Thới; Thới Long; Trung Nhứt; Thuận Hưng; Thốt Nốt; Tân Lộc.
-- Xã: Phong Điền; Nhơn Ái; Thới Lai; Đông Thuận; Trường Xuân; Trường Thành; Cờ Đỏ; Đông Hiệp; Trung Hưng; Vĩnh Thạnh; Vĩnh Trinh; Thạnh An; Thạnh Qưới; Trường Long; Thạnh Phú; Thới Hưng.
-
-
-2
-Phụ lục 2
-- Phường: Vị Thanh; Vị Tân; Long Bình; Long Mỹ; Long Phú 1; Đại Thành; Ngã Bảy.
-- Xã: Hỏa Lựu; Vị Thủy; Vĩnh Thuận Đông; Vị Thanh 1; Vĩnh Tường; Vĩnh Viễn; Xà Phiên; Lương Tâm; Thạnh Xuân; Tân Hòa; Trường Long Tây; Châu Thành; Đông Phước; Phú Hữu; Tân Bình; Hòa An; Phương Bình; Tân Phước Hưng; Hiệp Hưng; Phụng Hiệp; Thạnh Hòa.
-
-
-3
-Phụ lục 3
-- Phường: Phú Lợi; Sóc Trăng; Mỹ Xuyên; Vĩnh Phước; Vĩnh Châu; Khánh Hòa; Ngã Năm; Mỹ Qưới.
-- Xã: Hòa Tú; Gia Hòa; Nhu Gia; Ngọc Tố; Trường Khánh; Đại Ngãi; Tân Thạnh; Long Phú; Nhơn Mỹ; An Lạc Thôn; Kế Sách; Thới An Hội; Đại Hải; Phú Tâm; An Ninh; Thuận Hòa; Hồ Đắc Kiện; Mỹ Tú; Long Hưng; Mỹ Hương; Tân Long; Phú Lộc; Vĩnh Lợi; Lâm Tân; Thạnh Thới An; Tài Văn; Liêu Tú; Lịch Hội Thượng; Trần Đề; An Thạnh; Cù Lao Dung; Phong Nẫm; Mỹ Phước; Lai Hòa; Vĩnh Hải.
-
-
-
