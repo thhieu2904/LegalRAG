@@ -19,7 +19,6 @@ from app.services.language_model import LLMService
 from app.services.rag_engine import RAGService
 from app.api import rag
 from app.api import documents
-from app.api import router_business_api
 
 # Cấu hình logging
 logging.basicConfig(
@@ -151,14 +150,7 @@ app.add_middleware(
 app.include_router(rag.router)
 app.include_router(documents.router)
 
-# Include Business API
-try:
-    app.include_router(router_business_api.router, prefix="/api/business")
-    logger.info("✅ Business API endpoints enabled")
-except Exception as e:
-    logger.warning(f"⚠️ Business API not available: {e}")
-
-# Include Router CRUD API
+# Include Router CRUD API (minimal endpoints for clarification)
 try:
     from app.api.router_crud import router as router_crud_router
     app.include_router(router_crud_router)
@@ -182,7 +174,6 @@ async def root():
         "endpoints": {
             "query": "/api/v1/query",
             "collections": "/router/collections", 
-            "business": "/api/business/collections",
             "health": "/health"
         }
     }

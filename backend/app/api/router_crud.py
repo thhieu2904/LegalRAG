@@ -1,11 +1,20 @@
 """
-🔥 Router CRUD API - ESSENTIAL ENDPOINTS ONLY
+🔥 Router CRUD API - ESSENTIAL READ-ONLY ENDPOINTS
 
-❌ CRUD operations disabled, but keeping essential endpoints for clarification
-💡 Only collections endpoint enabled for frontend compatibility
+❌ CRUD operations (CREATE/UPDATE/DELETE) chưa được implement
+💡 Chỉ có READ operations để support clarification flow
+🎯 Dự định tương lai: Thêm CRUD để quản lý questions.json và document.json
 
-This file provides minimal router endpoints needed for clarification flow.
-Full CRUD functionality can be re-enabled after implementing CRUD methods in QueryRouter.
+Chức năng hiện tại:
+- GET /router/collections: Lấy danh sách collections
+- GET /router/collections/{name}/questions: Lấy questions cho clarification
+- GET /router/health: Health check
+
+Tính năng sẽ thêm trong tương lai:
+- POST /router/collections/{name}/questions: Thêm question mới
+- PUT /router/collections/{name}/questions/{id}: Sửa question
+- DELETE /router/collections/{name}/questions/{id}: Xóa question
+- POST/PUT cho document metadata management
 """
 
 from fastapi import APIRouter, HTTPException, Depends
