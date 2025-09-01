@@ -16,14 +16,35 @@ The LegalRAG backend provides AI-powered legal document search and question-answ
 
 ### 1. Environment Setup
 
+**🚀 Method 1: Auto Setup (Recommended)**
+
 ```bash
-# Create conda environment
-conda create -n LegalRAG_v1 python=3.11
+cd backend/environment
+
+# Windows
+setup_environment.bat LegalRAG_Backend
+
+# Linux/Mac
+./setup_environment.sh LegalRAG_Backend
+```
+
+**⚙️ Method 2: Manual Setup**
+
+```bash
+# Navigate to environment folder
+cd backend/environment
+
+# Create environment from config file
+conda env create -f environment.yml
+
+# Activate environment
 conda activate LegalRAG_v1
 
-# Install dependencies
-pip install -r requirements.txt
+# Verify installation
+python -c "import torch; print(f'PyTorch: {torch.__version__}, CUDA: {torch.cuda.is_available()}')"
 ```
+
+📖 **Detailed Environment Guide**: See [`environment/README.md`](environment/README.md) for comprehensive setup instructions.
 
 ### 2. Model Setup
 
