@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_boi_thuong_nn/QUY TRÌNH BỒI THƯỜNG NN/1. Thủ tục xác định cơ quan giải quyết bồi thường.doc",
+    "title": "Thủ tục xác định cơ quan giải quyết bồi thường",
+    "code": "QT 01/BTNN",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Sở Tư pháp, UBND cấp tỉnh",
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ],
+    "processing_time_text": "05 ngày làm việc kể từ ngày nhận được hồ sơ",
+    "fee_vnd": null,
+    "fee_text": "Không quy định lệ phí cho thủ tục xác định cơ quan giải quyết bồi thường",
+    "has_form": false,
+    "requirements_conditions": "Thủ tục hành chính được thực hiện khi có một trong các căn cứ sau đây: Trường hợp xác định cơ quan theo quy định tại khoản 2 Điều 32 Nghị định số 68/2018/NĐ-CP, Sở Tư pháp giúp UBND cấp tỉnh xác định cơ quan giải quyết bồi thường thì khi có một trong các căn cứ sau: + Không có sự thống nhất về cơ quan giải quyết bồi thường trong trường hợp có nhiều người thi hành công vụ thuộc nhiều cơ quan trong phạm vi quản lý của địa phương mình cùng gây thiệt hại; + Cơ quan nhà nước ở địa phương bị giải thể theo quyết định của Quốc hội, Ủy ban Thường vụ Quốc hội, Chính phủ, Thủ tướng Chính phủ. Trường hợp xác định cơ quan theo quy định tại Điều 33 Nghị định số 68/2018/NĐ-CP, Sở Tư pháp thực hiện việc xác định cơ quan giải quyết bồi thường khi người yêu cầu bồi thường chưa xác định ngay được cơ quan giải quyết bồi thương và người yêu cầu bồi thường gửi hồ sơ yêu cầu bồi thường đến Sở Tư pháp theo quy định tại khoản 4 Điều 41 Luật TNBTCNN năm 2017.",
+    "legal_basis_references": [
+      "Luật Trách nhiệm bồi thường của Nhà nước năm 2017",
+      "Nghị định số 68/2018/NĐ-CP ngày 15/5/2018 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Trách nhiệm bồi thường của Nhà nước",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không quy định lệ phí"
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần, số lượng hồ sơ và căn cứ thực hiện",
+      "content": "Thành phần hồ sơ:\nYêu cầu xác định cơ quan giải quyết bồi thường của người yêu cầu bồi thường hoặc hồ sơ do các cơ quan không thống nhất được cơ quan giải quyết bồi thường chuyển sang khi có một trong các căn cứ sau:\n\n**A. TRƯỜNG HỢP XÁC ĐỊNH THEO ĐIỀU 32 NGHỊ ĐỊNH 68/2018/NĐ-CP:**\n- Sở Tư pháp giúp UBND cấp tỉnh xác định cơ quan giải quyết bồi thường khi có một trong các căn cứ sau:\n  + Không có sự thống nhất về cơ quan giải quyết bồi thường trong trường hợp có nhiều người thi hành công vụ thuộc nhiều cơ quan trong phạm vi quản lý của địa phương mình cùng gây thiệt hại\n  + Cơ quan nhà nước ở địa phương bị giải thể theo quyết định của Quốc hội, Ủy ban Thường vụ Quốc hội, Chính phủ, Thủ tướng Chính phủ\n\n**B. TRƯỜNG HỢP XÁC ĐỊNH THEO ĐIỀU 33 NGHỊ ĐỊNH 68/2018/NĐ-CP:**\n- Sở Tư pháp thực hiện việc xác định cơ quan giải quyết bồi thường khi người yêu cầu bồi thường chưa xác định ngay được cơ quan giải quyết bồi thương\n- Người yêu cầu bồi thường gửi hồ sơ yêu cầu bồi thường quy định tại Điều 41 Luật TNBTCNN năm 2017\n\n**Số lượng hồ sơ:** Không quy định",
+      "source_reference": "Điều 32, 33 Nghị định số 68/2018/NĐ-CP",
+      "keywords": [
+        "hồ sơ",
+        "yêu cầu",
+        "xác định cơ quan",
+        "bồi thường",
+        "người thi hành công vụ",
+        "cơ quan nhà nước"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc kể từ ngày nhận được hồ sơ.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "hồ sơ"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và Cơ quan thực hiện",
+      "content": "**Đối tượng thực hiện:** Người yêu cầu bồi thường.\n\n**Cơ quan thực hiện:**\n- Sở Tư pháp và UBND cấp tỉnh trong trường hợp xác định cơ quan theo quy định tại khoản 2 Điều 32 Nghị định số 68/2018/NĐ-CP (Sở Tư pháp giúp UBND cấp tỉnh xác định cơ quan giải quyết bồi thường)\n- Sở Tư pháp trong trường hợp xác định cơ quan theo quy định tại Điều 33 Nghị định số 68/2018/NĐ-CP",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "cơ quan thực hiện",
+        "Sở Tư pháp",
+        "UBND cấp tỉnh"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "**Kết quả thực hiện:** Văn bản xác định cơ quan giải quyết bồi thường.\n\n**Lệ phí:** Không quy định lệ phí cho thủ tục xác định cơ quan giải quyết bồi thường.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "văn bản",
+        "lệ phí",
+        "miễn phí"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "**Thời gian tổng thể:** 05 ngày làm việc\n\n**Các bước thực hiện:**\n\n1. **Tiếp nhận hồ sơ từ người yêu cầu bồi thường** (¼ ngày)\n   - Trách nhiệm: Bộ phận tiếp nhận và trả kết quả hoặc Văn thư Sở Tư pháp\n\n2. **Tiếp nhận hồ sơ, phân công cho chuyên viên xử lý** (1.5 ngày)\n   - **Trường hợp theo Điều 32:**\n     + Tham mưu tổ chức họp với các cơ quan có liên quan để xác định cơ quan giải quyết bồi thường\n     + Trường hợp thống nhất: Dự thảo văn bản xác định cơ quan giải quyết bồi thường\n     + Trường hợp không thống nhất: Tham mưu quyết định một trong số các cơ quan có liên quan là cơ quan giải quyết bồi thường\n   - **Trường hợp theo Điều 33:**\n     + Tham mưu trao đổi với các cơ quan có liên quan để thống nhất cơ quan giải quyết bồi thường\n     + Khi xác định được cơ quan: Tham mưu gửi hồ sơ cho cơ quan đó để thụ lý, giải quyết\n     + Trường hợp theo điểm a hoặc b Khoản 1 Điều 40 Luật TNBTCNN: Tham mưu gửi hồ sơ đến cơ quan quản lý nhà nước về công tác bồi thường có thẩm quyền\n   - Trách nhiệm: Phòng ban chuyên môn - Sở Tư pháp\n\n3. **Ký văn bản trình UBND thành phố hoặc xác định cơ quan** (¼ ngày)\n   - **Trường hợp theo Điều 32:** Ký văn bản trình UBND thành phố\n   - **Trường hợp theo Điều 33:** Ký văn bản xác định cơ quan giải quyết bồi thường và gửi hồ sơ\n   - Trách nhiệm: Lãnh đạo Sở Tư pháp\n\n4. **Phát hành văn bản, chuyển hồ sơ** (¼ ngày)\n   - Trách nhiệm: Văn thư Sở Tư pháp\n\n5. **UBND thành phố ban hành văn bản xác định** (1.5 ngày)\n   - Trách nhiệm: UBND thành phố\n\n6. **Chuyển văn bản, hồ sơ đến Sở Tư pháp và cơ quan giải quyết** (¼ ngày)\n   - Trách nhiệm: Bộ phận tiếp nhận và trả kết quả của UBND thành phố\n\n**Lưu ý:** Các bước có thể tăng hoặc giảm tùy theo đặc điểm của từng thủ tục nhưng đảm bảo tổng thời gian không quá quy định pháp luật.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thời gian",
+        "tiếp nhận",
+        "xử lý",
+        "ký văn bản",
+        "phát hành",
+        "UBND thành phố"
+      ]
+    }
+  ]
+}

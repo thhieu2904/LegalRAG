@@ -1,0 +1,178 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_033/33. Cấp Giấy xác nhận tình trạng hôn nhân.doc",
+    "title": "Cấp Giấy xác nhận tình trạng hôn nhân",
+    "code": "QT 33/CX-HT",
+    "issuing_authority": "Ủy ban nhân dân cấp xã",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú hoặc nơi tạm trú (nếu không có nơi thường trú)",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "03 ngày làm việc; trường hợp phải xác minh thì không quá 23 ngày",
+    "fee_vnd": 0,
+    "fee_text": "Miễn lệ phí (32 xã, phường); 10.000 đồng (trực tiếp)/8.000 đồng (trực tuyến) tùy khu vực",
+    "has_form": true,
+    "requirements_conditions": "Trường hợp yêu cầu xác nhận tình trạng hôn nhân nhằm mục đích kết hôn thì người yêu cầu phải đáp ứng đủ điều kiện kết hôn: Nam từ đủ 20 tuổi trở lên, nữ từ đủ 18 tuổi trở lên; việc kết hôn do nam và nữ tự nguyện quyết định; không bị mất năng lực hành vi dân sự; việc kết hôn không thuộc các trường hợp cấm kết hôn (kết hôn giả tạo, tảo hôn, cưỡng ép kết hôn, lừa dối kết hôn, cản trở kết hôn; người đang có vợ, có chồng mà kết hôn với người khác; kết hôn giữa những người cùng dòng máu về trực hệ, giữa những người có họ trong phạm vi ba đời, giữa cha mẹ nuôi với con nuôi; kết hôn giữa những người cùng giới tính). Trường hợp yêu cầu cấp Giấy xác nhận tình trạng hôn nhân để sử dụng vào mục đích khác thì không phải đáp ứng điều kiện kết hôn",
+    "legal_basis_references": [
+      "Luật Hôn nhân và gia đình năm 2014",
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
+      "Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch trực tuyến",
+      "Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy chứng nhận",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực",
+      "Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp",
+      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP",
+      "Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP",
+      "Thông tư số 03/2023/TT-BTP ngày 02/8/2023 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP và Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch",
+      "Thông tư số 281/2016/TT-BTC ngày 14/11/2016 của Bộ trưởng Bộ Tài chính quy định mức thu, chế độ thu, nộp, quản lý và sử dụng phí khai thác, sử dụng thông tin trong cơ sở dữ liệu hộ tịch",
+      "Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương",
+      "Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC",
+      "Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng",
+      "Nghị quyết số 04/2024/NQ-HĐND ngày 17/4/2024 của Hội đồng nhân dân tỉnh Sóc Trăng quy định mức thu một số loại phí, lệ phí trong thực hiện thủ tục hành chính thông qua dịch vụ công trực tuyến",
+      "Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang"
+    ]
+  },
+  "fee_structure": {
+    "base_fee": 0,
+    "additional_fees": [
+      {
+        "condition": "Nộp trực tiếp tại 43 xã, phường",
+        "amount": 10000,
+        "description": "Lệ phí cấp Giấy xác nhận tình trạng hôn nhân"
+      },
+      {
+        "condition": "Nộp trực tuyến tại 43 xã, phường",
+        "amount": 8000,
+        "description": "Lệ phí cấp Giấy xác nhận tình trạng hôn nhân (giảm 20% khi nộp trực tuyến)"
+      },
+      {
+        "condition": "Tại 28 xã, phường",
+        "amount": 10000,
+        "description": "Lệ phí cấp Giấy xác nhận tình trạng hôn nhân"
+      }
+    ],
+    "exemptions": [
+      {
+        "condition": "Tại 32 xã, phường theo Phụ lục 1",
+        "description": "Miễn lệ phí hoàn toàn"
+      },
+      {
+        "condition": "Người thuộc gia đình có công với cách mạng",
+        "description": "Miễn lệ phí theo quy định"
+      },
+      {
+        "condition": "Người thuộc hộ nghèo",
+        "description": "Miễn lệ phí theo quy định"
+      },
+      {
+        "condition": "Người cao tuổi",
+        "description": "Miễn lệ phí theo quy định"
+      },
+      {
+        "condition": "Người khuyết tật",
+        "description": "Miễn lệ phí theo quy định"
+      },
+      {
+        "condition": "Đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+        "description": "Miễn lệ phí theo quy định"
+      }
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu điện tử tương tác cấp Giấy xác nhận tình trạng hôn nhân (được sử dụng khi nộp hồ sơ theo hình thức trực tuyến)",
+    "has_paper_form": true,
+    "paper_form_description": "Tờ khai cấp Giấy xác nhận tình trạng hôn nhân theo mẫu (được sử dụng khi nộp hồ sơ theo hình thức trực tiếp hoặc gửi qua hệ thống bưu chính)"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Tờ khai cấp Giấy xác nhận tình trạng hôn nhân theo mẫu (hoặc mẫu điện tử tương tác nếu nộp trực tuyến)\n2. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu\n3. Giấy tờ chứng minh nơi cư trú (trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin từ CSDLQGVDC)\n4. Trường hợp người yêu cầu đã có vợ hoặc chồng nhưng đã ly hôn hoặc người vợ/chồng đã chết thì phải xuất trình bản chính hoặc nộp bản sao giấy tờ chứng minh (Giấy chứng nhận kết hôn, Bản án/Quyết định ly hôn, Giấy báo tử)\n5. Trường hợp công dân Việt Nam đã ly hôn, hủy việc kết hôn ở nước ngoài thì phải nộp bản sao Trích lục ghi chú ly hôn\n6. Trường hợp cá nhân yêu cầu cấp lại Giấy xác nhận tình trạng hôn nhân thì phải nộp lại Giấy xác nhận tình trạng hôn nhân đã được cấp trước đó\n7. Văn bản ủy quyền (trường hợp ủy quyền, chỉ cần công chứng nếu không phải người thân thích trong phạm vi 3 đời)\nSố lượng hồ sơ: 01 bộ",
+      "source_reference": "QT 33/CX-HT - Chunk 1",
+      "keywords": [
+        "hồ sơ",
+        "tờ khai",
+        "giấy tờ nhân thân",
+        "giấy tờ cư trú",
+        "giấy xác nhận tình trạng hôn nhân",
+        "trực tuyến",
+        "trực tiếp"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Cơ quan thực hiện thủ tục",
+      "content": "Ủy ban nhân dân cấp xã nơi người yêu cầu thường trú có thẩm quyền cấp Giấy xác nhận tình trạng hôn nhân. Trường hợp người yêu cầu không có nơi thường trú nhưng có đăng ký tạm trú thì Ủy ban nhân dân cấp xã nơi tạm trú thực hiện việc cấp Giấy xác nhận. Công chức tư pháp - hộ tịch tiếp nhận hồ sơ và tham mưu cho lãnh đạo Ủy ban nhân dân cấp xã quyết định. Cơ quan quản lý Cơ sở dữ liệu quốc gia về dân cư và Cơ sở dữ liệu hộ tịch điện tử phối hợp cung cấp thông tin. Trường hợp cần xác minh thì Ủy ban nhân dân cấp xã nơi thường trú trước đây hoặc nơi dự định đăng ký kết hôn sẽ được yêu cầu xác minh thông tin.",
+      "source_reference": "QT 33/CX-HT - Chunk 2",
+      "keywords": [
+        "cơ quan",
+        "Ủy ban nhân dân cấp xã",
+        "công chức tư pháp",
+        "thẩm quyền",
+        "giấy xác nhận tình trạng hôn nhân",
+        "Cơ sở dữ liệu quốc gia về dân cư",
+        "Cơ sở dữ liệu hộ tịch điện tử",
+        "xác minh"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thời hạn giải quyết",
+      "content": "03 ngày làm việc (trường hợp không cần xác minh); không quá 23 ngày (trường hợp phải xác minh thông tin về tình trạng hôn nhân tại các nơi khác nhau).",
+      "source_reference": "QT 33/CX-HT - Chunk 3",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "ngày làm việc",
+        "xác minh",
+        "giấy xác nhận tình trạng hôn nhân"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Lệ phí",
+      "content": "Không có lệ phí (áp dụng tại 32 xã, phường theo Phụ lục 1). Nộp trực tiếp: 10.000 đồng; nộp trực tuyến: 8.000 đồng (áp dụng tại 43 xã, phường theo Phụ lục 3). Tại 28 xã, phường theo Phụ lục 2: 10.000 đồng/trường hợp. Miễn lệ phí đối với người thuộc gia đình có công với cách mạng, người thuộc hộ nghèo, người cao tuổi, người khuyết tật, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn.",
+      "source_reference": "QT 33/CX-HT - Chunk 4",
+      "keywords": [
+        "phí",
+        "lệ phí",
+        "miễn phí",
+        "trực tuyến",
+        "trực tiếp",
+        "giấy xác nhận tình trạng hôn nhân"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục",
+      "content": "Giấy xác nhận tình trạng hôn nhân (bản chính). Bản điện tử Giấy xác nhận tình trạng hôn nhân sẽ được gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu sau khi hoàn tất thủ tục. Trường hợp sử dụng để kết hôn thì chỉ được cấp 01 bản; trường hợp sử dụng vào mục đích khác thì ghi rõ mục đích và số lượng theo yêu cầu.",
+      "source_reference": "QT 33/CX-HT - Chunk 5",
+      "keywords": [
+        "kết quả",
+        "giấy xác nhận tình trạng hôn nhân",
+        "bản chính",
+        "bản điện tử",
+        "kho dữ liệu điện tử"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Văn bản pháp luật viện dẫn",
+      "content": "Luật Hôn nhân và gia đình năm 2014; Luật Hộ tịch năm 2014; Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch; Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch trực tuyến; Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy chứng nhận; Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực; Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp; Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP; Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP; Thông tư số 03/2023/TT-BTP ngày 02/8/2023 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP; Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP và Thông tư số 04/2020/TT-BTP; Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch; Thông tư số 281/2016/TT-BTC ngày 14/11/2016 của Bộ trưởng Bộ Tài chính quy định mức thu, chế độ thu, nộp, quản lý và sử dụng phí khai thác, sử dụng thông tin trong cơ sở dữ liệu hộ tịch; Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương; Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC; Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng; Nghị quyết số 04/2024/NQ-HĐND ngày 17/4/2024 của Hội đồng nhân dân tỉnh Sóc Trăng quy định mức thu một số loại phí, lệ phí trong thực hiện thủ tục hành chính thông qua dịch vụ công trực tuyến; Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang.",
+      "source_reference": "QT 33/CX-HT - Chunk 6",
+      "keywords": [
+        "pháp luật",
+        "luật",
+        "nghị định",
+        "thông tư",
+        "nghị quyết",
+        "hôn nhân",
+        "gia đình",
+        "hộ tịch",
+        "giấy xác nhận tình trạng hôn nhân"
+      ]
+    }
+  ]
+}

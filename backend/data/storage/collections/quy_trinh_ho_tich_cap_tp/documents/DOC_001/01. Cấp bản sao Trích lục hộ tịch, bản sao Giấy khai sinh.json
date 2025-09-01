@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_ho_tich_cap_tp/documents/DOC_001/01. Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh.doc",
+    "title": "Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh",
+    "code": "QT 01/HTTP",
+    "issuing_authority": "Ủy ban nhân dân cấp tỉnh/thành phố",
+    "effective_date": "2025-01-01",
+    "executing_agency": "Ủy ban nhân dân cấp huyện/quận/thị xã/thành phố thuộc tỉnh",
+    "applicant_type": [
+      "Công dân Việt Nam",
+      "Người nước ngoài"
+    ],
+    "processing_time_text": "03 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ (có thể kéo dài đến 05 ngày nếu cần xác minh)",
+    "fee_vnd": 10000,
+    "fee_text": "10.000 VND/trường hợp (miễn phí cho trẻ em dưới 6 tuổi, người cao tuổi, người khuyết tật, hộ nghèo)",
+    "has_form": true,
+    "requirements_conditions": "Người yêu cầu phải có giấy tờ hợp lệ chứng minh quan hệ nhân thân với người có sự kiện hộ tịch hoặc có giấy ủy quyền hợp pháp.",
+    "legal_basis_references": [
+      "Luật Hộ tịch 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Thông tư số 15/2018/TT-BTP",
+      "Thông tư số 250/2016/TT-BTC"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "10.000đ",
+      "online": "10.000đ",
+      "description": "Phí cấp bản sao trích lục hộ tịch"
+    },
+    "exemptions": [
+      "Trẻ em dưới 6 tuổi",
+      "Người cao tuổi, người khuyết tật",
+      "Người thuộc hộ nghèo, hộ cận nghèo"
+    ],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ yêu cầu",
+      "content": "Hồ sơ cấp bản sao trích lục hộ tịch bao gồm:\\n1. Tờ khai cấp bản sao trích lục hộ tịch theo mẫu quy định.\\n2. Bản sao có chứng thực giấy tờ tùy thân của người yêu cầu.\\n3. Giấy tờ chứng minh quan hệ nhân thân với người có sự kiện hộ tịch (giấy khai sinh, sổ hộ khẩu, v.v.).\\n4. Giấy ủy quyền có chữ ký chứng thực (nếu được ủy quyền).\\n5. Bản sao có chứng thực giấy tờ tùy thân của người được ủy quyền (nếu có).\\n\\nLưu ý: Các giấy tờ phải còn hiệu lực và được cấp bởi cơ quan có thẩm quyền.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "bản sao trích lục",
+        "tờ khai",
+        "giấy tờ tùy thân",
+        "quan hệ nhân thân",
+        "giấy ủy quyền",
+        "chứng thực"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "03 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.\\n\\nTrường hợp cần xác minh thông tin hoặc có vướng mắc, thời hạn giải quyết không quá 05 ngày làm việc và cơ quan có thẩm quyền phải thông báo bằng văn bản cho người yêu cầu về lý do kéo dài.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "03 ngày",
+        "05 ngày",
+        "hồ sơ hợp lệ",
+        "xác minh",
+        "thông báo"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng có quyền yêu cầu cấp bản sao trích lục hộ tịch:\\n- Chủ thể của sự kiện hộ tịch.\\n- Cha mẹ, vợ chồng, con, anh chị em ruột của chủ thể sự kiện hộ tịch.\\n- Người được ủy quyền hợp pháp.\\n- Cơ quan, tổ chức có thẩm quyền theo quy định của pháp luật.\\n\\nCơ quan thực hiện: Ủy ban nhân dân cấp huyện/quận/thị xã/thành phố thuộc tỉnh nơi đăng ký sự kiện hộ tịch.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "chủ thể sự kiện",
+        "cha mẹ",
+        "vợ chồng",
+        "con",
+        "anh chị em",
+        "ủy quyền",
+        "UBND cấp huyện"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "Kết quả: Bản sao trích lục hộ tịch có đóng dấu và chữ ký xác nhận của cơ quan có thẩm quyền, có giá trị sử dụng theo quy định của pháp luật.\\n\\nLệ phí: 10.000 VND/trường hợp theo quy định tại Thông tư số 250/2016/TT-BTC.\\n\\nMiễn lệ phí đối với: Trẻ em dưới 6 tuổi, người cao tuổi, người khuyết tật, người thuộc hộ nghèo, hộ cận nghèo có xác nhận của chính quyền địa phương.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "bản sao trích lục",
+        "đóng dấu",
+        "chữ ký",
+        "xác nhận",
+        "lệ phí",
+        "10.000 VND",
+        "miễn phí"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Các bước thực hiện:\\n1. **Tiếp nhận hồ sơ:** Người yêu cầu nộp hồ sơ tại bộ phận tiếp nhận của UBND cấp huyện.\\n2. **Kiểm tra hồ sơ:** Cán bộ tiếp nhận kiểm tra tính đầy đủ và hợp lệ của hồ sơ trong 01 ngày làm việc.\\n3. **Xử lý hồ sơ:** Trường hợp hồ sơ hợp lệ, tiến hành cấp bản sao trong 02 ngày làm việc tiếp theo.\\n4. **Xác minh (nếu cần):** Trường hợp cần xác minh, thông báo bằng văn bản và hoàn thành xác minh trong thời hạn quy định.\\n5. **Trả kết quả:** Người yêu cầu nhận kết quả tại nơi nộp hồ sơ hoặc qua đường bưu điện theo yêu cầu.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "tiếp nhận",
+        "kiểm tra hồ sơ",
+        "xử lý",
+        "xác minh",
+        "trả kết quả",
+        "bưu điện"
+      ]
+    }
+  ]
+}

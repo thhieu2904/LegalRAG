@@ -1,0 +1,113 @@
+{
+  "metadata": {
+    "source": "13. Cấp lại Thẻ công chứng viên.doc",
+    "title": "Cấp lại Thẻ công chứng viên",
+    "code": "QT 13/CC",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "15/05/2025",
+    "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương",
+    "applicant_type": "Công chứng viên",
+    "processing_time_text": "Thời hạn giải quyết: 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 0,
+    "fee_text": "Có phí cấp lại thẻ công chứng viên theo quy định của Bộ Tài chính",
+    "has_form": true,
+    "requirements_conditions": [
+      "Thẻ công chứng viên cũ bị hỏng, mất hoặc thay đổi thông tin",
+      "Vẫn đáp ứng các điều kiện hành nghề công chứng viên",
+      "Không thuộc các trường hợp bị thu hồi thẻ công chứng viên",
+      "Có đề nghị cấp lại thẻ theo quy định",
+      "Đáp ứng các yêu cầu về nhân thân và phẩm chất đạo đức"
+    ],
+    "legal_basis_references": [
+      "Thông tư số 06/2025/TT-BTP ngày 15/5/2025 của Bộ trưởng Bộ Tư pháp quy định về công chứng viên và tổ chức hành nghề công chứng",
+      "Thông tư số 257/2016/TT-BTC ngày 11/11/2016 của Bộ trưởng Bộ Tài chính quy định mức thu, chế độ thu, nộp, quản lý, sử dụng phí công chứng",
+      "Luật Công chứng số 53/2014/QH13",
+      "Nghị định số 29/2015/NĐ-CP quy định chi tiết và hướng dẫn thi hành Luật Công chứng"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "amount_vnd": 0,
+      "description": "Phí cấp lại thẻ công chứng viên theo quy định của Bộ Tài chính",
+      "payment_method": "Nộp tại Sở Tư pháp hoặc cơ quan tài chính",
+      "exemption_conditions": []
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Văn bản đề nghị cấp lại thẻ công chứng viên\n2. Thẻ công chứng viên cũ (trường hợp bị hỏng) hoặc văn bản báo mất thẻ (trường hợp bị mất)\n3. Bản chính hoặc bản sao có chứng thực Quyết định bổ nhiệm công chứng viên hiện hành\n4. Giấy tờ chứng minh thay đổi thông tin (trường hợp thay đổi thông tin trên thẻ)\n5. 02 ảnh chân dung kích thước 3x4 cm chụp trong 06 tháng\n6. Các tài liệu khác chứng minh đủ điều kiện cấp lại thẻ\n\nLưu ý: Hồ sơ có thể nộp trực tiếp, qua dịch vụ bưu chính hoặc trực tuyến. Trường hợp nộp trực tuyến, các thông tin được khai thác từ Cơ sở dữ liệu quốc gia về dân cư.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "hồ sơ",
+        "đề nghị cấp lại",
+        "thẻ cũ",
+        "báo mất",
+        "quyết định bổ nhiệm",
+        "ảnh chân dung"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "- Tiếp nhận hồ sơ: Trong ngày làm việc\n- Thụ lý hồ sơ: 01 ngày làm việc\n- Xác minh điều kiện: 02 ngày làm việc\n- Cấp lại thẻ: 02 ngày làm việc\n\nTổng thời gian giải quyết: 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bổ sung trong 03 ngày làm việc.\n\nKết quả: Sở Tư pháp quyết định cấp lại thẻ cho công chứng viên; trường hợp từ chối phải nêu rõ lý do.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "thời hạn",
+        "05 ngày",
+        "tiếp nhận",
+        "thụ lý",
+        "xác minh",
+        "cấp lại thẻ"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện và Cơ quan có thẩm quyền",
+      "content": "Đối tượng thực hiện thủ tục:\n- Công chứng viên có thẻ công chứng viên cũ bị hỏng, mất hoặc cần thay đổi thông tin\n- Vẫn đáp ứng các điều kiện hành nghề công chứng viên\n- Không thuộc các trường hợp bị thu hồi thẻ công chứng viên\n- Có đề nghị cấp lại thẻ theo quy định\n\nCơ quan có thẩm quyền giải quyết:\n- Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương nơi công chứng viên hành nghề\n\nCác trường hợp cấp lại thẻ:\n- Thẻ bị hỏng, cũ không sử dụng được\n- Thẻ bị mất\n- Thay đổi thông tin trên thẻ (họ tên, ngày sinh, nơi cư trú, v.v.)\n- Các trường hợp khác theo quy định",
+      "source_reference": "Điều 25 Luật Công chứng",
+      "keywords": [
+        "đối tượng",
+        "công chứng viên",
+        "sở tư pháp",
+        "trường hợp cấp lại",
+        "thẻ hỏng",
+        "thẻ mất"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "Kết quả thực hiện thủ tục:\n- Thẻ công chứng viên mới\n- Quyết định cấp lại thẻ công chứng viên\n- Trường hợp từ chối: Văn bản nêu rõ lý do từ chối\n\nLệ phí:\n- Phí cấp lại thẻ công chứng viên theo quy định của Bộ Tài chính\n- Mức phí cụ thể theo Thông tư số 257/2016/TT-BTC\n\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn bổ sung.\n\nMẫu đơn: Văn bản đề nghị cấp lại thẻ công chứng viên.",
+      "source_reference": "Thông tư số 257/2016/TT-BTC",
+      "keywords": [
+        "kết quả",
+        "thẻ mới",
+        "quyết định cấp lại",
+        "từ chối",
+        "phí cấp lại",
+        "mẫu đơn"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý chi tiết",
+      "content": "Bước 1: Công chứng viên nộp hồ sơ đề nghị cấp lại thẻ đến Sở Tư pháp\n\nBước 2: Sở Tư pháp tiếp nhận và kiểm tra hồ sơ:\n- Trường hợp hồ sơ đầy đủ: Tiếp tục xử lý\n- Trường hợp hồ sơ thiếu: Thông báo bổ sung trong 03 ngày\n\nBước 3: Thụ lý hồ sơ và phân công xử lý trong 01 ngày\n\nBước 4: Xác minh điều kiện cấp lại thẻ:\n- Kiểm tra thẻ cũ hoặc xác nhận mất thẻ\n- Xác minh các điều kiện hành nghề công chứng viên\n- Kiểm tra thông tin thay đổi (nếu có)\n- Thẩm tra tính chính xác của hồ sơ\n\nBước 5: Lập báo cáo thẩm tra và trình lãnh đạo phê duyệt\n\nBước 6: Lãnh đạo Sở Tư pháp ký quyết định cấp lại thẻ\n\nBước 7: In thẻ công chứng viên mới và trao cho công chứng viên\n\nBước 8: Thu hồi thẻ cũ (nếu có) và lưu hồ sơ\n\nLưu ý: Trường hợp từ chối cấp lại thẻ phải có văn bản nêu rõ lý do.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "quy trình",
+        "bước 1",
+        "bước 2",
+        "bước 3",
+        "bước 4",
+        "bước 5",
+        "bước 6",
+        "bước 7",
+        "bước 8"
+      ]
+    }
+  ]
+}

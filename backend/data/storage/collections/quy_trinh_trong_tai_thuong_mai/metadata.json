@@ -1,0 +1,205 @@
+{
+  "documents": [
+    {
+      "title": "Thành lập, đăng ký hoạt động Trung tâm trọng tài",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_001",
+      "fee_text": "3.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_001/1 Thành lập, đăng ký hoạt động TTTT.doc",
+      "code": "QT 01/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi nội dung Giấy phép thành lập của Trung tâm trọng tài",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc",
+      "id": "DOC_002",
+      "fee_text": "1.500.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_002/2 Thay đổi nội dung Giấy phép thành lập của TTTT.doc",
+      "code": "QT 02/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Chấm dứt hoạt động Trung tâm trọng tài theo Điều lệ của Trung tâm trọng tài",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc",
+      "id": "DOC_003",
+      "fee_text": "1.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_003/3 Chấm dứt hoạt động TTTT theo Điều lệ của TTTT.doc",
+      "code": "QT 03/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Cấp Giấy phép thành lập Chi nhánh, Văn phòng đại diện của Tổ chức trọng tài nước ngoài tại Việt Nam",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "25 ngày làm việc",
+      "id": "DOC_004",
+      "fee_text": "5.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_004/4 Cấp Giấy phép thành lập CN, VPDD của Tổ chức trọng tài nước ngoài tại Việt Nam.doc",
+      "code": "QT 04/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi nội dung Giấy phép thành lập của Chi nhánh Tổ chức trọng tài nước ngoài tại Việt Nam",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc",
+      "id": "DOC_005",
+      "fee_text": "2.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_005/5 Thay đổi nội dung Giấy phép thành lập của CN TT nước ngoài tại Việt Nam.doc",
+      "code": "QT 05/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Chấm dứt hoạt động Chi nhánh, Văn phòng đại diện của Tổ chức trọng tài nước ngoài tại Việt Nam",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc",
+      "id": "DOC_006",
+      "fee_text": "1.500.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_006/6 Chấm dứt hoạt động CN, VPĐDcủa Tổ chức TT nước ngoài tại Việt Nam.doc",
+      "code": "QT 06/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Cấp lại Giấy phép thành lập của Trung tâm trọng tài, Chi nhánh, Văn phòng đại diện của Tổ chức trọng tài nước ngoài tại Việt Nam",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "10 ngày làm việc",
+      "id": "DOC_007",
+      "fee_text": "800.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_007/7 Cấp lại Giấy phép thành lập của TTTT, CN, VPĐD của Tc TT nước ngoài tại Việt Nam.doc",
+      "code": "QT 07/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký hoạt động Trung tâm trọng tài khi thay đổi địa điểm đặt trụ sở sang tỉnh, thành phố trực thuộc trung ương khác",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "12 ngày làm việc",
+      "id": "DOC_008",
+      "fee_text": "1.200.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_008/8 ĐKHĐ TTTT  khi thay đổi địa điểm đặt trụ sở sang tỉnh, thành phố trực thuộc trung ương khác.doc",
+      "code": "QT 08/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký hoạt động Chi nhánh Trung tâm trọng tài",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc",
+      "id": "DOC_009",
+      "fee_text": "2.500.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_009/9 ĐKHĐ Chi nhánh TTTT.doc",
+      "code": "QT 09/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi nội dung Giấy đăng ký hoạt động của Trung tâm trọng tài; thay đổi nội dung Giấy đăng ký hoạt động của Chi nhánh Tổ chức trọng tài nước ngoài tại Việt Nam",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "10 ngày làm việc",
+      "id": "DOC_010",
+      "fee_text": "1.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_010/10 Thay đổi nội dung Giấy đăng ký hoạt động của Trung tâm trọng tài; thay đổi nội dung Giấy đăng ký hoạt động của Chi nhánh Tổ chức trọng tài nước ngoài tại Việt Nam.doc",
+      "code": "QT 10/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi nội dung Giấy đăng ký hoạt động của Chi nhánh Trung tâm trọng tài khi thay đổi Trưởng Chi nhánh, địa điểm đặt trụ sở của Chi nhánh trong phạm vi tỉnh, thành phố trực thuộc trung ương",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "8 ngày làm việc",
+      "id": "DOC_011",
+      "fee_text": "800.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_011/11 Thay đổi nội dung Giấy ĐKHĐ của CN TTTT  khi thay đổi Trưởng Chi nhánh, địa điểm đặt trụ sở của Chi nhánh trong phạm vi tỉnh, thành phố trực thuộc trung ương.doc",
+      "code": "QT 11/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Chuyển đổi loại hình hoạt động Trung tâm trọng tài",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "18 ngày làm việc",
+      "id": "DOC_012",
+      "fee_text": "2.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_012/12 Đăng ký hoạt động Chi nhánh của Tổ chức trọng tài nước ngoài tại Việt Nam sau khi được cấp Giấy phép thành lập.doc",
+      "code": "QT 12/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Cấp lại Giấy đăng ký hoạt động của Trung tâm trọng tài, Chi nhánh Trung tâm trọng tài, Chi nhánh của Tổ chức trọng tài nước ngoài tại Việt Nam",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "7 ngày làm việc",
+      "id": "DOC_013",
+      "fee_text": "600.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_013/13 Cấp lại Giấy đăng ký hoạt động của Trung tâm trọng tài, Chi nhánh Trung tâm trọng tài, Chi nhánh của Tổ chức trọng tài nước ngoài tại Việt Nam.doc",
+      "code": "QT 13/TTTM",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    }
+  ],
+  "issuing_authority": "Sở Tư pháp",
+  "collection_type": "quy_trinh_trong_tai_thuong_mai",
+  "collection_name": "quy_trinh_trong_tai_thuong_mai",
+  "created_date": "2025-08-30",
+  "last_updated": "2025-08-30",
+  "description": "Bộ sưu tập các quy trình trọng tài thương mại"
+}

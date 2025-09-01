@@ -1,0 +1,110 @@
+{
+  "metadata": {
+    "source": "15. Thành lập Văn phòng công chứng.doc",
+    "title": "Thành lập Văn phòng công chứng",
+    "code": "QT 15/CC",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "15/05/2025",
+    "executing_agency": "Sở Tư pháp và Ủy ban nhân dân cấp tỉnh",
+    "applicant_type": "Công chứng viên hoặc nhóm công chứng viên",
+    "processing_time_text": "Sở Tư pháp: 05 ngày làm việc + UBND tỉnh: 10 ngày làm việc = Tổng thời gian 15 ngày làm việc",
+    "fee_vnd": 0,
+    "fee_text": "Có phí thẩm định điều kiện hoạt động Văn phòng công chứng theo quy định",
+    "has_form": true,
+    "requirements_conditions": [
+      "Công chứng viên phải có kinh nghiệm hành nghề từ đủ 02 năm trở lên",
+      "Đáp ứng các điều kiện về nhân thân, phẩm chất đạo đức",
+      "Có đề án thành lập Văn phòng công chứng đầy đủ",
+      "Có địa điểm đặt trụ sở phù hợp",
+      "Đáp ứng các điều kiện về cơ sở vật chất, nhân sự",
+      "Không thuộc các trường hợp không được thành lập Văn phòng công chứng"
+    ],
+    "legal_basis_references": [
+      "Thông tư số 05/2025/TT-BTP ngày 15/5/2025 của Bộ trưởng Bộ Tư pháp quy định về tổ chức và hoạt động của Văn phòng công chứng",
+      "Luật Công chứng số 53/2014/QH13",
+      "Nghị định số 29/2015/NĐ-CP quy định chi tiết và hướng dẫn thi hành Luật Công chứng"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "amount_vnd": 0,
+      "description": "Phí thẩm định điều kiện hoạt động Văn phòng công chứng theo quy định của Bộ Tài chính",
+      "payment_method": "Nộp tại Sở Tư pháp hoặc cơ quan tài chính",
+      "exemption_conditions": []
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Văn bản đề nghị thành lập Văn phòng công chứng (Mẫu TP-CC-09)\n2. Đề án thành lập Văn phòng công chứng bao gồm:\n   - Sự cần thiết thành lập\n   - Dự kiến về tổ chức, tên, nhân sự, địa điểm trụ sở\n   - Các điều kiện vật chất và kế hoạch triển khai\n   - Giá trị và tỷ lệ góp vốn (đối với công ty hợp danh)\n3. Bản chính hoặc bản sao có chứng thực Quyết định bổ nhiệm công chứng viên\n4. Dự thảo Điều lệ Văn phòng công chứng (đối với công ty hợp danh)\n5. Giấy tờ chứng minh đã hành nghề công chứng từ đủ 02 năm trở lên\n6. Giấy tờ chứng minh địa điểm đặt trụ sở\n7. Cam kết không thuộc trường hợp không được thành lập Văn phòng công chứng\n8. Các tài liệu khác chứng minh đáp ứng điều kiện thành lập\n\nLưu ý: Hồ sơ có thể nộp trực tiếp, qua dịch vụ bưu chính hoặc trực tuyến.",
+      "source_reference": "Thông tư số 05/2025/TT-BTP",
+      "keywords": [
+        "hồ sơ",
+        "đề nghị thành lập",
+        "đề án",
+        "quyết định bổ nhiệm",
+        "điều lệ",
+        "giấy tờ chứng minh"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "- Sở Tư pháp: 05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ để trình UBND cấp tỉnh\n- UBND cấp tỉnh: 10 ngày làm việc kể từ ngày nhận được văn bản đề nghị của Sở Tư pháp và hồ sơ hợp lệ\n\nTổng thời gian giải quyết: 15 ngày làm việc\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bổ sung trong 03 ngày làm việc.\n\nKết quả: Quyết định cho phép thành lập Văn phòng công chứng của UBND cấp tỉnh.",
+      "source_reference": "Thông tư số 05/2025/TT-BTP",
+      "keywords": [
+        "thời hạn",
+        "05 ngày",
+        "10 ngày",
+        "15 ngày",
+        "sở tư pháp",
+        "ubnd tỉnh"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện và Cơ quan có thẩm quyền",
+      "content": "Đối tượng thực hiện thủ tục:\n- Công chứng viên có kinh nghiệm hành nghề từ đủ 02 năm trở lên\n- Nhóm công chứng viên thành lập Văn phòng công chứng theo loại hình công ty hợp danh\n- Công chứng viên thành lập Văn phòng công chứng theo loại hình doanh nghiệp tư nhân\n\nCơ quan có thẩm quyền giải quyết:\n- Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương (thẩm định hồ sơ)\n- Ủy ban nhân dân cấp tỉnh (ra quyết định cho phép thành lập)\n\nĐiều kiện thành lập Văn phòng công chứng:\n- Công chứng viên phải có kinh nghiệm hành nghề từ đủ 02 năm\n- Đáp ứng các điều kiện về nhân thân, phẩm chất đạo đức\n- Có địa điểm đặt trụ sở và cơ sở vật chất phù hợp\n- Có đề án thành lập đầy đủ và khả thi",
+      "source_reference": "Điều 34 Luật Công chứng",
+      "keywords": [
+        "đối tượng",
+        "công chứng viên",
+        "sở tư pháp",
+        "ubnd tỉnh",
+        "điều kiện thành lập"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "Kết quả thực hiện thủ tục:\n- Quyết định cho phép thành lập Văn phòng công chứng của UBND cấp tỉnh\n- Giấy chứng nhận đăng ký hoạt động của Văn phòng công chứng\n\nLệ phí:\n- Phí thẩm định điều kiện hoạt động Văn phòng công chứng theo quy định của Bộ Tài chính\n- Mức phí cụ thể theo Thông tư số 257/2016/TT-BTC\n\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn bổ sung.\n\nMẫu đơn: Văn bản đề nghị thành lập Văn phòng công chứng (Mẫu TP-CC-09).",
+      "source_reference": "Thông tư số 257/2016/TT-BTC",
+      "keywords": [
+        "kết quả",
+        "quyết định cho phép",
+        "giấy chứng nhận",
+        "phí thẩm định",
+        "mẫu đơn"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý chi tiết",
+      "content": "Bước 1: Công chứng viên nộp hồ sơ đề nghị thành lập Văn phòng công chứng đến Sở Tư pháp\n\nBước 2: Sở Tư pháp tiếp nhận và kiểm tra hồ sơ:\n- Trường hợp hồ sơ đầy đủ: Tiếp tục xử lý\n- Trường hợp hồ sơ thiếu: Thông báo bổ sung trong 03 ngày\n\nBước 3: Sở Tư pháp thẩm định hồ sơ trong 05 ngày làm việc:\n- Kiểm tra đề án thành lập\n- Xác minh điều kiện của công chứng viên\n- Thẩm tra các tài liệu chứng minh\n- Lập báo cáo thẩm định\n\nBước 4: Sở Tư pháp trình UBND cấp tỉnh hồ sơ và văn bản đề nghị\n\nBước 5: UBND cấp tỉnh xem xét và quyết định trong 10 ngày làm việc:\n- Xem xét đề án thành lập\n- Kiểm tra tính hợp pháp của hồ sơ\n- Ra quyết định cho phép thành lập\n\nBước 6: Sở Tư pháp thông báo quyết định cho công chứng viên\n\nBước 7: Công chứng viên hoàn tất thủ tục đăng ký hoạt động\n\nLưu ý: Văn phòng công chứng phải đăng ký hoạt động trong thời hạn quy định sau khi được cho phép thành lập.",
+      "source_reference": "Thông tư số 05/2025/TT-BTP",
+      "keywords": [
+        "quy trình",
+        "bước 1",
+        "bước 2",
+        "bước 3",
+        "bước 4",
+        "bước 5",
+        "bước 6",
+        "bước 7"
+      ]
+    }
+  ]
+}

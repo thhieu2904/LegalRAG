@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_luat_su/documents/DOC_005/5. Cấp lại CCHNLS trong trường hợp bị mất, bị rách, bị cháy hoặc vì lý do khác không cố ý.doc",
+    "title": "Cấp lại chứng chỉ hành nghề luật sư trong trường hợp bị mất, bị rách, bị cháy",
+    "code": "QT 005/LS",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "Theo Luật Luật sư 2006, sửa đổi 2012",
+    "executing_agency": "Bộ Tư pháp",
+    "applicant_type": [
+      "Luật sư",
+      "Tổ chức hành nghề luật sư"
+    ],
+    "processing_time_text": "30 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ",
+    "fee_vnd": 1000000,
+    "fee_text": "1.000.000đ",
+    "has_form": true,
+    "requirements_conditions": "Đáp ứng các điều kiện theo quy định của Luật Luật sư và các văn bản hướng dẫn.",
+    "legal_basis_references": [
+      "Luật Luật sư 2006, sửa đổi 2012",
+      "Nghị định 123/2013/NĐ-CP",
+      "Thông tư 09/2013/TT-BTP",
+      "Thông tư 250/2016/TT-BTC"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "1.000.000đ",
+      "online": "1.000.000đ",
+      "description": "Phí cấp lại chứng chỉ hành nghề luật sư trong trường hợp bị mất, bị rách, bị cháy"
+    },
+    "exemptions": [],
+    "additional_fees": [
+      "Phí chứng thực bản sao: 10.000đ/trang"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Đối tượng và điều kiện",
+      "content": "Quy định về đối tượng và điều kiện thực hiện cấp lại chứng chỉ hành nghề luật sư trong trường hợp bị mất, bị rách, bị cháy.",
+      "source_reference": "Luật Luật sư, Nghị định 123/2013",
+      "keywords": [
+        "đối tượng",
+        "điều kiện",
+        "luật sư",
+        "hành nghề"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thành phần hồ sơ",
+      "content": "Hồ sơ yêu cầu cho việc cấp lại chứng chỉ hành nghề luật sư trong trường hợp bị mất, bị rách, bị cháy theo quy định.",
+      "source_reference": "Nghị định 123/2013/NĐ-CP",
+      "keywords": [
+        "hồ sơ",
+        "thành phần",
+        "yêu cầu",
+        "quy định"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thời hạn giải quyết",
+      "content": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.",
+      "source_reference": "Thông tư 09/2013/TT-BTP",
+      "keywords": [
+        "thời hạn",
+        "30 ngày",
+        "hồ sơ hợp lệ",
+        "giải quyết"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Lệ phí và kết quả",
+      "content": "Lệ phí thực hiện và kết quả của việc cấp lại chứng chỉ hành nghề luật sư trong trường hợp bị mất, bị rách, bị cháy.",
+      "source_reference": "Thông tư 250/2016/TT-BTC",
+      "keywords": [
+        "lệ phí",
+        "kết quả",
+        "thực hiện",
+        "quy định"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình thực hiện",
+      "content": "Các bước thực hiện quy trình cấp lại chứng chỉ hành nghề luật sư trong trường hợp bị mất, bị rách, bị cháy.",
+      "source_reference": "Nghị định 123/2013/NĐ-CP",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thực hiện",
+        "xử lý"
+      ]
+    }
+  ]
+}

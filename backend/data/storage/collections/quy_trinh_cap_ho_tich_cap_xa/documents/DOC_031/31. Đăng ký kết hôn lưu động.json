@@ -1,0 +1,128 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_031/31. Đăng ký kết hôn lưu động.doc",
+    "title": "Đăng ký kết hôn lưu động",
+    "code": "QT 31/CX-HT",
+    "issuing_authority": "Ủy ban nhân dân cấp xã",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của hai bên nam, nữ",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "05 ngày làm việc",
+    "fee_vnd": 0,
+    "fee_text": "Miễn lệ phí",
+    "has_form": true,
+    "requirements_conditions": "Hai bên nam, nữ cùng thường trú trên địa bàn cấp xã mà một hoặc cả hai bên nam, nữ là người khuyết tật, ốm bệnh không thể đi đăng ký kết hôn được. Nam từ đủ 20 tuổi trở lên, nữ từ đủ 18 tuổi trở lên; việc kết hôn do nam và nữ tự nguyện quyết định; không bị mất năng lực hành vi dân sự; việc kết hôn không thuộc một trong các trường hợp cấm kết hôn, gồm: Kết hôn giả tạo, tảo hôn, cưỡng ép kết hôn, lừa dối kết hôn, cản trở kết hôn; người đang có vợ, có chồng mà kết hôn với người khác hoặc chưa có vợ, chưa có chồng mà kết hôn với người đang có chồng, có vợ; kết hôn giữa những người cùng dòng máu về trực hệ; giữa những người có họ trong phạm vi ba đời; giữa cha, mẹ nuôi với con nuôi; giữa người đã từng là cha, mẹ nuôi với con nuôi, cha chồng với con dâu, mẹ vợ với con rể, cha dượng với con riêng của vợ, mẹ kế với con riêng của chồng; kết hôn giữa những người cùng giới tính",
+    "legal_basis_references": [
+      "Luật Hôn nhân và gia đình năm 2014",
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
+      "Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy chứng nhận",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực",
+      "Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp",
+      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP",
+      "Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP và Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch",
+      "Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương",
+      "Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC",
+      "Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng",
+      "Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang"
+    ]
+  },
+  "fee_structure": {
+    "base_fee": 0,
+    "additional_fees": [],
+    "exemptions": [
+      {
+        "condition": "Tất cả trường hợp",
+        "description": "Miễn lệ phí hoàn toàn"
+      }
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": false,
+    "electronic_form_description": "",
+    "has_paper_form": true,
+    "paper_form_description": "Tờ khai đăng ký kết hôn theo mẫu (hai bên nam, nữ có thể khai chung vào một Tờ khai đăng ký kết hôn, nộp trực tiếp tại Ủy ban nhân dân cấp xã nơi cư trú của hai bên nam, nữ)"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Tờ khai đăng ký kết hôn theo mẫu (hai bên nam, nữ có thể khai chung vào một Tờ khai đăng ký kết hôn)\n2. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu đăng ký kết hôn\n3. Giấy tờ có giá trị chứng minh thông tin về cư trú trong trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin về nơi cư trú của công dân theo các phương thức quy định tại khoản 2 Điều 14 Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ. Trường hợp các thông tin về giấy tờ chứng minh nơi cư trú đã được khai thác từ CSDLQGVDC bằng các phương thức này thì người yêu cầu không phải xuất trình",
+      "source_reference": "QT 31/CX-HT - Chunk 1",
+      "keywords": [
+        "hồ sơ",
+        "tờ khai",
+        "giấy tờ nhân thân",
+        "giấy tờ cư trú",
+        "đăng ký kết hôn lưu động",
+        "khuyết tật",
+        "ốm bệnh"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Cơ quan thực hiện thủ tục",
+      "content": "Ủy ban nhân dân cấp xã nơi cư trú của hai bên nam, nữ có thẩm quyền đăng ký kết hôn lưu động. Công chức tư pháp - hộ tịch tiếp nhận hồ sơ và tham mưu cho lãnh đạo Ủy ban nhân dân cấp xã quyết định. Cơ quan quản lý Cơ sở dữ liệu quốc gia về dân cư phối hợp cung cấp thông tin.",
+      "source_reference": "QT 31/CX-HT - Chunk 2",
+      "keywords": [
+        "cơ quan",
+        "Ủy ban nhân dân cấp xã",
+        "công chức tư pháp",
+        "thẩm quyền",
+        "đăng ký kết hôn lưu động",
+        "Cơ sở dữ liệu quốc gia về dân cư"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc.",
+      "source_reference": "QT 31/CX-HT - Chunk 3",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "ngày làm việc",
+        "đăng ký kết hôn lưu động"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Lệ phí",
+      "content": "Miễn lệ phí.",
+      "source_reference": "QT 31/CX-HT - Chunk 4",
+      "keywords": ["phí", "lệ phí", "miễn phí", "đăng ký kết hôn lưu động"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục",
+      "content": "Giấy chứng nhận kết hôn (bản chính), mỗi bên vợ, chồng 01 bản; bản sao Trích lục kết hôn (trường hợp yêu cầu cấp bản sao Trích lục kết hôn).",
+      "source_reference": "QT 31/CX-HT - Chunk 5",
+      "keywords": [
+        "kết quả",
+        "giấy chứng nhận kết hôn",
+        "bản chính",
+        "bản sao",
+        "trích lục kết hôn",
+        "đăng ký kết hôn lưu động"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Văn bản pháp luật viện dẫn",
+      "content": "Luật Hôn nhân và gia đình năm 2014; Luật Hộ tịch năm 2014; Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch; Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy chứng nhận; Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực; Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp; Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP; Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP và Thông tư số 04/2020/TT-BTP; Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch; Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương; Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC; Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng; Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang.",
+      "source_reference": "QT 31/CX-HT - Chunk 6",
+      "keywords": [
+        "pháp luật",
+        "luật",
+        "nghị định",
+        "thông tư",
+        "nghị quyết",
+        "hôn nhân",
+        "gia đình",
+        "hộ tịch",
+        "đăng ký kết hôn lưu động"
+      ]
+    }
+  ]
+}

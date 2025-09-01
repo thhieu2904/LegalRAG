@@ -5,6 +5,7 @@ import {
   type ClarificationOption,
   type ApiResponse,
   type ContextSummary,
+  type FormAttachment,
 } from "../services/chatService";
 
 interface Message {
@@ -15,6 +16,7 @@ interface Message {
   clarification?: ClarificationData;
   processingTime?: number;
   sourceDocuments?: string[];
+  formAttachments?: FormAttachment[]; // 🔥 NEW: Form attachments
   apiResponse?: ApiResponse; // Store full API response for advanced handling
 }
 
@@ -69,6 +71,7 @@ export function useChat(options: UseChatOptions = {}) {
       clarification?: ClarificationData,
       processingTime?: number,
       sourceDocuments?: string[],
+      formAttachments?: FormAttachment[], // 🔥 NEW: Form attachments parameter
       apiResponse?: ApiResponse
     ) => {
       const message: Message = {
@@ -82,6 +85,7 @@ export function useChat(options: UseChatOptions = {}) {
         clarification,
         processingTime,
         sourceDocuments,
+        formAttachments, // 🔥 NEW: Include form attachments
         apiResponse,
       };
 
@@ -163,6 +167,7 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
             setCurrentClarification(null);
@@ -185,6 +190,7 @@ export function useChat(options: UseChatOptions = {}) {
               apiResponse.clarification,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
           } else if (apiResponse.type === "no_results") {
@@ -194,9 +200,9 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              undefined, // No form attachments for no_results
               apiResponse
             );
-            setCurrentClarification(null);
           } else if (apiResponse.type === "error") {
             addMessage(`Có lỗi xảy ra: ${apiResponse.error}`, true);
             setCurrentClarification(null);
@@ -208,7 +214,8 @@ export function useChat(options: UseChatOptions = {}) {
             true,
             undefined,
             response.processing_time,
-            response.sources
+            response.sources,
+            response.form_attachments // 🔥 NEW: Pass form attachments from fallback
           );
         }
       } catch (error) {
@@ -294,12 +301,27 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
             // 🔧 Clear currentClarification only when we have a final answer
             console.log(
               "✅ Final answer received, clearing currentClarification"
             );
+            setCurrentClarification(null);
+          } else if (apiResponse.type === "manual_input_request") {
+            // 🔧 NEW: Handle manual input request
+            console.log("📝 Manual input requested:", apiResponse.message);
+            addMessage(
+              apiResponse.message || "Vui lòng nhập câu hỏi cụ thể của bạn:",
+              true,
+              undefined,
+              apiResponse.processing_time,
+              apiResponse.context_info?.source_documents,
+              undefined, // No form attachments for manual input request
+              apiResponse
+            );
+            // Keep currentClarification for context but allow manual input
             setCurrentClarification(null);
           } else if (
             apiResponse.type === "clarification_needed" &&
@@ -322,6 +344,7 @@ export function useChat(options: UseChatOptions = {}) {
               apiResponse.clarification,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
           }
@@ -331,7 +354,8 @@ export function useChat(options: UseChatOptions = {}) {
             true,
             undefined,
             response.processing_time,
-            response.sources
+            response.sources,
+            response.form_attachments // 🔥 NEW: Pass form attachments from fallback
           );
           // 🔧 Clear currentClarification for non-API responses
           console.log("✅ Non-API response, clearing currentClarification");

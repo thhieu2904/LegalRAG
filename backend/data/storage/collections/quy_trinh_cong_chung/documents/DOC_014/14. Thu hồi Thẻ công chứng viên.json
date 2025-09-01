@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "source": "14. Thu hồi Thẻ công chứng viên.doc",
+    "title": "Thu hồi Thẻ công chứng viên",
+    "code": "QT 14/CC",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "15/05/2025",
+    "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương",
+    "applicant_type": "Sở Tư pháp hoặc cơ quan có thẩm quyền",
+    "processing_time_text": "Thời hạn giải quyết: 05 ngày làm việc kể từ ngày nhận được văn bản/thông báo",
+    "fee_vnd": 0,
+    "fee_text": "Không có phí",
+    "has_form": false,
+    "requirements_conditions": [
+      "Công chứng viên bị miễn nhiệm theo quy định",
+      "Công chứng viên không còn hành nghề tại tổ chức hành nghề công chứng",
+      "Phòng công chứng chuyển đổi, giải thể hoặc chấm dứt hoạt động",
+      "Văn phòng công chứng chấm dứt hoạt động theo quy định",
+      "Công chứng viên thuộc các trường hợp bị thu hồi thẻ theo pháp luật"
+    ],
+    "legal_basis_references": [
+      "Thông tư số 06/2025/TT-BTP ngày 15/5/2025 của Bộ trưởng Bộ Tư pháp quy định về công chứng viên và tổ chức hành nghề công chứng",
+      "Luật Công chứng số 53/2014/QH13",
+      "Nghị định số 29/2015/NĐ-CP quy định chi tiết và hướng dẫn thi hành Luật Công chứng"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "amount_vnd": 0,
+      "description": "Không có phí cho thủ tục thu hồi thẻ công chứng viên",
+      "payment_method": "Không áp dụng",
+      "exemption_conditions": [
+        "Thủ tục hành chính này không thu phí theo quy định"
+      ]
+    },
+    "exemptions": [
+      {
+        "condition": "Tất cả trường hợp",
+        "description": "Không thu phí cho thủ tục thu hồi thẻ công chứng viên"
+      }
+    ],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Quyết định miễn nhiệm công chứng viên (trường hợp miễn nhiệm)\n2. Văn bản thông báo của Phòng công chứng về việc công chứng viên không còn hành nghề\n3. Hồ sơ thay đổi nội dung đăng ký hoạt động của Văn phòng công chứng\n4. Hồ sơ đăng ký hoạt động của Văn phòng công chứng (trường hợp bổ sung công chứng viên)\n5. Quyết định chuyển đổi, giải thể Phòng công chứng\n6. Quyết định thu hồi quyết định cho phép thành lập Văn phòng công chứng\n7. Các văn bản khác liên quan đến việc chấm dứt hoạt động của tổ chức hành nghề công chứng\n\nLưu ý: Hồ sơ thu hồi thẻ được lập dựa trên các văn bản chính thức từ cơ quan có thẩm quyền hoặc tổ chức hành nghề công chứng.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "hồ sơ",
+        "quyết định miễn nhiệm",
+        "thông báo",
+        "thay đổi đăng ký",
+        "giải thể",
+        "thu hồi quyết định"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "- Trường hợp miễn nhiệm công chứng viên: 05 ngày làm việc kể từ ngày nhận được quyết định miễn nhiệm\n- Trường hợp công chứng viên không còn hành nghề tại Phòng công chứng: 05 ngày làm việc kể từ ngày nhận được văn bản thông báo\n- Trường hợp Phòng công chứng chuyển đổi, giải thể: 05 ngày làm việc kể từ ngày quyết định có hiệu lực\n- Trường hợp Văn phòng công chứng chấm dứt hoạt động: 05 ngày làm việc kể từ ngày quyết định thu hồi quyết định thành lập có hiệu lực\n\nTổng thời gian giải quyết: 05 ngày làm việc trong tất cả các trường hợp\n\nKết quả: Sở Tư pháp ra quyết định thu hồi thẻ công chứng viên.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "thời hạn",
+        "05 ngày",
+        "miễn nhiệm",
+        "không còn hành nghề",
+        "chuyển đổi",
+        "giải thể"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện và Cơ quan có thẩm quyền",
+      "content": "Đối tượng chịu tác động của thủ tục:\n- Công chứng viên bị thu hồi thẻ\n- Tổ chức hành nghề công chứng nơi công chứng viên hành nghề\n\nCơ quan có thẩm quyền thực hiện thủ tục:\n- Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương nơi cấp thẻ công chứng viên\n\nCác trường hợp thu hồi thẻ công chứng viên:\n- Công chứng viên bị miễn nhiệm theo quy định của pháp luật\n- Công chứng viên không còn hành nghề tại tổ chức hành nghề công chứng\n- Phòng công chứng chuyển đổi, giải thể hoặc chấm dứt hoạt động\n- Văn phòng công chứng chấm dứt hoạt động theo quy định\n- Các trường hợp khác theo quy định của pháp luật về công chứng",
+      "source_reference": "Điều 25 Luật Công chứng",
+      "keywords": [
+        "đối tượng",
+        "công chứng viên",
+        "tổ chức hành nghề",
+        "sở tư pháp",
+        "trường hợp thu hồi"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "Kết quả thực hiện thủ tục:\n- Quyết định thu hồi thẻ công chứng viên\n- Thu hồi thẻ công chứng viên của công chứng viên\n- Thông báo cho các bên liên quan về việc thu hồi thẻ\n\nLệ phí: Không có phí cho thủ tục này\n\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn bổ sung.\n\nMẫu đơn: Thủ tục này do cơ quan nhà nước chủ động thực hiện, không yêu cầu mẫu đơn từ công chứng viên.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "kết quả",
+        "quyết định thu hồi",
+        "thu hồi thẻ",
+        "không có phí",
+        "chủ động"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý chi tiết",
+      "content": "Bước 1: Nhận được văn bản/thông báo về trường hợp thu hồi thẻ\n\nBước 2: Sở Tư pháp thụ lý và kiểm tra tính chính xác của thông tin:\n- Xác minh quyết định miễn nhiệm (nếu có)\n- Xác minh thông báo của tổ chức hành nghề công chứng\n- Kiểm tra các văn bản liên quan đến việc chấm dứt hoạt động\n\nBước 3: Lập hồ sơ thu hồi thẻ công chứng viên\n\nBước 4: Dự thảo quyết định thu hồi thẻ công chứng viên\n\nBước 5: Lãnh đạo Sở Tư pháp ký quyết định thu hồi thẻ\n\nBước 6: Thông báo quyết định thu hồi thẻ cho công chứng viên\n\nBước 7: Thu hồi thẻ công chứng viên và lưu hồ sơ\n\nBước 8: Thông báo cho tổ chức hành nghề công chứng và các cơ quan liên quan\n\nLưu ý: Quyết định thu hồi thẻ phải nêu rõ lý do thu hồi theo quy định của pháp luật.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "quy trình",
+        "bước 1",
+        "bước 2",
+        "bước 3",
+        "bước 4",
+        "bước 5",
+        "bước 6",
+        "bước 7",
+        "bước 8"
+      ]
+    }
+  ]
+}

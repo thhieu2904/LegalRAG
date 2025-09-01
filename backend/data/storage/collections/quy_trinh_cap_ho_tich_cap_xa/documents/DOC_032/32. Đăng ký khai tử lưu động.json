@@ -1,0 +1,155 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_032/32. Đăng ký khai tử lưu động.doc",
+    "title": "Đăng ký khai tử lưu động",
+    "code": "QT 32/CX-HT",
+    "issuing_authority": "Ủy ban nhân dân cấp xã",
+    "effective_date": "2025-07-07",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết hoặc nơi người đó chết hoặc nơi phát hiện thi thể người chết",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "05 ngày làm việc",
+    "fee_vnd": 0,
+    "fee_text": "Miễn lệ phí (đăng ký đúng hạn); 8.000 đồng (đăng ký không đúng hạn)",
+    "has_form": true,
+    "requirements_conditions": "Người chết không có người thân thích, người thân thích không sống cùng địa bàn xã hoặc là người già, yếu, khuyết tật không đi đăng ký khai tử được. Trường hợp không xác định được nơi cư trú cuối cùng của người chết thì đăng ký tại UBND cấp xã nơi người đó chết hoặc nơi phát hiện thi thể người chết",
+    "legal_basis_references": [
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
+      "Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy chứng nhận",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực",
+      "Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp",
+      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP",
+      "Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP và Thông tư số 04/2020/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch",
+      "Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương",
+      "Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND ngày 09/12/2022 của Hội đồng nhân dân thành phố Cần Thơ sửa đổi, bổ sung một số điều của Nghị quyết số 03/2017/NQ-HĐND",
+      "Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng",
+      "Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang"
+    ]
+  },
+  "fee_structure": {
+    "base_fee": 0,
+    "additional_fees": [
+      {
+        "condition": "Đăng ký khai tử không đúng hạn",
+        "amount": 8000,
+        "description": "Lệ phí đăng ký khai tử không đúng hạn"
+      },
+      {
+        "condition": "Đăng ký khai tử không đúng hạn (tỉnh Sóc Trăng cũ)",
+        "amount": 5000,
+        "description": "Lệ phí đăng ký khai tử không đúng hạn theo quy định cũ"
+      }
+    ],
+    "exemptions": [
+      {
+        "condition": "Đăng ký khai tử đúng hạn",
+        "description": "Miễn lệ phí hoàn toàn"
+      },
+      {
+        "condition": "Người thuộc gia đình có công với cách mạng, hộ nghèo, người khuyết tật",
+        "description": "Miễn lệ phí theo quy định tại Phụ lục 1"
+      },
+      {
+        "condition": "Trẻ em, người cao tuổi, người khuyết tật, người có công với cách mạng, đồng bào dân tộc thiểu số ở xã có điều kiện kinh tế - xã hội đặc biệt khó khăn",
+        "description": "Miễn lệ phí theo quy định tại Phụ lục 2"
+      }
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": false,
+    "electronic_form_description": "",
+    "has_paper_form": true,
+    "paper_form_description": "Tờ khai đăng ký khai tử theo mẫu (có thể khai chung cho nhiều người trong cùng hộ gia đình)"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Tờ khai đăng ký khai tử theo mẫu\n2. Giấy báo tử hoặc giấy tờ thay Giấy báo tử do cơ quan có thẩm quyền cấp (trường hợp đã nộp bản điện tử hoặc cơ quan đã khai thác được dữ liệu điện tử có ký số thì không phải nộp bản giấy)\n3. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu đăng ký khai tử\n4. Giấy tờ chứng minh nơi cư trú cuối cùng của người chết để xác định thẩm quyền (trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin từ CSDLQGVDC)\n5. Trường hợp không xác định được nơi cư trú cuối cùng của người chết thì xuất trình giấy tờ chứng minh nơi người đó chết hoặc nơi phát hiện thi thể của người chết\nSố lượng hồ sơ: 01 bộ",
+      "source_reference": "QT 32/CX-HT - Chunk 1",
+      "keywords": [
+        "hồ sơ",
+        "tờ khai",
+        "giấy báo tử",
+        "giấy tờ nhân thân",
+        "giấy tờ cư trú",
+        "đăng ký khai tử lưu động",
+        "người chết",
+        "thi thể"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Cơ quan thực hiện thủ tục",
+      "content": "Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết có thẩm quyền đăng ký khai tử lưu động. Trường hợp không xác định được nơi cư trú cuối cùng của người chết thì Ủy ban nhân dân cấp xã nơi người đó chết hoặc nơi phát hiện thi thể người chết thực hiện việc đăng ký khai tử. Công chức tư pháp - hộ tịch tiếp nhận hồ sơ và tham mưu cho lãnh đạo Ủy ban nhân dân cấp xã quyết định. Cơ quan quản lý Cơ sở dữ liệu quốc gia về dân cư phối hợp cung cấp thông tin.",
+      "source_reference": "QT 32/CX-HT - Chunk 2",
+      "keywords": [
+        "cơ quan",
+        "Ủy ban nhân dân cấp xã",
+        "công chức tư pháp",
+        "thẩm quyền",
+        "đăng ký khai tử lưu động",
+        "Cơ sở dữ liệu quốc gia về dân cư",
+        "nơi cư trú cuối cùng",
+        "nơi chết"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc.",
+      "source_reference": "QT 32/CX-HT - Chunk 3",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "ngày làm việc",
+        "đăng ký khai tử lưu động"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Lệ phí",
+      "content": "Miễn lệ phí đối với trường hợp đăng ký khai tử đúng hạn; đăng ký cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Đối với trường hợp đăng ký khai tử không đúng hạn: 8.000 đồng (tại các xã, phường theo Phụ lục 1); 5.000 đồng (tỉnh Sóc Trăng cũ). Miễn lệ phí đối với trường hợp đăng ký cho trẻ em, người cao tuổi, người khuyết tật, người có công với cách mạng, đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn.",
+      "source_reference": "QT 32/CX-HT - Chunk 4",
+      "keywords": [
+        "phí",
+        "lệ phí",
+        "miễn phí",
+        "đăng ký khai tử lưu động",
+        "đúng hạn",
+        "không đúng hạn"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục",
+      "content": "Trích lục khai tử (bản chính). Trường hợp yêu cầu cấp bản sao Trích lục khai tử thì được cấp bản sao với lệ phí 5.000 đồng/bản.",
+      "source_reference": "QT 32/CX-HT - Chunk 5",
+      "keywords": [
+        "kết quả",
+        "trích lục khai tử",
+        "bản chính",
+        "bản sao",
+        "đăng ký khai tử lưu động"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Văn bản pháp luật viện dẫn",
+      "content": "Luật Hộ tịch năm 2014; Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch; Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến việc nộp, xuất trình sổ hộ khẩu, sổ tạm trú giấy chứng nhận; Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch, quốc tịch, chứng thực; Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Tư pháp; Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP; Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP và Thông tư số 04/2020/TT-BTP; Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp và phân cấp trong lĩnh vực quản lý hộ tịch; Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh, thành phố trực thuộc trung ương; Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC; Nghị quyết số 10/2022/NQ-HĐND ngày 09/12/2022 của Hội đồng nhân dân thành phố Cần Thơ sửa đổi, bổ sung một số điều của Nghị quyết số 03/2017/NQ-HĐND; Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng ban hành quy định mức thu, chế độ thu, nộp, quản lý và sử dụng một số loại phí, lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân tỉnh Sóc Trăng; Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang Quy định các khoản thu phí, lệ phí và tỷ lệ phần trăm (%) trích lại cho đơn vị thu trên địa bàn tỉnh Hậu Giang.",
+      "source_reference": "QT 32/CX-HT - Chunk 6",
+      "keywords": [
+        "pháp luật",
+        "luật",
+        "nghị định",
+        "thông tư",
+        "nghị quyết",
+        "hộ tịch",
+        "khai tử",
+        "đăng ký khai tử lưu động"
+      ]
+    }
+  ]
+}

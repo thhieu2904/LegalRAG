@@ -1,0 +1,55 @@
+{
+  "documents": [
+    {
+      "title": "Quy trình hỗ trợ hòa giải viên",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ, có thể gia hạn thêm 15 ngày",
+      "id": "DOC_001",
+      "fee_text": "",
+      "source": "data/documents/quy_trinh_pbgdpl_htpldn/DOC_001/01. Quy trinh hỗ trợ hòa giải viên.doc",
+      "code": "QT 01/PBGDPL-HTPLDN",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đề nghị hỗ trợ chi phí tư vấn pháp luật cho doanh nghiệp nhỏ và vừa",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "03 ngày làm việc, trường hợp phải kiểm tra, xác minh thì thời hạn có thể kéo dài nhưng không quá 10 ngày",
+      "id": "DOC_002",
+      "fee_text": "",
+      "source": "data/documents/quy_trinh_pbgdpl_htpldn/DOC_002/2. Quy trinh  ĐỀ NGHỊ HỖ TRỢ CHI PHÍ TƯ VẤN PHÁP LUẬT CHO DOANH NGHIỆP NHỎ VÀ VỪA.doc",
+      "code": "QT 02/PBGDPL-HTPLDN",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đề nghị thanh toán chi phí tư vấn pháp luật cho doanh nghiệp nhỏ và vừa",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "03 ngày làm việc, trường hợp phải kiểm tra, xác minh thì thời hạn có thể kéo dài nhưng không quá 10 ngày",
+      "id": "DOC_003",
+      "fee_text": "",
+      "source": "data/documents/quy_trinh_pbgdpl_htpldn/DOC_003/3. Quy trình ĐỀ NGHỊ THANH TOÁN CHI PHÍ TƯ VẤN PHÁP LUẬT CHO DOANH NGHIỆP NHỎ VÀ VỪA.doc",
+      "code": "QT 03/PBGDPL-HTPLDN",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    }
+  ],
+  "issuing_authority": "Sở Tư pháp",
+  "collection_type": "quy_trinh_pbgdpl_htpldn",
+  "collection_name": "quy_trinh_pbgdpl_htpldn",
+  "created_date": "2025-08-30",
+  "last_updated": "2025-08-30",
+  "description": "Bộ sưu tập các quy trình hỗ trợ pháp lý cho doanh nghiệp nhỏ và vừa"
+}

@@ -18,6 +18,7 @@ from app.services.vector import VectorDBService
 from app.services.language_model import LLMService
 from app.services.rag_engine import RAGService
 from app.api import rag
+from app.api import documents
 
 # Cấu hình logging
 logging.basicConfig(
@@ -147,6 +148,15 @@ app.add_middleware(
 
 # Include optimized routes
 app.include_router(rag.router)
+app.include_router(documents.router)
+
+# Include Router CRUD API (minimal endpoints for clarification)
+try:
+    from app.api.router_crud import router as router_crud_router
+    app.include_router(router_crud_router)
+    logger.info("✅ Router CRUD API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Router CRUD API not available: {e}")
 
 # Root endpoint với thông tin VRAM optimization
 @app.get("/")
@@ -160,16 +170,21 @@ async def root():
             "llm_model": "GPU (song song hóa)", 
             "reranker_model": "GPU (song song hóa)"
         },
-        "features": [
-            "Smart Ambiguous Query Detection",
-            "Nucleus Context Expansion Strategy",
-            "VRAM-Optimized Model Placement",
-            "Enhanced Session Management"
-        ],
-        "docs_url": "/docs",
-        "health_url": "/api/v2/health",
-        "query_url": "/api/v2/optimized-query"
+        "status": "running",
+        "endpoints": {
+            "query": "/api/v1/query",
+            "collections": "/router/collections", 
+            "health": "/health"
+        }
     }
+
+# Health endpoint
+@app.get("/health")
+async def health():
+    if rag_service:
+        return rag_service.get_health_status()
+    else:
+        return {"status": "starting", "message": "Services are initializing..."}
 
 if __name__ == "__main__":
     uvicorn.run(

@@ -1,0 +1,120 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_luat_su/documents/DOC_001/1. Cấp chứng chỉ HNLS đối với người đạt yêu cầu kiểm tra KQTS HN.doc",
+    "title": "Cấp chứng chỉ hành nghề luật sư đối với người đạt yêu cầu kiểm tra kết quả tập sự hành nghề luật sư",
+    "code": "QT 01/LS",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "Theo Luật Luật sư 2006, sửa đổi 2012",
+    "executing_agency": "Bộ Tư pháp",
+    "applicant_type": [
+      "Người đã hoàn thành tập sự hành nghề luật sư"
+    ],
+    "processing_time_text": "30 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ",
+    "fee_vnd": 1000000,
+    "fee_text": "1.000.000 đồng/chứng chỉ (theo Thông tư 250/2016/TT-BTC)",
+    "has_form": true,
+    "requirements_conditions": "Đã hoàn thành khóa đào tạo nghề luật sư, đã tập sự hành nghề luật sư đủ thời hạn và đạt yêu cầu kiểm tra kết quả tập sự.",
+    "legal_basis_references": [
+      "Luật Luật sư 2006, sửa đổi 2012",
+      "Nghị định 123/2013/NĐ-CP quy định chi tiết Luật Luật sư",
+      "Thông tư 09/2013/TT-BTP hướng dẫn Luật Luật sư",
+      "Thông tư 250/2016/TT-BTC về phí, lệ phí"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "1.000.000đ",
+      "online": "1.000.000đ",
+      "description": "Phí cấp chứng chỉ hành nghề luật sư"
+    },
+    "exemptions": [],
+    "additional_fees": [
+      "Phí tái cấp do mất, hỏng: 500.000đ",
+      "Phí chứng thực bản sao: 10.000đ/trang"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ yêu cầu",
+      "content": "Hồ sơ cấp chứng chỉ hành nghề luật sư bao gồm:\\n1. Đơn đề nghị cấp chứng chỉ hành nghề luật sư theo mẫu quy định.\\n2. Bản sao có chứng thực bằng tốt nghiệp đại học luật hoặc cao đẳng luật.\\n3. Bản sao có chứng thực chứng chỉ đào tạo nghề luật sư.\\n4. Bản sao có chứng thực chứng chỉ tập sự hành nghề luật sư.\\n5. Giấy chứng nhận kết quả kiểm tra kết quả tập sự hành nghề luật sư.\\n6. Bản sao có chứng thực giấy tờ tùy thân.\\n7. Phiếu lý lịch tư pháp không quá 03 tháng.\\n8. Giấy khám sức khỏe theo quy định.",
+      "source_reference": "Điều 15, 16 Luật Luật sư",
+      "keywords": [
+        "hồ sơ",
+        "chứng chỉ hành nghề luật sư",
+        "đơn đề nghị",
+        "bằng tốt nghiệp luật",
+        "chứng chỉ đào tạo",
+        "tập sự",
+        "kiểm tra kết quả",
+        "giấy tờ tùy thân",
+        "lý lịch tư pháp",
+        "khám sức khỏe"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.\\n\\nTrường hợp cần bổ sung hồ sơ, Bộ Tư pháp thông báo bằng văn bản trong 10 ngày làm việc và thời hạn giải quyết được tính lại từ ngày nhận hồ sơ bổ sung đầy đủ.",
+      "source_reference": "Điều 17 Luật Luật sư",
+      "keywords": [
+        "thời hạn",
+        "30 ngày",
+        "hồ sơ hợp lệ",
+        "bổ sung",
+        "thông báo",
+        "văn bản",
+        "10 ngày"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng được cấp chứng chỉ:\\n- Người đã hoàn thành khóa đào tạo nghề luật sư.\\n- Đã tập sự hành nghề luật sư đủ thời hạn theo quy định (12 tháng).\\n- Đạt yêu cầu kiểm tra kết quả tập sự hành nghề luật sư.\\n- Có đủ sức khỏe để hành nghề luật sư.\\n- Có phẩm chất đạo đức tốt.\\n\\nCơ quan thực hiện: Bộ Tư pháp.",
+      "source_reference": "Điều 10, 11, 12 Luật Luật sư",
+      "keywords": [
+        "đối tượng",
+        "đào tạo nghề",
+        "tập sự",
+        "12 tháng",
+        "kiểm tra kết quả",
+        "sức khỏe",
+        "phẩm chất đạo đức",
+        "Bộ Tư pháp"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "Kết quả: Chứng chỉ hành nghề luật sư có giá trị trên toàn quốc, được cấp bởi Bộ trưởng Bộ Tư pháp.\\n\\nLệ phí: 1.000.000 VND/chứng chỉ theo quy định tại Thông tư 250/2016/TT-BTC.\\n\\nPhí bổ sung:\\n- Tái cấp do mất, hỏng: 500.000 VND\\n- Chứng thực bản sao: 10.000 VND/trang",
+      "source_reference": "Thông tư 250/2016/TT-BTC",
+      "keywords": [
+        "kết quả",
+        "chứng chỉ",
+        "toàn quốc",
+        "Bộ trưởng",
+        "lệ phí",
+        "1.000.000 VND",
+        "tái cấp",
+        "chứng thực"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Các bước thực hiện:\\n1. **Tiếp nhận hồ sơ:** Người đề nghị nộp hồ sơ tại Bộ Tư pháp (trực tiếp hoặc qua bưu điện).\\n2. **Kiểm tra hồ sơ:** Bộ Tư pháp kiểm tra tính đầy đủ và hợp lệ trong 10 ngày làm việc.\\n3. **Thẩm định:** Trường hợp hồ sơ hợp lệ, tiến hành thẩm định trong 20 ngày làm việc.\\n4. **Bổ sung (nếu cần):** Thông báo bổ sung hồ sơ bằng văn bản trong 10 ngày.\\n5. **Cấp chứng chỉ:** Ký và cấp chứng chỉ hành nghề luật sư.\\n6. **Trả kết quả:** Người đề nghị nhận chứng chỉ tại Bộ Tư pháp hoặc qua bưu điện.",
+      "source_reference": "Nghị định 123/2013/NĐ-CP",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "tiếp nhận",
+        "kiểm tra",
+        "thẩm định",
+        "bổ sung",
+        "cấp chứng chỉ",
+        "trả kết quả",
+        "bưu điện"
+      ]
+    }
+  ]
+}

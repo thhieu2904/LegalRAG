@@ -1,0 +1,128 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_ho_tich_cap_tp/documents/DOC_002/02. Xác nhận hộ tịch.doc",
+    "title": "Xác nhận hộ tịch",
+    "code": "QT 02/HTTP",
+    "issuing_authority": "Ủy ban nhân dân cấp tỉnh/thành phố",
+    "effective_date": "2025-01-01",
+    "executing_agency": "Ủy ban nhân dân cấp huyện/quận/thị xã/thành phố thuộc tỉnh",
+    "applicant_type": [
+      "Công dân Việt Nam",
+      "Người nước ngoài"
+    ],
+    "processing_time_text": "05 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ (có thể kéo dài đến 15 ngày nếu cần xác minh với nhiều cơ quan)",
+    "fee_vnd": 30000,
+    "fee_text": "30.000 VND/trường hợp (miễn phí cho trẻ em dưới 6 tuổi, người cao tuổi, người khuyết tật, hộ nghèo)",
+    "has_form": true,
+    "requirements_conditions": "Người yêu cầu phải có lý do chính đáng và giấy tờ hợp lệ chứng minh quan hệ nhân thân với người có sự kiện hộ tịch.",
+    "legal_basis_references": [
+      "Luật Hộ tịch 2014",
+      "Nghị định số 123/2015/NĐ-CP",
+      "Thông tư số 15/2018/TT-BTP",
+      "Thông tư số 250/2016/TT-BTC"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "30.000đ",
+      "online": "30.000đ",
+      "description": "Phí xác nhận hộ tịch"
+    },
+    "exemptions": [
+      "Trẻ em dưới 6 tuổi",
+      "Người cao tuổi, người khuyết tật",
+      "Người thuộc hộ nghèo, hộ cận nghèo"
+    ],
+    "additional_fees": [
+      "Phí tư vấn pháp lý: 50.000đ (nếu có yêu cầu)",
+      "Phí gửi kết quả bằng bưu điện: theo biểu phí bưu điện"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ yêu cầu",
+      "content": "Hồ sơ xác nhận hộ tịch bao gồm:\\n1. Đơn yêu cầu xác nhận hộ tịch theo mẫu quy định.\\n2. Bản sao có chứng thực giấy tờ tùy thân của người yêu cầu.\\n3. Giấy tờ chứng minh quan hệ nhân thân với người có sự kiện hộ tịch (giấy khai sinh, sổ hộ khẩu, v.v.).\\n4. Giấy tờ liên quan đến sự kiện hộ tịch cần xác nhận (nếu có).\\n5. Giấy ủy quyền có chữ ký chứng thực (nếu được ủy quyền).\\n6. Bản sao có chứng thực giấy tờ tùy thân của người được ủy quyền (nếu có).\\n\\nLưu ý: Tất cả giấy tờ phải còn hiệu lực và được cấp bởi cơ quan có thẩm quyền.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "đơn yêu cầu",
+        "xác nhận hộ tịch",
+        "giấy tờ tùy thân",
+        "quan hệ nhân thân",
+        "sự kiện hộ tịch",
+        "giấy ủy quyền",
+        "chứng thực"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.\\n\\nTrường hợp cần xác minh thông tin với nhiều cơ quan hoặc địa phương khác, thời hạn giải quyết không quá 15 ngày làm việc. Cơ quan có thẩm quyền phải thông báo bằng văn bản cho người yêu cầu về lý do kéo dài và thời gian dự kiến hoàn thành.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "05 ngày",
+        "15 ngày",
+        "hồ sơ hợp lệ",
+        "xác minh",
+        "nhiều cơ quan",
+        "địa phương khác",
+        "thông báo"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng có quyền yêu cầu xác nhận hộ tịch:\\n- Chủ thể của sự kiện hộ tịch.\\n- Cha mẹ, vợ chồng, con, anh chị em ruột của chủ thể sự kiện hộ tịch.\\n- Người được ủy quyền hợp pháp.\\n- Cơ quan, tổ chức có thẩm quyền theo quy định của pháp luật.\\n- Luật sư, người bào chữa theo quy định của pháp luật tố tụng.\\n\\nCơ quan thực hiện: Ủy ban nhân dân cấp huyện/quận/thị xã/thành phố thuộc tỉnh nơi đăng ký sự kiện hộ tịch hoặc nơi cư trú của chủ thể sự kiện.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "chủ thể sự kiện",
+        "cha mẹ",
+        "vợ chồng",
+        "con",
+        "anh chị em",
+        "ủy quyền",
+        "luật sư",
+        "người bào chữa",
+        "UBND cấp huyện"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "Kết quả: Văn bản xác nhận hộ tịch có đóng dấu và chữ ký của cơ quan có thẩm quyền, nêu rõ thông tin xác nhận về sự kiện hộ tịch theo yêu cầu.\\n\\nLệ phí: 30.000 VND/trường hợp theo quy định tại Thông tư số 250/2016/TT-BTC.\\n\\nMiễn lệ phí đối với: Trẻ em dưới 6 tuổi, người cao tuổi, người khuyết tật, người thuộc hộ nghèo, hộ cận nghèo có xác nhận của chính quyền địa phương.\\n\\nPhí bổ sung: Tư vấn pháp lý (nếu có yêu cầu): 50.000 VND.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "văn bản xác nhận",
+        "đóng dấu",
+        "chữ ký",
+        "thông tin xác nhận",
+        "lệ phí",
+        "30.000 VND",
+        "miễn phí",
+        "tư vấn pháp lý"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Các bước thực hiện:\\n1. **Tiếp nhận hồ sơ:** Người yêu cầu nộp hồ sơ tại bộ phận một cửa của UBND cấp huyện.\\n2. **Kiểm tra hồ sơ:** Cán bộ tiếp nhận kiểm tra tính đầy đủ và hợp lệ của hồ sơ trong 01 ngày làm việc.\\n3. **Xem xét và xác minh:** Rà soát thông tin trong sổ đăng ký hộ tịch và xác minh với các cơ quan liên quan (nếu cần) trong 03-12 ngày làm việc.\\n4. **Ra quyết định:** Cấp văn bản xác nhận hoặc từ chối có lý do trong 01 ngày làm việc cuối.\\n5. **Trả kết quả:** Người yêu cầu nhận kết quả tại nơi nộp hồ sơ hoặc qua đường bưu điện theo yêu cầu.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "tiếp nhận",
+        "kiểm tra hồ sơ",
+        "xem xét",
+        "xác minh",
+        "sổ đăng ký",
+        "ra quyết định",
+        "từ chối",
+        "trả kết quả"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_trong_tai_thuong_mai/DOC_001/1 Thành lập, đăng ký hoạt động TTTT.doc",
+    "title": "Thành lập, đăng ký hoạt động Trung tâm trọng tài",
+    "code": "QT 01/TTTM",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ],
+    "processing_time_text": "20 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 3000000,
+    "fee_text": "3.000.000đ (theo quy định)",
+    "has_form": true,
+    "requirements_conditions": "",
+    "legal_basis_references": [
+      "Luật Trọng tài thương mại năm 2010",
+      "Nghị định số 22/2017/NĐ-CP",
+      "Thông tư số 01/2018/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "3.000.000đ",
+      "online": "3.000.000đ",
+      "description": "Phí thẩm định hồ sơ thành lập Trung tâm trọng tài"
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Điều kiện thành lập Trung tâm trọng tài",
+      "content": "Điều kiện thành lập Trung tâm trọng tài:\n\n1. Có ít nhất 05 sáng lập viên là công dân Việt Nam\n\n2. Sáng lập viên phải có đủ điều kiện là Trọng tài viên theo quy định\n\n3. Có Điều lệ tổ chức và hoạt động của Trung tâm trọng tài\n\n4. Có phương án hoạt động và quy tắc tố tụng trọng tài\n\n5. Có địa điểm đặt trụ sở chính tại Việt Nam\n\n6. Có vốn hoạt động tối thiểu theo quy định\n\n7. Có ít nhất 05 Trọng tài viên trong danh sách Trọng tài viên\n\nCơ quan có thẩm quyền: Sở Tư pháp nơi Trung tâm trọng tài đặt trụ sở\n\nĐối tượng: Tổ chức, cá nhân có nhu cầu thành lập Trung tâm trọng tài",
+      "source_reference": "Điều 15 Luật Trọng tài thương mại năm 2010",
+      "keywords": [
+        "điều kiện",
+        "sáng lập viên",
+        "trọng tài viên",
+        "điều lệ",
+        "trụ sở",
+        "vốn"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thành phần hồ sơ thành lập",
+      "content": "Hồ sơ gồm các giấy tờ sau:\n\n1. Đơn đề nghị thành lập Trung tâm trọng tài (theo mẫu)\n\n2. Điều lệ tổ chức và hoạt động của Trung tâm trọng tài\n\n3. Danh sách Trọng tài viên đề nghị thành lập Trung tâm\n\n4. Giấy tờ chứng minh điều kiện của các sáng lập viên:\n   - Giấy tờ chứng minh là Trọng tài viên\n   - Lý lịch tư pháp\n   - Giấy khám sức khỏe\n   - Giấy tờ chứng minh trình độ chuyên môn\n\n5. Phương án hoạt động và quy tắc tố tụng trọng tài\n\n6. Giấy tờ chứng minh địa điểm đặt trụ sở\n\n7. Giấy tờ chứng minh vốn hoạt động\n\n8. Giấy tờ chứng minh tên gọi của Trung tâm trọng tài\n\nSố lượng hồ sơ: 01 bộ bản chính\n\nLưu ý: Tất cả giấy tờ phải còn hiệu lực và được cấp trong thời hạn 6 tháng",
+      "source_reference": "Điều 16 Nghị định số 22/2017/NĐ-CP",
+      "keywords": [
+        "đơn đề nghị",
+        "điều lệ",
+        "danh sách",
+        "giấy tờ chứng minh",
+        "phương án",
+        "quy tắc"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Quy trình thành lập Trung tâm trọng tài",
+      "content": "Quy trình xử lý hồ sơ:\n\n1. Tiếp nhận hồ sơ (01 ngày):\n   - Kiểm tra tính đầy đủ, chính xác của hồ sơ\n   - Thông báo bổ sung nếu hồ sơ thiếu\n   - Chuyển bộ phận chuyên môn nếu đầy đủ\n\n2. Thẩm định hồ sơ (10 ngày):\n   - Kiểm tra tính hợp pháp của hồ sơ\n   - Xác minh điều kiện của sáng lập viên\n   - Thẩm định Điều lệ và quy tắc tố tụng\n   - Dự thảo công văn trả lời nếu không đủ điều kiện\n\n3. Ký văn bản trình UBND (02 ngày):\n   - Lãnh đạo Sở Tư pháp ký văn bản đề nghị\n   - Gửi UBND cấp tỉnh phê duyệt\n\n4. UBND cấp tỉnh quyết định (05 ngày):\n   - Xem xét và cấp Giấy phép thành lập\n   - Phê duyệt Điều lệ của Trung tâm\n\n5. Cấp Giấy đăng ký hoạt động (02 ngày):\n   - Sở Tư pháp cấp Giấy đăng ký hoạt động\n   - Ghi tên Trung tâm vào Sổ đăng ký\n\nTổng thời gian: 20 ngày làm việc\n\nLưu ý: Thời gian xác minh thông tin có thể kéo dài hơn",
+      "source_reference": "Điều 17 Thông tư số 01/2018/TT-BTP",
+      "keywords": [
+        "thẩm định",
+        "tiếp nhận",
+        "quyết định",
+        "giấy phép",
+        "điều lệ",
+        "thời gian"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Quyền lợi và nghĩa vụ của Trung tâm trọng tài",
+      "content": "Quyền lợi của Trung tâm trọng tài:\n\n- Được tổ chức phiên họp trọng tài\n- Được thu phí trọng tài theo quy định\n- Được quản lý và sử dụng con dấu\n- Được tham gia các hoạt động hợp tác quốc tế\n- Được bảo vệ quyền lợi hợp pháp\n\nNghĩa vụ của Trung tâm trọng tài:\n\n- Tuân thủ pháp luật về trọng tài thương mại\n- Bảo mật thông tin trong quá trình tố tụng\n- Đảm bảo chất lượng hoạt động trọng tài\n- Báo cáo hoạt động định kỳ\n- Tham gia đào tạo, bồi dưỡng nghiệp vụ\n- Chấp hành quyết định của cơ quan quản lý\n\nHiệu lực của Giấy phép thành lập:\n- Có hiệu lực kể từ ngày ký\n- Có giá trị trong phạm vi toàn quốc\n- Chấm dứt khi bị thu hồi hoặc giải thể\n\nLưu ý: Trung tâm trọng tài phải hoạt động độc lập, khách quan, công bằng",
+      "source_reference": "Điều 18 Luật Trọng tài thương mại năm 2010",
+      "keywords": [
+        "quyền lợi",
+        "nghĩa vụ",
+        "giấy phép",
+        "độc lập",
+        "khách quan",
+        "báo cáo"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Giám sát và chế độ báo cáo",
+      "content": "Chế độ giám sát hoạt động:\n\n- Theo dõi quá trình xử lý hồ sơ theo ISO 9001:2015\n- Giám sát hoạt động trọng tài định kỳ\n- Thanh tra, kiểm tra khi có dấu hiệu vi phạm\n\nChế độ báo cáo:\n\n- Báo cáo hoạt động hàng quý\n- Báo cáo tổng kết năm\n- Báo cáo đột xuất khi có yêu cầu\n- Báo cáo về việc giải quyết tranh chấp\n\nXử lý vi phạm:\n\n- Cảnh cáo đối với vi phạm nhẹ\n- Tạm ngừng hoạt động\n- Thu hồi Giấy phép thành lập\n- Xử phạt vi phạm hành chính\n\nQuyền khiếu nại:\n- Khiếu nại quyết định từ chối thành lập\n- Thời hạn: 90 ngày kể từ ngày nhận quyết định\n- Cơ quan giải quyết: UBND cấp tỉnh\n\nCác trường hợp bị xử lý:\n- Nộp hồ sơ không đúng quy định\n- Cung cấp thông tin sai lệch\n- Vi phạm quy định pháp luật\n- Không báo cáo theo quy định\n\nLưu ý: Việc thành lập phải đảm bảo công khai, minh bạch",
+      "source_reference": "Điều 19 Thông tư số 08/2025/TT-BTP",
+      "keywords": [
+        "giám sát",
+        "báo cáo",
+        "xử lý vi phạm",
+        "khiếu nại",
+        "công khai",
+        "thanh tra"
+      ]
+    }
+  ],
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu điện tử tương tác (được sử dụng khi nộp hồ sơ theo hình thức trực tuyến)",
+    "has_paper_form": true,
+    "paper_form_description": "Mẫu giấy theo quy định (được sử dụng khi nộp hồ sơ theo hình thức trực tiếp)"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "documents": [
+    {
+      "title": "Thủ tục xác định cơ quan giải quyết bồi thường",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": false,
+      "processing_time_text": "05 ngày làm việc kể từ ngày nhận được hồ sơ",
+      "id": "DOC_001",
+      "fee_text": "Không quy định lệ phí cho thủ tục xác định cơ quan giải quyết bồi thường",
+      "source": "data/documents/quy_trinh_boi_thuong_nn/QUY TRÌNH BỒI THƯỜNG NN/1. Thủ tục xác định cơ quan giải quyết bồi thường.doc",
+      "code": "QT 01/BTNN",
+      "executing_agency": "Sở Tư pháp, UBND cấp tỉnh"
+    },
+    {
+      "title": "Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "Thời hạn tổng thể tùy theo từng giai đoạn: tiếp nhận (½ ngày), thụ lý (02 ngày), bổ sung hồ sơ (05 ngày), tạm ứng (05-07 ngày), xác minh (14-30 ngày), thương lượng (10-15 ngày), quyết định (½ ngày)",
+      "id": "DOC_002",
+      "fee_text": "Không quy định lệ phí cho thủ tục giải quyết yêu cầu bồi thường",
+      "source": "data/documents/quy_trinh_boi_thuong_nn/QUY TRÌNH BỒI THƯỜNG NN/2. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại.doc",
+      "code": "QT 02/BTNN",
+      "executing_agency": "Cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại ở cấp tỉnh"
+    },
+    {
+      "title": "Thủ tục phục hồi danh dự",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "Thời hạn tổng thể: 30 ngày kể từ ngày nhận hồ sơ hợp lệ (có thể gia hạn tối đa 15 ngày)",
+      "id": "DOC_003",
+      "fee_text": "Không quy định lệ phí cho thủ tục phục hồi danh dự",
+      "source": "data/documents/quy_trinh_boi_thuong_nn/QUY TRÌNH BỒI THƯỜNG NN/3. Thủ tục phục hồi danh dự.doc",
+      "code": "QT 03/BTNN",
+      "executing_agency": "Cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại ở cấp tỉnh"
+    },
+    {
+      "title": "Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại cấp xã",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "Thời hạn tổng thể tùy theo từng giai đoạn: tiếp nhận (½ ngày), thụ lý (02 ngày), bổ sung hồ sơ (05 ngày), xác minh (15-30 ngày), thương lượng (10 ngày), quyết định (½ ngày)",
+      "id": "DOC_004",
+      "fee_text": "Không quy định lệ phí cho thủ tục giải quyết yêu cầu bồi thường",
+      "source": "data/documents/quy_trinh_boi_thuong_nn/QUY TRÌNH BỒI THƯỜNG NN/4. Thủ tục giải quyết yêu cầu bồi thường tại cơ quan trực tiếp quản lý người thi hành công vụ gây thiệt hại cấp xã.doc",
+      "code": "QT 04/BTNN",
+      "executing_agency": "Ủy ban nhân dân cấp xã"
+    }
+  ],
+  "issuing_authority": "Sở Tư pháp",
+  "collection_type": "quy_trinh_boi_thuong_nn",
+  "collection_name": "quy_trinh_boi_thuong_nn",
+  "created_date": "2025-08-30",
+  "last_updated": "2025-08-30",
+  "description": "Bộ sưu tập các quy trình bồi thường nhà nước"
+}

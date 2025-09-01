@@ -1,0 +1,130 @@
+{
+  "documents": [
+    {
+      "title": "Cấp chứng chỉ hành nghề Quản tài viên đối với luật sư, kiểm toán viên, người có trình độ cử nhân luật, kinh tế, tài chính, ngân hàng từ 5 năm trở lên",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_001",
+      "fee_text": "3.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_quan_tai_vien/DOC_001/QTV - QT 01 -Cấp chứng chỉ hành nghề Quản tài viên đối với luật sư, kiểm toán viên, người có trình độ cử nhân luật, kinh tế, tài chính, ngân hàng...5 năm trở lên .doc",
+      "code": "QT 01/QTV",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Cấp chứng chỉ hành nghề Quản tài viên đối với luật sư nước ngoài đã được cấp Giấy phép hành nghề luật sư tại Việt Nam",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_002",
+      "fee_text": "3.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_quan_tai_vien/DOC_002/QTV - QT 02 - Cấp chứng chỉ hành nghề Quản tài viên đối với luật sư nước ngoài đã được cấp Giấy phép hành nghề luật sư tại Việt Nam.doc",
+      "code": "QT 02/QTV",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Cấp lại chứng chỉ hành nghề Quản tài viên",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_003",
+      "fee_text": "1.500.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_quan_tai_vien/DOC_003/QTV - QT 03 - Cấp lại chứng chỉ hành nghề Quản tài viên .doc",
+      "code": "QT 03/QTV",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký hành nghề quản lý, thanh lý tài sản với tư cách cá nhân",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "10 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_004",
+      "fee_text": "500.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_quan_tai_vien/DOC_004/QTV - QT 04 - Đăng ký hành nghề quản lý, thanh lý tài sản với tư cách cá nhân .doc",
+      "code": "QT 04/QTV",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Đăng ký hành nghề quản lý, thanh lý tài sản đối với doanh nghiệp quản lý, thanh lý tài sản",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "20 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_005",
+      "fee_text": "2.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_quan_tai_vien/DOC_005/QTV - QT 05 - Đăng ký hành nghề quản lý, thanh lý tài sản đối với doanh nghiệp quản lý, thanh lý tài sản .doc",
+      "code": "QT 05/QTV",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi thành viên hợp danh của công ty hợp danh hoặc thay đổi chủ doanh nghiệp tư nhân của doanh nghiệp quản lý, thanh lý tài sản",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "15 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_006",
+      "fee_text": "1.000.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_quan_tai_vien/DOC_006/QTV - QT 06 - Thay đổi thành viên hợp danh của công ty hợp danh hoặc thay đổi chủ doanh nghiệp tư nhân của doanh nghiệp quản lý, thanh lý tài sản  .doc",
+      "code": "QT 06/QTV",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi tên, địa chỉ trụ sở, văn phòng đại diện, chi nhánh, người đại diện theo pháp luật, danh sách Quản tài viên hành nghề trong doanh nghiệp quản lý, thanh lý tài sản",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "12 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_007",
+      "fee_text": "750.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_quan_tai_vien/DOC_007/QTV - QT 07 - Thay đổi tên, địa chỉ trụ sở, văn phòng đại diện, chi nhanh, người đại diện theo pháp luật, danh sách Quản tài viên hành nghề trong DNQLTLTS .doc",
+      "code": "QT 07/QTV",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    },
+    {
+      "title": "Thay đổi thông tin đăng ký hành nghề của doanh nghiệp quản lý, thanh lý tài sản",
+      "effective_date": "2025-08-27",
+      "applicant_type": [
+        "Cá nhân",
+        "Tổ chức"
+      ],
+      "has_form": true,
+      "processing_time_text": "10 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+      "id": "DOC_008",
+      "fee_text": "500.000đ (theo quy định)",
+      "source": "data/documents/quy_trinh_quan_tai_vien/DOC_008/QTV - QT 08 - Thay đổi thông tin đăng ký hành nghề của Quản tài viên .doc",
+      "code": "QT 08/QTV",
+      "executing_agency": "Sở Tư pháp cấp tỉnh"
+    }
+  ],
+  "issuing_authority": "Sở Tư pháp",
+  "collection_type": "quy_trinh_quan_tai_vien",
+  "collection_name": "quy_trinh_quan_tai_vien",
+  "created_date": "2025-08-30",
+  "last_updated": "2025-08-30",
+  "description": "Bộ sưu tập các quy trình quản tài viên"
+}

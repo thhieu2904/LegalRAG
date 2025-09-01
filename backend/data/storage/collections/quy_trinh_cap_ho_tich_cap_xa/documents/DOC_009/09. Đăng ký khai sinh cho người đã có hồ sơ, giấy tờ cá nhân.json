@@ -1,0 +1,144 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_009/09. Đăng ký khai sinh cho người đã có hồ sơ, giấy tờ cá nhân.doc",
+    "title": "Đăng ký khai sinh cho người đã có hồ sơ, giấy tờ cá nhân",
+    "code": "QT 09/CX-HT",
+    "issuing_authority": "UBND cấp xã",
+    "effective_date": "2025-08-29",
+    "executing_agency": "UBND cấp xã nơi cư trú của người yêu cầu đăng ký khai sinh",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "05 ngày làm việc. Trường hợp phải có văn bản xác minh thì thời hạn giải quyết không quá 10 ngày làm việc",
+    "fee_vnd": 8000,
+    "fee_text": "Nộp trực tiếp: 8.000 đồng; nộp trực tuyến: 4.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Giấy khai sinh: 8.000 đồng/bản. Đối với trường hợp đăng ký khai sinh không đúng hạn: 50.000 đồng (trực tiếp), 40.000 đồng (trực tuyến)",
+    "has_form": true,
+    "requirements_conditions": "Công dân Việt Nam cư trú trong nước, sinh trước ngày 01/01/2016, chưa được đăng ký khai sinh, có hồ sơ, giấy tờ cá nhân (bản chính hoặc bản sao được chứng thực hợp lệ) như: giấy tờ tùy thân, bằng tốt nghiệp, giấy chứng nhận, chứng chỉ, học bạ, hồ sơ học tập do cơ quan có thẩm quyền cấp hoặc xác nhận; giấy tờ khác có thông tin về họ, chữ đệm, tên, ngày, tháng, năm sinh của cá nhân.",
+    "legal_basis_references": [
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
+      "Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch",
+      "Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến Luật Hộ tịch",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch",
+      "Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương cấp tỉnh và cấp huyện trong lĩnh vực hộ tịch",
+      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch",
+      "Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP",
+      "Thông tư số 03/2023/TT-BTP ngày 02/8/2023 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương",
+      "Thông tư số 09/2022/TT-BTP ngày 30/12/2022 của Bộ trưởng Bộ Tư pháp bãi bỏ một số nội dung tại các Thông tư trong lĩnh vực trợ giúp pháp lý, hộ tịch",
+      "Thông tư số 281/2016/TT-BTC ngày 14/11/2016 của Bộ trưởng Bộ Tài chính quy định mức thu, chế độ thu, nộp, quản lý và sử dụng phí khai thác, sử dụng thông tin trong cơ sở dữ liệu hộ tịch",
+      "Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân cấp tỉnh",
+      "Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND ngày 09/12/2022 của Hội đồng nhân dân thành phố Cần Thơ",
+      "Nghị quyết số 06/2024/NQ-HĐND ngày 05/7/2024 của Hội đồng nhân dân thành phố Cần Thơ",
+      "Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng",
+      "Nghị quyết số 04/2024/NQ-HĐND ngày 17/4/2024 của Hội đồng nhân dân tỉnh Sóc Trăng",
+      "Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang"
+    ]
+  },
+  "fee_structure": {
+    "base_fee": 8000,
+    "additional_fees": [
+      {
+        "description": "Đăng ký khai sinh đúng hạn (trực tuyến)",
+        "amount_vnd": 4000,
+        "unit": "lần"
+      },
+      {
+        "description": "Đăng ký khai sinh không đúng hạn (trực tiếp)",
+        "amount_vnd": 50000,
+        "unit": "lần"
+      },
+      {
+        "description": "Đăng ký khai sinh không đúng hạn (trực tuyến)",
+        "amount_vnd": 40000,
+        "unit": "lần"
+      },
+      {
+        "description": "Phí cấp bản sao Giấy khai sinh",
+        "amount_vnd": 8000,
+        "unit": "bản"
+      }
+    ],
+    "exemptions": [
+      "Người thuộc gia đình có công với cách mạng",
+      "Người thuộc hộ nghèo",
+      "Người khuyết tật",
+      "Người cao tuổi",
+      "Người có công với cách mạng",
+      "Đồng bào dân tộc thiểu số ở các xã có điều kiện kinh tế - xã hội đặc biệt khó khăn"
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu hộ tịch điện tử tương tác đăng ký khai sinh (do người yêu cầu cung cấp thông tin theo hướng dẫn trên Cổng dịch vụ công quốc gia)",
+    "has_paper_form": true,
+    "paper_form_description": "Tờ khai đăng ký khai sinh theo mẫu (nếu người yêu cầu lựa chọn nộp hồ sơ theo hình thức trực tiếp hoặc gửi hồ sơ qua hệ thống bưu chính)"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Tờ khai đăng ký khai sinh theo mẫu (nếu người yêu cầu lựa chọn nộp hồ sơ theo hình thức trực tiếp hoặc gửi hồ sơ qua hệ thống bưu chính)\n2. Mẫu hộ tịch điện tử tương tác đăng ký khai sinh (do người yêu cầu cung cấp thông tin theo hướng dẫn trên Cổng dịch vụ công nếu người yêu cầu lựa chọn nộp hồ sơ theo hình thức trực tuyến)\n3. Người yêu cầu đăng ký khai sinh thực hiện việc nộp/xuất trình (theo hình thức trực tiếp) bản sao toàn bộ hồ sơ, giấy tờ của người yêu cầu hoặc hồ sơ, giấy tờ, tài liệu khác trong đó có thông tin liên quan đến nội dung khai sinh, gồm: Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước/Hộ chiếu; giấy tờ chứng minh về nơi cư trú; Bằng tốt nghiệp, Giấy chứng nhận, Chứng chỉ, Học bạ, Hồ sơ học tập do cơ quan có thẩm quyền cấp hoặc xác nhận; giấy tờ khác có thông tin về họ, chữ đệm, tên, ngày, tháng, năm sinh của cá nhân\n4. Trường hợp người yêu cầu đăng ký khai sinh là cán bộ, công chức, viên chức, người đang công tác trong lực lượng vũ trang thì phải có văn bản xác nhận của Thủ trưởng cơ quan, đơn vị về việc những nội dung khai sinh của người đó gồm họ, chữ đệm, tên; giới tính; ngày, tháng, năm sinh; dân tộc; quốc tịch; quê quán; quan hệ cha - con, mẹ - con phù hợp với hồ sơ do cơ quan, đơn vị quản lý\n5. Văn bản ủy quyền theo quy định của pháp luật trong trường hợp ủy quyền thực hiện việc đăng ký khai sinh. Trường hợp người được ủy quyền là ông, bà, cha, mẹ, con, vợ, chồng, anh, chị, em ruột của người yêu cầu thì không cần văn bản ủy quyền\n6. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của người yêu cầu đăng ký khai sinh\n7. Giấy tờ có giá trị chứng minh thông tin về cư trú trong trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin về nơi cư trú của công dân theo các phương thức quy định",
+      "source_reference": "QT 09/CX-HT - Chunk 1",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "tờ khai",
+        "biểu mẫu",
+        "hồ sơ cá nhân",
+        "bằng tốt nghiệp",
+        "học bạ",
+        "ủy quyền",
+        "căn cước",
+        "hộ chiếu"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Cơ quan thực hiện thủ tục",
+      "content": "Ủy ban nhân dân cấp xã nơi cư trú của người yêu cầu đăng ký khai sinh. Cá nhân có quyền lựa chọn thực hiện thủ tục hành chính về hộ tịch tại cơ quan đăng ký hộ tịch nơi cư trú; nơi cư trú của cá nhân được xác định theo quy định của pháp luật về cư trú. Cơ quan phối hợp: Cơ quan quản lý CSDLQGVDC, Ủy ban nhân dân cấp xã nơi người yêu cầu đã đăng ký thường trú hoặc tạm trú.",
+      "source_reference": "QT 09/CX-HT - Chunk 2",
+      "keywords": [
+        "cơ quan",
+        "UBND",
+        "ủy ban nhân dân",
+        "nơi cư trú",
+        "phối hợp"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc. Trường hợp phải có văn bản xác minh thì thời hạn giải quyết không quá 10 ngày làm việc.",
+      "source_reference": "QT 09/CX-HT - Chunk 3",
+      "keywords": ["thời hạn", "giải quyết", "ngày", "xác minh"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Lệ phí",
+      "content": "Nộp trực tiếp: 8.000 đồng; nộp trực tuyến: 4.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Giấy khai sinh: 8.000 đồng/bản. Đối với trường hợp đăng ký khai sinh không đúng hạn: 50.000 đồng (trực tiếp), 40.000 đồng (trực tuyến).",
+      "source_reference": "QT 09/CX-HT - Chunk 4",
+      "keywords": ["phí", "lệ phí", "miễn phí", "bản sao", "không đúng hạn"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục",
+      "content": "Giấy khai sinh (bản chính), bản sao Giấy khai sinh (trường hợp yêu cầu cấp bản sao); Bản điện tử Giấy khai sinh (Bản điện tử sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu sau khi đã hoàn tất thủ tục đăng ký khai sinh tại cơ quan đăng ký hộ tịch).",
+      "source_reference": "QT 09/CX-HT - Chunk 5",
+      "keywords": [
+        "kết quả",
+        "giấy khai sinh",
+        "bản chính",
+        "bản sao",
+        "bản điện tử"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Văn bản pháp luật viện dẫn",
+      "content": "Luật Hộ tịch năm 2014; Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch; Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch; Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến Luật Hộ tịch; Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch; Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương cấp tỉnh và cấp huyện trong lĩnh vực hộ tịch.",
+      "source_reference": "QT 09/CX-HT - Chunk 6",
+      "keywords": ["pháp luật", "luật", "nghị định", "thông tư", "văn bản"]
+    }
+  ]
+}

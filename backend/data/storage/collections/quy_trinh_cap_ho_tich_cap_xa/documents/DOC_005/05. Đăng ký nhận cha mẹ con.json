@@ -1,0 +1,115 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_005/05. Đăng ký nhận cha mẹ con.doc",
+    "title": "Đăng ký nhận cha, mẹ, con",
+    "code": "QT 05/CX-HT",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ],
+    "processing_time_text": "05 ngày làm việc.",
+    "fee_vnd": 15000,
+    "fee_text": "15.000 VND (theo quy định)",
+    "has_form": true,
+    "requirements_conditions": "",
+    "legal_basis_references": [
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
+      "Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch trực tuyến",
+      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP",
+      "Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP"
+    ]
+  },
+  "fee_structure": {
+    "direct": "15.000 VND",
+    "online": "7.500 VND (đến 31/12/2025)"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Tờ khai đăng ký nhận cha, mẹ, con theo mẫu. 2. Giấy tờ chứng minh quan hệ cha, mẹ, con (giấy khám nghiệm ADN, giấy tờ hộ tịch, giấy tờ chứng minh nhân thân, v.v.). 3. Giấy tờ chứng minh quyền và nghĩa vụ của cha, mẹ, con. 4. Văn bản ủy quyền (nếu có). Số lượng hồ sơ: 01 bộ.",
+      "source_reference": "QT 05/CX-HT - Chunk 1",
+      "keywords": [
+        "thành phần hồ sơ",
+        "tờ khai",
+        "quan hệ cha mẹ con",
+        "giấy tờ chứng minh",
+        "đăng ký nhận"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Cơ quan thực hiện thủ tục",
+      "content": "Ủy ban nhân dân cấp xã nơi cư trú của người nhận hoặc người được nhận là cha, mẹ, con có thẩm quyền đăng ký nhận cha, mẹ, con. Công chức tư pháp - hộ tịch tiếp nhận hồ sơ và trình lãnh đạo UBND cấp xã quyết định.",
+      "source_reference": "QT 05/CX-HT - Chunk 2",
+      "keywords": [
+        "ủy ban nhân dân cấp xã",
+        "công chức tư pháp",
+        "thẩm quyền",
+        "đăng ký nhận",
+        "quan hệ cha mẹ con"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.",
+      "source_reference": "QT 05/CX-HT - Chunk 3",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "ngày làm việc",
+        "đăng ký nhận"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Phí",
+      "content": "15.000 đồng/lần đăng ký (nộp trực tiếp); 7.500 đồng/lần đăng ký (nộp trực tuyến đến 31/12/2025). Có các trường hợp miễn, giảm phí theo quy định.",
+      "source_reference": "QT 05/CX-HT - Chunk 4",
+      "keywords": [
+        "phí",
+        "lệ phí",
+        "đăng ký nhận",
+        "trực tuyến",
+        "trực tiếp",
+        "miễn phí"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục",
+      "content": "Giấy xác nhận việc đăng ký nhận cha, mẹ, con. Trường hợp từ chối phải có văn bản nêu rõ lý do.",
+      "source_reference": "QT 05/CX-HT - Chunk 5",
+      "keywords": [
+        "kết quả",
+        "giấy xác nhận",
+        "đăng ký nhận",
+        "từ chối"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Văn bản pháp luật viện dẫn",
+      "content": "Luật Hộ tịch năm 2014; Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch; Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch trực tuyến; Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch và Nghị định số 123/2015/NĐ-CP; Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP.",
+      "source_reference": "QT 05/CX-HT - Chunk 6",
+      "keywords": [
+        "pháp luật",
+        "luật hộ tịch",
+        "nghị định",
+        "thông tư",
+        "quan hệ cha mẹ con"
+      ]
+    }
+  ],
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu điện tử tương tác (được sử dụng khi nộp hồ sơ theo hình thức trực tuyến)",
+    "has_paper_form": true,
+    "paper_form_description": "Mẫu giấy theo quy định (được sử dụng khi nộp hồ sơ theo hình thức trực tiếp)"
+  }
+}

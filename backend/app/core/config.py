@@ -23,9 +23,14 @@ class Settings(BaseSettings):
     
     # Data Paths - Load from environment
     data_root_dir: str = "data"  # Overridden by DATA_ROOT_DIR in .env
-    documents_dir: str = "data/documents"  # Overridden by DOCUMENTS_DIR in .env
+    documents_dir: str = "data/documents"  # Overridden by DOCUMENTS_DIR in .env (OLD STRUCTURE)
     vectordb_dir: str = "data/vectordb"  # Overridden by VECTORDB_DIR in .env
     models_dir: str = "data/models"  # Overridden by MODELS_DIR in .env
+    
+    # New Structure Paths (using PathConfig)
+    storage_dir: str = "data/storage"  # New centralized storage
+    collections_dir: str = "data/storage/collections"  # Collections
+    registry_dir: str = "data/storage/registry"  # Registries
     
     # Model Configuration - Actual values từ .env file
     embedding_model_name: str = "AITeamVN/Vietnamese_Embedding_v2"  # From EMBEDDING_MODEL_NAME
@@ -52,7 +57,7 @@ class Settings(BaseSettings):
     chunk_overlap: int = 200  # From CHUNK_OVERLAP in .env
     
     # Enhanced RAG Process Parameters - 4-step RAG: Search > Rerank > Expand > Synthesize
-    broad_search_k: int = 20  # Giảm từ 30 để giảm initial search results (Performance Optimization)
+    broad_search_k: int = 12  # Optimized from 20 to 12 for better performance
     similarity_threshold: float = 0.3  # From SIMILARITY_THRESHOLD in .env (permissive)
     context_expansion_size: int = 1  # From CONTEXT_EXPANSION_SIZE in .env (adjacent chunks)
     use_routing: bool = True  # From USE_ROUTING in .env (smart collection routing)

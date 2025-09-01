@@ -1,0 +1,127 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_nuoi_con_nuoi/documents/DOC_004/4. STP -Giải quyết việc người nước ngoài thường trú ở Việt Nam nhận trẻ em Việt Nam làm con nuôi.doc",
+    "title": "Giải quyết việc người nước ngoài thường trú ở Việt Nam nhận trẻ em Việt Nam làm con nuôi",
+    "code": "QT 04/NCN",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-01-01",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Người nước ngoài thường trú ở Việt Nam",
+      "Người Việt Nam định cư ở nước ngoài nhưng đang thường trú ở Việt Nam"
+    ],
+    "processing_time_text": "45 ngày làm việc từ khi có đủ hồ sơ hợp lệ (có thể kéo dài đến 60 ngày trong trường hợp phức tạp)",
+    "fee_vnd": 3000000,
+    "fee_text": "Lệ phí: 3.000.000 VND/trường hợp. Chi phí giải quyết: 25.000.000 VND/trường hợp",
+    "has_form": true,
+    "requirements_conditions": "Người nước ngoài thường trú ở Việt Nam muốn nhận trẻ em Việt Nam làm con nuôi phải đáp ứng điều kiện của pháp luật Việt Nam về nuôi con nuôi và có giấy phép thường trú hợp lệ tại Việt Nam.",
+    "legal_basis_references": [
+      "Luật Nuôi con nuôi 2010",
+      "Nghị định số 19/2011/NĐ-CP",
+      "Nghị định số 24/2019/NĐ-CP",
+      "Thông tư số 01/2011/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "3.000.000đ",
+      "online": "3.000.000đ",
+      "description": "Lệ phí giải quyết việc nuôi con nuôi"
+    },
+    "exemptions": [
+      "Trẻ em khuyết tật",
+      "Trẻ em mắc bệnh hiểm nghèo"
+    ],
+    "additional_fees": [
+      {
+        "name": "Chi phí giải quyết",
+        "amount": "25.000.000đ",
+        "description": "Chi phí thực hiện các thủ tục liên quan"
+      }
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ và điều kiện",
+      "content": "Hồ sơ người nước ngoài thường trú tại Việt Nam nhận con nuôi gồm:\\n\\n**A. HỒ SƠ CỦA NGƯỜI NHẬN CON NUÔI:**\\n1. Đơn xin nhận trẻ em Việt Nam làm con nuôi (theo mẫu).\\n2. Bản sao có chứng thực Hộ chiếu và thẻ thường trú.\\n3. Giấy chứng nhận tình trạng hôn nhân.\\n4. Bản điều tra về tâm lý, gia đình, xã hội (còn hiệu lực 12 tháng).\\n5. Giấy khám sức khỏe (còn hiệu lực 12 tháng).\\n6. Giấy xác nhận thu nhập và tài sản (còn hiệu lực 12 tháng).\\n7. Phiếu lý lịch tư pháp (còn hiệu lực 12 tháng).\\n8. Giấy tờ chứng minh đang thường trú tại Việt Nam ít nhất 1 năm.\\n\\n**B. HỒ SƠ CỦA TRẺ EM:**\\n1. Giấy khai sinh của trẻ.\\n2. Giấy khám sức khỏe (không quá 12 tháng).\\n3. Ảnh của trẻ (không quá 6 tháng).\\n4. Tài liệu chứng minh hoàn cảnh đặc biệt của trẻ.\\n5. Tài liệu về đặc điểm, sở thích của trẻ.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "người nước ngoài",
+        "thường trú",
+        "Việt Nam",
+        "hộ chiếu",
+        "thẻ thường trú",
+        "điều tra tâm lý",
+        "phiếu lý lịch tư pháp",
+        "trẻ em"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "45 ngày làm việc kể từ ngày có đủ hồ sơ hợp lệ. Trường hợp phức tạp cần xác minh thêm, thời hạn có thể kéo dài đến 60 ngày làm việc.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "45 ngày",
+        "60 ngày",
+        "hồ sơ hợp lệ",
+        "trường hợp phức tạp"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng: Người nước ngoài thường trú ở Việt Nam đủ điều kiện nhận con nuôi theo pháp luật Việt Nam, có thẻ thường trú hợp lệ và đã sống liên tục tại Việt Nam ít nhất 1 năm. Cơ quan thực hiện: Sở Tư pháp cấp tỉnh nơi trẻ em thường trú hoặc nơi cơ sở nuôi dưỡng trẻ em đóng trụ sở.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "người nước ngoài",
+        "thường trú",
+        "thẻ thường trú",
+        "1 năm",
+        "Sở Tư pháp",
+        "cơ sở nuôi dưỡng"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả và lệ phí",
+      "content": "Kết quả: Quyết định cho phép việc nuôi con nuôi của UBND cấp tỉnh. Lệ phí: 3.000.000 VND/trường hợp. Chi phí giải quyết: 25.000.000 VND/trường hợp. Miễn chi phí cho trẻ em khuyết tật, mắc bệnh hiểm nghèo.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "quyết định",
+        "UBND cấp tỉnh",
+        "lệ phí",
+        "3.000.000 VND",
+        "chi phí giải quyết",
+        "25.000.000 VND",
+        "miễn phí",
+        "trẻ khuyết tật"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Các bước thực hiện:\\n1. Tiếp nhận hồ sơ tại Sở Tư pháp.\\n2. Thẩm tra hồ sơ và yêu cầu bổ sung (nếu cần) trong 10 ngày.\\n3. Thụ lý hồ sơ và phân công cán bộ giải quyết.\\n4. Xác minh thông tin về người nhận con nuôi và trẻ em trong 15 ngày.\\n5. Tổ chức giới thiệu trẻ với người nhận con nuôi trong 10 ngày.\\n6. Lấy ý kiến của các cơ quan liên quan trong 10 ngày.\\n7. Trình UBND cấp tỉnh ra quyết định cho phép nuôi con nuôi.\\n8. Tổ chức lễ giao nhận con nuôi theo quy định.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "tiếp nhận",
+        "thẩm tra",
+        "thụ lý",
+        "xác minh",
+        "giới thiệu trẻ",
+        "lấy ý kiến",
+        "trình UBND",
+        "lễ giao nhận"
+      ]
+    }
+  ]
+}

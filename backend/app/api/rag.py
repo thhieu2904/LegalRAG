@@ -1,9 +1,6 @@
 """
 API Routes for Optimized Enhanced RAG Service
-Endpoints tốidef get_rag_service():
-    if rag_service is None:
-        raise HTTPException(status_code=503, detail="RAG service not initialized")
-    return rag_servicevới VRAM-optimized architecture
+Endpoints tối ưu với VRAM-optimized architecture
 """
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -54,6 +51,9 @@ class QueryResponse(BaseModel):
     
     # Context info
     context_info: Optional[Dict[str, Any]] = Field(None, description="Thông tin về context")
+    
+    # Form attachments - NEW
+    form_attachments: Optional[List[Dict[str, Any]]] = Field(None, description="Danh sách form đi kèm")
     
     # Meta info
     session_id: str = Field(..., description="Session ID")

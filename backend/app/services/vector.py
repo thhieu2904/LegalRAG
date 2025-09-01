@@ -6,6 +6,7 @@ from typing import List, Dict, Any, Optional
 import hashlib
 import json
 from ..core.config import settings
+from ..core.path_config import path_config
 
 logger = logging.getLogger(__name__)
 

@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_quan_tai_vien/DOC_007/QTV - QT 07 - Thay đổi tên, địa chỉ trụ sở, văn phòng đại diện, chi nhanh, người đại diện theo pháp luật, danh sách Quản tài viên hành nghề trong DNQLTLTS .doc",
+    "title": "Thay đổi tên, địa chỉ trụ sở, văn phòng đại diện, chi nhánh, người đại diện theo pháp luật, danh sách Quản tài viên hành nghề trong doanh nghiệp quản lý, thanh lý tài sản",
+    "code": "QT 07/QTV",
+    "issuing_authority": "Sở Tư pháp",
+    "effective_date": "2025-08-27",
+    "executing_agency": "Sở Tư pháp cấp tỉnh",
+    "applicant_type": [
+      "Cá nhân",
+      "Tổ chức"
+    ],
+    "processing_time_text": "12 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 750000,
+    "fee_text": "750.000đ (theo quy định)",
+    "has_form": true,
+    "requirements_conditions": "",
+    "legal_basis_references": [
+      "Luật Phá sản năm 2014",
+      "Luật Doanh nghiệp năm 2020",
+      "Nghị định số 22/2015/NĐ-CP",
+      "Nghị định số 112/2025/NĐ-CP"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "750.000đ",
+      "online": "750.000đ",
+      "description": "Lệ phí thay đổi thông tin doanh nghiệp"
+    },
+    "exemptions": [],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Các loại thay đổi được phép",
+      "content": "Các thông tin có thể thay đổi:\n\n1. Tên doanh nghiệp quản lý, thanh lý tài sản\n\n2. Địa chỉ trụ sở chính của doanh nghiệp\n\n3. Văn phòng đại diện, chi nhánh của doanh nghiệp\n\n4. Người đại diện theo pháp luật\n\n5. Danh sách quản tài viên hành nghề trong doanh nghiệp\n\nĐiều kiện thay đổi:\n- Không làm thay đổi bản chất hoạt động hành nghề\n- Vẫn đáp ứng điều kiện về vốn điều lệ tối thiểu 5 tỷ đồng\n- Không thuộc trường hợp bị cấm hành nghề\n- Phải có quyết định của doanh nghiệp về việc thay đổi\n- Các thay đổi phải được đăng ký tại Sở Kế hoạch và Đầu tư\n\nCơ quan có thẩm quyền: Sở Tư pháp nơi doanh nghiệp đăng ký hành nghề\n\nLưu ý: Việc thay đổi phải đảm bảo tính nhất quán với đăng ký doanh nghiệp",
+      "source_reference": "Điều 36 Luật Phá sản năm 2014",
+      "keywords": [
+        "tên doanh nghiệp",
+        "địa chỉ trụ sở",
+        "văn phòng đại diện",
+        "chi nhánh",
+        "người đại diện",
+        "danh sách quản tài viên"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thành phần hồ sơ thay đổi",
+      "content": "Hồ sơ gồm các giấy tờ sau:\n\n1. Đơn đề nghị thay đổi theo mẫu TP-QTV-07\n\n2. Quyết định của doanh nghiệp về việc thay đổi\n\n3. Biên bản họp của Hội đồng thành viên (đối với công ty hợp danh)\n\n4. Giấy tờ chứng minh thông tin thay đổi:\n   - Giấy chứng nhận đăng ký thuế (nếu thay đổi tên)\n   - Giấy tờ chứng minh địa chỉ mới (hợp đồng thuê nhà, sổ đỏ)\n   - Giấy tờ chứng minh văn phòng đại diện, chi nhánh\n   - Giấy tờ chứng minh người đại diện mới\n   - Danh sách quản tài viên hành nghề mới\n\n5. Giấy chứng nhận đăng ký doanh nghiệp (bản sao)\n\n6. Giấy đăng ký hành nghề quản lý, thanh lý tài sản (bản gốc)\n\n7. Văn bản xác nhận của Sở Kế hoạch và Đầu tư về thay đổi đăng ký\n\n8. Giấy tờ chứng minh quản tài viên mới đáp ứng điều kiện\n\nSố lượng hồ sơ: 01 bộ bản chính\n\nLưu ý: Các giấy tờ phải còn hiệu lực và được cấp trong thời hạn 6 tháng",
+      "source_reference": "Điều 37 Nghị định số 112/2025/NĐ-CP",
+      "keywords": [
+        "đơn đề nghị",
+        "quyết định",
+        "biên bản họp",
+        "giấy tờ chứng minh",
+        "bản sao",
+        "thời hạn"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Quy trình xử lý hồ sơ",
+      "content": "Quy trình xử lý hồ sơ:\n\n1. Tiếp nhận hồ sơ: Kiểm tra tính đầy đủ, hợp lệ của hồ sơ\n\n2. Thẩm định hồ sơ: Xác minh thông tin thay đổi\n\n3. Xem xét điều kiện: Kiểm tra đáp ứng các yêu cầu pháp lý\n\n4. Xác minh với Sở Kế hoạch và Đầu tư: Kiểm tra đăng ký doanh nghiệp\n\n5. Thông báo kết quả: Thông báo bằng văn bản về việc chấp thuận\n\n6. Cấp quyết định thay đổi: Ban hành quyết định phê duyệt thay đổi\n\n7. Cấp giấy đăng ký mới: Cấp giấy đăng ký hành nghề với thông tin mới\n\n8. Đăng tải thông tin: Cập nhật thông tin trên Cổng thông tin điện tử\n\nThời hạn xử lý: 12 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ\n\nTrường hợp từ chối: Thông báo bằng văn bản và nêu rõ lý do\n\nTrường hợp hồ sơ chưa đầy đủ: Thông báo bổ sung trong thời hạn 03 ngày làm việc\n\nLưu ý: Có thể yêu cầu xác minh thông tin tại các cơ quan liên quan",
+      "source_reference": "Điều 38 Thông tư số 06/2016/TT-BTP",
+      "keywords": [
+        "thẩm định",
+        "xác minh",
+        "thông báo",
+        "quyết định",
+        "cấp giấy",
+        "thời hạn"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Hiệu lực và quyền lợi sau thay đổi",
+      "content": "Hiệu lực của thay đổi:\n\n- Quyết định thay đổi có hiệu lực kể từ ngày ký\n- Giấy đăng ký hành nghề mới có hiệu lực kể từ ngày cấp\n- Thông tin được cập nhật trên Cổng thông tin điện tử\n- Phải đăng ký thay đổi tại Sở Kế hoạch và Đầu tư\n\nQuyền lợi của doanh nghiệp sau thay đổi:\n\n- Tiếp tục được hành nghề quản lý, thanh lý tài sản\n- Được chỉ định làm doanh nghiệp quản lý, thanh lý trong các vụ việc\n- Được hưởng đầy đủ quyền lợi theo quy định pháp luật\n- Thông tin được cập nhật chính xác, đầy đủ\n\nNghĩa vụ sau thay đổi:\n\n- Tuân thủ quy định pháp luật về hành nghề\n- Báo cáo hoạt động định kỳ\n- Tham gia đào tạo, bồi dưỡng kiến thức\n- Chấp hành quy định về thuế, bảo hiểm\n- Bảo mật thông tin trong quá trình hành nghề\n\nLưu ý: Phải thông báo thay đổi cho các cơ quan liên quan trong thời hạn 30 ngày",
+      "source_reference": "Điều 39 Nghị định số 22/2015/NĐ-CP",
+      "keywords": [
+        "hiệu lực",
+        "quyền lợi",
+        "nghĩa vụ",
+        "báo cáo",
+        "đào tạo",
+        "thông báo"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Giám sát và xử lý vi phạm",
+      "content": "Chế độ giám sát sau thay đổi:\n\n1. Báo cáo hoạt động định kỳ 6 tháng/lần\n\n2. Báo cáo về việc thay đổi thông tin đăng ký\n\n3. Có thể bị kiểm tra, thanh tra hoạt động hành nghề\n\n4. Phải tuân thủ quy tắc đạo đức nghề nghiệp\n\nXử lý vi phạm:\n\n1. Cảnh cáo đối với vi phạm nhẹ\n\n2. Tạm ngừng hành nghề từ 1-12 tháng\n\n3. Thu hồi giấy đăng ký hành nghề\n\n4. Xử phạt vi phạm hành chính theo quy định\n\nCác trường hợp bị xử lý:\n\n- Thay đổi thông tin không đúng quy định\n- Không thông báo thay đổi theo quy định\n- Làm ảnh hưởng đến uy tín của nghề nghiệp\n- Vi phạm quy định pháp luật trong quá trình hành nghề\n\nQuyền khiếu nại: Theo quy định của Luật Khiếu nại, thời hạn 90 ngày\n\nLưu ý: Việc thay đổi phải được thực hiện công khai, minh bạch",
+      "source_reference": "Điều 40 Luật Phá sản năm 2014",
+      "keywords": [
+        "giám sát",
+        "xử lý vi phạm",
+        "cảnh cáo",
+        "thu hồi",
+        "khiếu nại",
+        "công khai"
+      ]
+    }
+  ],
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu điện tử tương tác (được sử dụng khi nộp hồ sơ theo hình thức trực tuyến)",
+    "has_paper_form": true,
+    "paper_form_description": "Mẫu giấy theo quy định (được sử dụng khi nộp hồ sơ theo hình thức trực tiếp)"
+  }
+}

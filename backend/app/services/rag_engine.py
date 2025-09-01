@@ -10,10 +10,13 @@ Tích hợp:
 import logging
 import time
 import uuid
+import os
+import json
 import numpy as np
 from typing import Dict, List, Any, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from pathlib import Path
+from enum import Enum
 
 from .vector import VectorDBService
 from .language_model import LLMService
@@ -21,9 +24,72 @@ from .reranker import RerankerService
 from .clarification import ClarificationService
 from .router import QueryRouter, RouterBasedQueryService
 from .context import ContextExpander
+from .simple_form_detection import SimpleFormDetectionService
+from .fee_service import FeeService
+from .prompt_service import prompt_service, PromptType
 from ..core.config import settings
 
+# Import path_config with try/except for graceful fallback
+try:
+    from ..core.path_config import path_config
+except ImportError:
+    logger.warning("PathConfig not available, using old structure only")
+    path_config = None
+
 logger = logging.getLogger(__name__)
+
+# 🎯 CENTRALIZED OVERRIDE SYSTEM
+class OverrideType(Enum):
+    """Types of routing overrides in the system"""
+    FORCED_COLLECTION = "forced_collection"
+    FORCED_DOCUMENT = "forced_document" 
+    MANUAL_INPUT_DOCUMENT = "manual_input_document"
+    MANUAL_INPUT_CLARIFICATION = "manual_input_clarification"
+    SESSION_CONTEXT = "session_context"
+
+@dataclass
+class OverrideContext:
+    """Centralized override context for consistent handling"""
+    override_type: OverrideType
+    target_collection: str
+    target_document: Optional[str] = None
+    confidence_level: Optional[str] = None
+    confidence_score: Optional[float] = None
+    inferred_filters: Dict[str, Any] = field(default_factory=dict)
+    session_data: Optional[Dict[str, Any]] = field(default_factory=dict)
+    
+    def __post_init__(self):
+        """Set confidence based on override type if not provided"""
+        if self.confidence_level is None or self.confidence_score is None:
+            confidence_mappings = {
+                OverrideType.FORCED_COLLECTION: ("forced_high", 0.95),
+                OverrideType.FORCED_DOCUMENT: ("forced_high", 0.98),
+                OverrideType.MANUAL_INPUT_DOCUMENT: ("manual_input_high", 0.92),
+                OverrideType.MANUAL_INPUT_CLARIFICATION: ("manual_input_medium", 0.85),
+                OverrideType.SESSION_CONTEXT: ("session_high", 0.88)
+            }
+            
+            level, score = confidence_mappings.get(self.override_type, ("forced_high", 0.95))
+            
+            if self.confidence_level is None:
+                self.confidence_level = level
+            if self.confidence_score is None:
+                self.confidence_score = score
+    
+    def to_routing_result(self) -> Dict[str, Any]:
+        """Convert to standard routing result format"""
+        return {
+            "target_collection": self.target_collection,
+            "confidence": self.confidence_score,
+            "confidence_level": self.confidence_level,
+            "inferred_filters": self.inferred_filters,
+            "was_overridden": True,
+            "override_type": self.override_type.value,
+            "best_match": {
+                "document": self.target_document,
+                "question": "Overridden query"
+            } if self.target_document else {}
+        }
 
 def convert_numpy_types(obj: Any) -> Any:
     """Convert numpy types to Python native types for JSON serialization"""
@@ -70,12 +136,13 @@ class OptimizedChatSession:
             self.cached_rag_content = rag_content
         self.consecutive_low_confidence_count = 0  # Reset counter
         
-    def should_override_confidence(self, current_confidence: float) -> bool:
+    def should_override_confidence(self, current_confidence: float, query: str = "") -> bool:
         """
-        Kiểm tra có nên ghi đè kết quả định tuyến hiện tại bằng ngữ cảnh đã lưu không.
+        Enhanced override logic with follow-up detection
         Ghi đè khi:
         1. Đang có ngữ cảnh tốt được lưu từ trước.
         2. Kết quả định tuyến mới không phải là "rất chắc chắn".
+        3. Query hiện tại là follow-up của conversation trước.
         """
         if not self.last_successful_collection:
             return False
@@ -89,12 +156,78 @@ class OptimizedChatSession:
         # Ngưỡng tối thiểu của ngữ cảnh đã lưu để được coi là "tốt"
         MIN_CONTEXT_CONFIDENCE = 0.78
 
-        # Nếu độ tin cậy hiện tại không đủ cao VÀ ngữ cảnh trước đó đủ tốt -> Ghi đè
-        if current_confidence < VERY_HIGH_CONFIDENCE_GATE and self.last_successful_confidence >= MIN_CONTEXT_CONFIDENCE:
-            logger.info(f"🔥 STATEFUL ROUTER: Ghi đè vì current_confidence ({current_confidence:.3f}) < {VERY_HIGH_CONFIDENCE_GATE} và context_confidence ({self.last_successful_confidence:.3f}) >= {MIN_CONTEXT_CONFIDENCE}")
-            return True
-
-        return False
+        # Signal 1: Low confidence (traditional approach)
+        low_confidence_signal = current_confidence < VERY_HIGH_CONFIDENCE_GATE and self.last_successful_confidence >= MIN_CONTEXT_CONFIDENCE
+        
+        # Signal 2: Follow-up question (new approach)
+        followup_signal = False
+        if query:
+            followup_signal = self.is_followup_question(query)
+        
+        # Signal 3: Recent context (within 5 minutes for follow-ups)
+        recent_context_signal = self.last_successful_timestamp and (time.time() - self.last_successful_timestamp) < 300
+        
+        # Override if:
+        # - Traditional: low confidence + good context
+        # - Follow-up: is follow-up + recent context (regardless of confidence)
+        should_override = bool(low_confidence_signal or (followup_signal and recent_context_signal))
+        
+        if should_override:
+            reason = "low_confidence" if low_confidence_signal else "followup_detection"
+            logger.info(f"🔥 ENHANCED OVERRIDE: {reason} - current_confidence ({current_confidence:.3f}) < {VERY_HIGH_CONFIDENCE_GATE}, context_confidence ({self.last_successful_confidence:.3f}) >= {MIN_CONTEXT_CONFIDENCE}, followup: {followup_signal}")
+        
+        return should_override
+        
+    def is_followup_question(self, query: str) -> bool:
+        """
+        Detect if current query is a follow-up of previous conversation
+        Based on linguistic patterns common in Vietnamese follow-up questions
+        """
+        if not self.query_history:
+            return False
+            
+        query_lower = query.lower().strip()
+        
+        # 1. Follow-up keywords (Vietnamese)
+        followup_keywords = [
+            'nó', 'đó', 'cái này', 'cái đó', 'mình', 'tôi', 'tớ',
+            'thế', 'thế nào', 'sao', 'như thế nào', 'ra sao',
+            'có cần', 'phải không', 'được không', 'có được không',
+            'bao nhiêu', 'bao lâu', 'mất bao lâu', 'thời gian',
+            'phí', 'tiền', 'chi phí', 'lệ phí'
+        ]
+        
+        # Check for followup keywords
+        has_followup_keyword = any(keyword in query_lower for keyword in followup_keywords)
+        
+        # 2. Short query (follow-ups are usually shorter)
+        is_short_query = len(query.split()) < 10
+        
+        # 3. Question marks or question patterns
+        has_question_pattern = any(word in query_lower for word in ['?', 'không', 'sao', 'thế'])
+        
+        # 4. Lack of specific legal terms (suggesting context dependency)
+        legal_terms = [
+            'đăng ký', 'khai sinh', 'hộ tịch', 'nuôi con', 'ly hôn',
+            'hôn nhân', 'kết hôn', 'chung sống', 'pháp luật', 'luật',
+            'thủ tục', 'giấy tờ', 'công chứng', 'dấu gia'
+        ]
+        has_specific_legal_terms = any(term in query_lower for term in legal_terms)
+        
+        # Scoring system
+        score = 0
+        if has_followup_keyword: score += 2
+        if is_short_query: score += 1
+        if has_question_pattern: score += 1
+        if not has_specific_legal_terms: score += 1
+        
+        # Follow-up if score >= 2
+        is_followup = score >= 2
+        
+        if is_followup:
+            logger.info(f"🔄 FOLLOW-UP DETECTED: '{query}' (score: {score})")
+        
+        return is_followup
         
     def increment_low_confidence(self):
         """Tăng counter khi gặp confidence thấp"""
@@ -193,13 +326,118 @@ class RAGService:
     - Reranker: GPU (cần song song hóa cho multiple comparisons)
     """
     
+    # 🎯 OVERRIDE HELPER METHODS
+    def _create_override_context(
+        self,
+        override_type: OverrideType,
+        target_collection: str,
+        target_document: Optional[str] = None,
+        session_data: Optional[Dict[str, Any]] = None,
+        **kwargs
+    ) -> OverrideContext:
+        """Create standardized override context"""
+        
+        # Determine confidence based on override type
+        confidence_mappings = {
+            OverrideType.FORCED_COLLECTION: ("forced_high", 0.95),
+            OverrideType.FORCED_DOCUMENT: ("forced_high", 0.98),
+            OverrideType.MANUAL_INPUT_DOCUMENT: ("manual_input_high", 0.92),
+            OverrideType.MANUAL_INPUT_CLARIFICATION: ("manual_input_medium", 0.85),
+            OverrideType.SESSION_CONTEXT: ("session_high", 0.88)
+        }
+        
+        confidence_level, confidence_score = confidence_mappings.get(
+            override_type, ("forced_high", 0.95)
+        )
+        
+        # Build inferred filters based on override type
+        inferred_filters = {}
+        if target_document:
+            inferred_filters["document_title"] = target_document
+            
+        # Add any additional filters from kwargs
+        inferred_filters.update(kwargs.get('additional_filters', {}))
+        
+        return OverrideContext(
+            override_type=override_type,
+            target_collection=target_collection,
+            target_document=target_document,
+            confidence_level=confidence_level,
+            confidence_score=confidence_score,
+            inferred_filters=inferred_filters,
+            session_data=session_data or {}
+        )
+    
+    def _handle_manual_input_override(
+        self,
+        query: str,
+        collection: str,
+        document: Optional[str] = None,
+        clarification_context: Optional[Dict[str, Any]] = None
+    ) -> OverrideContext:
+        """Handle manual input override scenarios"""
+        
+        if document:
+            # Manual input with specific document
+            return self._create_override_context(
+                override_type=OverrideType.MANUAL_INPUT_DOCUMENT,
+                target_collection=collection,
+                target_document=document,
+                additional_filters={"manual_input": True}
+            )
+        elif clarification_context:
+            # Manual input with clarification context
+            return self._create_override_context(
+                override_type=OverrideType.MANUAL_INPUT_CLARIFICATION,
+                target_collection=collection,
+                session_data=clarification_context,
+                additional_filters={"manual_input": True, "clarification": True}
+            )
+        else:
+            # Basic manual input
+            return self._create_override_context(
+                override_type=OverrideType.FORCED_COLLECTION,
+                target_collection=collection,
+                additional_filters={"manual_input": True}
+            )
+    
+    def _handle_forced_routing_override(
+        self,
+        collection: str,
+        document: Optional[str] = None
+    ) -> OverrideContext:
+        """Handle forced routing scenarios"""
+        
+        if document:
+            return self._create_override_context(
+                override_type=OverrideType.FORCED_DOCUMENT,
+                target_collection=collection,
+                target_document=document
+            )
+        else:
+            return self._create_override_context(
+                override_type=OverrideType.FORCED_COLLECTION,
+                target_collection=collection
+            )
+    
     def __init__(
         self,
-        documents_dir: str,
-        vectordb_service: VectorDBService,
-        llm_service: LLMService
+        documents_dir: Optional[str] = None,  # Made optional, will use path_config if not provided
+        vectordb_service: Optional[VectorDBService] = None,
+        llm_service: Optional[LLMService] = None
     ):
-        self.documents_dir = documents_dir
+        # Use new path config by default, fallback to provided documents_dir for backward compatibility
+        if documents_dir is None:
+            # New structure - use path_config
+            self.use_new_structure = True
+            self.path_config = path_config
+            self.documents_dir = None  # Not used in new structure
+        else:
+            # Old structure - backward compatibility
+            self.use_new_structure = False
+            self.path_config = None
+            self.documents_dir = documents_dir
+            
         self.vectordb_service = vectordb_service
         self.llm_service = llm_service
         
@@ -250,9 +488,203 @@ class RAGService:
             )
             logger.info("✅ Enhanced Context Expansion Service initialized")
             
+            # Simple Form Detection Service - consolidated form handling
+            self.form_detection_service = SimpleFormDetectionService()
+            logger.info("✅ Simple Form Detection Service initialized")
+            
+            # Fee Service
+            self.fee_service = FeeService()
+            logger.info("✅ Fee Service initialized")
+            
         except Exception as e:
             logger.error(f"Error initializing services: {e}")
             raise
+    
+    # 🚀 HELPER METHODS - INTELLIGENT SYSTEM UTILITIES
+    
+    def _map_document_title_to_doc_folder(self, document_title: str, collection: str) -> Optional[str]:
+        """
+        Map document title to correct DOC_XXX folder name
+        """
+        try:
+            import os
+            # Try to find matching document folder
+            collection_path = f"data/storage/collections/{collection}/documents"
+            if os.path.exists(collection_path):
+                for doc_folder in os.listdir(collection_path):
+                    if doc_folder.startswith("DOC_"):
+                        doc_path = os.path.join(collection_path, doc_folder)
+                        # Check for matching document file
+                        for file in os.listdir(doc_path):
+                            if file.endswith('.json') and document_title in file:
+                                return doc_folder
+            return None
+        except Exception as e:
+            logger.error(f"Error mapping document title: {e}")
+            return None
+
+    def _calculate_adaptive_k(
+        self, 
+        confidence_level: str, 
+        confidence_score: float, 
+        query: str,
+        session_history: Optional[List] = None
+    ) -> int:
+        """
+        🚀 INTELLIGENT ADAPTIVE K SYSTEM
+        Tính toán K thông minh dựa trên nhiều yếu tố
+        """
+        base_k = settings.broad_search_k  # Default: 12
+        
+        # 1. CONFIDENCE-BASED ADJUSTMENT
+        # 🚀 FIX: Handle both score-based and level-based confidence
+        if confidence_level in ['high_confidence', 'override_high', 'forced_high'] or confidence_score >= 0.8:
+            confidence_multiplier = 0.5  # High confidence → search ít
+        elif confidence_level in ['medium_high_confidence'] or confidence_score >= 0.7:
+            confidence_multiplier = 0.7  # Medium-high confidence
+        elif confidence_level in ['medium_confidence'] or confidence_score >= 0.6:
+            confidence_multiplier = 1.0  # Medium confidence
+        elif confidence_level in ['low_confidence', 'insufficient_context'] or confidence_score < 0.6:
+            confidence_multiplier = 1.5  # Low confidence → search nhiều
+        else:
+            # Fallback to score-based logic
+            if confidence_score >= 0.9:
+                confidence_multiplier = 0.3  # Rất cao
+            elif confidence_score >= 0.8:
+                confidence_multiplier = 0.5  # Cao
+            elif confidence_score >= 0.7:
+                confidence_multiplier = 0.7  # Trung bình cao
+            elif confidence_score >= 0.6:
+                confidence_multiplier = 1.0  # Trung bình
+            else:
+                confidence_multiplier = 1.5  # Thấp
+            
+        # 2. QUERY COMPLEXITY ADJUSTMENT
+        query_length = len(query.split())
+        if query_length <= 3:
+            complexity_multiplier = 0.6  # Simple query
+        elif query_length <= 8:
+            complexity_multiplier = 1.0  # Medium query
+        else:
+            complexity_multiplier = 1.3  # Complex query
+            
+        # 3. QUERY TYPE ADJUSTMENT
+        if any(word in query.lower() for word in ['phí', 'giá', 'tiền', 'chi phí']):
+            intent_multiplier = 0.7  # Specific fact question
+        elif any(word in query.lower() for word in ['như thế nào', 'cách', 'thủ tục']):
+            intent_multiplier = 1.2  # Process question
+        elif any(word in query.lower() for word in ['tất cả', 'toàn bộ', 'chi tiết']):
+            intent_multiplier = 1.4  # Comprehensive question
+        else:
+            intent_multiplier = 1.0  # General question
+            
+        # 4. SESSION HISTORY LEARNING
+        session_multiplier = 1.0
+        if session_history and len(session_history) > 0:
+            avg_context_length = sum(h.get('context_length', 0) for h in session_history[-3:]) / min(3, len(session_history))
+            if avg_context_length < 2000:
+                session_multiplier = 0.8  # User prefers short answers
+            elif avg_context_length > 8000:
+                session_multiplier = 1.3  # User prefers detailed answers
+                
+        # 5. CALCULATE FINAL K
+        final_k = int(base_k * confidence_multiplier * complexity_multiplier * 
+                      intent_multiplier * session_multiplier)
+        
+        # 6. BOUNDS CHECKING
+        final_k = max(3, min(50, final_k))
+        
+        logger.info(f"🎯 ADAPTIVE K: base={base_k}, conf={confidence_multiplier:.1f}, "
+                   f"complex={complexity_multiplier:.1f}, intent={intent_multiplier:.1f}, "
+                   f"session={session_multiplier:.1f} → final_k={final_k}")
+        
+        return final_k
+    
+    def _create_real_nucleus_chunks(
+        self, 
+        preserved_document: str, 
+        collection: str, 
+        doc_folder: str, 
+        query: str
+    ) -> List[Dict[str, Any]]:
+        """
+        🚀 CREATE REAL NUCLEUS CHUNKS với FULL DOCUMENT CONTENT
+        Load đúng document content đầy đủ để match với full document
+        🎯 PHASE 4: SYNCHRONIZE CONTENT FORMAT với context expansion
+        """
+        try:
+            # Construct full source path
+            full_source_path = f"data/storage/collections/{collection}/documents/{doc_folder}/{preserved_document}.json"
+            
+            if not os.path.exists(full_source_path):
+                logger.error(f"❌ Source file not found: {full_source_path}")
+                return []
+            
+            # Load document content
+            with open(full_source_path, 'r', encoding='utf-8') as f:
+                document_data = json.load(f)
+            
+            # 🚀 PHASE 4: Load FULL DOCUMENT CONTENT với format IDENTICAL với context expansion
+            content_chunks = document_data.get('content_chunks', [])
+            metadata = document_data.get('metadata', {})
+            
+            if not content_chunks:
+                logger.error(f"❌ No content chunks found in {preserved_document}")
+                return []
+            
+            # 🎯 PHASE 4: SYNCHRONIZE CONTENT FORMAT với context expansion
+            # Sử dụng EXACT format giống như _load_full_document_and_metadata
+            complete_parts = []
+            
+            # 🧹 PHASE 4: Clean metadata formatting - IDENTICAL với context expansion
+            if metadata:
+                complete_parts.append("Thông tin thủ tục:")
+                for key, value in metadata.items():
+                    if value:  # Chỉ loại bỏ empty values
+                        clean_key = key.replace('_', ' ').title()
+                        complete_parts.append(f"{clean_key}: {value}")
+                complete_parts.append("")  # Empty line separator
+            
+            # 🧹 PHASE 4: Clean content formatting - IDENTICAL với context expansion
+            if content_chunks:
+                complete_parts.append("Nội dung chi tiết:")
+                for chunk in content_chunks:
+                    if chunk.get('content'):
+                        complete_parts.append(chunk['content'])
+                    if chunk.get('subcontent'):
+                        for sub in chunk['subcontent']:
+                            if sub.get('content'):
+                                complete_parts.append(sub['content'])
+                complete_parts.append("")
+            
+            # Join tất cả content với format IDENTICAL
+            full_content = "\n".join(complete_parts)
+            
+            # 🚀 PHASE 4: Tạo nucleus chunk với FULL CONTENT format IDENTICAL
+            nucleus_chunk = {
+                'content': full_content,  # 🚀 FULL CONTENT với format IDENTICAL!
+                'collection': collection,
+                'document_title': preserved_document,
+                'source_file': preserved_document,
+                'rerank_score': 1.0,
+                'similarity': 1.0,
+                'source': {'file_path': full_source_path},
+                'section_title': 'Full Document',
+                'chunk_id': 'full_document',
+                'metadata': metadata  # Thêm metadata để context.py có thể sử dụng
+            }
+            
+            logger.info(f"✅ Created nucleus chunk with FULL CONTENT: {len(full_content)} chars")
+            logger.info(f"   Content preview: {full_content[:200]}...")
+            logger.info(f"🎯 PHASE 4: Content format SYNCHRONIZED với context expansion")
+            
+            return [nucleus_chunk]  # Return list với 1 nucleus chunk duy nhất
+            
+        except Exception as e:
+            logger.error(f"❌ Error creating real nucleus chunks: {e}")
+            return []
+    
+
             
     def create_session(self, metadata: Optional[Dict[str, Any]] = None) -> str:
         """Tạo session chat mới"""
@@ -356,20 +788,30 @@ class RAGService:
                     logger.info(f"🔄 Found preserved document context: {preserved_document['title']}")
                     forced_collection = preserved_document['collection']
                     forced_document_title = preserved_document['title']
+                    
+                # 🔧 NEW: Check for manual input context
+                manual_input_context = session.metadata.get('manual_input_context')
+                if manual_input_context and manual_input_context.get('bypass_router'):
+                    logger.info(f"🔄 Found manual input context: {manual_input_context['collection']}")
+                    forced_collection = manual_input_context['collection']
+                    # Clear manual input context after use
+                    session.metadata.pop('manual_input_context', None)
             
             # Step 1: Enhanced Smart Query Routing với MULTI-LEVEL Confidence Processing + Stateful Router
             if forced_collection:
                 # � FORCED ROUTING: Dành cho clarification hoặc debug
-                logger.info(f"⚡ Forced routing to collection: {forced_collection} (from clarification)")
+                logger.info(f"⚡ Forced routing to collection: {forced_collection} (from clarification/manual input)")
                 routing_result = {
                     "target_collection": forced_collection,
                     "confidence": 0.95,  # High confidence cho forced routing
+                    "confidence_level": "forced_high",
                     "inferred_filters": {}
                 }
                 # Get confidence level from routing result for further processing
                 confidence_level = routing_result.get('confidence_level', 'forced_high')
                 best_collections = [forced_collection]
                 inferred_filters = {}
+                was_overridden = True  # Forced routing có override
                 
                 # 🔥 NEW: Add document title filter if specified
                 if forced_document_title:
@@ -381,72 +823,238 @@ class RAGService:
                 routing_result = self.smart_router.route_query(query, session)
                 confidence_level = routing_result.get('confidence_level', 'low')
                 was_overridden = routing_result.get('was_overridden', False)
+                inferred_filters = routing_result.get('inferred_filters', {})
                 
                 logger.info(f"Router confidence: {confidence_level} (score: {routing_result['confidence']:.3f})")
                 if was_overridden:
                     logger.info(f"🔥 Session-based confidence override applied!")
                 
-                if confidence_level in ['high', 'override_high', 'high_followup']:
+                if confidence_level in ['high_confidence', 'high', 'override_high', 'high_followup']:
                     # HIGH CONFIDENCE (including overridden & follow-up) - Route trực tiếp
                     target_collection = routing_result['target_collection']
                     inferred_filters = routing_result.get('inferred_filters', {})
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
-                    logger.info(f"✅ HIGH CONFIDENCE routing to: {target_collection}")
+                    logger.info(f"✅ HIGH CONFIDENCE ({confidence_level}) routing to: {target_collection}")
                     
-                elif confidence_level in ['low-medium', 'override_medium', 'medium_followup']:
-                    # MEDIUM CONFIDENCE (including overridden & follow-up) - Route với caution
-                    target_collection = routing_result['target_collection']
-                    inferred_filters = routing_result.get('inferred_filters', {})
-                    best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
-                    logger.info(f"⚠️ MEDIUM CONFIDENCE routing to: {target_collection}")
+                elif confidence_level in ['medium_high_confidence', 'medium_high', 'medium-high', 'override_medium_high']:
+                    # MEDIUM-HIGH CONFIDENCE - Show questions within best document
+                    logger.info(f"🎯 MEDIUM-HIGH CONFIDENCE ({routing_result['confidence']:.3f}) - showing questions in document")
                     
+                    # 🔧 FIX: Set session context để follow-up questions có thể hoạt động 
+                    if session:
+                        target_collection = routing_result.get('target_collection')
+                        session.last_successful_collection = target_collection
+                        session.last_successful_filters = routing_result.get('inferred_filters', {})
+                        session.last_successful_timestamp = start_time
+                        logger.info(f"🔄 Set session context for follow-up: {target_collection}")
+                    
+                    return self._generate_smart_clarification(routing_result, query, session_id, start_time)
+                    
+                elif confidence_level in ['medium_confidence', 'low-medium', 'override_medium', 'medium_followup']:
+                    # 🔥 MEDIUM CONFIDENCE FIX - Trigger clarification instead of routing
+                    # Vì medium confidence có risk cao matching sai topic → cần hỏi user xác nhận
+                    logger.info(f"🤔 MEDIUM CONFIDENCE ({routing_result['confidence']:.3f}) - triggering clarification to avoid wrong routing")
+                    
+                    # 🔧 FIX: Set session context cho follow-up (medium confidence vẫn có potential collection)
+                    if session:
+                        target_collection = routing_result.get('target_collection')
+                        session.last_successful_collection = target_collection
+                        session.last_successful_filters = routing_result.get('inferred_filters', {})
+                        session.last_successful_timestamp = start_time
+                        logger.info(f"🔄 Set session context for follow-up (medium): {target_collection}")
+                    
+                    return self._generate_smart_clarification(routing_result, query, session_id, start_time)
+                    
+                elif confidence_level in ['low_confidence', 'insufficient_context']:
+                    # LOW CONFIDENCE - Hỏi lại user, không route
+                    logger.info(f"🤔 LOW CONFIDENCE ({confidence_level}) - hỏi lại user thay vì route")
+                    
+                    # 🔧 FIX: Set session context nếu có target collection (low confidence vẫn có thể có best guess)
+                    if session and routing_result.get('target_collection'):
+                        target_collection = routing_result.get('target_collection')
+                        session.last_successful_collection = target_collection
+                        session.last_successful_filters = routing_result.get('inferred_filters', {})
+                        session.last_successful_timestamp = start_time
+                        logger.info(f"🔄 Set session context for follow-up (low): {target_collection}")
+                    
+                    return self._generate_smart_clarification(routing_result, query, session_id, start_time)
+                
                 else:
-                    # TẤT CẢ CONFIDENCE < THRESHOLD - Hỏi lại user, không route
-                    logger.info(f"🤔 CONFIDENCE KHÔNG ĐỦ CAO ({confidence_level}) - hỏi lại user thay vì route")
+                    # UNKNOWN CONFIDENCE LEVEL - Log warning và fallback to clarification
+                    logger.warning(f"⚠️ UNKNOWN CONFIDENCE LEVEL: {confidence_level} - falling back to clarification")
                     return self._generate_smart_clarification(routing_result, query, session_id, start_time)
             
-            # Step 2: Focused Search với ĐỘNG BROAD_SEARCH_K dựa trên router confidence
-            # 🚀 PERFORMANCE OPTIMIZATION: Giảm số documents cần rerank
-            dynamic_k = settings.broad_search_k  # default 12
-            if confidence_level in ['high', 'high_followup']:
-                dynamic_k = max(8, settings.broad_search_k - 4)  # Router tự tin → ít docs hơn
-                logger.info(f"🎯 HIGH CONFIDENCE: Giảm broad_search_k xuống {dynamic_k}")
-            elif confidence_level in ['low-medium', 'override_medium', 'medium_followup']:
-                dynamic_k = min(15, settings.broad_search_k + 3)  # Router không chắc → nhiều docs hơn
-                logger.info(f"🔍 MEDIUM CONFIDENCE: Tăng broad_search_k lên {dynamic_k}")
-            else:
-                logger.info(f"📊 DEFAULT/FALLBACK: Sử dụng broad_search_k={dynamic_k}")
+            # Check for preserved document from session override
+            preserved_document = None
+            # 🚀 FIX: Check for both override_high and session override scenarios
+            if (confidence_level == 'override_high' and 
+                routing_result.get('inferred_filters') and 
+                'source_file' in routing_result['inferred_filters']):
+                preserved_document = routing_result['inferred_filters']['source_file']
+                logger.info(f"⚡ FULL CONTEXT PRESERVATION: Using document {preserved_document} directly from session")
+            elif (confidence_level == 'override_high' and 
+                  session and 
+                  session.metadata.get('current_document')):
+                # 🚀 FIX: Use session metadata if inferred_filters doesn't have source_file
+                preserved_document = session.metadata['current_document']
+                logger.info(f"⚡ SESSION METADATA PRESERVATION: Using document {preserved_document} from session metadata")
             
-            broad_search_results = []
-            for collection_name in best_collections[:2]:  # Limit to top 2 collections
-                try:
-                    # ✅ CRITICAL FIX: Pass smart filters to vector search với dynamic K
-                    # 🔍 DEBUG: Log filter trước khi tìm kiếm để debug vấn đề filter bị "đánh rơi"
-                    logger.info(f"🔍 Chuẩn bị tìm kiếm với filter: {inferred_filters}")
-                    
-                    # 🔥 ADAPTIVE THRESHOLD: Hạ threshold khi có filter vì filter đã đảm bảo relevance
-                    adaptive_threshold = settings.similarity_threshold
-                    if inferred_filters:
-                        adaptive_threshold = max(0.2, settings.similarity_threshold * 0.5)  # Hạ threshold khi có filter
-                        logger.info(f"🎯 ADAPTIVE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (có filter)")
-                    else:
-                        logger.info(f"📊 STANDARD THRESHOLD: {adaptive_threshold} (không có filter)")
-                    
-                    results = self.vectordb_service.search_in_collection(
-                        collection_name=collection_name,
-                        query=query,
-                        top_k=dynamic_k,
-                        similarity_threshold=adaptive_threshold,
-                        where_filter=inferred_filters if inferred_filters else None
+            # If we have a preserved document, skip search and go directly to context expansion
+            if preserved_document:
+                # 🚀 FIX: Map document title to correct DOC_XXX folder
+                doc_folder = self._map_document_title_to_doc_folder(preserved_document, best_collections[0])
+                if not doc_folder:
+                    logger.error(f"❌ Could not map document title '{preserved_document}' to DOC folder")
+                    # Fallback to normal search
+                    preserved_document = None
+                else:
+                    # 🚀 FIX: Load real document content instead of placeholder
+                    nucleus_chunks = self._create_real_nucleus_chunks(
+                        preserved_document=preserved_document,
+                        collection=best_collections[0],
+                        doc_folder=doc_folder,
+                        query=query
                     )
                     
-                    for result in results:
-                        result["collection"] = collection_name
+                    if not nucleus_chunks:
+                        logger.error(f"❌ Could not create real nucleus chunks for {preserved_document}")
+                        preserved_document = None
+                    else:
+                        logger.info(f"🔧 CREATED REAL NUCLEUS CHUNKS: {len(nucleus_chunks)} chunks with real content")
+                
+                # Skip to context expansion
+                logger.info(f"🔒 SESSION CONTINUITY: Skipping vector search and reranking for preserved document")
+                expanded_context = self.context_expansion_service.expand_context_with_nucleus(
+                    nucleus_chunks=nucleus_chunks
+                )
+                
+                # Skip ahead to context building
+                context_text = self._build_context_from_expanded(expanded_context, nucleus_chunks)
+                
+                # ✅ ENHANCED: Smart context building với intent detection
+                detected_intent = self._detect_specific_intent(query)
+                if detected_intent and expanded_context.get('structured_metadata'):
+                    context_text = self._build_smart_context(
+                        intent=detected_intent,
+                        metadata=expanded_context['structured_metadata'],
+                        full_text=context_text
+                    )
+                
+                logger.info(f"Context expanded: {expanded_context['total_length']} chars from {len(expanded_context.get('source_documents', []))} documents")
+                if detected_intent:
+                    logger.info(f"🎯 Detected intent: {detected_intent} - Applied smart context building")
+                
+                # Jump to LLM generation
+                logger.info("🔄 PHASE 2: LLM Generation (GPU) - Loading LLM for final answer...")
+                
+                # Skip all the search and reranking logic, move straight to answer generation
+                answer = self._generate_answer_with_context(
+                    query=query,
+                    context=context_text,
+                    session=session
+                )
+                
+                # Update session history
+                session.query_history.append({
+                    "query": query,
+                    "answer": answer,
+                    "timestamp": time.time(),
+                    "nucleus_chunks_count": len(nucleus_chunks),
+                    "context_length": len(context_text),
+                    "from_preserved_document": True
+                })
+                
+                # Keep only last 5 queries in session
+                if len(session.query_history) > 5:
+                    session.query_history = session.query_history[-5:]
+                
+                # Update session state for next query
+                session.update_successful_routing(
+                    collection=target_collection, 
+                    confidence=routing_result.get('confidence', 0.85),
+                    filters={"source_file": preserved_document},
+                    rag_content={
+                        "context_text": context_text,
+                        "nucleus_chunks": nucleus_chunks,
+                        "expanded_context": expanded_context,
+                        "collections": [target_collection]
+                    }
+                )
+                logger.info(f"🔥 Reinforced session state with preserved document: {preserved_document}")
+                
+                processing_time = time.time() - start_time
+                
+                # Check for forms
+                forms_info = self.check_document_forms([preserved_document])
+                
+                # Return final response with preserved document
+                return {
+                    "type": "answer",
+                    "answer": answer,
+                    "context_info": {
+                        "nucleus_chunks": 1,
+                        "context_length": len(context_text),
+                        "source_collections": [target_collection],
+                        "source_documents": [preserved_document],
+                        "from_preserved_document": True
+                    },
+                    "session_id": session_id,
+                    "processing_time": processing_time,
+                    "routing_info": {
+                        "best_collections": [target_collection],
+                        "target_collection": target_collection,
+                        "confidence": float(routing_result.get('confidence', 0.85)),
+                        "confidence_level": "preserved_document",
+                        "preserved_document": preserved_document
+                    }
+                }
+                
+            else:
+                # Step 2: Focused Search với INTELLIGENT ADAPTIVE K SYSTEM  
+                # 🚀 FIX: Use intelligent adaptive K calculation
+                session_history = session.query_history if session else None
+                dynamic_k = self._calculate_adaptive_k(
+                    confidence_level=confidence_level,
+                    confidence_score=routing_result.get('confidence', 0.0),
+                    query=query,
+                    session_history=session_history
+                )
+                
+                broad_search_results = []
+                for collection_name in best_collections[:2]:  # Limit to top 2 collections
+                    try:
+                        # ✅ CRITICAL FIX: Pass smart filters to vector search với dynamic K
+                        # 🔍 DEBUG: Log filter trước khi tìm kiếm để debug vấn đề filter bị "đánh rơi"
+                        logger.info(f"🔍 Chuẩn bị tìm kiếm với filter: {inferred_filters}")
                         
-                    broad_search_results.extend(results)
-                    
-                except Exception as e:
-                    logger.warning(f"Error searching in collection {collection_name}: {e}")
+                        # 🔥 ADAPTIVE THRESHOLD: Hạ threshold khi có filter hoặc session override
+                        adaptive_threshold = settings.similarity_threshold
+                        if inferred_filters:
+                            adaptive_threshold = max(0.2, settings.similarity_threshold * 0.5)  # Hạ threshold khi có filter
+                            logger.info(f"🎯 ADAPTIVE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (có filter)")
+                        elif was_overridden:
+                            # 🔥 SESSION OVERRIDE: Hạ threshold để đảm bảo tìm được context trong session collection
+                            adaptive_threshold = max(0.15, settings.similarity_threshold * 0.4)  # Hạ threshold mạnh cho session override
+                            logger.info(f"🎯 SESSION OVERRIDE THRESHOLD: {settings.similarity_threshold} -> {adaptive_threshold} (session override)")
+                        else:
+                            logger.info(f"📊 STANDARD THRESHOLD: {adaptive_threshold} (không có filter)")
+                        
+                        results = self.vectordb_service.search_in_collection(
+                            collection_name=collection_name,
+                            query=query,
+                            top_k=dynamic_k,
+                            similarity_threshold=adaptive_threshold,
+                            where_filter=inferred_filters if inferred_filters else None
+                        )
+                        
+                        # Process results and add to broad search results
+                        for result in results:
+                            result["collection"] = collection_name
+                        
+                        broad_search_results.extend(results)
+                        
+                    except Exception as e:
+                        logger.warning(f"Error searching in collection {collection_name}: {e}")
             
             logger.info(f"📊 Dynamic search: {len(broad_search_results)} docs (k={dynamic_k}, confidence={confidence_level})")
             
@@ -480,7 +1088,10 @@ class RAGService:
                         documents=docs_to_rerank,
                         top_k=5,  # Analyze top 5 candidates
                         consensus_threshold=0.6,  # 3/5 = 60%
-                        min_rerank_score=-0.5  # Adjusted for legal documents
+                        min_rerank_score=-0.5,  # Adjusted for legal documents
+                        router_confidence=routing_result.get('confidence', 0.0),
+                        router_confidence_level=routing_result.get('confidence_level', 'low'),
+                        router_selected_document=routing_result.get('best_match', {}).get('document')
                     )
                     
                     if consensus_document:
@@ -540,6 +1151,119 @@ class RAGService:
             logger.info("🎯 INTELLIGENT CONTEXT EXPANSION - Ưu tiên nucleus chunk từ reranker")
             self.metrics["context_expansions"] += 1
             
+            # 🚀 PHASE 6: COMPLETE CONTENT MATCHING - FINAL FIX
+            # Fix nucleus chunks để có content đầy đủ thay vì chỉ 2000 chars
+            enhanced_nucleus_chunks = []
+            for chunk in nucleus_chunks:
+                try:
+                    # 🎯 PHASE 6: DEBUG LOGGING - Xem chunk structure
+                    logger.debug(f"🔍 Processing chunk: {chunk.keys()}")
+                    logger.debug(f"🔍 Chunk source: {chunk.get('source', {})}")
+                    logger.debug(f"🔍 Chunk collection: {chunk.get('collection', '')}")
+                    
+                    # 🎯 PHASE 6: SMART EXTRACTION với ROUTER INFORMATION
+                    source_info = chunk.get('source', {})
+                    collection = chunk.get('collection', '')
+                    
+                    # 🚀 PHASE 6: Try multiple extraction strategies
+                    document_title = None
+                    doc_folder = None
+                    
+                    # Strategy 1: Use router information (most reliable)
+                    if routing_result and routing_result.get('best_match', {}).get('document'):
+                        router_document = routing_result['best_match']['document']
+                        if router_document:
+                            document_title = router_document
+                            logger.info(f"🎯 Strategy 1 (Router): Found document: {document_title}")
+                    
+                    # Strategy 2: Try document_title from source
+                    elif source_info.get('document_title'):
+                        document_title = source_info.get('document_title')
+                        logger.debug(f"🎯 Strategy 2: Found document_title: {document_title}")
+                    
+                    # Strategy 3: Try source_file from source
+                    elif source_info.get('source_file'):
+                        document_title = source_info.get('source_file')
+                        logger.debug(f"🎯 Strategy 3: Found source_file: {document_title}")
+                    
+                    # Strategy 4: Try to extract from file_path
+                    elif source_info.get('file_path'):
+                        file_path = source_info.get('file_path')
+                        logger.debug(f"🎯 Strategy 4: Found file_path: {file_path}")
+                        # Extract document name from path: .../DOC_001/01. Đăng ký khai sinh.json
+                        if 'DOC_' in file_path and '.json' in file_path:
+                            parts = file_path.split('\\')  # Windows path
+                            if len(parts) >= 2:
+                                doc_folder = parts[-2]  # DOC_001
+                                # Try to find the actual document file
+                                doc_dir = f"data/storage/collections/{collection}/documents/{doc_folder}"
+                                if os.path.exists(doc_dir):
+                                    # Look for JSON files in the directory
+                                    for file in os.listdir(doc_dir):
+                                        if file.endswith('.json'):
+                                            document_title = file.replace('.json', '')
+                                            logger.debug(f"🎯 Strategy 4: Found document from path: {document_title}")
+                                            break
+                    
+                    # Strategy 5: Use router collection + first document (fallback)
+                    if not document_title and collection:
+                        # Use the first document in collection as fallback
+                        collection_path = f"data/storage/collections/{collection}/documents"
+                        if os.path.exists(collection_path):
+                            doc_folders = [d for d in os.listdir(collection_path) if d.startswith('DOC_')]
+                            if doc_folders:
+                                doc_folder = doc_folders[0]  # Use first DOC folder
+                                doc_dir = f"{collection_path}/{doc_folder}"
+                                if os.path.exists(doc_dir):
+                                    for file in os.listdir(doc_dir):
+                                        if file.endswith('.json'):
+                                            document_title = file.replace('.json', '')
+                                            logger.info(f"🎯 Strategy 5 (Fallback): Found document from collection: {document_title}")
+                                            break
+                    
+                    # 🚀 PHASE 6: Create enhanced nucleus chunk nếu tìm được document
+                    if document_title and collection:
+                        # Map document title to DOC folder nếu chưa có
+                        if not doc_folder:
+                            doc_folder = self._map_document_title_to_doc_folder(document_title, collection)
+                        
+                        if doc_folder:
+                            logger.info(f"🎯 Attempting to enhance: {document_title} in {doc_folder}")
+                            # Create enhanced nucleus chunk với full content
+                            enhanced_chunks = self._create_real_nucleus_chunks(
+                                preserved_document=document_title,
+                                collection=collection,
+                                doc_folder=doc_folder,
+                                query=query
+                            )
+                            if enhanced_chunks:
+                                enhanced_nucleus_chunks.extend(enhanced_chunks)
+                                logger.info(f"✅ Enhanced nucleus chunk for {document_title} with full content")
+                            else:
+                                # Fallback to original chunk
+                                enhanced_nucleus_chunks.append(chunk)
+                                logger.warning(f"⚠️ Could not enhance {document_title}, using original chunk")
+                        else:
+                            # Fallback to original chunk
+                            enhanced_nucleus_chunks.append(chunk)
+                            logger.warning(f"⚠️ Could not map {document_title} to DOC folder")
+                    else:
+                        # Fallback to original chunk
+                        enhanced_nucleus_chunks.append(chunk)
+                        logger.warning(f"⚠️ Could not extract document info from chunk: {chunk.keys()}")
+                        
+                except Exception as e:
+                    logger.error(f"❌ Error enhancing nucleus chunk: {e}")
+                    # Fallback to original chunk
+                    enhanced_nucleus_chunks.append(chunk)
+            
+            # Use enhanced nucleus chunks if available, otherwise fallback to original
+            if enhanced_nucleus_chunks:
+                nucleus_chunks = enhanced_nucleus_chunks
+                logger.info(f"🚀 Using enhanced nucleus chunks: {len(nucleus_chunks)} chunks with full content")
+            else:
+                logger.warning("⚠️ No enhanced nucleus chunks available, using original")
+            
             # 🧠 SMART OPTIMIZATION: Ưu tiên nucleus chunk + context liên quan thay vì cắt ngẫu nhiên
             # Logic: Luôn giữ nguyên nucleus chunk + thêm context xung quanh nếu còn chỗ
             # Step 5: Context Expansion - THIẾT KẾ GỐC: FULL DOCUMENT
@@ -549,7 +1273,8 @@ class RAGService:
                 nucleus_chunks=nucleus_chunks
             )
             
-            context_text = self._build_context_from_expanded(expanded_context)
+            # 🎯 PHASE 1: Apply highlighting cho nucleus chunks
+            context_text = self._build_context_from_expanded(expanded_context, nucleus_chunks)
             
             # ✅ ENHANCED: Smart context building với intent detection
             detected_intent = self._detect_specific_intent(query)
@@ -597,8 +1322,10 @@ class RAGService:
             
             # 🔥 Update session state for Stateful Router
             # Chỉ update state khi routing thành công với confidence đủ tốt (0.78+)
+            logger.info(f"🔍 Session update check: routing_result={routing_result is not None}, confidence={routing_result.get('confidence', 0) if routing_result else 'None'}")
             if routing_result and routing_result.get('confidence', 0) >= 0.78:
                 target_collection = routing_result.get('target_collection')
+                logger.info(f"🔍 Target collection for session update: {target_collection}")
                 if target_collection:
                     rag_content = {
                         "context_text": context_text,
@@ -624,7 +1351,7 @@ class RAGService:
                     session.update_successful_routing(
                         collection=target_collection, 
                         confidence=routing_result.get('confidence', 0),
-                        filters=enhanced_filters,  # � Enhanced filters with document info
+                        filters=enhanced_filters,  # 🔧 Enhanced filters with document info
                         rag_content=rag_content
                     )
                     logger.info(f"🔥 Updated session state: {target_collection} (confidence: {routing_result.get('confidence', 0):.3f})")
@@ -635,19 +1362,23 @@ class RAGService:
                 / self.metrics["total_queries"]
             )
             
-            return {
+            # 📎 CHECK FOR FORMS: If documents have forms, include them in response
+            source_documents = expanded_context.get("source_documents", []) if expanded_context else []
+            forms_info = self.check_document_forms(source_documents)
+            
+            response = {
                 "type": "answer",
                 "answer": answer,
                 "context_info": {
                     "nucleus_chunks": len(nucleus_chunks),
                     "context_length": len(context_text),
                     "source_collections": list(set(chunk.get("collection", "") for chunk in nucleus_chunks)),
-                    "source_documents": list(expanded_context.get("source_documents", [])) if expanded_context else []
+                    "source_documents": source_documents
                 },
                 "context_details": {
                     "total_length": expanded_context.get("total_length", len(context_text)) if expanded_context else len(context_text),
                     "expansion_strategy": expanded_context.get("expansion_strategy", "unknown") if expanded_context else "no_expansion",
-                    "source_documents": expanded_context.get("source_documents", []) if expanded_context else [],
+                    "source_documents": source_documents,
                     "nucleus_chunks_count": len(nucleus_chunks)
                 },
                 "session_id": session_id,
@@ -663,6 +1394,54 @@ class RAGService:
                     "status": routing_result.get('status', 'routed')
                 }
             }
+            
+            # � FORM PROCESSING: Use consolidated SimpleFormDetectionService only
+            try:
+                # Use SimpleFormDetectionService for all form processing
+                response = self.form_detection_service.enhance_rag_response_with_forms(response)
+                
+                # Update answer with form references if forms found
+                form_attachments = response.get("form_attachments", [])
+                if form_attachments:
+                    # Check if answer doesn't already mention forms
+                    if "form" not in response["answer"].lower() and "mẫu" not in response["answer"].lower():
+                        # Add form reference to answer
+                        form_text = "\n\n📋 **Biểu mẫu/tờ khai liên quan:**\n"
+                        for form in form_attachments:
+                            form_text += f"- {form['document_title']}: Xem biểu mẫu đính kèm\n"
+                        response["answer"] += form_text
+                    
+                    logger.info(f"📎 Enhanced response with {len(form_attachments)} form attachments")
+                    
+            except Exception as e:
+                logger.error(f"Error in form detection: {e}")
+                # Continue without forms if error occurs
+            
+            # 💰 ENHANCED FEE INFORMATION: Integrate with FeeService
+            try:
+                # Get document metadata for fee information
+                doc_metadata = {}
+                if response.get("source_documents"):
+                    # Try to get metadata from the first source document
+                    first_doc = response["source_documents"][0]
+                    if isinstance(first_doc, dict) and "metadata" in first_doc:
+                        doc_metadata = first_doc["metadata"]
+                    elif isinstance(first_doc, str):
+                        # If it's a document path, we might need to load metadata
+                        # For now, skip if we can't get metadata easily
+                        pass
+                
+                if doc_metadata:
+                    # Use FeeService to enhance response with fee information
+                    response = self.fee_service.enhance_rag_response_with_fee_info(response, doc_metadata)
+                    
+                    logger.info("💰 Enhanced response with fee information")
+                    
+            except Exception as e:
+                logger.error(f"Error in fee service: {e}")
+                # Continue without fee info if error occurs
+            
+            return response
             
         except Exception as e:
             logger.error(f"Error in enhanced query: {e}")
@@ -698,32 +1477,191 @@ class RAGService:
         action = selected_option.get('action')
         collection = selected_option.get('collection')
         
-        if action == 'proceed_with_collection' and collection:
+        if action == 'show_document_questions' and collection:
+            # 🎯 MEDIUM-HIGH CONFIDENCE: Hiển thị câu hỏi trong document cụ thể để chọn
+            document = selected_option.get('document', '')
+            procedure = selected_option.get('procedure', '')
+            
+            logger.info(f"🎯 Medium-High Step: User confirmed '{procedure}' in document '{document}'. Showing specific questions.")
+            
+            try:
+                # Sử dụng method mới để lấy câu hỏi liên quan đến procedure trong document
+                if document:
+                    # Lấy câu hỏi từ document cụ thể
+                    document_filename = f"{document}"
+                    matching_questions = self.smart_router.get_questions_from_specific_document(collection, document_filename)
+                    logger.info(f"🚀 SMART LOADING: Retrieved {len(matching_questions)} questions directly from document {document_filename}")
+                else:
+                    # Fallback: Sử dụng procedure để lấy câu hỏi liên quan
+                    matching_questions = self.smart_router.get_procedure_questions_limited(
+                        collection_name=collection,
+                        procedure=procedure,
+                        limit=20
+                    )
+                    logger.info(f"🚀 SMART LOADING: Retrieved {len(matching_questions)} procedure-related questions for '{procedure}'")
+                
+                if not matching_questions:
+                    logger.warning(f"⚠️ No questions found for procedure '{procedure}' in document '{document}'")
+                    # Fallback
+                    collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                    matching_questions = collection_questions[:10]
+                    logger.info(f"🔄 Fallback: Loaded {len(matching_questions)} questions (limited from {len(collection_questions)})")
+                
+                # Create question suggestions (sorted by relevance)
+                suggestions = []
+                for i, q in enumerate(matching_questions[:8]):  # Top 8 questions
+                    question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
+                    suggestions.append({
+                        "id": str(i + 1),
+                        "title": question_text,
+                        "description": f"Câu hỏi về {procedure}",
+                        "action": "proceed_with_question",
+                        "collection": collection,
+                        "document": document,
+                        "procedure": procedure,
+                        "question_text": question_text,
+                        "source_file": q.get('source', '') if isinstance(q, dict) else '',
+                        "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                    })
+                
+                # Add manual input option
+                suggestions.append({
+                    "id": str(len(suggestions) + 1),
+                    "title": "Câu hỏi khác...",
+                    "description": f"Tôi muốn hỏi về vấn đề khác trong {procedure}",
+                    "action": "manual_input",
+                    "collection": collection,
+                    "document": document,
+                    "procedure": procedure
+                })
+                
+                clarification_response = {
+                    "message": f"Đây là các câu hỏi về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
+                    "options": suggestions,
+                    "show_manual_input": True,
+                    "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {procedure}...",
+                    "context": "document_questions",
+                    "metadata": {
+                        "collection": collection,
+                        "document": document,
+                        "procedure": procedure,
+                        "stage": "document_questions"
+                    }
+                }
+                
+                # Update session state
+                session.metadata["routing_state"] = {
+                    "collection": collection,
+                    "document": document,
+                    "procedure": procedure,
+                    "stage": "document_questions"
+                }
+                self.chat_sessions[session_id] = session
+                
+                return {
+                    "answer": clarification_response["message"],
+                    "clarification": clarification_response,
+                    "collection": collection,
+                    "document": document,
+                    "procedure": procedure,
+                    "type": "clarification_needed",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+                
+            except Exception as e:
+                logger.error(f"❌ Error in document question generation: {e}")
+                return {
+                    "answer": f"Có lỗi khi tải câu hỏi về '{procedure}'. Vui lòng thử lại.",
+                    "type": "error",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+        
+        elif action == 'show_categories':
+            # 🔄 User muốn chọn thủ tục khác, hiển thị category suggestions
+            logger.info(f"🔄 User wants different categories. Showing all available options.")
+            
+            try:
+                # Get available collections
+                collections = self.smart_router.get_collections()
+                
+                # Create category suggestions
+                suggestions = []
+                for i, collection_info in enumerate(collections, 1):
+                    collection_name = collection_info.get('name')
+                    display_name = collection_info.get('display_name', collection_name)
+                    description = collection_info.get('description', '')
+                    
+                    suggestions.append({
+                        "id": str(i),
+                        "title": display_name,
+                        "description": description,
+                        "action": "proceed_with_collection",
+                        "collection": collection_name
+                    })
+                
+                clarification_response = {
+                    "message": "Hãy chọn lĩnh vực thủ tục bạn quan tâm:",
+                    "options": suggestions,
+                    "show_manual_input": True,
+                    "manual_input_placeholder": "Hoặc mô tả cụ thể thủ tục bạn cần...",
+                    "context": "category_selection",
+                    "metadata": {
+                        "stage": "category_selection"
+                    }
+                }
+                
+                # Reset session state
+                session.metadata["routing_state"] = {
+                    "stage": "category_selection"
+                }
+                self.chat_sessions[session_id] = session
+                
+                return {
+                    "answer": clarification_response["message"],
+                    "clarification": clarification_response,
+                    "type": "clarification_needed",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+                
+            except Exception as e:
+                logger.error(f"❌ Error in category generation: {e}")
+                return {
+                    "answer": "Có lỗi khi tải danh sách thủ tục. Vui lòng thử lại.",
+                    "type": "error",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+        
+        elif action == 'proceed_with_collection' and collection:
             # 🎯 GIAI ĐOẠN 2: User chọn collection, hiển thị documents để chọn
             logger.info(f"🎯 Clarification Step 2: User selected collection '{collection}'. Showing documents.")
             
             try:
-                # Lấy danh sách documents trong collection này từ smart_router
-                collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                # 🚀 OPTIMIZATION: Lấy danh sách documents trực tiếp, không qua questions
+                collection_documents_list = self.smart_router.get_collection_documents_directly(collection)
                 
-                # Extract unique documents from questions
+                # Convert to dictionary format for compatibility
                 collection_documents = {}
-                for question in collection_questions:
-                    source = question.get('source', '')
-                    if source:
-                        # Clean up source path to get document name
-                        doc_name = source.replace('.json', '').split('/')[-1]
-                        if '. ' in doc_name:
-                            doc_name = doc_name.split('. ', 1)[1]  # Remove numbering
-                        
-                        if doc_name not in collection_documents:
-                            collection_documents[doc_name] = {
-                                "filename": source,
-                                "title": doc_name,
-                                "description": f"Tài liệu về {doc_name}",
-                                "question_count": 0
-                            }
-                        collection_documents[doc_name]["question_count"] += 1
+                for doc_info in collection_documents_list:
+                    filename = doc_info['filename']
+                    
+                    # Clean up document name for display
+                    display_name = doc_info['title'][:50] + "..." if len(doc_info['title']) > 50 else doc_info['title']
+                    if '. ' in filename:
+                        clean_name = filename.split('. ', 1)[1] if '. ' in filename else filename
+                        display_name = clean_name
+                    
+                    collection_documents[display_name] = {
+                        "filename": f"{collection}/documents/{filename}/questions.json",
+                        "title": display_name,
+                        "description": doc_info['description'],
+                        "question_count": doc_info['question_count']
+                    }
+                
+                logger.info(f"🚀 OPTIMIZATION: Retrieved {len(collection_documents)} documents directly (no questions loaded)")
                 
                 if not collection_documents:
                     logger.warning(f"⚠️ No documents found in collection '{collection}'")
@@ -792,6 +1730,98 @@ class RAGService:
                     "processing_time": time.time() - start_time
                 }
         
+        if action == 'show_document_questions' and collection:
+            # 🎯 MEDIUM-HIGH CONFIDENCE: Show questions for specific procedure directly
+            procedure = selected_option.get('procedure')
+            document_title = selected_option.get('document_title') or procedure
+            
+            logger.info(f"🎯 Medium-High Confidence: Showing questions for procedure '{procedure}' in collection '{collection}'")
+            
+            try:
+                # 🚀 OPTIMIZATION: Sử dụng procedure-limited loading thay vì load toàn bộ collection
+                matching_questions = self.smart_router.get_procedure_questions_limited(
+                    collection, procedure, limit=20
+                )
+                
+                # If no specific matches, fallback to limited collection loading
+                if not matching_questions:
+                    logger.info(f"⚠️ No procedure-specific questions found for '{procedure}', using fallback")
+                    # Fallback: Lấy 10 questions đầu tiên trong collection thay vì toàn bộ
+                    all_questions = self.smart_router.get_example_questions_for_collection(collection)
+                    matching_questions = all_questions[:10]  # Chỉ lấy 10 thay vì toàn bộ
+                
+                logger.info(f"🚀 OPTIMIZATION: Retrieved {len(matching_questions)} procedure-related questions (limited loading)")
+                
+                # Create question suggestions (from optimized loading)
+                suggestions = []
+                for i, q in enumerate(matching_questions[:5]):
+                    question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
+                    suggestions.append({
+                        "id": str(i + 1),
+                        "title": question_text,
+                        "description": f"Câu hỏi về {procedure}",
+                        "action": "proceed_with_question",
+                        "collection": collection,
+                        "document_title": document_title,
+                        "question_text": question_text,
+                        "source_file": q.get('source', '') if isinstance(q, dict) else '',
+                        "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                    })
+                
+                # Add manual input option
+                suggestions.append({
+                    "id": str(len(suggestions) + 1),
+                    "title": "Câu hỏi khác...",
+                    "description": f"Tôi muốn hỏi về vấn đề khác trong {procedure}",
+                    "action": "manual_input",
+                    "collection": collection,
+                    "document_title": document_title
+                })
+                
+                clarification_response = {
+                    "message": f"Đây là các câu hỏi thường gặp về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
+                    "options": suggestions,
+                    "show_manual_input": True,
+                    "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {procedure}...",
+                    "context": "medium_high_questions",
+                    "metadata": {
+                        "collection": collection,
+                        "procedure": procedure,
+                        "document_title": document_title,
+                        "stage": "medium_high_questions"
+                    }
+                }
+                
+                # Update session state
+                session.metadata["routing_state"] = {
+                    "collection": collection,
+                    "procedure": procedure,
+                    "document_title": document_title,
+                    "stage": "medium_high_questions"
+                }
+                self.chat_sessions[session_id] = session
+                
+                return {
+                    "answer": clarification_response["message"],
+                    "clarification": clarification_response,
+                    "collection": collection,
+                    "document_title": document_title,
+                    "type": "clarification_needed",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+                
+            except Exception as e:
+                logger.error(f"❌ Error in medium-high question generation: {e}")
+                import traceback
+                traceback.print_exc()
+                return {
+                    "answer": f"Có lỗi khi tải câu hỏi về '{procedure}'. Vui lòng thử lại.",
+                    "type": "error",
+                    "session_id": session_id,
+                    "processing_time": time.time() - start_time
+                }
+        
         if action == 'proceed_with_document' and collection:
             # 🎯 GIAI ĐOẠN 2.5: User chọn document, generate question suggestions trong document đó
             document_filename = selected_option.get('document_filename')
@@ -800,19 +1830,26 @@ class RAGService:
             logger.info(f"🎯 Clarification Step 2.5: User selected document '{document_title}' in collection '{collection}'. Generating question suggestions.")
             
             try:
-                # Lấy tất cả questions trong collection và filter theo document
-                collection_questions = self.smart_router.get_example_questions_for_collection(collection)
-                
-                # Filter questions by document source
-                document_questions = []
-                for question in collection_questions:
-                    if question.get('source') and document_filename in question.get('source', ''):
-                        document_questions.append(question)
+                # 🚀 OPTIMIZATION: Lấy questions trực tiếp từ document cụ thể thay vì load toàn bộ collection
+                if document_filename:
+                    # Sử dụng method mới để lấy chỉ questions của document này
+                    document_questions = self.smart_router.get_questions_from_specific_document(collection, document_filename)
+                    logger.info(f"🚀 SMART LOADING: Retrieved {len(document_questions)} questions directly from document {document_filename}")
+                else:
+                    # Fallback: Document filename không rõ, phải load collection
+                    logger.warning(f"⚠️ Document filename not specified, falling back to collection loading")
+                    logger.info(f"🔄 Fallback: Loading limited questions from collection {collection}")
+                    collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                    document_questions = collection_questions[:10]  # Limit to 10 instead of all
+                    logger.info(f"🔄 Fallback: Loaded {len(document_questions)} questions (limited from {len(collection_questions)})")
                 
                 if not document_questions:
                     logger.warning(f"⚠️ No questions found for document {document_title}")
-                    # Fallback: Use all collection questions
-                    document_questions = collection_questions[:5]
+                    # Fallback: Lấy từ collection nhưng giới hạn số lượng
+                    logger.info(f"🔄 Fallback: Loading limited questions from collection {collection}")
+                    collection_questions = self.smart_router.get_example_questions_for_collection(collection)
+                    document_questions = collection_questions[:5]  # Chỉ lấy 5 questions thay vì toàn bộ
+                    logger.info(f"🔄 Fallback: Loaded {len(document_questions)} questions (limited from {len(collection_questions)})")
                 
                 # Create suggestions from document questions
                 suggestions = []
@@ -894,15 +1931,45 @@ class RAGService:
             
             if question_text and collection:
                 logger.info(f"🚀 Clarification Step 3→4: User selected question '{question_text}' in collection '{collection}'.")
-                if document_title:
-                    logger.info(f"🎯 Target document: '{document_title}' (source: {source_file})")
+                
+                # 🔧 FIX: Get the correct document title from source_file instead of using clarification document_title
+                actual_document_title = document_title
+                if source_file:
+                    # Extract DOC_XXX from source_file like "quy_trinh_pbgdpl_htpldn/documents/DOC_001/questions.json"
+                    doc_id = None
+                    if "/DOC_" in source_file:
+                        parts = source_file.split("/")
+                        for part in parts:
+                            if part.startswith("DOC_"):
+                                doc_id = part
+                                break
+                    
+                    if doc_id:
+                        # Get the actual document title from the content JSON file
+                        try:
+                            content_files = list(Path(f"data/storage/collections/{collection}/documents/{doc_id}").glob("*.json"))
+                            content_files = [f for f in content_files if f.name != "questions.json"]
+                            
+                            if content_files:
+                                with open(content_files[0], 'r', encoding='utf-8') as f:
+                                    content_data = json.load(f)
+                                
+                                if 'metadata' in content_data and 'title' in content_data['metadata']:
+                                    actual_document_title = content_data['metadata']['title']
+                                    logger.info(f"🔧 CORRECTED: Using actual document title from {doc_id}: '{actual_document_title}'")
+                                else:
+                                    logger.warning(f"🔧 No metadata title found in {doc_id}, keeping original title")
+                        except Exception as e:
+                            logger.warning(f"🔧 Error getting actual document title: {e}")
+                
+                logger.info(f"🎯 Target document: '{actual_document_title}' (source: {source_file})")
                 
                 # Chạy RAG với câu hỏi ĐÃ ĐƯỢC LÀM RÕ và collection ĐÃ CHỈ ĐỊNH
                 return self.process_query(
                     query=question_text,  # 🔥 Dùng câu hỏi cụ thể, không phải original query mơ hồ
                     session_id=session_id,
                     forced_collection=collection,  # 🔥 Force routing to selected collection
-                    forced_document_title=document_title  # 🔥 NEW: Force exact document filtering
+                    forced_document_title=actual_document_title  # 🔥 Use corrected document title
                 )
             else:
                 return {
@@ -913,14 +1980,54 @@ class RAGService:
                 }
             
         elif action == 'manual_input':
+            # 🎯 MANUAL INPUT: Sử dụng centralized override system
+            manual_query = selected_option.get('manual_query', original_query)
+            collection = selected_option.get('collection')
+            document = selected_option.get('document')
+            clarification_context = selected_option.get('clarification_context', {})
+            
+            logger.info(f"🎯 Manual Input: '{manual_query}' in collection '{collection}'" + 
+                       (f", document '{document}'" if document else ""))
+            
+            if collection:
+                # Create override context for manual input
+                override_context = self._handle_manual_input_override(
+                    query=manual_query,
+                    collection=collection,
+                    document=document,
+                    clarification_context=clarification_context
+                )
+                
+                logger.info(f"🎯 Manual Input Override: {override_context.override_type.value}")
+                
+                # Process query with override
+                return self.process_query(
+                    query=manual_query,
+                    session_id=session_id,
+                    forced_collection=collection,
+                    forced_document_title=document
+                )
+            else:
+                # No collection specified, fall back to normal processing
+                return self.process_query(
+                    query=manual_query,
+                    session_id=session_id
+                )
+        
+        elif action == 'old_manual_input':
             # 🔧 IMPROVED: Manual input với context preservation
             logger.info(f"🔄 Manual input requested by user. Preserving valuable context.")
             
             # ✅ SMART CONTEXT PRESERVATION: Giữ context có giá trị thay vì clear all
             original_routing = session.metadata.get('original_routing_context', {})
-            selected_collection = selected_option.get('collection')  # Collection user đã chọn
+            
+            # 🔧 FIX: Get collection from original routing context, not from selected_option
+            selected_collection = (selected_option.get('collection') or 
+                                 original_routing.get('target_collection'))
             selected_document = selected_option.get('document_filename')  # Document user đã chọn (if any)
             document_title = selected_option.get('document_title')  # Document title (if any)
+            
+            logger.info(f"🔍 Context check: selected_collection={selected_collection}, original_target={original_routing.get('target_collection')}")
             
             # Determine context to preserve based on conversation stage
             if selected_document and selected_collection:
@@ -973,18 +2080,46 @@ class RAGService:
                     "preserved_collection": selected_collection
                 }
             else:
-                # Không có collection context → Clear session (fallback)
-                logger.info(f"🔄 No collection context to preserve, clearing session state.")
-                session.clear_routing_state()
-                session.metadata.clear()
-                
-                return {
-                    "type": "manual_input_request",
-                    "message": "Vui lòng nhập lại câu hỏi cụ thể hơn. Tôi sẽ tìm kiếm trong ngữ cảnh phù hợp.",
-                    "session_id": session_id,
-                    "processing_time": time.time() - start_time,
-                    "context_preserved": False
-                }
+                # 🔧 FIX: Check if we have ANY collection context to preserve
+                if selected_collection:
+                    logger.info(f"🔄 FOUND COLLECTION CONTEXT: Preserving collection context: {selected_collection}")
+                    session.last_successful_collection = selected_collection
+                    session.last_successful_confidence = original_routing.get('confidence', 0.7)
+                    session.last_successful_timestamp = time.time()
+                    session.last_successful_filters = original_routing.get('inferred_filters', {})
+                    
+                    # Clear only metadata về clarification process
+                    session.metadata.pop('original_routing_context', None)
+                    session.metadata.pop('original_query', None)
+                    
+                    # 🔥 NEW: Set manual input context for next query
+                    session.metadata['manual_input_context'] = {
+                        'collection': selected_collection,
+                        'bypass_router': True,
+                        'preserve_collection': True
+                    }
+                    
+                    return {
+                        "type": "manual_input_request",
+                        "message": f"Vui lòng nhập lại câu hỏi cụ thể hơn về '{selected_collection}'. Tôi sẽ tìm kiếm trong lĩnh vực này.",
+                        "session_id": session_id,
+                        "processing_time": time.time() - start_time,
+                        "context_preserved": True,
+                        "preserved_collection": selected_collection
+                    }
+                else:
+                    # Không có collection context → Clear session (fallback)
+                    logger.info(f"🔄 No collection context to preserve, clearing session state.")
+                    session.clear_routing_state()
+                    session.metadata.clear()
+                    
+                    return {
+                        "type": "manual_input_request",
+                        "message": "Vui lòng nhập lại câu hỏi cụ thể hơn. Tôi sẽ tìm kiếm trong ngữ cảnh phù hợp.",
+                        "session_id": session_id,
+                        "processing_time": time.time() - start_time,
+                        "context_preserved": False
+                    }
             
             # ✅ Update session access time  
             session.last_accessed = time.time()
@@ -998,8 +2133,11 @@ class RAGService:
                 "processing_time": 0.0
             }
         
-    def _build_context_from_expanded(self, expanded_context: Dict[str, Any]) -> str:
-        """Build context string từ expanded context"""
+    def _build_context_from_expanded(self, expanded_context: Dict[str, Any], nucleus_chunks: Optional[List[Dict]] = None) -> str:
+        """
+        🎯 PHASE 1: Build context với highlighting cho nucleus chunks
+        🧹 PHASE 3: Clean formatting - bỏ decorative symbols
+        """
         context_parts = []
         
         for doc_content in expanded_context.get("expanded_content", []):
@@ -1007,7 +2145,24 @@ class RAGService:
             text = doc_content.get("text", "")
             chunk_count = doc_content.get("chunk_count", 0)
             
-            context_parts.append(f"=== Tài liệu: {source} ({chunk_count} đoạn) ===\n{text}")
+            # Apply highlighting cho nucleus chunk nếu có
+            if nucleus_chunks and self.context_expansion_service:
+                nucleus_chunk = nucleus_chunks[0]  # Lấy nucleus chunk đầu tiên
+                
+                # 🔍 DEBUG: Log nucleus chunk structure
+                logger.info(f"🔍 Nucleus chunk keys: {list(nucleus_chunk.keys())}")
+                logger.info(f"🔍 Nucleus chunk content preview: {nucleus_chunk.get('content', 'NO_CONTENT')[:100]}...")
+                
+                highlighted_text = self.context_expansion_service._build_highlighted_context(
+                    full_content=text,
+                    nucleus_chunk=nucleus_chunk
+                )
+                # 🧹 PHASE 3: Clean format - bỏ dấu ===
+                context_parts.append(f"Tài liệu: {source} ({chunk_count} đoạn)\n{highlighted_text}")
+                logger.info("✅ Applied highlighting to nucleus chunk in context")
+            else:
+                # 🧹 PHASE 3: Clean format - bỏ dấu ===
+                context_parts.append(f"Tài liệu: {source} ({chunk_count} đoạn)\n{text}")
             
         return "\n\n".join(context_parts)
     
@@ -1040,41 +2195,50 @@ class RAGService:
     
     def _build_smart_context(self, intent: Optional[str], metadata: Dict[str, Any], full_text: str) -> str:
         """
-        Xây dựng context thông minh dựa trên intent và metadata
-        Ưu tiên thông tin cụ thể lên đầu thay vì đánh dấu phức tạp
+        🧹 PHASE 3: Enhanced smart context building - Cải thiện thông tin về phí
         """
         priority_info = ""
         
         if intent == 'query_fee':
             fee_text = metadata.get('fee_text', '')
-            fee_vnd = metadata.get('fee_vnd', '')
-            if fee_text or fee_vnd:
-                fee_info = f"{fee_text} {fee_vnd}".strip()
-                priority_info = f"🎯 LỆ PHÍ: {fee_info}\n\n"
+            fee_vnd = metadata.get('fee_vnd', 0)
+            
+            if fee_text:
+                # Xử lý thông tin phí chi tiết và rõ ràng
+                if fee_vnd == 0 and "Miễn" in fee_text:
+                    # Trường hợp miễn phí thủ tục chính nhưng có phí phụ
+                    priority_info = f"THÔNG TIN VỀ PHÍ:\n{fee_text}\n\n"
+                else:
+                    # Trường hợp có phí
+                    priority_info = f"LỆ PHÍ: {fee_text}\n\n"
+            elif fee_vnd == 0:
+                priority_info = f"LỆ PHÍ: Miễn phí\n\n"
+            else:
+                priority_info = f"LỆ PHÍ: {fee_vnd:,} VNĐ\n\n"
         
         elif intent == 'query_time':
             time_text = metadata.get('processing_time_text', '')
             if time_text:
-                priority_info = f"🎯 THỜI GIAN XỬ LÝ: {time_text}\n\n"
+                priority_info = f"THỜI GIAN XỬ LÝ: {time_text}\n\n"
 
         elif intent == 'query_form':
             has_form = metadata.get('has_form', False)
             form_text = "Có biểu mẫu/tờ khai cần điền" if has_form else "Không có biểu mẫu cụ thể"
-            priority_info = f"🎯 BIỂU MẪU: {form_text}\n\n"
+            priority_info = f"BIỂU MẪU: {form_text}\n\n"
             
         elif intent == 'query_agency':
             agency = metadata.get('executing_agency', '')
             if agency:
-                priority_info = f"🎯 CƠ QUAN THỰC HIỆN: {agency}\n\n"
+                priority_info = f"CƠ QUAN THỰC HIỆN: {agency}\n\n"
                 
         elif intent == 'query_requirements':
             requirements = metadata.get('requirements_conditions', '')
             if requirements:
-                priority_info = f"🎯 ĐIỀU KIỆN/YÊU CẦU: {requirements}\n\n"
+                priority_info = f"ĐIỀU KIỆN/YÊU CẦU: {requirements}\n\n"
 
-        # Kết hợp thông tin ưu tiên với full context
+        # Kết hợp thông tin ưu tiên với full context - CLEAN FORMAT
         if priority_info:
-            return f"{priority_info}===== THÔNG TIN CHI TIẾT =====\n{full_text}"
+            return f"{priority_info}THÔNG TIN CHI TIẾT:\n{full_text}"
         else:
             # Không có intent cụ thể - giữ nguyên context
             return full_text
@@ -1100,66 +2264,24 @@ class RAGService:
                 answer_preview = item['answer'][:100] + "..." if len(item['answer']) > 100 else item['answer']
                 chat_history_structured.append({"role": "assistant", "content": answer_preview})
             
-        # ALWAYS use FULL system prompt - No conservative strategy
-        system_prompt = """Bạn là trợ lý AI chuyên về pháp luật Việt Nam.
-
-🚨 QUY TẮC BẮT BUỘC - KHÔNG ĐƯỢC VI PHẠM:
-1. CHỈ trả lời dựa CHÍNH XÁC trên thông tin CÓ TRONG tài liệu
-2. Trả lời NGẮN GỌN (tối đa 9-10 câu)
-3. KHÔNG tự sáng tạo thông tin không có trong tài liệu
-4. Nếu thông tin không có trong tài liệu, hãy trả lời: "Tài liệu không đề cập đến vấn đề này."
-
-🎯 CÁC LOẠI THÔNG TIN QUAN TRỌNG CẦN CHÚ Ý:
-- PHÍ/LỆ PHÍ: Tìm "fee_text", "fee_vnd" - nêu rõ miễn phí hoặc số tiền cụ thể
-- THỜI GIAN: Tìm "processing_time_text" - nêu rõ thời gian xử lý
-- CƠ QUAN: Tìm "executing_agency" - nêu rõ nơi thực hiện thủ tục  
-- FORM MẪU: Tìm "has_form" - nêu có/không có form mẫu
-- ĐIỀU KIỆN: Tìm "requirements_conditions" - nêu điều kiện cần đáp ứng
-- MÃ THỦ TỤC: Tìm "code" - mã quy trình
-
-ĐỊNH DẠNG TRẢ LỜI:
-- Câu trả lời ngắn gọn, chính xác
-- Ưu tiên thông tin user hỏi nhưng có thể bổ sung thông tin liên quan
-- Dẫn chứng từ tài liệu nếu có"""
+        # 🎯 PHASE 2: Use Complete Prompt Generation (Single Layer)  
+        # Create complete prompt ready for LLM - no further formatting needed
+        complete_prompt = prompt_service.get_complete_rag_prompt(
+            query=query,
+            context=context,
+            confidence_level="medium",
+            chat_history=chat_history_structured
+        )
         
-        logger.info(f"📝 Using ChatML format with structured chat history: {len(chat_history_structured)} messages")
-        
-        # 🔥 TOKEN MANAGEMENT - Kiểm soát độ dài để tránh context overflow
-        from app.core.config import settings
-        
-        # Ước tính token đơn giản (1 token ≈ 3-4 ký tự tiếng Việt)
-        # Tính toán cho ChatML format với các token đặc biệt
-        chat_history_text = "\n".join([f"{item['role']}: {item['content']}" for item in chat_history_structured])
-        estimated_tokens = len(system_prompt + context + query + chat_history_text + "<|im_start|><|im_end|>") // 3
-        max_context_tokens = settings.n_ctx - 500  # Để lại 500 token cho response
-        
-        if estimated_tokens > max_context_tokens:
-            # Cắt bớt context để fit trong giới hạn
-            logger.warning(f"🚨 Context overflow detected: {estimated_tokens} tokens > {max_context_tokens} max")
-            
-            # Tính toán space còn lại cho context
-            fixed_parts_length = len(system_prompt + chat_history_text + query + "<|im_start|><|im_end|>")
-            remaining_space = (max_context_tokens * 3) - fixed_parts_length
-            
-            if remaining_space > 500:  # Đảm bảo có ít nhất 500 ký tự cho context
-                context = context[:remaining_space] + "\n\n[...THÔNG TIN ĐÃ ĐƯỢC RÚT GỌN ĐỂ TRÁNH QUÁ TẢI...]"
-                logger.info(f"✂️ Context truncated to {len(context)} chars")
-            else:
-                # Nếu không đủ chỗ, bỏ chat history
-                chat_history_structured = []
-                context = context[:max_context_tokens * 3 // 2] + "\n\n[...RÚT GỌN...]"
-                logger.warning("⚠️ Removed chat history due to extreme context overflow")
-        
-        logger.info(f"📝 Final context length: {len(context)} chars (~{len(context)//3} tokens)")
+        logger.info(f"� Generated complete prompt, length: {len(complete_prompt)} chars")
 
         try:
-            response_data = self.llm_service.generate_response(
-                user_query=query,
-                context=context,
+            # 🔥 SIMPLIFIED: Send complete prompt directly to LLM 
+            # NO additional formatting in language_model.py
+            response_data = self.llm_service.generate_response_direct(
+                complete_prompt=complete_prompt,
                 max_tokens=settings.max_tokens,
-                temperature=settings.temperature,
-                system_prompt=system_prompt,
-                chat_history=chat_history_structured  # 🔥 THAM SỐ MỚI cho ChatML
+                temperature=settings.temperature
             )
             
             # Extract response text from dict
@@ -1177,33 +2299,33 @@ class RAGService:
     def get_health_status(self) -> Dict[str, Any]:
         """Trạng thái health của service"""
         try:
-            collections = self.vectordb_service.list_collections()
-            total_documents = 0
-            
-            for collection_info in collections:
-                try:
-                    collection = self.vectordb_service.get_collection(collection_info["name"])
-                    count = collection.count()
-                    total_documents += count
-                except:
-                    continue
+            # Lấy thống kê từ router thay vì vectordb để accurate hơn
+            try:
+                router_collections = self.smart_router.get_collections()
+                total_collections = len(router_collections)
+                total_documents = sum(col.get('file_count', 0) for col in router_collections)
+            except:
+                # Fallback nếu router chưa ready
+                total_collections = 0
+                total_documents = 0
                     
             return {
                 "status": "healthy",
-                "total_collections": len(collections),
+                "total_collections": total_collections,
                 "total_documents": total_documents,
-                "llm_loaded": self.llm_service.model is not None,
-                "reranker_loaded": self.reranker_service.model is not None,
+                "llm_loaded": self.llm_service is not None and hasattr(self.llm_service, 'model') and self.llm_service.model is not None,
+                "reranker_loaded": self.reranker_service is not None and hasattr(self.reranker_service, 'model') and self.reranker_service.model is not None,
                 "embedding_device": "CPU (VRAM optimized)",
                 "llm_device": "GPU",
-                "reranker_device": "GPU",
+                "reranker_device": "GPU", 
                 "active_sessions": len(self.chat_sessions),
                 "metrics": self.metrics,
-                "router_stats": self.smart_router.get_collection_info(),
+                "router_ready": hasattr(self, 'smart_router') and self.smart_router is not None,
                 "context_expansion": {
                     "total_chunks_cached": len(self.context_expansion_service.document_metadata_cache),
                     **self.context_expansion_service.get_stats()
-                }
+                },
+                "ambiguous_patterns": 0  # Placeholder
             }
             
         except Exception as e:
@@ -1229,6 +2351,70 @@ class RAGService:
             logger.info(f"Cleaned up {len(old_sessions)} old sessions")
             
         return len(old_sessions)
+
+    def check_document_forms(self, source_documents: List[str]) -> List[Dict[str, Any]]:
+        """
+        Check if documents have forms and collect form information
+        
+        Args:
+            source_documents: List of document names/titles
+            
+        Returns:
+            List of form info dictionaries
+        """
+        forms_info = []
+        
+        if not path_config:
+            logger.warning("PathConfig not available, cannot check for forms")
+            return forms_info
+            
+        try:
+            for doc_name in source_documents:
+                # Search for document across collections
+                for collection in path_config.list_collections():
+                    documents = path_config.list_documents(collection)
+                    
+                    # Search by document title or file name
+                    matching_doc = None
+                    for doc in documents:
+                        doc_content = path_config.load_document_json(collection, doc["doc_id"])
+                        if doc_content:
+                            doc_title = doc_content.get('metadata', {}).get('title', '')
+                            if (doc_name in doc_title or doc_title in doc_name or 
+                                doc_name in doc.get('json_file', '') or doc_name in doc.get('doc_file', '')):
+                                matching_doc = doc
+                                break
+                    
+                    if matching_doc:
+                        doc_content = path_config.load_document_json(collection, matching_doc["doc_id"])
+                        
+                        if doc_content and doc_content.get('metadata', {}).get('has_form'):
+                            # Get forms for this document
+                            forms_path = path_config.get_document_forms_path(collection, matching_doc["doc_id"])
+                            if forms_path and forms_path.exists():
+                                forms_list = []
+                                for form_file in forms_path.iterdir():
+                                    if form_file.is_file() and form_file.suffix.lower() in ['.pdf', '.doc', '.docx', '.xls', '.xlsx']:
+                                        forms_list.append({
+                                            'filename': form_file.name,
+                                            'path': str(form_file),
+                                            'size': form_file.stat().st_size,
+                                            'type': form_file.suffix.lower()
+                                        })
+                                
+                                if forms_list:
+                                    forms_info.append({
+                                        'document': doc_name,
+                                        'collection': collection,
+                                        'title': doc_content.get('metadata', {}).get('title', doc_name),
+                                        'forms': forms_list
+                                    })
+                        break  # Found document in this collection
+                        
+        except Exception as e:
+            logger.error(f"Error checking document forms: {e}")
+            
+        return forms_info
 
     # API Compatibility Methods
     def query(self, question: Optional[str] = None, query: Optional[str] = None, **kwargs) -> Dict[str, Any]:
@@ -1295,7 +2481,7 @@ class RAGService:
                         'collections_processed': 0,
                         'collection_name': collection_name,
                         'error': f'Collection {collection_name} does not exist',
-                        'suggestion': 'Run python tools/2_build_vectordb_final.py to build collections'
+                        'suggestion': 'Run python tools/2_build_vectordb_modernized.py to build collections'
                     }
             else:
                 # Build all collections - return info about existing ones
@@ -1306,7 +2492,7 @@ class RAGService:
                     'message': f'Found {len(collections)} existing collections',
                     'collections': [col['name'] for col in collections],
                     'total_documents': sum(col.get('document_count', 0) for col in collections),
-                    'suggestion': 'Use python tools/2_build_vectordb_final.py to build new collections from documents'
+                    'suggestion': 'Use python tools/2_build_vectordb_modernized.py to build new collections from documents'
                 }
         except Exception as e:
             logger.error(f"Error in build_index: {e}")
@@ -1467,30 +2653,54 @@ class RAGService:
     
     @property  
     def document_processor(self):
-        """Compatibility property cho API routes"""
+        """Compatibility property cho API routes với hỗ trợ new structure"""
         import os
         
         class DocumentProcessorCompat:
-            def get_available_collections(self, documents_dir):
-                """Lấy danh sách collections có thể tạo từ documents"""
+            def get_available_collections(self, documents_dir=None):
+                """Lấy danh sách collections từ new structure hoặc old structure"""
                 try:
-                    if not os.path.exists(documents_dir):
-                        return []
-                    
-                    collections = []
-                    for item in os.listdir(documents_dir):
-                        item_path = os.path.join(documents_dir, item)
-                        if os.path.isdir(item_path):
-                            # Đếm số files PDF trong thư mục
-                            pdf_count = len([f for f in os.listdir(item_path) 
-                                           if f.lower().endswith('.pdf')])
-                            if pdf_count > 0:
+                    # Try new structure first
+                    if path_config.is_new_structure_available():
+                        collections = []
+                        for collection_name in path_config.list_collections():
+                            documents = path_config.list_documents(collection_name)
+                            doc_count = len([doc for doc in documents if doc["json_path"]])
+                            
+                            if doc_count > 0:
                                 collections.append({
-                                    'name': item,
-                                    'path': item_path,
-                                    'document_count': pdf_count
+                                    'name': collection_name,
+                                    'path': str(path_config.get_collection_dir(collection_name)),
+                                    'document_count': doc_count,
+                                    'structure': 'new'  # Indicate new structure
                                 })
-                    return collections
+                        
+                        logger.info(f"📁 Found {len(collections)} collections in new structure")
+                        return collections
+                    
+                    # Fallback to old structure
+                    if documents_dir and os.path.exists(documents_dir):
+                        collections = []
+                        for item in os.listdir(documents_dir):
+                            item_path = os.path.join(documents_dir, item)
+                            if os.path.isdir(item_path):
+                                # Count JSON files instead of PDF files for old structure
+                                json_count = len([f for f in os.listdir(item_path) 
+                                               if f.lower().endswith('.json')])
+                                if json_count > 0:
+                                    collections.append({
+                                        'name': item,
+                                        'path': item_path,
+                                        'document_count': json_count,
+                                        'structure': 'old'  # Indicate old structure
+                                    })
+                        
+                        logger.info(f"📁 Found {len(collections)} collections in old structure")
+                        return collections
+                    
+                    logger.warning("📁 No document structure found (neither new nor old)")
+                    return []
+                    
                 except Exception as e:
                     logger.error(f"Error getting available collections: {e}")
                     return []

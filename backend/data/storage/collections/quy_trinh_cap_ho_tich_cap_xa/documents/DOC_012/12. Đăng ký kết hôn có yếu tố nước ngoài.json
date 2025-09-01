@@ -1,0 +1,126 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_cap_ho_tich_cap_xa/DOC_012/12. Đăng ký kết hôn có yếu tố nước ngoài.doc",
+    "title": "Đăng ký kết hôn có yếu tố nước ngoài",
+    "code": "QT 12/CX-HT",
+    "issuing_authority": "UBND cấp xã",
+    "effective_date": "2025-08-29",
+    "executing_agency": "Ủy ban nhân dân cấp xã nơi cư trú của công dân Việt Nam",
+    "applicant_type": ["Cá nhân"],
+    "processing_time_text": "05 ngày làm việc, trường hợp phải xác minh thì thời hạn giải quyết không quá 10 ngày làm việc",
+    "fee_vnd": 1500000,
+    "fee_text": "Nộp trực tiếp: 1.500.000 đồng; nộp trực tuyến: 750.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Trích lục kết hôn: 8.000 đồng/bản",
+    "has_form": true,
+    "requirements_conditions": "Công dân Việt Nam kết hôn với người nước ngoài hoặc công dân Việt Nam định cư ở nước ngoài kết hôn với nhau. Người nước ngoài, công dân Việt Nam định cư ở nước ngoài phải có giấy tờ cho phép cư trú do cơ quan có thẩm quyền cấp. Việc kết hôn không thuộc các trường hợp cấm kết hôn theo quy định của Luật Hôn nhân và Gia đình.",
+    "legal_basis_references": [
+      "Luật Hôn nhân và Gia đình năm 2014",
+      "Luật Hộ tịch năm 2014",
+      "Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch",
+      "Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch",
+      "Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến Luật Hộ tịch",
+      "Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch",
+      "Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương cấp tỉnh và cấp huyện trong lĩnh vực hộ tịch",
+      "Thông tư số 04/2020/TT-BTP ngày 28/5/2020 của Bộ trưởng Bộ Tư pháp quy định chi tiết thi hành một số điều của Luật Hộ tịch",
+      "Thông tư số 01/2022/TT-BTP ngày 04/01/2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP",
+      "Thông tư số 03/2023/TT-BTP ngày 02/8/2023 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP",
+      "Thông tư số 04/2024/TT-BTP ngày 06/6/2024 của Bộ trưởng Bộ Tư pháp sửa đổi, bổ sung một số điều của Thông tư số 02/2020/TT-BTP",
+      "Thông tư số 08/2025/TT-BTP ngày 12/6/2025 của Bộ trưởng Bộ Tư pháp quy định về phân định thẩm quyền của chính quyền địa phương",
+      "Thông tư số 281/2016/TT-BTC ngày 14/11/2016 của Bộ trưởng Bộ Tài chính quy định mức thu, chế độ thu, nộp, quản lý và sử dụng phí khai thác, sử dụng thông tin trong cơ sở dữ liệu hộ tịch",
+      "Thông tư số 85/2019/TT-BTC ngày 29/11/2019 của Bộ trưởng Bộ Tài chính hướng dẫn về phí và lệ phí thuộc thẩm quyền quyết định của Hội đồng nhân dân cấp tỉnh",
+      "Thông tư số 106/2021/TT-BTC ngày 26/11/2021 của Bộ trưởng Bộ Tài chính sửa đổi, bổ sung một số điều của Thông tư số 85/2019/TT-BTC",
+      "Nghị quyết số 10/2022/NQ-HĐND ngày 09/12/2022 của Hội đồng nhân dân thành phố Cần Thơ",
+      "Nghị quyết số 06/2024/NQ-HĐND ngày 05/7/2024 của Hội đồng nhân dân thành phố Cần Thơ",
+      "Nghị quyết số 12/2023/NQ-HĐND ngày 07/12/2023 của Hội đồng nhân dân tỉnh Sóc Trăng",
+      "Nghị quyết số 04/2024/NQ-HĐND ngày 17/4/2024 của Hội đồng nhân dân tỉnh Sóc Trăng",
+      "Nghị quyết số 04/2023/NQ-HĐND ngày 14/7/2023 của HĐND tỉnh Hậu Giang"
+    ]
+  },
+  "fee_structure": {
+    "base_fee": 1500000,
+    "additional_fees": [
+      {
+        "description": "Đăng ký kết hôn có yếu tố nước ngoài (trực tuyến)",
+        "amount_vnd": 750000,
+        "unit": "lần"
+      },
+      {
+        "description": "Phí cấp bản sao Trích lục kết hôn",
+        "amount_vnd": 8000,
+        "unit": "bản"
+      }
+    ],
+    "exemptions": [
+      "Người thuộc gia đình có công với cách mạng",
+      "Người thuộc hộ nghèo",
+      "Người khuyết tật"
+    ]
+  },
+  "form_logic": {
+    "has_electronic_form": true,
+    "electronic_form_description": "Mẫu hộ tịch điện tử tương tác đăng ký kết hôn (do người yêu cầu cung cấp thông tin theo hướng dẫn trên Cổng dịch vụ công quốc gia)",
+    "has_paper_form": true,
+    "paper_form_description": "Tờ khai đăng ký kết hôn theo mẫu, có đủ thông tin của hai bên nam, nữ. Hai bên nam, nữ có thể khai chung vào một Tờ khai đăng ký kết hôn (nếu người yêu cầu lựa chọn nộp hồ sơ theo hình thức trực tiếp hoặc gửi hồ sơ qua hệ thống bưu chính)"
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Tờ khai đăng ký kết hôn theo mẫu, có đủ thông tin của hai bên nam, nữ. Hai bên nam, nữ có thể khai chung vào một Tờ khai đăng ký kết hôn (nếu người yêu cầu lựa chọn nộp hồ sơ theo hình thức trực tiếp hoặc gửi hồ sơ qua hệ thống bưu chính)\n2. Mẫu hộ tịch điện tử tương tác đăng ký kết hôn (do người yêu cầu cung cấp thông tin theo hướng dẫn trên Cổng dịch vụ công, nếu người yêu cầu lựa chọn nộp hồ sơ theo hình thức trực tuyến)\n3. Giấy xác nhận của tổ chức y tế có thẩm quyền của Việt Nam hoặc nước ngoài xác nhận các bên kết hôn không mắc bệnh tâm thần hoặc bệnh khác mà không có khả năng nhận thức, làm chủ được hành vi của mình\n4. Giấy tờ chứng minh tình trạng hôn nhân của người nước ngoài do cơ quan có thẩm quyền của nước mà người đó là công dân cấp còn giá trị sử dụng, xác nhận hiện tại người đó không có vợ hoặc không có chồng; trường hợp nước ngoài không cấp xác nhận tình trạng hôn nhân thì thay bằng giấy tờ do cơ quan có thẩm quyền nước ngoài xác nhận người đó có đủ điều kiện kết hôn\n5. Ngoài giấy tờ nêu trên, tùy từng trường hợp, bên nam, bên nữ phải nộp giấy tờ tương ứng sau: Công dân Việt Nam là công chức, viên chức hoặc đang phục vụ trong lực lượng vũ trang phải nộp văn bản của cơ quan, đơn vị quản lý xác nhận việc kết hôn với người nước ngoài không trái với quy định của pháp luật Việt Nam về công chức, viên chức và lực lượng vũ trang\n6. Trường hợp người yêu cầu đăng ký kết hôn đang công tác, học tập, lao động có thời hạn ở nước ngoài thì phải nộp Giấy xác nhận tình trạng hôn nhân do Cơ quan đại diện ngoại giao, Cơ quan lãnh sự của Việt Nam ở nước ngoài cấp\n7. Hộ chiếu/Thẻ căn cước công dân/Thẻ căn cước/Căn cước điện tử/Giấy chứng nhận căn cước hoặc các giấy tờ khác có dán ảnh và thông tin cá nhân do cơ quan có thẩm quyền cấp, còn giá trị sử dụng để chứng minh về nhân thân của công dân Việt Nam\n8. Người nước ngoài xuất trình bản chính hộ chiếu để chứng minh về nhân thân; trường hợp người nước ngoài không có hộ chiếu để xuất trình thì có thể xuất trình giấy tờ đi lại quốc tế có giá trị thay hộ chiếu\n9. Giấy tờ có giá trị chứng minh thông tin về cư trú trong trường hợp cơ quan đăng ký hộ tịch không thể khai thác được thông tin về nơi cư trú của công dân theo các phương thức quy định",
+      "source_reference": "QT 12/CX-HT - Chunk 1",
+      "keywords": [
+        "hồ sơ",
+        "giấy tờ",
+        "tờ khai",
+        "biểu mẫu",
+        "giấy xác nhận",
+        "tình trạng hôn nhân",
+        "nước ngoài",
+        "hộ chiếu",
+        "căn cước",
+        "sức khỏe"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Cơ quan thực hiện thủ tục",
+      "content": "Ủy ban nhân dân cấp xã nơi cư trú của công dân Việt Nam. Cá nhân có quyền lựa chọn thực hiện thủ tục hành chính về hộ tịch tại cơ quan đăng ký hộ tịch nơi cư trú; nơi cư trú của cá nhân được xác định theo quy định của pháp luật về cư trú.",
+      "source_reference": "QT 12/CX-HT - Chunk 2",
+      "keywords": ["cơ quan", "UBND", "ủy ban nhân dân", "nơi cư trú"]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thời hạn giải quyết",
+      "content": "05 ngày làm việc, trường hợp phải xác minh thì thời hạn giải quyết không quá 10 ngày làm việc.",
+      "source_reference": "QT 12/CX-HT - Chunk 3",
+      "keywords": ["thời hạn", "giải quyết", "ngày", "xác minh"]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Lệ phí",
+      "content": "Nộp trực tiếp: 1.500.000 đồng; nộp trực tuyến: 750.000 đồng. Miễn lệ phí cho người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật. Phí cấp bản sao Trích lục kết hôn: 8.000 đồng/bản.",
+      "source_reference": "QT 12/CX-HT - Chunk 4",
+      "keywords": ["phí", "lệ phí", "miễn phí", "bản sao"]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Kết quả thực hiện thủ tục",
+      "content": "Giấy chứng nhận kết hôn (02 bản chính), mỗi bên vợ, chồng 01 bản; bản sao Trích lục kết hôn (trường hợp yêu cầu cấp bản sao); Bản điện tử Trích lục kết hôn (Bản điện tử sẽ tự động gửi về Kho quản lý dữ liệu điện tử của cá nhân/địa chỉ thư điện tử/thiết bị số/điện thoại của người yêu cầu sau khi đã hoàn tất thủ tục đăng ký kết hôn tại cơ quan đăng ký hộ tịch).",
+      "source_reference": "QT 12/CX-HT - Chunk 5",
+      "keywords": [
+        "kết quả",
+        "giấy chứng nhận",
+        "trích lục",
+        "bản chính",
+        "bản sao",
+        "bản điện tử"
+      ]
+    },
+    {
+      "chunk_id": 6,
+      "section_title": "Văn bản pháp luật viện dẫn",
+      "content": "Luật Hôn nhân và Gia đình năm 2014; Luật Hộ tịch năm 2014; Nghị định số 123/2015/NĐ-CP ngày 15/11/2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch; Nghị định số 87/2020/NĐ-CP ngày 28/7/2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch; Nghị định số 104/2022/NĐ-CP ngày 21/12/2022 của Chính phủ sửa đổi, bổ sung một số điều của các nghị định liên quan đến Luật Hộ tịch; Nghị định số 07/2025/NĐ-CP ngày 09/01/2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định trong lĩnh vực hộ tịch; Nghị định số 120/2025/NĐ-CP ngày 11/6/2025 của Chính phủ quy định về phân định thẩm quyền của chính quyền địa phương cấp tỉnh và cấp huyện trong lĩnh vực hộ tịch.",
+      "source_reference": "QT 12/CX-HT - Chunk 6",
+      "keywords": ["pháp luật", "luật", "nghị định", "thông tư", "văn bản"]
+    }
+  ]
+}

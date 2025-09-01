@@ -4,7 +4,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminVoice from "./pages/admin/AdminVoice";
 import AdminVector from "./pages/admin/AdminVector";
-import AdminQuestions from "./pages/admin/AdminQuestions";
+import AdminQuestionsRedesigned from "./pages/admin/AdminQuestionsRedesigned";
 import AdminDatabase from "./pages/admin/AdminDatabase";
 import AdminModels from "./pages/admin/AdminModels";
 import AdminSystem from "./pages/admin/AdminSystem";
@@ -28,7 +28,7 @@ function App() {
               <Route path="voice" element={<AdminVoice />} />
               <Route path="vector" element={<AdminVector />} />
               <Route path="legal-database" element={<AdminDatabase />} />
-              <Route path="questions" element={<AdminQuestions />} />
+              <Route path="questions" element={<AdminQuestionsRedesigned />} />
               <Route path="models" element={<AdminModels />} />
               <Route path="system" element={<AdminSystem />} />
             </Route>

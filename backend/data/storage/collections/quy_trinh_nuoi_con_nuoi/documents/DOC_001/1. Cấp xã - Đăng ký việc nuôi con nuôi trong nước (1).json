@@ -1,0 +1,108 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_nuoi_con_nuoi/documents/DOC_001/1. Cấp xã - Đăng ký việc nuôi con nuôi trong nước (1).doc",
+    "title": "Đăng ký việc nuôi con nuôi trong nước",
+    "code": "QT 01/NCN",
+    "issuing_authority": "UBND cấp xã",
+    "effective_date": "2025-01-01",
+    "executing_agency": "UBND cấp xã",
+    "applicant_type": [
+      "Công dân Việt Nam"
+    ],
+    "processing_time_text": "30 ngày làm việc (có thể kéo dài đến 45 ngày nếu cần xác minh)",
+    "fee_vnd": 0,
+    "fee_text": "Miễn phí",
+    "has_form": true,
+    "requirements_conditions": "Đối tượng: Công dân Việt Nam đủ 20 tuổi trở lên, có năng lực hành vi dân sự đầy đủ, có điều kiện về sức khỏe, kinh tế, chỗ ở để nuôi dưỡng, chăm sóc, giáo dục con nuôi. Trẻ em được nhận làm con nuôi phải dưới 16 tuổi, là trẻ mồ côi, bị bỏ rơi hoặc có hoàn cảnh đặc biệt khó khăn.",
+    "legal_basis_references": [
+      "Luật Nuôi con nuôi 2010",
+      "Nghị định số 19/2011/NĐ-CP",
+      "Thông tư số 01/2011/TT-BTP"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Miễn phí đăng ký nuôi con nuôi trong nước"
+    },
+    "exemptions": [
+      "Tất cả trường hợp đăng ký nuôi con nuôi trong nước"
+    ],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ yêu cầu",
+      "content": "Hồ sơ đăng ký nuôi con nuôi trong nước bao gồm:\n1. Đơn đăng ký nuôi con nuôi theo mẫu.\n2. Bản sao có chứng thực giấy tờ tùy thân của người nhận nuôi con nuôi và người được nhận làm con nuôi.\n3. Giấy khám sức khỏe của người nhận nuôi con nuôi và người được nhận làm con nuôi.\n4. Giấy tờ chứng minh hoàn cảnh gia đình, tài chính của người nhận nuôi con nuôi.\n5. Tài liệu chứng minh quan hệ nhân thân giữa người nhận nuôi và người được nhận làm con nuôi (nếu có).\n6. Giấy tờ chứng minh người được nhận làm con nuôi là trẻ em mồ côi, trẻ em bị bỏ rơi hoặc trẻ em có hoàn cảnh đặc biệt khó khăn.",
+      "source_reference": "Mục 5.a",
+      "keywords": [
+        "hồ sơ",
+        "đăng ký",
+        "nuôi con nuôi",
+        "trong nước",
+        "đơn xin",
+        "giấy tờ tùy thân",
+        "giấy khám sức khỏe",
+        "hoàn cảnh gia đình"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "30 ngày làm việc kể từ ngày nhận hồ sơ hợp lệ. Trường hợp cần xác minh, thời hạn không quá 45 ngày làm việc.",
+      "source_reference": "Mục 5.b",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "30 ngày",
+        "xác minh",
+        "45 ngày"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng: Công dân Việt Nam đủ 20 tuổi trở lên, có năng lực hành vi dân sự đầy đủ, có điều kiện nuôi dưỡng, chăm sóc, giáo dục con nuôi. Cơ quan thực hiện: Ủy ban nhân dân cấp xã nơi người được nhận làm con nuôi thường trú.",
+      "source_reference": "Mục 5.c, 5.d",
+      "keywords": [
+        "đối tượng",
+        "công dân Việt Nam",
+        "20 tuổi",
+        "UBND cấp xã",
+        "năng lực hành vi dân sự",
+        "nuôi dưỡng"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và lệ phí",
+      "content": "Kết quả: Quyết định công nhận việc nuôi con nuôi. Lệ phí: Miễn phí theo quy định của pháp luật.",
+      "source_reference": "Mục 5.đ, 5.e",
+      "keywords": [
+        "kết quả",
+        "quyết định",
+        "công nhận",
+        "lệ phí",
+        "miễn phí"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Các bước thực hiện:\n1. Người nhận nuôi con nuôi nộp hồ sơ tại UBND cấp xã.\n2. UBND cấp xã kiểm tra hồ sơ trong 10 ngày.\n3. UBND cấp xã niêm yết công khai trong 15 ngày.\n4. UBND cấp xã tổ chức họp để công nhận việc nuôi con nuôi.\n5. UBND cấp xã ban hành quyết định công nhận việc nuôi con nuôi.",
+      "source_reference": "Mục 5.k",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "nộp hồ sơ",
+        "kiểm tra",
+        "niêm yết",
+        "công khai",
+        "tổ chức họp",
+        "ban hành quyết định"
+      ]
+    }
+  ]
+}

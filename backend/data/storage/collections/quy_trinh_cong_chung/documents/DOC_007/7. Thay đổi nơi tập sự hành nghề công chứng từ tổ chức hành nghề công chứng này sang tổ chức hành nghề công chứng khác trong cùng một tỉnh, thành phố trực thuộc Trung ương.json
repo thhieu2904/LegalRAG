@@ -1,0 +1,111 @@
+{
+  "metadata": {
+    "source": "7. Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng này sang tổ chức hành nghề công chứng khác trong cùng một tỉnh, thành phố trực thuộc Trung ương.doc",
+    "title": "Thay đổi nơi tập sự hành nghề công chứng từ tổ chức hành nghề công chứng này sang tổ chức hành nghề công chứng khác trong cùng một tỉnh, thành phố trực thuộc Trung ương",
+    "code": "QT 07/CC",
+    "issuing_authority": "Bộ Tư pháp",
+    "effective_date": "15/05/2025",
+    "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương",
+    "applicant_type": "Người tập sự hành nghề công chứng",
+    "processing_time_text": "03 ngày làm việc (để nộp giấy đề nghị) + 05 ngày làm việc (để Sở Tư pháp thông báo) = Tổng thời gian 08 ngày làm việc",
+    "fee_vnd": 0,
+    "fee_text": "Không có phí",
+    "has_form": true,
+    "requirements_conditions": [
+      "Đã được đăng ký tập sự theo quy định",
+      "Tự liên hệ được tổ chức hành nghề công chứng mới nhận tập sự",
+      "Trường hợp đặc biệt: Nếu không tự liên hệ được, Sở Tư pháp sẽ chỉ định trong 10 ngày làm việc"
+    ],
+    "legal_basis_references": [
+      "Thông tư số 06/2025/TT-BTP ngày 15/5/2025 của Bộ trưởng Bộ Tư pháp quy định về tập sự hành nghề công chứng",
+      "Luật Công chứng số 53/2014/QH13",
+      "Nghị định số 29/2015/NĐ-CP quy định chi tiết và hướng dẫn thi hành Luật Công chứng"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "amount_vnd": 0,
+      "description": "Không có phí cho thủ tục thay đổi nơi tập sự",
+      "payment_method": "Không áp dụng",
+      "exemption_conditions": [
+        "Thủ tục hành chính này không thu phí theo quy định"
+      ]
+    },
+    "exemptions": [
+      {
+        "condition": "Tất cả trường hợp",
+        "description": "Không thu phí cho thủ tục thay đổi nơi tập sự hành nghề công chứng"
+      }
+    ],
+    "additional_fees": []
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ",
+      "content": "1. Giấy đề nghị thay đổi nơi tập sự hành nghề công chứng theo mẫu quy định\n2. Bản sao có chứng thực Quyết định đăng ký tập sự hành nghề công chứng\n3. Giấy xác nhận của tổ chức hành nghề công chứng mới về việc nhận tập sự\n4. Trường hợp không tự liên hệ được nơi tập sự mới: Giấy đề nghị Sở Tư pháp bố trí nơi tập sự mới\n\nLưu ý: Hồ sơ có thể nộp trực tiếp, qua dịch vụ bưu chính hoặc trực tuyến. Trường hợp nộp trực tuyến, các thông tin được khai thác từ Cơ sở dữ liệu quốc gia về dân cư.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "hồ sơ",
+        "giấy đề nghị",
+        "quyết định đăng ký",
+        "xác nhận tổ chức",
+        "nộp trực tuyến"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "- Trong thời hạn 03 ngày làm việc kể từ ngày được nhận tập sự tại tổ chức hành nghề công chứng mới, người tập sự nộp Giấy đề nghị thay đổi nơi tập sự\n- Trong thời hạn 05 ngày làm việc kể từ ngày nhận được giấy đề nghị, Sở Tư pháp thông báo bằng văn bản cho người tập sự, tổ chức hành nghề công chứng nhận tập sự và tổ chức hành nghề công chứng mà người tập sự đã tập sự trước đó\n- Trường hợp người tập sự không tự liên hệ được nơi tập sự mới và đề nghị Sở Tư pháp bố trí nơi tập sự mới: Trong thời hạn 10 ngày làm việc kể từ ngày nhận được Giấy đề nghị, Sở Tư pháp xem xét, chỉ định tổ chức hành nghề công chứng nhận tập sự\n\nTổng thời gian giải quyết: 08 ngày làm việc (trường hợp thông thường)",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "thời hạn",
+        "03 ngày",
+        "05 ngày",
+        "10 ngày",
+        "tổng thời gian"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng thực hiện và Cơ quan có thẩm quyền",
+      "content": "Đối tượng thực hiện thủ tục:\n- Người tập sự hành nghề công chứng đã được đăng ký tập sự theo quy định\n- Phải có nguyện vọng thay đổi nơi tập sự trong cùng tỉnh/thành phố\n\nCơ quan có thẩm quyền giải quyết:\n- Sở Tư pháp tỉnh/thành phố trực thuộc Trung ương nơi đăng ký tập sự ban đầu\n\nCác trường hợp phải thay đổi nơi tập sự:\n- Tổ chức hành nghề công chứng nhận tập sự tạm ngừng hoạt động hoặc chấm dứt hoạt động\n- Tổ chức hành nghề công chứng chuyển đổi, giải thể theo quy định\n- Công chứng viên hướng dẫn tập sự thuộc trường hợp phải thay đổi theo quy định",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "đối tượng",
+        "người tập sự",
+        "sở tư pháp",
+        "thẩm quyền",
+        "trường hợp thay đổi"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và Lệ phí",
+      "content": "Kết quả thực hiện thủ tục:\n- Văn bản thông báo của Sở Tư pháp về việc thay đổi nơi tập sự\n- Trường hợp đề nghị bố trí nơi tập sự mới: Quyết định chỉ định tổ chức hành nghề công chứng nhận tập sự\n\nLệ phí: Không có phí cho thủ tục này\n\nTrường hợp hồ sơ chưa đầy đủ, chính xác hoặc không thuộc thẩm quyền: Thông báo bằng văn bản nêu rõ nội dung, lý do và hướng dẫn bổ sung.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "kết quả",
+        "văn bản thông báo",
+        "quyết định chỉ định",
+        "không có phí",
+        "hồ sơ thiếu"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý chi tiết",
+      "content": "Bước 1: Người tập sự liên hệ với tổ chức hành nghề công chứng mới để được nhận tập sự\n\nBước 2: Trong thời hạn 03 ngày làm việc kể từ ngày được nhận tập sự, nộp hồ sơ đề nghị thay đổi nơi tập sự đến Sở Tư pháp\n\nBước 3: Sở Tư pháp tiếp nhận và kiểm tra hồ sơ:\n- Trường hợp hồ sơ đầy đủ, hợp lệ: Tiếp tục xử lý\n- Trường hợp hồ sơ thiếu hoặc không hợp lệ: Thông báo bổ sung trong 02 ngày làm việc\n\nBước 4: Sở Tư pháp thông báo bằng văn bản cho các bên liên quan trong thời hạn 05 ngày làm việc\n\nBước 5: Trường hợp đặc biệt (không tự liên hệ được nơi tập sự mới):\n- Sở Tư pháp xem xét và chỉ định tổ chức hành nghề công chứng nhận tập sự trong 10 ngày làm việc\n\nBước 6: Hoàn tất thủ tục và trả kết quả cho người tập sự\n\nLưu ý: Các bước có thể tăng hoặc giảm tùy theo đặc điểm cụ thể nhưng đảm bảo tổng thời gian không quá quy định.",
+      "source_reference": "Thông tư số 06/2025/TT-BTP",
+      "keywords": [
+        "quy trình",
+        "bước 1",
+        "bước 2",
+        "bước 3",
+        "bước 4",
+        "bước 5",
+        "bước 6"
+      ]
+    }
+  ]
+}

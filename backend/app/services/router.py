@@ -9,11 +9,30 @@ import json
 import os
 import pickle
 import time
+from typing import Dict, List, Any, Optional
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+import time
+import sys
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Import PathConfig for new structure with multiple fallbacks
+PathConfig = None
+try:
+    from ..core.path_config import PathConfig
+except ImportError:
+    try:
+        from app.core.path_config import PathConfig
+    except ImportError:
+        try:
+            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from core.path_config import PathConfig
+        except ImportError:
+            pass
+    
 logger = logging.getLogger(__name__)
 
 class QueryRouter:
@@ -21,7 +40,7 @@ class QueryRouter:
     
     def __init__(self, embedding_model: SentenceTransformer):
         self.embedding_model = embedding_model
-        self.base_path = "data/router_examples"
+        self.base_path = "data/storage/collections"  # New questions.json structure
         self.cache_file = "data/cache/router_embeddings.pkl"
         
         # Load configuration
@@ -31,13 +50,16 @@ class QueryRouter:
         self.example_questions = {}
         self.question_vectors = {}
         self.collection_mappings = {}
+        self.cached_embeddings = {}  # For pre-computed embeddings cache
         
-        # Thresholds - Hạ thấp để linh hoạt hơn, không quá cứng nhắc
-        self.high_confidence_threshold = 0.80  # Hạ từ 0.85 -> 0.80 để linh hoạt hơn
-        self.min_confidence_threshold = 0.50   # Dưới threshold này = hỏi lại user
+        # Thresholds - UPDATED to match clarification levels
+        self.high_confidence_threshold = 0.80      # >= 0.80: auto route
+        self.medium_high_threshold = 0.65          # 0.65-0.79: questions in document  
+        self.min_confidence_threshold = 0.50       # 0.50-0.64: multiple choices
+        # < 0.50: category suggestions
         
-        logger.info(f"🎯 Router thresholds - Min: {self.min_confidence_threshold}, High: {self.high_confidence_threshold}")
-        logger.info("💡 STRATEGY: Threshold CỰC CAO, nếu không chắc chắn thì hỏi lại user")
+        logger.info(f"🎯 Router thresholds - Min: {self.min_confidence_threshold}, Medium-High: {self.medium_high_threshold}, High: {self.high_confidence_threshold}")
+        logger.info("💡 STRATEGY: 4-level clarification system")
         
         # Initialize database - cache first, fallback to live loading
         if self._load_from_cache():
@@ -51,887 +73,990 @@ class QueryRouter:
         
         logger.info(f"✅ Enhanced Smart Query Router initialized with {len(self.collection_mappings)} collections")
     
-    def _is_followup_question(self, query: str) -> bool:
-        """Simple follow-up detection"""
-        followup_words = ["ủa", "vậy", "thế", "còn", "khi nào", "bao nhiêu", "phí", "tiền", "chi phí", "lệ phí"]
-        query_lower = query.lower()
-        return any(word in query_lower for word in followup_words) or len(query.split()) <= 6
-    
-    def _route_followup(self, query: str, session) -> Dict[str, Any]:
-        """Route follow-up questions to same collection"""
-        return {
-            'status': 'routed',
-            'confidence_level': 'high_followup',
-            'target_collection': session.last_successful_collection,
-            'confidence': 0.85,
-            'all_scores': {session.last_successful_collection: 0.85},
-            'display_name': self.collection_mappings.get(session.last_successful_collection, {}).get('display_name'),
-            'clarification_needed': False,
-            'matched_example': f"Follow-up question in {session.last_successful_collection}",
-            'source_procedure': "Context-aware routing",
-            'inferred_filters': getattr(session, 'last_successful_filters', {}),
-            'is_followup': True
-        }
-    
     def _load_config(self) -> Dict[str, Any]:
-        """Load configuration from router_examples_smart_v3 directory"""
+        """Load configuration from new questions.json structure"""
         try:
-            # New approach: Load from individual router files - Updated to V3
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
+            # Load from new structure: data/storage/collections/*/documents/*/questions.json
+            collections_path = self.base_path  # "data/storage/collections"
             
-            if not os.path.exists(router_smart_path):
-                logger.warning(f"Router examples directory not found: {router_smart_path}")
+            if not os.path.exists(collections_path):
+                logger.warning(f"Collections directory not found: {collections_path}")
                 return {}
-            
-            # Check for V3 summary file
-            summary_file = os.path.join(router_smart_path, "llm_generation_summary_v3.json")
-            if os.path.exists(summary_file):
-                with open(summary_file, 'r', encoding='utf-8') as f:
-                    summary = json.load(f)
-                
-                logger.info(f"📋 Loaded router summary V3: {summary.get('statistics', {}).get('total_files_processed', 0)} files, {summary.get('statistics', {}).get('total_examples_generated', 0)} examples")
-                
-                # Build config from summary
-                config = {
-                    'metadata': {
-                        'version': '2.0',
-                        'generator': 'smart_router_individual',
-                        'structure': 'individual_files'
-                    },
-                    'collection_mappings': {}
-                }
-                
-                # Map collections from summary
-                for collection_name, count in summary.get('collections', {}).items():
-                    config['collection_mappings'][collection_name] = {
-                        'description': collection_name.replace('_', ' ').title(),
-                        'file_count': count,
-                        'example_files': []  # Will be loaded dynamically
-                    }
-                
-                return config
-            
-            # Fallback: scan directory structure
-            else:
-                logger.info("📁 Scanning router_examples_smart_v3 directory structure...")
-                return self._scan_individual_files(router_smart_path)
-            
-        except Exception as e:
-            logger.error(f"❌ Error loading config: {e}")
-            return {}
-    
-    def _scan_individual_files(self, router_smart_path: str) -> Dict[str, Any]:
-        """Scan individual router files and build config"""
-        try:
-            from pathlib import Path
             
             config = {
                 'metadata': {
-                    'version': '2.0',
-                    'generator': 'smart_router_individual_scan',
-                    'structure': 'individual_files'
+                    'version': '3.0',
+                    'generator': 'questions_json_structure',
+                    'structure': 'questions_plus_document'
                 },
                 'collection_mappings': {}
             }
             
-            # Scan for JSON files recursively
-            router_path = Path(router_smart_path)
-            json_files = list(router_path.rglob("*.json"))
-            
-            # Exclude summary files
-            json_files = [f for f in json_files if not f.name.endswith('_summary.json')]
-            
-            # Group by collection (based on directory structure)
-            collections = {}
-            for json_file in json_files:
-                # Try to determine collection from path
-                relative_path = json_file.relative_to(router_path)
-                parts = relative_path.parts
+            # Scan collections
+            for collection_name in os.listdir(collections_path):
+                collection_path = os.path.join(collections_path, collection_name)
+                if not os.path.isdir(collection_path):
+                    continue
                 
-                if 'ho_tich' in str(relative_path).lower():
-                    collection = 'ho_tich_cap_xa'
-                elif 'chung_thuc' in str(relative_path).lower():
-                    collection = 'chung_thuc'
-                elif 'nuoi_con' in str(relative_path).lower():
-                    collection = 'nuoi_con_nuoi'
-                else:
-                    collection = 'general'
+                documents_path = os.path.join(collection_path, "documents")
+                if not os.path.exists(documents_path):
+                    continue
                 
-                if collection not in collections:
-                    collections[collection] = []
-                collections[collection].append(str(relative_path))
+                # Count documents với questions.json
+                doc_count = 0
+                for doc_name in os.listdir(documents_path):
+                    doc_path = os.path.join(documents_path, doc_name)
+                    if os.path.isdir(doc_path):
+                        questions_file = os.path.join(doc_path, "questions.json")
+                        if os.path.exists(questions_file):
+                            doc_count += 1
+                
+                if doc_count > 0:
+                    config['collection_mappings'][collection_name] = {
+                        'description': collection_name.replace('_', ' ').title(),
+                        'file_count': doc_count,
+                        'path': collection_path,
+                        'documents_path': documents_path
+                    }
             
-            # Build collection mappings
-            for collection_name, files in collections.items():
-                config['collection_mappings'][collection_name] = {
-                    'description': collection_name.replace('_', ' ').title(),
-                    'file_count': len(files),
-                    'example_files': files[:10]  # Limit for performance
-                }
-            
-            logger.info(f"📁 Scanned {len(json_files)} individual router files in {len(collections)} collections")
+            logger.info(f"📋 Loaded new structure: {len(config['collection_mappings'])} collections")
             return config
             
         except Exception as e:
-            logger.error(f"❌ Error scanning individual files: {e}")
+            logger.error(f"❌ Error loading new structure config: {e}")
             return {}
     
     def _load_from_cache(self) -> bool:
-        """Load router data from cache if available"""
+        """Load router data from cache with embeddings support"""
         try:
             if not os.path.exists(self.cache_file):
-                logger.info("📦 No router cache found")
+                logger.info("📦 No cache file found")
                 return False
-            
-            # Check cache freshness - với tolerance 10 seconds để tránh race condition
-            cache_time = os.path.getmtime(self.cache_file)
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
-            
-            if os.path.exists(router_smart_path):
-                from pathlib import Path
-                router_files = list(Path(router_smart_path).rglob("*.json"))
-                
-                if router_files:
-                    newest_router = max(f.stat().st_mtime for f in router_files)
-                    # Thêm tolerance 10 giây để tránh cache bị invalidate không cần thiết
-                    if cache_time < (newest_router - 10):
-                        logger.info(f"🔄 Cache is older than router files (cache: {cache_time}, newest: {newest_router})")
-                        return False
-                    else:
-                        logger.info(f"📦 Cache is fresh enough (tolerance: 10s)")
-                else:
-                    logger.info("📦 No router files found, using cache")
-            
-            # Load cache
-            logger.info("📦 Loading router from cache...")
-            start_time = time.time()
             
             with open(self.cache_file, 'rb') as f:
-                cache_data = pickle.load(f)
+                cache_container = pickle.load(f)
             
-            # Validate structure
-            if not all(key in cache_data for key in ['metadata', 'questions', 'embeddings']):
-                logger.warning("⚠️ Invalid cache structure")
-                return False
+            # Handle new format with 'data' and metadata
+            if isinstance(cache_container, dict) and 'data' in cache_container:
+                cache_data = cache_container['data']
+                logger.info(f"Loaded new cache format with metadata: {cache_container.get('metadata', {})}")
+            else:
+                cache_data = cache_container
+                logger.warning("⚠️ Legacy cache format detected")
             
-            # Load data
-            questions_data = cache_data['questions']
-            embeddings_data = cache_data['embeddings']
+            # Check for cache format from script: {collection: {doc: {embeddings, fused_embedding, texts, metadata}}}
+            if isinstance(cache_data, dict) and cache_data:
+                # Check if it's the script format
+                first_collection = next(iter(cache_data.values()), {})
+                if isinstance(first_collection, dict):
+                    first_doc = next(iter(first_collection.values()), {})
+                    if isinstance(first_doc, dict) and 'embeddings' in first_doc:
+                        logger.info("🚀 Loading cache format from script with embeddings")
+                        
+                        # Build example_questions from cache
+                        self.example_questions = {}
+                        self.cached_embeddings = {}
+                        self.question_vectors = {}
+                        
+                        for collection_name, documents in cache_data.items():
+                            collection_questions = {}
+                            collection_embeddings = {}
+                            collection_vectors = {}
+                            
+                            for doc_name, doc_data in documents.items():
+                                # Extract questions
+                                texts = doc_data.get('texts', [])
+                                if texts:
+                                    main_question = texts[0] if texts else ''
+                                    variants = texts[1:] if len(texts) > 1 else []
+                                    
+                                    collection_questions[doc_name] = {
+                                        'main_question': main_question,
+                                        'question_variants': variants
+                                    }
+                                
+                                # Extract embeddings
+                                if 'embeddings' in doc_data:
+                                    collection_embeddings[doc_name] = {
+                                        'embeddings': doc_data['embeddings'],
+                                        'questions': texts,
+                                        'main_question': texts[0] if texts else ''
+                                    }
+                                
+                                # Extract fused embeddings
+                                if 'fused_embedding' in doc_data:
+                                    collection_vectors[doc_name] = {
+                                        'fused_embedding': doc_data['fused_embedding'],
+                                        'fused_text': doc_data.get('fused_text', ''),
+                                        'questions': texts,
+                                        'main_question': texts[0] if texts else ''
+                                    }
+                            
+                            if collection_questions:
+                                self.example_questions[collection_name] = collection_questions
+                            if collection_embeddings:
+                                self.cached_embeddings[collection_name] = collection_embeddings
+                            if collection_vectors:
+                                self.question_vectors[collection_name] = collection_vectors
+                        
+                        # Build collection mappings
+                        self.collection_mappings = {}
+                        for collection_name, docs in self.example_questions.items():
+                            self.collection_mappings[collection_name] = {
+                                'description': collection_name.replace('_', ' ').title(),
+                                'file_count': len(docs),
+                                'path': f"data/storage/collections/{collection_name}",
+                                'documents_path': f"data/storage/collections/{collection_name}/documents"
+                            }
+                        
+                        total_docs = sum(len(docs) for docs in self.example_questions.values())
+                        logger.info(f"📦 Loaded cache with EMBEDDINGS: {len(self.collection_mappings)} collections, {total_docs} documents")
+                        logger.info(f"🎯 Cached embeddings available for: {list(self.cached_embeddings.keys())}")
+                        if self.question_vectors:
+                            logger.info("Loaded fused embeddings from cache")
+                        return True
             
-            for collection_name, questions in questions_data.items():
-                self.example_questions[collection_name] = questions
-                self.question_vectors[collection_name] = embeddings_data[collection_name]
-                
-                self.collection_mappings[collection_name] = {
-                    'display_name': collection_name.replace('_', ' ').title(),
-                    'total_questions': len(questions)
-                }
-            
-            load_time = time.time() - start_time
-            total_questions = cache_data['metadata'].get('total_questions', 0)
-            
-            logger.info(f"📦 Cache loaded: {total_questions} questions in {load_time:.1f}s")
-            return True
-            
-        except Exception as e:
-            logger.error(f"❌ Error loading cache: {e}")
+            # Old formats fallback
+            logger.warning("⚠️  Unknown cache format, will reload")
             return False
-
-    def _save_to_cache(self):
-        """Save router data to cache for faster startup next time"""
-        try:
-            # Ensure cache directory exists
-            cache_dir = os.path.dirname(self.cache_file)
-            os.makedirs(cache_dir, exist_ok=True)
             
-            logger.info("💾 Saving router cache...")
-            start_time = time.time()
-            
-            # Prepare cache data
-            cache_data = {
-                'metadata': {
-                    'version': '1.0',
-                    'created': time.strftime('%Y-%m-%d %H:%M:%S'),
-                    'total_questions': sum(len(questions) for questions in self.example_questions.values()),
-                    'collections': {name: len(questions) for name, questions in self.example_questions.items()}
-                },
-                'questions': self.example_questions,
-                'embeddings': self.question_vectors
-            }
-            
-            # Save cache
-            import pickle
-            with open(self.cache_file, 'wb') as f:
-                pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
-            
-            save_time = time.time() - start_time
-            total_questions = cache_data['metadata']['total_questions']
-            file_size = os.path.getsize(self.cache_file) / (1024 * 1024)  # MB
-            
-            logger.info(f"💾 Cache saved: {total_questions} questions, {file_size:.1f}MB in {save_time:.1f}s")
-            
+            # Old metadata format
+            if isinstance(cache_data, dict) and 'metadata' in cache_data:
+                logger.warning("⚠️  OLD cache format without embeddings - will be slow")
+                self.example_questions = cache_data.get('collections', {})
+                self.cached_embeddings = {}  # No cached embeddings
+                
+                # Build collection mappings from cache
+                self.collection_mappings = {}
+                for collection_name, docs in self.example_questions.items():
+                    self.collection_mappings[collection_name] = {
+                        'description': collection_name.replace('_', ' ').title(),
+                        'file_count': len(docs),
+                        'path': f"data/storage/collections/{collection_name}",
+                        'documents_path': f"data/storage/collections/{collection_name}/documents"
+                    }
+                
+                logger.info(f"📦 Loaded cache: {len(self.collection_mappings)} collections, {sum(len(docs) for docs in self.example_questions.values())} documents")
+                return True
+            else:
+                logger.warning("⚠️  Unknown cache format, will reload")
+                return False
+                
         except Exception as e:
-            logger.warning(f"⚠️ Failed to save cache: {e}")
-            # Don't fail initialization just because of cache save failure
-            pass
+            logger.error(f"❌ Cache loading error: {e}")
+            return False
     
     def _load_example_questions(self):
-        """Load all example questions from individual router JSON files"""
-        try:
-            # Get router_examples_smart_v3 path
-            router_smart_path = os.path.join(self.base_path.replace("router_examples", "router_examples_smart_v3"))
+        """Load example questions from questions.json files"""
+        logger.info("🔄 Loading example questions from new structure...")
+        
+        self.example_questions = {}
+        
+        for collection_name, mapping in self.collection_mappings.items():
+            collection_questions = {}
+            documents_path = mapping['documents_path']
             
-            if not os.path.exists(router_smart_path):
-                logger.warning(f"Router examples directory not found: {router_smart_path}")
-                return
+            if not os.path.exists(documents_path):
+                continue
             
-            from pathlib import Path
-            router_path = Path(router_smart_path)
-            json_files = list(router_path.rglob("*.json"))
-            
-            # Exclude summary files
-            json_files = [f for f in json_files if not f.name.endswith('_summary.json')]
-            
-            # Reset collections
-            self.collection_mappings = {}
-            collections_data = {}
-            
-            for json_file in json_files:
-                try:
-                    with open(json_file, 'r', encoding='utf-8') as f:
-                        router_data = json.load(f)
-                    
-                    # Get collection from metadata
-                    collection_name = router_data.get('expected_collection', 'general')
-                    
-                    if collection_name not in collections_data:
-                        collections_data[collection_name] = []
-                        self.collection_mappings[collection_name] = {
-                            'display_name': collection_name.replace('_', ' ').title(),
-                            'total_questions': 0
-                        }
-                    
-                    # Extract questions from individual router file
-                    main_question = {
-                        'text': router_data.get('main_question', ''),
-                        'collection': collection_name,
-                        'source': router_data.get('metadata', {}).get('title', ''),
-                        'keywords': router_data.get('smart_filters', {}).get('title_keywords', []),
-                        'type': 'main',
-                        'filters': router_data.get('smart_filters', {}),
-                        'priority_score': router_data.get('priority_score', 0.5)
-                    }
-                    collections_data[collection_name].append(main_question)
-                    
-                    # Add question variants
-                    for variant in router_data.get('question_variants', []):
-                        variant_question = {
-                            'text': variant,
-                            'collection': collection_name,
-                            'source': router_data.get('metadata', {}).get('title', ''),
-                            'keywords': router_data.get('smart_filters', {}).get('title_keywords', []),
-                            'type': 'variant',
-                            'filters': router_data.get('smart_filters', {}),
-                            'priority_score': router_data.get('priority_score', 0.5) - 0.1
-                        }
-                        collections_data[collection_name].append(variant_question)
+            for doc_name in os.listdir(documents_path):
+                doc_path = os.path.join(documents_path, doc_name)
+                questions_file = os.path.join(doc_path, "questions.json")
                 
-                except Exception as e:
-                    logger.warning(f"⚠️ Error processing {json_file.name}: {e}")
-                    continue
+                if os.path.exists(questions_file):
+                    try:
+                        with open(questions_file, 'r', encoding='utf-8') as f:
+                            questions_data = json.load(f)
+                        
+                        # Extract main question and variants
+                        main_question = questions_data.get('main_question', '')
+                        variants = questions_data.get('question_variants', [])
+                        
+                        collection_questions[doc_name] = {
+                            'main_question': main_question,
+                            'question_variants': variants
+                        }
+                    except Exception as e:
+                        logger.error(f"❌ Error loading {questions_file}: {e}")
             
-            # Store loaded questions and update counts
-            total_questions = 0
-            for collection_name, questions in collections_data.items():
-                # Store questions by collection
-                if collection_name not in self.example_questions:
-                    self.example_questions[collection_name] = []
-                self.example_questions[collection_name].extend(questions)
-                self.collection_mappings[collection_name]['total_questions'] = len(questions)
-                total_questions += len(questions)
-            
-            logger.info(f"📚 Loaded {total_questions} example questions from {len(json_files)} individual files")
-            logger.info(f"📂 Collections: {list(collections_data.keys())}")
-            
-            # Build embeddings cache if needed
-            if total_questions > 0:
-                self._build_embeddings_cache()
-            
-        except Exception as e:
-            logger.error(f"❌ Error loading example questions: {e}")
-    
-    def _build_embeddings_cache(self):
-        """Build embeddings cache for loaded questions"""
-        try:
-            if not self.example_questions:
-                logger.warning("No questions to build embeddings for")
-                return
-            
-            logger.info("🔄 Building embeddings cache for router questions...")
-            # This method can be implemented later if needed for caching
-            logger.info("✅ Embeddings cache ready")
-            
-        except Exception as e:
-            logger.error(f"❌ Error building embeddings cache: {e}")
+            if collection_questions:
+                self.example_questions[collection_name] = collection_questions
+        
+        logger.info(f"✅ Loaded {len(self.example_questions)} collections with questions")
     
     def _initialize_question_vectors(self):
-        """Tính toán vectors cho tất cả example questions"""
-        try:
-            if not self.example_questions:
-                logger.warning("No example questions to vectorize")
-                return
-            
-            total_questions = sum(len(questions) for questions in self.example_questions.values())
-            logger.info(f"🔢 Vectorizing {total_questions} example questions...")
-            
-            for collection_name, questions in self.example_questions.items():
-                if not questions:
-                    continue
-                    
-                collection_vectors = []
-                
-                for question in questions:
-                    # Combine question text with keywords for better representation
-                    keywords_text = " ".join(question.get('keywords', []))
-                    combined_text = f"{question['text']} {keywords_text}"
-                    
-                    # Create embedding
-                    vector = self.embedding_model.encode([combined_text])[0]
-                    collection_vectors.append(vector)
-                
-                if collection_vectors:
-                    # Store vectors as numpy array for efficient similarity computation
-                    self.question_vectors[collection_name] = np.array(collection_vectors)
-                    logger.info(f"🎯 Vectorized {len(collection_vectors)} questions for {collection_name}")
-                
-        except Exception as e:
-            logger.error(f"❌ Error initializing question vectors: {e}")
-            raise
-    
-    def route_query(self, query: str, session: Optional[Any] = None) -> Dict[str, Any]:
-        """
-        Định tuyến câu hỏi đến collection phù hợp nhất dựa trên example questions
+        """Initialize question vectors for similarity matching"""
+        logger.info("🔄 Initializing question vectors...")
         
-        Returns:
-            {
-                'status': 'routed' | 'ambiguous' | 'no_match',
-                'target_collection': str | None,
-                'confidence': float,
-                'all_scores': Dict[str, float],
-                'display_name': str | None,
-                'clarification_needed': bool,
-                'matched_example': str | None,
-                'source_procedure': str | None
-            }
-        """
+        self.question_vectors = {}
+        
+        for collection_name, documents in self.example_questions.items():
+            collection_vectors = {}
+            
+            for doc_name, doc_data in documents.items():
+                # Combine main question and variants
+                all_questions = [doc_data['main_question']]
+                all_questions.extend(doc_data['question_variants'])
+                
+                # Get document metadata
+                metadata = self._get_document_metadata(collection_name, doc_name)
+                
+                # Create fused text for embedding
+                fused_text = doc_data['main_question']  # Main đầu để weight cao
+                if all_questions[1:]:
+                    fused_text += " | " + " | ".join(all_questions[1:])
+                if metadata:
+                    metadata_str = " | ".join([f"{k}: {str(v)}" for k, v in metadata.items() if isinstance(v, (str, list))])
+                    fused_text += " | METADATA: " + metadata_str
+                # Giới hạn length nếu quá dài
+                if len(fused_text) > 2000:
+                    fused_text = fused_text[:2000]
+                
+                # Create embeddings (text-only for now)
+                collection_vectors[doc_name] = {
+                    'questions': all_questions,
+                    'main_question': doc_data['main_question'],
+                    'fused_embedding': self.embedding_model.encode([fused_text])[0],
+                    'fused_text': fused_text  # Để debug
+                }
+            
+            self.question_vectors[collection_name] = collection_vectors
+        
+        logger.info(f"✅ Initialized vectors for {len(self.question_vectors)} collections")
+    
+    def _save_to_cache(self):
+        """Save router data to cache"""
         try:
-            # Create vector for query
-            query_vector = self.embedding_model.encode([query])[0]
+            cache_data = {
+                'metadata': {
+                    'structure_version': '3.0',
+                    'cache_type': 'questions_only',
+                    'created_at': time.time(),
+                    'collections_count': len(self.example_questions),
+                    'total_documents': sum(len(docs) for docs in self.example_questions.values())
+                },
+                'collections': self.example_questions,
+                'vectors': self.question_vectors  # Thêm để lưu fused_embedding
+            }
             
-            # Find best matching example question across all collections
-            best_collection = None
-            best_score = 0.0
-            best_example = None
-            best_source = None
-            best_filters = {}
+            os.makedirs(os.path.dirname(self.cache_file), exist_ok=True)
+            
+            with open(self.cache_file, 'wb') as f:
+                pickle.dump(cache_data, f)
+            
+            logger.info(f"💾 Cache saved: {self.cache_file}")
+            
+        except Exception as e:
+            logger.error(f"❌ Cache save error: {e}")
+    
+    def route_query(self, query: str, session=None) -> Dict[str, Any]:
+        """Route query to appropriate collection using metadata and semantic matching"""
+        try:
+            # Use semantic routing based on document metadata and content
+            return self._semantic_route_query(query, session)
+            
+        except Exception as e:
+            logger.error(f"❌ Router error: {e}")
+            return {
+                'status': 'error',
+                'confidence': 0.0,
+                'target_collection': None,
+                'confidence_level': 'none',
+                'message': 'Lỗi hệ thống routing'
+            }
+    
+    def _semantic_route_query(self, query: str, session=None) -> Dict[str, Any]:
+        """Semantic routing using embedding similarity with cached embeddings"""
+        try:
+            # Get query embedding
+            query_embedding = self.embedding_model.encode([query])
+            
             collection_scores = {}
+            all_similarities = []
             
-            for collection_name, questions in self.example_questions.items():
-                if collection_name not in self.question_vectors:
-                    continue
+            # Check if we have cached embeddings (FAST PATH)
+            if hasattr(self, 'cached_embeddings') and self.cached_embeddings:
+                logger.info("🚀 Using CACHED embeddings for fast similarity calculation")
                 
-                # Calculate similarities with all questions in this collection
-                question_vectors = self.question_vectors[collection_name]
-                similarities = cosine_similarity(
-                    query_vector.reshape(1, -1),
-                    question_vectors
-                )[0]
-                
-                # Get best match in this collection
-                max_idx = np.argmax(similarities)
-                max_similarity = similarities[max_idx]
-                collection_scores[collection_name] = float(max_similarity)
-                
-                # Update global best
-                if max_similarity > best_score:
-                    best_score = max_similarity
-                    best_collection = collection_name
-                    best_example = questions[max_idx]['text']
-                    best_source = questions[max_idx]['source']
-                    best_filters = questions[max_idx].get('filters', {})
+                # Calculate similarity with cached embeddings
+                for collection_name, collection_data in self.cached_embeddings.items():
+                    collection_similarities = []
                     
-                    # 🐛 DEBUG: Log the exact match info
-                    logger.info(f"🔍 NEW BEST MATCH: score={max_similarity:.3f}, collection={collection_name}")
-                    logger.info(f"🔍 Question text: '{best_example[:100]}...'")
-                    logger.info(f"🔍 Source procedure: {best_source}")
-                    if 'exact_title' in best_filters:
-                        logger.info(f"🔍 Exact title from filters: {best_filters['exact_title']}")
+                    for doc_name, doc_data in collection_data.items():
+                        # Use regular question embeddings (no fused)
+                        embeddings = doc_data['embeddings']
+                        
+                        questions = doc_data['questions']
+                        
+                        # Calculate cosine similarity with question embeddings
+                        from sklearn.metrics.pairwise import cosine_similarity
+                        similarities = cosine_similarity(query_embedding, embeddings)[0]
+                        
+                        # Get best similarity for this document
+                        max_similarity = float(max(similarities))
+                        best_question_idx = int(similarities.argmax())
+                        best_question = questions[best_question_idx]
+                        
+                        # Boost if this is main_question match (no re-encoding needed)
+                        if best_question_idx == 0 and max_similarity > 0.6:  # main_question index = 0
+                            max_similarity = min(1.0, max_similarity * 1.15)  # Higher boost for main_question
+                        
+                        collection_similarities.append({
+                            'similarity': max_similarity,
+                            'document': doc_name,
+                            'best_question': best_question,
+                            'question_type': 'main' if best_question_idx == 0 else 'variant'
+                        })
+                        
+                        all_similarities.append({
+                            'collection': collection_name,
+                            'document': doc_name,
+                            'similarity': max_similarity,
+                            'question': best_question
+                        })
+                    
+                    if collection_similarities:
+                        # Get best document similarity for this collection
+                        best_doc = max(collection_similarities, key=lambda x: x['similarity'])
+                        collection_scores[collection_name] = {
+                            'score': best_doc['similarity'],
+                            'best_document': best_doc['document'],
+                            'best_question': best_doc['best_question'],
+                            'question_type': best_doc['question_type'],
+                            'all_docs': collection_similarities
+                        }
             
-            logger.info(f"🎯 Query: '{query[:50]}...' -> Best match: {best_collection} ({best_score:.3f})")
-            if best_example:
-                logger.info(f"📝 Matched example: '{best_example[:80]}...'")
+            else:
+                # FALLBACK: Real-time embedding calculation (SLOW PATH)
+                logger.warning("⚠️  No cached embeddings - using SLOW real-time calculation")
+                
+                # Calculate similarity with all cached questions
+                for collection_name, documents in self.example_questions.items():
+                    collection_similarities = []
+                    
+                    for doc_name, doc_data in documents.items():
+                        # Get all questions for this document
+                        main_question = doc_data.get('main_question', '')
+                        variants = doc_data.get('question_variants', [])
+                        all_questions = [main_question] + variants
+                        
+                        # Filter out empty questions
+                        valid_questions = [q for q in all_questions if q.strip()]
+                        
+                        if valid_questions:
+                            # Calculate embeddings for document questions (SLOW!)
+                            question_embeddings = self.embedding_model.encode(valid_questions)
+                            
+                            # Calculate cosine similarity
+                            from sklearn.metrics.pairwise import cosine_similarity
+                            similarities = cosine_similarity(query_embedding, question_embeddings)[0]
+                            
+                            # Get best similarity for this document
+                            max_similarity = float(max(similarities))
+                            best_question_idx = int(similarities.argmax())
+                            best_question = valid_questions[best_question_idx]
+                            
+                            # Boost if this is main_question match (no re-encoding needed)
+                            if best_question_idx == 0 and max_similarity > 0.6:  # main_question index = 0
+                                max_similarity = min(1.0, max_similarity * 1.15)  # Higher boost for main_question
+                            
+                            collection_similarities.append({
+                                'similarity': max_similarity,
+                                'document': doc_name,
+                                'best_question': best_question,
+                                'question_type': 'main' if best_question_idx == 0 else 'variant'
+                            })
+                            
+                            all_similarities.append({
+                                'collection': collection_name,
+                                'document': doc_name,
+                                'similarity': max_similarity,
+                                'question': best_question
+                            })
+                    
+                    if collection_similarities:
+                        # Get best document similarity for this collection
+                        best_doc = max(collection_similarities, key=lambda x: x['similarity'])
+                        collection_scores[collection_name] = {
+                            'score': best_doc['similarity'],
+                            'best_document': best_doc['document'],
+                            'best_question': best_doc['best_question'],
+                            'question_type': best_doc['question_type'],
+                            'all_docs': collection_similarities
+                        }
             
-            # 🔥 STATEFUL ROUTER LOGIC - Confidence Override (ƯU TIÊN CAO NHẤT)
+            # Find best collection
+            if not collection_scores:
+                return {
+                    'status': 'ambiguous',
+                    'confidence': 0.1,
+                    'target_collection': None,
+                    'confidence_level': 'low',
+                    'message': 'Không tìm thấy câu hỏi tương tự'
+                }
+            
+            best_collection = max(collection_scores.keys(), key=lambda k: collection_scores[k]['score'])
+            best_score = collection_scores[best_collection]['score']
+            best_match = collection_scores[best_collection]
+            
+            # DEBUG: Log top 3 documents for troubleshooting
+            if collection_scores:
+                sorted_docs = sorted([(k, v['score'], v['best_document']) for k, v in collection_scores.items()], 
+                                   key=lambda x: x[1], reverse=True)
+                logger.info(f"🏆 TOP DOCUMENT SCORES: {sorted_docs[:3]}")
+                logger.info(f"🎯 WINNER: {best_match['best_document']} with {best_score:.4f}")
+                logger.info(f"📝 WINNING QUESTION: {best_match['best_question']}")
+            
+            # Determine confidence level based on similarity score
+            confidence_level = 'low'
+            if best_score >= 0.80:  # Changed from 0.85 to match high threshold
+                confidence_level = 'high_confidence'
+            elif best_score >= 0.65:  # Combined medium_high and medium
+                confidence_level = 'medium_high_confidence'
+            elif best_score >= 0.50:
+                confidence_level = 'medium_confidence'
+            
+            # Sort all similarities for clarification
+            all_similarities.sort(key=lambda x: x['similarity'], reverse=True)
+            
+            # 🔥 SESSION CONFIDENCE OVERRIDE: Check if we should boost based on session context
             original_confidence = best_score
-            should_override = False
-            override_collection = None
+            original_confidence_level = confidence_level
+            was_overridden = False
+            target_collection = best_collection if best_score >= 0.65 else None
+            inferred_filters = {}
             
             if session and hasattr(session, 'should_override_confidence'):
-                if session.should_override_confidence(best_score):
-                    override_collection = session.last_successful_collection
-                    override_filters = getattr(session, 'last_successful_filters', None)  # 🔥 NEW: Lấy filters từ session
-                    should_override = True
-                    # Boost confidence to medium level khi override
-                    best_score = max(best_score, 0.75)
-                    best_collection = override_collection
-                    if override_filters:
-                        best_filters = override_filters  # 🔥 NEW: Override filters
-                        logger.info(f"🔥 OVERRIDE FILTERS: {override_filters}")
-                    logger.info(f"🔥 CONFIDENCE OVERRIDE: {original_confidence:.3f} -> {best_score:.3f}")
-                    logger.info(f"🔥 Override to collection: {override_collection} (from session state)")
+                if session.should_override_confidence(best_score, query):
+                    # Use session collection and boost confidence
+                    target_collection = session.last_successful_collection
+                    best_score = 0.85  # Override to high confidence 
+                    confidence_level = 'override_high'
+                    was_overridden = True
+
                     
-                    # Update display info for overridden case
-                    if override_collection in self.collection_mappings:
-                        display_name = self.collection_mappings[override_collection].get('display_name')
-                    else:
-                        display_name = override_collection
-                elif original_confidence < self.min_confidence_threshold:
-                    # Track consecutive low confidence
-                    session.increment_low_confidence()
-                    if session.consecutive_low_confidence_count >= 3:
-                        # Too many failed attempts - clear state
-                        logger.info("🧹 Clearing session state due to consecutive low confidence queries")
-                        session.clear_routing_state()
-            
-            # 🔗 FOLLOW-UP DETECTION (chỉ khi KHÔNG có override)
-            if not should_override and session and hasattr(session, 'last_successful_collection') and session.last_successful_collection:
-                logger.info(f"🔗 Session has previous context: {session.last_successful_collection}")
-                is_followup = self._is_followup_question(query)
-                logger.info(f"🔗 Follow-up check: query='{query}' -> is_followup={is_followup}")
-                if is_followup:
-                    logger.info(f"🔗 FOLLOW-UP DETECTED: '{query[:50]}...' -> maintaining {session.last_successful_collection}")
-                    return self._route_followup(query, session)
-            elif not should_override:
-                logger.info(f"🔗 No session context available: session={session is not None}, has_attr={hasattr(session, 'last_successful_collection') if session else False}, value={getattr(session, 'last_successful_collection', None) if session else None}")
-            
-            # �🐛 DEBUG: Final validation before returning
-            if best_filters:
-                final_title = best_filters.get('exact_title', ['Unknown'])
-                logger.info(f"🔍 FINAL FILTERS CHECK - Exact title: {final_title}")
-            
-            # Determine routing decision - LOGIC MỚI với 3 mức tin cậy + Override
-            if best_score >= self.high_confidence_threshold:
-                # High confidence - route immediately với tin cậy cao
-                confidence_level = 'high' if not should_override else 'override_high'
-                logger.info(f"✅ HIGH CONFIDENCE routing: {best_score:.3f} >= {self.high_confidence_threshold}")
-                return {
-                    'status': 'routed',
-                    'confidence_level': confidence_level,
-                    'target_collection': best_collection,
-                    'confidence': best_score,
-                    'original_confidence': original_confidence if should_override else best_score,
-                    'was_overridden': should_override,
-                    'all_scores': collection_scores,
-                    'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
-                    'clarification_needed': False,
-                    'matched_example': best_example,
-                    'source_procedure': best_source,
-                    'inferred_filters': best_filters
-                }
-            
-            elif best_score >= self.min_confidence_threshold:
-                # Khả năng match có thể đúng nhưng chưa chắc chắn - ROUTE NHƯNG CAUTION
-                confidence_level = 'low-medium' if not should_override else 'override_medium'
-                logger.info(f"⚠️ LOW-MEDIUM CONFIDENCE routing: {best_score:.3f} >= {self.min_confidence_threshold}")
-                return {
-                    'status': 'routed',
-                    'confidence_level': confidence_level, 
-                    'target_collection': best_collection,
-                    'confidence': best_score,
-                    'original_confidence': original_confidence if should_override else best_score,
-                    'was_overridden': should_override,
-                    'all_scores': collection_scores,
-                    'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
-                    'clarification_needed': False,  # Route nhưng sẽ có extra validation
-                    'matched_example': best_example,
-                    'source_procedure': best_source,
-                    'inferred_filters': best_filters,
-                    'warning': 'low_medium_confidence' if not should_override else 'overridden_routing'
-                }
-            
+                    # Add document preservation in router result
+                    if hasattr(session, 'last_successful_filters') and session.last_successful_filters:
+                        if 'source_file' in session.last_successful_filters:
+                            # Pass document info in routing result
+                            inferred_filters = session.last_successful_filters.copy()
+                            logger.info(f"🔒 SESSION OVERRIDE: Preserving document {session.last_successful_filters['source_file']}")
+                    
+                    logger.info(f"🔥 SESSION OVERRIDE: {original_confidence:.3f} → {best_score:.3f} for collection {target_collection}")
             else:
-                # Below min threshold - cần clarification vì quá mơ hồ
-                logger.warning(f"🤔 TOO AMBIGUOUS - cần clarification: {best_score:.3f} < {self.min_confidence_threshold}")
-                return {
-                    'status': 'clarification_needed',
-                    'confidence_level': 'low',
-                    'target_collection': best_collection,
-                    'confidence': best_score,
-                    'all_scores': collection_scores,
-                    'display_name': self.collection_mappings.get(best_collection, {}).get('display_name'),
-                    'clarification_needed': True,
-                    'matched_example': best_example,
-                    'source_procedure': best_source,
-                    'inferred_filters': best_filters,
-                    'suggested_topics': []
-                }
+                target_collection = best_collection if best_score >= 0.65 else None
             
-            # Below min threshold - backup strategy hoặc clarification
-            logger.warning(f"🚨 VERY LOW CONFIDENCE - kích hoạt backup strategy: {best_score:.3f} < {self.min_confidence_threshold}")
             return {
-                'status': 'no_match',
-                'confidence_level': 'very_low',
-                'target_collection': None,
+                'status': 'routed' if best_score >= 0.65 else 'ambiguous',
                 'confidence': best_score,
-                'all_scores': collection_scores,
-                'display_name': None,
-                'clarification_needed': True,
-                'matched_example': best_example,
-                'source_procedure': best_source,
-                'inferred_filters': best_filters,
-                'suggested_topics': [],
-                'needs_vector_backup': True
+                'target_collection': target_collection,
+                'confidence_level': confidence_level,
+                'original_confidence': original_confidence if was_overridden else None,
+                'was_overridden': was_overridden,
+                'all_scores': {k: v['score'] for k, v in collection_scores.items()},
+                'inferred_filters': inferred_filters if was_overridden and 'inferred_filters' in locals() else {},
+                'best_match': {
+                    'collection': best_collection,
+                    'document': best_match['best_document'],
+                    'question': best_match['best_question'],
+                    'similarity_percent': round(best_score * 100, 1),
+                    'question_type': best_match['question_type']
+                },
+                'top_similar_questions': all_similarities[:10],  # Top 10 for clarification
+                'matching_details': [f"Best match: {best_match['best_question']} ({round(best_score * 100, 1)}%)"]
             }
             
         except Exception as e:
-            logger.error(f"❌ Error in enhanced query routing: {e}")
+            logger.error(f"❌ Semantic routing error: {e}")
+            # Simple fallback
             return {
-                'status': 'no_match',
+                'status': 'ambiguous',
+                'confidence': 0.3,
                 'target_collection': None,
-                'confidence': 0.0,
-                'all_scores': {},
-                'display_name': None,
-                'clarification_needed': True,
-                'matched_example': None,
-                'source_procedure': None,
-                'inferred_filters': {}
+                'confidence_level': 'low',
+                'message': f'Lỗi semantic routing: {e}'
             }
     
-    def _get_top_suggestions(self, collection_scores: Dict[str, float], top_k: int = 3) -> List[Dict[str, Any]]:
-        """Lấy top suggestions từ collection scores để hiển thị cho user"""
+    def _get_document_metadata(self, collection_name: str, doc_name: str) -> Dict[str, Any]:
+        """Get document metadata from JSON file"""
         try:
-            # Sort collections by score
-            sorted_collections = sorted(collection_scores.items(), key=lambda x: x[1], reverse=True)
+            collection_path = os.path.join(self.base_path, collection_name, "documents", doc_name)
             
-            suggestions = []
-            for collection_name, score in sorted_collections[:top_k]:
-                if score > 0.2:  # Chỉ suggest nếu có ít nhất một chút liên quan
-                    display_name = self.collection_mappings.get(collection_name, {}).get('display_name', collection_name)
+            # Try to find the main document JSON (not questions.json)
+            for file_name in os.listdir(collection_path):
+                if file_name.endswith('.json') and file_name != 'questions.json':
+                    file_path = os.path.join(collection_path, file_name)
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        doc_data = json.load(f)
+                        
+                    # Extract metadata and keywords from content chunks
+                    metadata = doc_data.get('metadata', {})
                     
-                    # Lấy example question từ collection này để làm gợi ý
-                    example_questions = self.example_questions.get(collection_name, [])
-                    sample_question = None
-                    if example_questions:
-                        # Lấy main question hoặc question có priority cao
-                        main_questions = [q for q in example_questions if q.get('type') == 'main']
-                        if main_questions:
-                            sample_question = main_questions[0]['text']
-                        else:
-                            sample_question = example_questions[0]['text']
+                    # Aggregate keywords from all chunks
+                    all_keywords = []
+                    content_chunks = doc_data.get('content_chunks', [])
+                    for chunk in content_chunks:
+                        chunk_keywords = chunk.get('keywords', [])
+                        all_keywords.extend(chunk_keywords)
                     
-                    suggestions.append({
-                        'collection': collection_name,
-                        'display_name': display_name,
-                        'score': score,
-                        'sample_question': sample_question
-                    })
+                    # Add keywords to metadata
+                    if all_keywords:
+                        metadata['keywords'] = list(set(all_keywords))  # Remove duplicates
+                    
+                    return metadata
             
-            return suggestions
+            return {}
             
         except Exception as e:
-            logger.warning(f"Error getting top suggestions: {e}")
-            return []
-    
-    def get_collection_info(self) -> Dict[str, Any]:
-        """Trả về thông tin về tất cả collections"""
-        return {
-            'total_collections': len(self.collection_mappings),
-            'collections': self.collection_mappings,
-            'total_questions': sum(info['total_questions'] for info in self.collection_mappings.values())
-        }
+            logger.warning(f"Could not load metadata for {collection_name}/{doc_name}: {e}")
+            return {}
     
     def get_example_questions_for_collection(self, collection_name: str) -> List[Dict[str, Any]]:
-        """Trả về tất cả example questions cho một collection"""
-        return self.example_questions.get(collection_name, [])
-    
-    def get_similar_procedures_for_collection(
-        self, 
-        collection_name: str, 
-        reference_query: str, 
-        top_k: int = 5
-    ) -> List[Dict[str, Any]]:
-        """
-        Tìm các thủ tục tương đồng trong collection dựa trên reference query
-        Sử dụng embedding similarity để tìm procedures có liên quan cao nhất
-        
-        Args:
-            collection_name: Tên collection cần tìm
-            reference_query: Câu hỏi/procedure gốc để làm reference  
-            top_k: Số lượng procedures trả về tối đa
-            
-        Returns:
-            List các procedures tương đồng cao nhất, có thể ít hơn top_k nếu collection nhỏ
-        """
+        """Get example questions for a specific collection"""
         try:
-            # Get all example questions for this collection
-            collection_questions = self.example_questions.get(collection_name, [])
+            # Collection name mapping - frontend uses short names
+            collection_mappings = {
+                'ho_tich_cap_xa': 'quy_trinh_cap_ho_tich_cap_xa',
+                'chung_thuc': 'quy_trinh_chung_thuc', 
+                'nuoi_con_nuoi': 'quy_trinh_nuoi_con_nuoi'
+            }
             
-            if not collection_questions:
-                logger.warning(f"No example questions found for collection: {collection_name}")
+            # Map frontend collection name to actual collection name
+            actual_collection = collection_mappings.get(collection_name, collection_name)
+            
+            if actual_collection not in self.example_questions:
+                logger.warning(f"Collection not found: {actual_collection} (requested: {collection_name})")
                 return []
             
-            # 🚀 OPTIMIZED: Get embedding for reference query with caching
-            reference_cache_key = f"reference:{reference_query}"
-            if reference_cache_key in self.question_vectors:
-                reference_embedding = np.array(self.question_vectors[reference_cache_key]).reshape(1, -1)
-                logger.info(f"📦 Using cached embedding for reference query")
-            else:
-                reference_embedding = self.embedding_model.encode([reference_query])
-                # Cache the reference embedding for future use
-                self.question_vectors[reference_cache_key] = reference_embedding[0].tolist()
-                logger.info(f"🔄 Generated and cached embedding for reference query")
+            collection_docs = self.example_questions[actual_collection]
+            questions_list = []
             
-            # Calculate similarities with all questions in collection
-            similarities = []
-            
-            # 🚀 DEBUG: Log cache structure để hiểu format
-            if collection_name in self.question_vectors:
-                cache_format = self.question_vectors[collection_name]
-                if isinstance(cache_format, list):
-                    logger.info(f"🔍 DEBUG: Cache format for {collection_name} is list with {len(cache_format)} items")
-                elif isinstance(cache_format, dict):
-                    logger.info(f"🔍 DEBUG: Cache format for {collection_name} is dict with keys: {list(cache_format.keys())[:3]}...")
-                else:
-                    logger.info(f"🔍 DEBUG: Cache format for {collection_name} is {type(cache_format)}")
-                    
-            for i, question in enumerate(collection_questions):
-                question_text = question.get('text', question) if isinstance(question, dict) else question
+            for doc_name, doc_data in collection_docs.items():
+                main_question = doc_data.get('main_question', '')
+                variants = doc_data.get('question_variants', [])
                 
-                # 🚀 OPTIMIZED: Use pre-computed embedding from cache with correct format
-                question_embedding = None
-                
-                # Try cache format: collection_name -> embeddings (numpy array or list)
-                if collection_name in self.question_vectors:
-                    collection_embeddings = self.question_vectors[collection_name]
-                    
-                    # Handle numpy array format (from cache)
-                    if isinstance(collection_embeddings, np.ndarray):
-                        if len(collection_embeddings.shape) == 2 and i < collection_embeddings.shape[0]:
-                            question_embedding = collection_embeddings[i:i+1]  # Keep 2D shape
-                            if i == 0:  # Log first match only to avoid spam
-                                logger.info(f"📦 Using cached embedding (numpy format) for {collection_name}[{i}]")
-                    
-                    # Handle list format (fallback)
-                    elif isinstance(collection_embeddings, list) and i < len(collection_embeddings):
-                        embedding_data = collection_embeddings[i]
-                        if embedding_data is not None:
-                            question_embedding = np.array(embedding_data).reshape(1, -1)
-                            if i == 0:  # Log first match only to avoid spam
-                                logger.info(f"📦 Using cached embedding (list format) for {collection_name}[{i}]")
-                
-                # Try alternative cache format: "collection:question" key
-                if question_embedding is None:
-                    question_key = f"{collection_name}:{question_text}"
-                    if question_key in self.question_vectors:
-                        question_embedding = np.array(self.question_vectors[question_key]).reshape(1, -1)
-                        if i == 0:  # Log first match only
-                            logger.info(f"📦 Using cached embedding (key format) for {question_key[:50]}...")
-                
-                # Try embedded format: question dict with embedding
-                if question_embedding is None and isinstance(question, dict) and 'embedding' in question:
-                    question_embedding = np.array(question['embedding']).reshape(1, -1)
-                    if i == 0:  # Log first match only
-                        logger.info(f"📦 Using embedded embedding for {question_text[:50]}...")
-                
-                # Last resort: compute new embedding
-                if question_embedding is None:
-                    logger.warning(f"⚠️ Computing new embedding for: {question_text[:50]}...")
-                    question_embedding = self.embedding_model.encode([question_text])
-                    # Cache it for future use with both formats
-                    question_key = f"{collection_name}:{question_text}"
-                    self.question_vectors[question_key] = question_embedding[0].tolist()
-                    
-                    # Also update collection format if it exists
-                    if collection_name not in self.question_vectors:
-                        self.question_vectors[collection_name] = []
-                    if isinstance(self.question_vectors[collection_name], list):
-                        while len(self.question_vectors[collection_name]) <= i:
-                            self.question_vectors[collection_name].append(None)
-                        self.question_vectors[collection_name][i] = question_embedding[0].tolist()
-                
-                # Calculate cosine similarity
-                similarity = cosine_similarity(reference_embedding, question_embedding)[0][0]
-                
-                similarities.append({
-                    'question': question,
-                    'similarity': float(similarity),
-                    'text': question_text
-                })
-            
-            # Sort by similarity and return top_k
-            similarities.sort(key=lambda x: x['similarity'], reverse=True)
-            
-            # 🎯 ENHANCED: Boost exact/partial title matches to prioritize core procedures
-            for item in similarities:
-                question = item['question']
-                question_text = item['text']
-                
-                # Extract document title if available
-                if isinstance(question, dict):
-                    doc_title = question.get('title', '')
-                    source_file = question.get('source', '')
-                    
-                    # Extract title from source filename if no explicit title
-                    if not doc_title and source_file:
-                        filename = source_file.split('/')[-1].replace('.json', '').replace('.doc', '')
-                        if '. ' in filename:
-                            doc_title = filename.split('. ', 1)[1]  # Remove numbering like "01. "
-                    
-                    # 🔥 EXACT TITLE MATCH: Boost if reference query contains the exact document title
-                    if doc_title:
-                        # Clean both strings for comparison
-                        clean_reference = reference_query.lower().strip()
-                        clean_doc_title = doc_title.lower().strip()
-                        
-                        # Check for exact match or reference contains the document title
-                        if clean_doc_title in clean_reference or clean_reference in clean_doc_title:
-                            # 🚀 Special boost for core procedures (without "lưu động", "có yếu tố nước ngoài", etc.)
-                            is_core_procedure = not any(special in clean_doc_title for special in [
-                                'lưu động', 'có yếu tố nước ngoài', 'lại', 'kết hợp', 'chấm dứt'
-                            ])
-                            
-                            if is_core_procedure:
-                                # Major boost for core procedures with exact title match
-                                item['similarity'] = min(1.0, item['similarity'] + 0.3)
-                                logger.info(f"🎯 CORE TITLE MATCH: Boosted '{doc_title}' similarity to {item['similarity']:.3f}")
-                            else:
-                                # Minor boost for specialized procedures
-                                item['similarity'] = min(1.0, item['similarity'] + 0.1)
-                                logger.info(f"🎯 SPECIALIZED TITLE MATCH: Boosted '{doc_title}' similarity to {item['similarity']:.3f}")
-            
-            # Re-sort after boosting
-            similarities.sort(key=lambda x: x['similarity'], reverse=True)
-            
-            # Return top results, ensuring we have diverse procedures
-            results = []
-            seen_sources = set()  # Track sources to avoid duplicate procedures from same document
-            
-            for item in similarities[:top_k * 2]:  # Get more to filter
-                question = item['question']
-                
-                # Extract source info to avoid duplicates
-                source = None
-                if isinstance(question, dict):
-                    source = question.get('source', question.get('file', ''))
-                
-                # Add if we haven't seen this source or if no source info available
-                if not source or source not in seen_sources:
-                    results.append({
-                        'text': item['text'],
-                        'similarity': item['similarity'],
-                        'source': source or 'Unknown',
-                        'category': question.get('category', 'general') if isinstance(question, dict) else 'general',
-                        'collection': collection_name
+                # Add main question
+                if main_question:
+                    questions_list.append({
+                        'text': main_question,
+                        'type': 'main',
+                        'source': f"{actual_collection}/documents/{doc_name}/questions.json",
+                        'document': doc_name
                     })
-                    
-                    if source:
-                        seen_sources.add(source)
-                    
-                    if len(results) >= top_k:
-                        break
+                
+                # Add variants
+                for variant in variants:
+                    if variant.strip():
+                        questions_list.append({
+                            'text': variant,
+                            'type': 'variant',
+                            'source': f"{actual_collection}/documents/{doc_name}/questions.json",
+                            'document': doc_name
+                        })
             
-            logger.info(f"🎯 Found {len(results)} similar procedures in {collection_name} for reference: {reference_query[:50]}...")
-            if results:
-                logger.info(f"   Top similarity: {results[0]['similarity']:.3f} - {results[0]['text'][:60]}...")
-            
-            return results
+            logger.info(f"Retrieved {len(questions_list)} questions for collection {actual_collection} (requested: {collection_name})")
+            return questions_list
             
         except Exception as e:
-            logger.error(f"❌ Error finding similar procedures for collection {collection_name}: {e}")
-            # Fallback to first few questions from collection
-            fallback_questions = self.get_example_questions_for_collection(collection_name)[:top_k]
-            return [
-                {
-                    'text': q.get('text', q) if isinstance(q, dict) else q,
-                    'similarity': 0.0,  # No similarity calculated
-                    'source': q.get('source', 'Unknown') if isinstance(q, dict) else 'Unknown',
-                    'category': q.get('category', 'general') if isinstance(q, dict) else 'general',
-                    'collection': collection_name
+            logger.error(f"Error getting questions for collection {collection_name}: {e}")
+            return []
+    
+    def get_questions_from_specific_document(self, collection_name: str, document_name: str) -> List[Dict[str, Any]]:
+        """
+        Get questions chỉ từ document cụ thể thay vì toàn bộ collection
+        Đây là method hiệu quả hơn khi router đã xác định được document
+        """
+        try:
+            # Collection name mapping
+            collection_mappings = {
+                'ho_tich_cap_xa': 'quy_trinh_cap_ho_tich_cap_xa',
+                'chung_thuc': 'quy_trinh_chung_thuc', 
+                'nuoi_con_nuoi': 'quy_trinh_nuoi_con_nuoi'
+            }
+            
+            actual_collection = collection_mappings.get(collection_name, collection_name)
+            
+            # 🔧 FIX: Extract just the DOC_XXX part if document_name contains full path
+            if "/" in document_name and "documents" in document_name:
+                # Extract DOC_XXX from path like "quy_trinh_pbgdpl_htpldn/documents/DOC_002/questions.json"
+                parts = document_name.split("/")
+                for part in parts:
+                    if part.startswith("DOC_"):
+                        document_name = part
+                        break
+                logger.info(f"🔧 Extracted document name: {document_name}")
+            elif document_name.endswith(".json"):
+                # Remove .json extension if present
+                document_name = document_name.replace("/questions.json", "").split("/")[-1]
+                logger.info(f"🔧 Cleaned document name: {document_name}")
+            
+            # Kiểm tra xem có data trong memory cache không
+            if actual_collection in self.example_questions:
+                collection_docs = self.example_questions[actual_collection]
+                if document_name in collection_docs:
+                    doc_data = collection_docs[document_name]
+                    
+                    main_question = doc_data.get('main_question', '')
+                    variants = doc_data.get('question_variants', [])
+                    
+                    questions_list = []
+                    
+                    # Add main question
+                    if main_question:
+                        questions_list.append({
+                            'text': main_question,
+                            'type': 'main',
+                            'source': f"{actual_collection}/documents/{document_name}/questions.json",
+                            'document': document_name,
+                            'priority': 'high'  # Main question có priority cao
+                        })
+                    
+                    # Add variants
+                    for i, variant in enumerate(variants):
+                        if variant.strip():
+                            questions_list.append({
+                                'text': variant,
+                                'type': 'variant',
+                                'source': f"{actual_collection}/documents/{document_name}/questions.json",
+                                'document': document_name,
+                                'priority': 'medium',
+                                'variant_index': i
+                            })
+                    
+                    logger.info(f"Retrieved {len(questions_list)} questions from specific document {document_name} in {actual_collection}")
+                    return questions_list
+                else:
+                    logger.warning(f"Document {document_name} not found in collection {actual_collection}")
+            
+            # Fallback: Load từ file nếu không có trong cache
+            questions_file = os.path.join(self.base_path, actual_collection, "documents", document_name, "questions.json")
+            
+            if not os.path.exists(questions_file):
+                logger.warning(f"Questions file not found: {questions_file}")
+                return []
+            
+            with open(questions_file, 'r', encoding='utf-8') as f:
+                questions_data = json.load(f)
+            
+            main_question = questions_data.get('main_question', '')
+            variants = questions_data.get('question_variants', [])
+            
+            questions_list = []
+            
+            # Add main question
+            if main_question:
+                questions_list.append({
+                    'text': main_question,
+                    'type': 'main',
+                    'source': f"{actual_collection}/documents/{document_name}/questions.json",
+                    'document': document_name,
+                    'priority': 'high'
+                })
+            
+            # Add variants
+            for i, variant in enumerate(variants):
+                if variant.strip():
+                    questions_list.append({
+                        'text': variant,
+                        'type': 'variant',
+                        'source': f"{actual_collection}/documents/{document_name}/questions.json",
+                        'document': document_name,
+                        'priority': 'medium',
+                        'variant_index': i
+                    })
+            
+            logger.info(f"Retrieved {len(questions_list)} questions from file for document {document_name} in {actual_collection}")
+            return questions_list
+            
+        except Exception as e:
+            logger.error(f"Error getting questions from document {document_name} in collection {collection_name}: {e}")
+            return []
+    
+    def get_document_info_from_routing_result(self, routing_result: Dict[str, Any]) -> Dict[str, str]:
+        """
+        Extract collection và document info từ routing result
+        Helper method để lấy thông tin cần thiết cho get_questions_from_specific_document
+        """
+        try:
+            collection = routing_result.get('target_collection')
+            best_match = routing_result.get('best_match', {})
+            document = best_match.get('document')
+            
+            if collection and document:
+                return {
+                    'collection': collection,
+                    'document': document,
+                    'status': 'found'
                 }
-                for q in fallback_questions
-            ]
+            else:
+                logger.warning(f"Missing collection or document info in routing result: collection={collection}, document={document}")
+                return {
+                    'collection': collection or 'unknown',
+                    'document': document or 'unknown',
+                    'status': 'incomplete'
+                }
+        except Exception as e:
+            logger.error(f"Error extracting document info from routing result: {e}")
+            return {
+                'collection': 'unknown',
+                'document': 'unknown',
+                'status': 'error'
+            }
+    
+    def get_collection_documents_directly(self, collection_name: str) -> List[Dict[str, Any]]:
+        """
+        Lấy danh sách documents trực tiếp từ collection, không qua questions
+        Hiệu quả hơn cho việc hiển thị document list
+        """
+        try:
+            # Collection name mapping
+            collection_mappings = {
+                'ho_tich_cap_xa': 'quy_trinh_cap_ho_tich_cap_xa',
+                'chung_thuc': 'quy_trinh_chung_thuc', 
+                'nuoi_con_nuoi': 'quy_trinh_nuoi_con_nuoi'
+            }
+            
+            actual_collection = collection_mappings.get(collection_name, collection_name)
+            documents_path = os.path.join(self.base_path, actual_collection, "documents")
+            
+            if not os.path.exists(documents_path):
+                logger.warning(f"Documents directory not found: {documents_path}")
+                return []
+            
+            documents_list = []
+            
+            # Scan documents directory
+            for doc_name in os.listdir(documents_path):
+                doc_path = os.path.join(documents_path, doc_name)
+                if not os.path.isdir(doc_path):
+                    continue
+                
+                # Kiểm tra xem có questions.json không
+                questions_file = os.path.join(doc_path, "questions.json")
+                if not os.path.exists(questions_file):
+                    continue
+                
+                # Đọc questions.json và content JSON để lấy thông tin đầy đủ
+                try:
+                    with open(questions_file, 'r', encoding='utf-8') as f:
+                        questions_data = json.load(f)
+                    
+                    main_question = questions_data.get('main_question', '')
+                    variants = questions_data.get('question_variants', [])
+                    question_count = (1 if main_question else 0) + len([v for v in variants if v.strip()])
+                    
+                    # Đọc content JSON để lấy title chính xác từ metadata
+                    content_files = [f for f in os.listdir(doc_path) if f.endswith('.json') and f != 'questions.json']
+                    document_title = main_question[:50] + "..." if main_question else doc_name
+                    
+                    if content_files:
+                        content_file = os.path.join(doc_path, content_files[0])
+                        try:
+                            with open(content_file, 'r', encoding='utf-8') as f:
+                                content_data = json.load(f)
+                            
+                            # Lấy title từ metadata thay vì main_question
+                            if 'metadata' in content_data and 'title' in content_data['metadata']:
+                                full_title = content_data['metadata']['title']
+                                document_title = full_title[:50] + "..." if len(full_title) > 50 else full_title
+                                logger.info(f"📄 Using metadata title for {doc_name}: {document_title}")
+                            else:
+                                logger.warning(f"📄 No metadata title found for {doc_name}, using main_question")
+                        except Exception as e:
+                            logger.warning(f"📄 Error reading content file {content_file}: {e}")
+                    
+                    documents_list.append({
+                        'filename': doc_name,
+                        'title': document_title,
+                        'description': f"Tài liệu về {document_title[:30]}...",
+                        'question_count': question_count,
+                        'full_path': f"{actual_collection}/documents/{doc_name}",
+                        'has_questions': question_count > 0
+                    })
+                    
+                except Exception as e:
+                    logger.warning(f"Error reading questions from {questions_file}: {e}")
+                    # Thêm document nhưng không có question count
+                    documents_list.append({
+                        'filename': doc_name,
+                        'title': doc_name,
+                        'description': f"Tài liệu {doc_name}",
+                        'question_count': 0,
+                        'full_path': f"{actual_collection}/documents/{doc_name}",
+                        'has_questions': False
+                    })
+            
+            # Sắp xếp theo số questions (nhiều nhất trước)
+            documents_list.sort(key=lambda x: x['question_count'], reverse=True)
+            
+            logger.info(f"🚀 Retrieved {len(documents_list)} documents directly from collection {actual_collection} (no questions loaded)")
+            return documents_list
+            
+        except Exception as e:
+            logger.error(f"Error getting documents from collection {collection_name}: {e}")
+            return []
+    
+    def get_collections(self) -> List[Dict[str, Any]]:
+        """Get list of available collections with proper structure"""
+        try:
+            # Frontend mapping - return short names for easier frontend handling
+            name_mappings = {
+                'quy_trinh_cap_ho_tich_cap_xa': 'ho_tich_cap_xa',
+                'quy_trinh_chung_thuc': 'chung_thuc',
+                'quy_trinh_nuoi_con_nuoi': 'nuoi_con_nuoi'
+            }
+            
+            display_names = {
+                'quy_trinh_cap_ho_tich_cap_xa': 'Hộ tịch cấp xã',
+                'quy_trinh_chung_thuc': 'Chứng thực',
+                'quy_trinh_nuoi_con_nuoi': 'Nuôi con nuôi'
+            }
+            
+            collections = []
+            
+            # Iterate through collection_mappings (new structure)
+            for collection_name, collection_info in self.collection_mappings.items():
+                short_name = name_mappings.get(collection_name, collection_name)
+                display_name = display_names.get(collection_name, collection_info.get('description', collection_name))
+                
+                collections.append({
+                    'name': short_name,
+                    'full_name': collection_name,
+                    'title': display_name,
+                    'description': f"Các thủ tục và quy trình về {display_name.lower() if display_name else 'unknown'}",
+                    'file_count': collection_info.get('file_count', 0),
+                    'path': collection_info.get('path', ''),
+                    'documents_path': collection_info.get('documents_path', ''),
+                    'question_count': len(self.example_questions.get(collection_name, []))
+                })
+            
+            logger.info(f"📊 Returning {len(collections)} collections for frontend")
+            return collections
+            
+        except Exception as e:
+            logger.error(f"Error getting collections: {e}")
+            return []
+    
+    def get_procedure_questions_limited(self, collection_name: str, procedure: str, limit: int = 20) -> List[Dict[str, Any]]:
+        """
+        Lấy questions liên quan đến procedure với giới hạn số lượng
+        Hiệu quả hơn cho việc hiển thị procedure-related questions
+        """
+        try:
+            # Collection name mapping
+            collection_mappings = {
+                'ho_tich_cap_xa': 'quy_trinh_cap_ho_tich_cap_xa',
+                'chung_thuc': 'quy_trinh_chung_thuc', 
+                'nuoi_con_nuoi': 'quy_trinh_nuoi_con_nuoi'
+            }
+            
+            actual_collection = collection_mappings.get(collection_name, collection_name)
+            
+            if actual_collection not in self.example_questions:
+                logger.warning(f"Collection not found: {actual_collection}")
+                return []
+            
+            collection_docs = self.example_questions[actual_collection]
+            matching_questions = []
+            
+            # Tìm questions phù hợp với procedure
+            for doc_name, doc_data in collection_docs.items():
+                main_question = doc_data.get('main_question', '')
+                variants = doc_data.get('question_variants', [])
+                
+                # Kiểm tra main question
+                if procedure and procedure.lower() in main_question.lower():
+                    matching_questions.append({
+                        'text': main_question,
+                        'type': 'main',
+                        'source': f"{actual_collection}/documents/{doc_name}/questions.json",
+                        'document': doc_name,
+                        'priority': 'high',
+                        'relevance_score': self._calculate_relevance(main_question, procedure)
+                    })
+                
+                # Kiểm tra variants
+                for i, variant in enumerate(variants):
+                    if variant.strip() and procedure and procedure.lower() in variant.lower():
+                        matching_questions.append({
+                            'text': variant,
+                            'type': 'variant',
+                            'source': f"{actual_collection}/documents/{doc_name}/questions.json",
+                            'document': doc_name,
+                            'priority': 'medium',
+                            'variant_index': i,
+                            'relevance_score': self._calculate_relevance(variant, procedure)
+                        })
+                
+                # Giới hạn số lượng để tránh quá nhiều
+                if len(matching_questions) >= limit:
+                    break
+            
+            # Sắp xếp theo relevance score (cao nhất trước)
+            matching_questions.sort(key=lambda x: x.get('relevance_score', 0), reverse=True)
+            
+            # Giới hạn kết quả
+            limited_questions = matching_questions[:limit]
+            
+            logger.info(f"🚀 Retrieved {len(limited_questions)} procedure-related questions for '{procedure}' in {actual_collection} (limit: {limit})")
+            return limited_questions
+            
+        except Exception as e:
+            logger.error(f"Error getting procedure questions for {collection_name}/{procedure}: {e}")
+            return []
+    
+    def _calculate_relevance(self, text: str, procedure: str) -> float:
+        """
+        Tính toán độ tương quan giữa text và procedure
+        Đơn giản: đếm số từ khóa khớp
+        """
+        if not text or not procedure:
+            return 0.0
+        
+        text_lower = text.lower()
+        procedure_lower = procedure.lower()
+        
+        # Đếm số từ khóa khớp
+        procedure_words = procedure_lower.split()
+        matches = sum(1 for word in procedure_words if word in text_lower)
+        
+        # Tính tỉ lệ khớp
+        relevance = matches / len(procedure_words) if procedure_words else 0.0
+        
+        # Bonus nếu khớp chính xác phrase
+        if procedure_lower in text_lower:
+            relevance += 0.5
+        
+        return min(1.0, relevance)  # Giới hạn 0-1
 
 class RouterBasedQueryService:
-    """Service xử lý câu hỏi mơ hồ dựa trên router results"""
+    """Service for handling ambiguous queries using router"""
     
     def __init__(self, router: QueryRouter):
         self.router = router
-        self.clarification_templates = {
-            'ambiguous': [
-                "Câu hỏi của bạn có thể liên quan đến nhiều lĩnh vực. Bạn có thể cung cấp thêm thông tin cụ thể không?",
-                "Để hỗ trợ bạn tốt hơn, bạn có thể nói rõ hơn về vấn đề bạn quan tâm?",
-                "Câu hỏi của bạn khá chung. Bạn có thể chỉ rõ bạn muốn tìm hiểu về thủ tục nào cụ thể?"
-            ],
-            'no_match': [
-                "Xin lỗi, tôi không tìm thấy thông tin phù hợp với câu hỏi của bạn trong cơ sở dữ liệu hiện tại.",
-                "Câu hỏi này có vẻ nằm ngoài phạm vi hỗ trợ của tôi. Bạn có thể hỏi về các thủ tục hành chính khác không?",
-                "Tôi không có thông tin về vấn đề này. Bạn có thể tham khảo trực tiếp tại cơ quan có thẩm quyền."
-            ]
-        }
-        
-        logger.info("✅ Router-based Ambiguous Query Service initialized")
+        logger.info("✅ RouterBasedQueryService initialized")
     
-    def is_ambiguous(self, query: str) -> Tuple[bool, Dict[str, Any]]:
-        """
-        Kiểm tra query có ambiguous không dựa trên router results
-        UPDATED: Sử dụng logic mới với multi-level confidence
-        
-        Returns:
-            (is_ambiguous, routing_result)
-        """
+    def handle_ambiguous_query(self, query: str, session=None):
+        """Handle ambiguous query using router"""
         try:
-            routing_result = self.router.route_query(query)
-            confidence_level = routing_result.get('confidence_level', 'low')
-            
-            # Ambiguous nếu confidence không phải high
-            is_ambiguous = confidence_level in ['low', 'very_low']
-            
-            if is_ambiguous:
-                logger.info(f"🤔 Ambiguous query detected: confidence_level={confidence_level}, score={routing_result['confidence']:.3f}")
-            
-            return is_ambiguous, routing_result
-            
+            # Use router to find best match
+            if hasattr(self.router, 'route_query'):
+                return self.router.route_query(query, session)
+            else:
+                # Fallback basic response
+                return {
+                    'status': 'ambiguous',
+                    'confidence': 0.3,
+                    'target_collection': None,
+                    'message': 'Query is ambiguous, please be more specific'
+                }
         except Exception as e:
-            logger.error(f"❌ Error checking ambiguous query: {e}")
-            return True, {'status': 'error', 'confidence': 0.0, 'confidence_level': 'very_low'}
-    
-    def generate_clarification_response(self, routing_result: Dict[str, Any]) -> str:
-        """Generate clarification response dựa trên routing result"""
-        try:
-            status = routing_result.get('status', 'no_match')
-            
-            if status == 'ambiguous':
-                # Có match nhưng confidence thấp
-                templates = self.clarification_templates['ambiguous']
-                base_response = templates[0]
-                
-                # Suggest top collections
-                all_scores = routing_result.get('all_scores', {})
-                if all_scores:
-                    top_collections = sorted(all_scores.items(), key=lambda x: x[1], reverse=True)[:2]
-                    suggestions = []
-                    for collection, score in top_collections:
-                        display_name = self.router.collection_mappings.get(collection, {}).get('display_name', collection)
-                        suggestions.append(display_name)
-                    
-                    if suggestions:
-                        base_response += f" Các lĩnh vực có thể liên quan: {', '.join(suggestions)}."
-                
-                return base_response
-            
-            else:  # no_match
-                return self.clarification_templates['no_match'][0]
-                
-        except Exception as e:
-            logger.error(f"❌ Error generating clarification response: {e}")
-            return "Xin lỗi, có lỗi xảy ra khi xử lý câu hỏi của bạn."
+            logger.error(f"❌ RouterBasedQueryService error: {e}")
+            return {
+                'status': 'error',
+                'confidence': 0.0,
+                'target_collection': None,
+                'message': f'Error processing query: {e}'
+            }
+
+    # _scan_individual_files method removed - no longer needed with questions.json structure

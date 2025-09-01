@@ -1,0 +1,135 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_001/1. Đăng ký hoạt động của doanh nghiệp đấu giá tài sản.doc",
+    "title": "Đăng ký hoạt động của doanh nghiệp đấu giá tài sản",
+    "code": "QT 01/ĐGTS",
+    "issuing_authority": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương",
+    "effective_date": "Theo Luật Đấu giá tài sản 2016",
+    "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương",
+    "applicant_type": [
+      "Doanh nghiệp đấu giá tài sản đã thành lập theo quy định"
+    ],
+    "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 0,
+    "fee_text": "Không thu lệ phí (thủ tục hành chính)",
+    "has_form": true,
+    "requirements_conditions": "Doanh nghiệp đấu giá tài sản phải đáp ứng đầy đủ các điều kiện theo quy định của Luật Đấu giá tài sản và các văn bản hướng dẫn.",
+    "legal_basis_references": [
+      "Luật Đấu giá tài sản 2016",
+      "Nghị định số 62/2017/NĐ-CP",
+      "Thông tư số 06/2017/TT-BTP",
+      "Nghị định số 17/2020/NĐ-CP"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "0đ",
+      "online": "0đ",
+      "description": "Không thu lệ phí đăng ký hoạt động doanh nghiệp đấu giá tài sản"
+    },
+    "exemptions": [
+      "Tất cả doanh nghiệp đấu giá tài sản"
+    ],
+    "additional_fees": [
+      "Phí chứng thực bản sao: 10.000đ/trang",
+      "Phí công chứng (nếu cần): theo quy định"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Thành phần hồ sơ yêu cầu",
+      "content": "Hồ sơ đăng ký hoạt động doanh nghiệp đấu giá tài sản bao gồm:\\n1. Đơn đề nghị đăng ký hoạt động đấu giá tài sản theo mẫu do Bộ trưởng Bộ Tư pháp ban hành.\\n2. Bản sao có chứng thực Giấy chứng nhận đăng ký doanh nghiệp hoặc Giấy chứng nhận đăng ký đầu tư.\\n3. Bản sao có chứng thực Chứng chỉ hành nghề đấu giá của các đấu giá viên.\\n4. Bản sao có chứng thực Giấy chứng nhận đủ điều kiện kinh doanh dịch vụ đấu giá tài sản (nếu có).\\n5. Danh sách trích ngang công chứng viên, đấu giá viên, nhân viên nghiệp vụ.\\n6. Bản sao có chứng thực văn bằng, chứng chỉ đào tạo nghiệp vụ đấu giá tài sản.\\n7. Quy trình đấu giá tài sản do doanh nghiệp xây dựng.\\n8. Bản sao có chứng thực tài liệu chứng minh về cơ sở vật chất, trang thiết bị.\\n9. Các giấy tờ khác liên quan đến nội dung đề nghị đăng ký.",
+      "source_reference": "Điều 60, 61 Luật Đấu giá tài sản",
+      "keywords": [
+        "hồ sơ",
+        "đăng ký hoạt động",
+        "doanh nghiệp đấu giá",
+        "đơn đề nghị",
+        "giấy chứng nhận đăng ký",
+        "chứng chỉ hành nghề",
+        "đấu giá viên",
+        "điều kiện kinh doanh",
+        "nhân viên nghiệp vụ",
+        "quy trình đấu giá",
+        "cơ sở vật chất"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thời hạn giải quyết",
+      "content": "Thời hạn giải quyết: 30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.\\n\\nTrường hợp đặc biệt:\\n- Nếu hồ sơ chưa đầy đủ: Sở Tư pháp thông báo bằng văn bản trong 05 ngày làm việc.\\n- Nếu từ chối cấp giấy đăng ký: Phải thông báo bằng văn bản có nêu rõ lý do.\\n- Hồ sơ không thuộc thẩm quyền: Thông báo và hướng dẫn nơi tiếp nhận đúng.",
+      "source_reference": "Điều 62 Luật Đấu giá tài sản",
+      "keywords": [
+        "thời hạn",
+        "30 ngày làm việc",
+        "hồ sơ hợp lệ",
+        "thông báo",
+        "05 ngày",
+        "từ chối",
+        "lý do",
+        "thẩm quyền",
+        "hướng dẫn"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Đối tượng và cơ quan thực hiện",
+      "content": "Đối tượng được đăng ký:\\n- Doanh nghiệp đấu giá tài sản đã được thành lập hợp pháp theo quy định của Luật Doanh nghiệp.\\n- Có đủ điều kiện về nhân sự (tối thiểu 01 đấu giá viên có chứng chỉ hành nghề).\\n- Có đủ điều kiện về cơ sở vật chất, trang thiết bị.\\n- Có quy trình đấu giá phù hợp với quy định pháp luật.\\n\\nCơ quan thực hiện: Sở Tư pháp tỉnh/thành phố trực thuộc trung ương nơi doanh nghiệp đặt trụ sở chính.",
+      "source_reference": "Điều 57, 58, 59 Luật Đấu giá tài sản",
+      "keywords": [
+        "đối tượng",
+        "doanh nghiệp đấu giá",
+        "thành lập hợp pháp",
+        "Luật Doanh nghiệp",
+        "điều kiện nhân sự",
+        "đấu giá viên",
+        "chứng chỉ hành nghề",
+        "cơ sở vật chất",
+        "trang thiết bị",
+        "quy trình đấu giá",
+        "Sở Tư pháp",
+        "trụ sở chính"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả thực hiện và phí",
+      "content": "Kết quả: Sở Tư pháp cấp Giấy đăng ký hoạt động đấu giá tài sản cho doanh nghiệp hoặc văn bản từ chối có nêu rõ lý do.\\n\\nGiấy đăng ký có các thông tin:\\n- Tên, địa chỉ trụ sở chính của doanh nghiệp\\n- Lĩnh vực hoạt động đấu giá được phép\\n- Danh sách đấu giá viên\\n- Thời hạn hiệu lực (không hạn chế thời gian)\\n\\nPhí và lệ phí: Không thu lệ phí cho thủ tục này theo quy định.",
+      "source_reference": "Điều 63 Luật Đấu giá tài sản",
+      "keywords": [
+        "kết quả",
+        "giấy đăng ký",
+        "hoạt động đấu giá",
+        "văn bản từ chối",
+        "tên địa chỉ",
+        "trụ sở chính",
+        "lĩnh vực hoạt động",
+        "danh sách đấu giá viên",
+        "thời hạn hiệu lực",
+        "không thu lệ phí"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý công việc",
+      "content": "Các bước thực hiện:\\n1. **Chuẩn bị hồ sơ:** Doanh nghiệp đấu giá tài sản chuẩn bị đầy đủ hồ sơ theo quy định.\\n2. **Nộp hồ sơ:** Nộp hồ sơ tại Sở Tư pháp nơi đặt trụ sở chính (trực tiếp hoặc qua bưu điện).\\n3. **Tiếp nhận:** Sở Tư pháp tiếp nhận và kiểm tra tính đầy đủ, hợp lệ của hồ sơ.\\n4. **Thẩm tra:** Thẩm tra các điều kiện về nhân sự, cơ sở vật chất, quy trình đấu giá.\\n5. **Quyết định:** Cấp Giấy đăng ký hoặc từ chối bằng văn bản có nêu rõ lý do.\\n6. **Cập nhật:** Cập nhật thông tin doanh nghiệp vào hệ thống quản lý.\\n7. **Công khai:** Công khai thông tin trên website của Sở Tư pháp.",
+      "source_reference": "Nghị định 62/2017/NĐ-CP",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "chuẩn bị hồ sơ",
+        "nộp hồ sơ",
+        "trực tiếp",
+        "bưu điện",
+        "tiếp nhận",
+        "thẩm tra",
+        "điều kiện",
+        "quyết định",
+        "cập nhật hệ thống",
+        "công khai",
+        "website"
+      ]
+    }
+  ]
+}

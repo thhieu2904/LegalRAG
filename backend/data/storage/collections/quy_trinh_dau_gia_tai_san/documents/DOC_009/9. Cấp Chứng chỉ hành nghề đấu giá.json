@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "source": "data/documents/quy_trinh_dau_gia_tai_san/documents/DOC_009/9. Cấp Chứng chỉ hành nghề đấu giá.doc",
+    "title": "Cấp Chứng chỉ hành nghề đấu giá",
+    "code": "QT 009/ĐGTS",
+    "issuing_authority": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương",
+    "effective_date": "Theo Luật Đấu giá tài sản 2016",
+    "executing_agency": "Sở Tư pháp tỉnh/thành phố trực thuộc trung ương",
+    "applicant_type": [
+      "Doanh nghiệp đấu giá tài sản",
+      "Đấu giá viên",
+      "Chi nhánh doanh nghiệp đấu giá"
+    ],
+    "processing_time_text": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ",
+    "fee_vnd": 500000,
+    "fee_text": "500,000đ",
+    "has_form": true,
+    "requirements_conditions": "Đáp ứng các điều kiện theo quy định của Luật Đấu giá tài sản và các văn bản hướng dẫn.",
+    "legal_basis_references": [
+      "Luật Đấu giá tài sản 2016",
+      "Nghị định số 62/2017/NĐ-CP",
+      "Thông tư số 06/2017/TT-BTP",
+      "Nghị định số 17/2020/NĐ-CP",
+      "Thông tư số 250/2016/TT-BTC"
+    ]
+  },
+  "fee_structure": {
+    "main_fee": {
+      "direct": "500,000đ",
+      "online": "500,000đ",
+      "description": "Phí cấp chứng chỉ hành nghề đấu giá"
+    },
+    "exemptions": [
+      "Không có đối tượng miễn phí"
+    ],
+    "additional_fees": [
+      "Phí chứng thực bản sao: 10.000đ/trang"
+    ]
+  },
+  "content_chunks": [
+    {
+      "chunk_id": 1,
+      "section_title": "Đối tượng và điều kiện",
+      "content": "Đối tượng và điều kiện thực hiện cấp chứng chỉ hành nghề đấu giá.",
+      "source_reference": "Luật Đấu giá tài sản, Nghị định 62/2017",
+      "keywords": [
+        "đối tượng",
+        "điều kiện",
+        "doanh nghiệp",
+        "đấu giá tài sản",
+        "đấu giá viên"
+      ]
+    },
+    {
+      "chunk_id": 2,
+      "section_title": "Thành phần hồ sơ",
+      "content": "Hồ sơ yêu cầu cho cấp chứng chỉ hành nghề đấu giá.",
+      "source_reference": "Nghị định 62/2017/NĐ-CP",
+      "keywords": [
+        "hồ sơ",
+        "thành phần",
+        "yêu cầu",
+        "giấy tờ"
+      ]
+    },
+    {
+      "chunk_id": 3,
+      "section_title": "Thời hạn giải quyết",
+      "content": "30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.",
+      "source_reference": "Thông tư 06/2017/TT-BTP",
+      "keywords": [
+        "thời hạn",
+        "giải quyết",
+        "hồ sơ hợp lệ",
+        "ngày làm việc"
+      ]
+    },
+    {
+      "chunk_id": 4,
+      "section_title": "Kết quả và lệ phí",
+      "content": "Kết quả và lệ phí cấp chứng chỉ hành nghề đấu giá: 500,000đ.",
+      "source_reference": "Thông tư 250/2016/TT-BTC",
+      "keywords": [
+        "kết quả",
+        "lệ phí",
+        "chứng chỉ",
+        "giấy đăng ký"
+      ]
+    },
+    {
+      "chunk_id": 5,
+      "section_title": "Quy trình xử lý",
+      "content": "Quy trình và các bước thực hiện cấp chứng chỉ hành nghề đấu giá.",
+      "source_reference": "Nghị định 62/2017/NĐ-CP",
+      "keywords": [
+        "quy trình",
+        "các bước",
+        "thực hiện",
+        "xử lý"
+      ]
+    }
+  ]
+}
