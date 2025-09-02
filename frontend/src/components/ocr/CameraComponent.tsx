@@ -44,9 +44,12 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
 
       const constraints: MediaStreamConstraints = {
         video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: 1920, min: 1280 }, // Higher resolution for QR scanning
+          height: { ideal: 1080, min: 720 },
           facingMode: facingMode,
+          // Additional constraints for better quality
+          frameRate: { ideal: 30 },
+          aspectRatio: { ideal: 16 / 9 },
         },
       };
 
@@ -122,15 +125,19 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
 
     if (!ctx) return;
 
-    // Set canvas size to match video
+    // Set canvas size to match video with high resolution
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
+
+    // Use higher quality rendering
+    ctx.imageSmoothingEnabled = false; // Disable smoothing for sharper QR codes
+    ctx.imageSmoothingQuality = "high";
 
     // Draw current video frame to canvas
     ctx.drawImage(video, 0, 0);
 
-    // Get image data
-    const imageData = canvas.toDataURL("image/jpeg", 0.8);
+    // Get image data with maximum quality for QR scanning
+    const imageData = canvas.toDataURL("image/png"); // Use PNG for lossless quality
     setCapturedImage(imageData);
 
     // Don't call onCapture yet, wait for user confirmation

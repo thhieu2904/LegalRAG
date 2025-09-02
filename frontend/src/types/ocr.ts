@@ -9,6 +9,10 @@ export interface CCCDExtractedData {
   issue_date?: string;
   expiry_date?: string;
   issued_by?: string;
+  // QR-specific fields
+  citizen_id?: string;
+  old_id?: string;
+  address?: string;
 }
 
 export interface ConfidenceScores {

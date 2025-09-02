@@ -1,0 +1,99 @@
+/* QRFileUpload.css */
+.qr-file-upload {
+  width: 100%;
+}
+
+.upload-zone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.upload-zone:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.upload-zone.drag-over {
+  border-color: #10b981;
+  background: #ecfdf5;
+  transform: scale(1.02);
+}
+
+.upload-zone.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.upload-icon {
+  color: #64748b;
+  transition: color 0.3s ease;
+}
+
+.upload-zone:hover .upload-icon {
+  color: #3b82f6;
+}
+
+.upload-zone.drag-over .upload-icon {
+  color: #10b981;
+}
+
+.upload-text h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.upload-text p {
+  color: #64748b;
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+}
+
+.upload-tips {
+  display: flex;
+  justify-content: center;
+}
+
+.tip-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.tip-item svg {
+  color: #3b82f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .upload-zone {
+    padding: 2rem 1rem;
+  }
+
+  .upload-text h3 {
+    font-size: 1.1rem;
+  }
+
+  .upload-text p {
+    font-size: 0.9rem;
+  }
+}
