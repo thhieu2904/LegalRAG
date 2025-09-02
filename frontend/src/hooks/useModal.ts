@@ -145,6 +145,30 @@ export const MODAL_CONFIGS: Record<ModalType, ModalConfig> = {
     closable: true,
     backdrop: true,
   },
+  "add-question": {
+    title: "Thêm Câu Hỏi Mới",
+    size: "lg",
+    closable: true,
+    backdrop: true,
+  },
+  "edit-question": {
+    title: "Chỉnh Sửa Câu Hỏi",
+    size: "lg",
+    closable: true,
+    backdrop: true,
+  },
+  "view-question": {
+    title: "Chi Tiết Câu Hỏi",
+    size: "lg",
+    closable: true,
+    backdrop: true,
+  },
+  "delete-question": {
+    title: "Xóa Câu Hỏi",
+    size: "sm",
+    closable: true,
+    backdrop: true,
+  },
   "upload-files": {
     title: "Tải Lên Files",
     size: "lg",
