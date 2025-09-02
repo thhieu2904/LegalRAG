@@ -1,0 +1,91 @@
+# OCR Microservice
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+logs/
+
+# Data and cache
+data/
+cache/
+temp/
+tmp/
+
+# Model files (large)
+*.pth
+*.bin
+*.h5
+*.pkl
+
+# Models and data
+data/models/
+*.gguf
+*.bin
+*.pt
+*.pth
+*.safetensors
+*.incomplete
+
+# Images (temporary)
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Jupyter
+.ipynb_checkpoints

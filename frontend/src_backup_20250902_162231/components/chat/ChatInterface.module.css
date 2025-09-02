@@ -1,0 +1,20 @@
+/* ChatInterface Module Styles */
+.chatInterface {
+  composes: chat-interface from "../../../styles/components/chat.css";
+}
+
+.chatMessages {
+  composes: chat-messages from "../../../styles/components/chat.css";
+}
+
+.scrollArea {
+  composes: chat-scroll-area from "../../../styles/components/chat.css";
+}
+
+.loadingContainer {
+  composes: chat-loading from "../../../styles/components/chat.css";
+}
+
+.loadingDots {
+  composes: loading-dots from "../../../styles/components/chat.css";
+}

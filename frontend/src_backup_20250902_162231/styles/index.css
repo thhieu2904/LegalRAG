@@ -1,0 +1,17 @@
+/* Main Styles Entry Point */
+
+/* Design System */
+@import "./design-system/index.css";
+
+/* Layout Styles */
+@import "./layouts/app.css";
+@import "./layouts/admin.css";
+
+/* Component Styles */
+@import "./components/chat.css";
+@import "./components/speech.css";
+@import "./components/ui.css";
+
+/* Page Specific Styles */
+@import "./pages/chat-page.css";
+@import "./pages/admin-pages.css";

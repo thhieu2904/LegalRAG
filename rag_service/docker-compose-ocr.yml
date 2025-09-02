@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  # Redis for OCR cache
+  redis-ocr:
+    image: redis:7-alpine
+    container_name: legalrag-redis-ocr
+    ports:
+      - "6380:6379" # Using different port to avoid conflicts
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_ocr_data:/data
+    environment:
+      - REDIS_PORT=6379
+    networks:
+      - legalrag-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Main backend service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: legalrag-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OCR_REDIS_HOST=redis-ocr
+      - OCR_REDIS_PORT=6379
+      - OCR_REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - OCR_DEBUG_MODE=${DEBUG_MODE:-false}
+      - OCR_MAX_IMAGE_SIZE_MB=10
+      - OCR_SESSION_EXPIRY_HOURS=1
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      redis-ocr:
+        condition: service_healthy
+    networks:
+      - legalrag-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/ocr/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  redis_ocr_data:
+    driver: local
+
+networks:
+  legalrag-network:
+    driver: bridge

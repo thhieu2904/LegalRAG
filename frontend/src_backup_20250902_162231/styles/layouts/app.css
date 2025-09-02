@@ -1,0 +1,69 @@
+/* Application Layout Styles */
+
+.App {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+}
+
+/* Main Content Area */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-4);
+}
+
+/* Container Classes */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+}
+
+.container-sm {
+  max-width: 768px;
+}
+
+.container-lg {
+  max-width: 1400px;
+}
+
+/* Layout Grid */
+.layout-grid {
+  display: grid;
+  gap: var(--spacing-6);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .layout-grid {
+    grid-template-columns: 250px 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout-grid {
+    grid-template-columns: 300px 1fr 250px;
+  }
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .container:not(.chat-interface) {
+    padding: 0 var(--spacing-2);
+  }
+
+  .main-content:not(.chat-interface) {
+    padding: var(--spacing-2);
+  }
+
+  /* Ensure chat interface remains full width on mobile */
+  .chat-interface {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

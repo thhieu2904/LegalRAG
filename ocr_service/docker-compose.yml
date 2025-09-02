@@ -1,0 +1,97 @@
+version: "3.8"
+
+services:
+  # OCR Microservice
+  ocr-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: ocr_service
+    ports:
+      - "8001:8001"
+    environment:
+      # Service configuration
+      - HOST=0.0.0.0
+      - PORT=8001
+      - DEBUG=false
+      - SERVICE_VERSION=1.0.0
+
+      # Redis configuration
+      - REDIS_HOST=redis-ocr
+      - REDIS_PORT=6379
+      - REDIS_DB=1
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+
+      # OCR settings
+      - TORCH_CPU_THREADS=4
+      - MAX_IMAGE_SIZE_MB=10
+      - SESSION_EXPIRY_HOURS=2
+
+      # CORS settings
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+    depends_on:
+      - redis-ocr
+    volumes:
+      - ocr-data:/app/data
+      - ocr-cache:/app/cache
+    networks:
+      - ocr-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Redis for OCR caching
+  redis-ocr:
+    image: redis:7-alpine
+    container_name: redis-ocr
+    ports:
+      - "6380:6379" # Different port to avoid conflict with main Redis
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    volumes:
+      - redis-ocr-data:/data
+    networks:
+      - ocr-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Redis Commander for OCR Redis management (optional)
+  redis-commander-ocr:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander-ocr
+    hostname: redis-commander-ocr
+    ports:
+      - "8082:8081"
+    environment:
+      - REDIS_HOSTS=local:redis-ocr:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    depends_on:
+      - redis-ocr
+    networks:
+      - ocr-network
+    restart: unless-stopped
+    profiles: ["dev", "debug"]
+
+volumes:
+  ocr-data:
+    driver: local
+  ocr-cache:
+    driver: local
+  redis-ocr-data:
+    driver: local
+
+networks:
+  ocr-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
