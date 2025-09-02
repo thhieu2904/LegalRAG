@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     # Model Configuration - Actual values từ .env file
     embedding_model_name: str = "AITeamVN/Vietnamese_Embedding_v2"  # From EMBEDDING_MODEL_NAME
     reranker_model_name: str = "AITeamVN/Vietnamese_Reranker"  # From RERANKER_MODEL_NAME
-    llm_model_path: str = "data/models/llm_dir/PhoGPT-4B-Chat-q4_k_m.gguf"  # From LLM_MODEL_PATH
+    llm_model_path: str = "data/models/llm_dir/PhoGPT-4B-Chat-Q4_K_M.gguf"  # From LLM_MODEL_PATH - FIXED case
     llm_model_url: str = ""  # From LLM_MODEL_URL
     
     # HuggingFace Cache Configuration - For offline mode

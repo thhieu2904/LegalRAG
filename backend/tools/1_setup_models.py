@@ -143,7 +143,7 @@ def check_and_setup_models(verify_only: bool = False):
         
         # Check LLM model
         logger.info("   🧠 LLM Model:")
-        llm_path = Path(settings.llm_model_path)
+        llm_path = settings.llm_model_file_path  # Use the property that returns absolute path
         llm_dir = llm_path.parent
         
         if llm_path.exists():
