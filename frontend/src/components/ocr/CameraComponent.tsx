@@ -4,16 +4,12 @@ import { Camera, CameraOff, RotateCcw, Check, X } from "lucide-react";
 interface CameraComponentProps {
   onCapture: (imageData: string, imageFormat: string) => void;
   onError?: (error: string) => void;
-  isActive: boolean;
-  onToggle: () => void;
   className?: string;
 }
 
 export const CameraComponent: React.FC<CameraComponentProps> = ({
   onCapture,
   onError,
-  isActive,
-  onToggle,
   className = "",
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -21,6 +17,7 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
   const streamRef = useRef<MediaStream | null>(null);
 
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<"user" | "environment">(
@@ -29,8 +26,21 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
 
   // Start camera stream
   const startCamera = useCallback(async () => {
+    // Prevent multiple simultaneous calls
+    if (streamRef.current || isStarting) {
+      console.log("🔄 Camera already active or starting, skipping...");
+      return;
+    }
+
     try {
+      setIsStarting(true);
       setError(null);
+      console.log("🎥 Requesting camera access...");
+
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Camera not supported in this browser");
+      }
 
       const constraints: MediaStreamConstraints = {
         video: {
@@ -40,22 +50,51 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
         },
       };
 
+      console.log("📹 Camera constraints:", constraints);
+
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
 
+      console.log("✅ Camera stream obtained");
+      console.log("🔍 Video ref exists:", !!videoRef.current);
+
       if (videoRef.current) {
+        console.log("📺 Setting video source...");
         videoRef.current.srcObject = stream;
-        videoRef.current.play();
-        setIsStreaming(true);
+
+        try {
+          await videoRef.current.play();
+          setIsStreaming(true);
+          console.log("🎬 Video element started successfully");
+        } catch (playError) {
+          console.error("❌ Video play failed:", playError);
+          throw new Error(`Failed to start video: ${playError}`);
+        }
+      } else {
+        console.error("❌ Video ref is null!");
+        throw new Error("Video element not found");
       }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to access camera";
       setError(errorMessage);
       onError?.(errorMessage);
-      console.error("Camera error:", err);
+      console.error("❌ Camera error:", err);
+      console.error("❌ Error details:", {
+        name: err instanceof Error ? err.name : "Unknown",
+        message: errorMessage,
+        constraints: {
+          video: {
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            facingMode: facingMode,
+          },
+        },
+      });
+    } finally {
+      setIsStarting(false);
     }
-  }, [facingMode, onError]);
+  }, [facingMode, onError, isStarting]);
 
   // Stop camera stream
   const stopCamera = useCallback(() => {
@@ -69,23 +108,9 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
     }
 
     setIsStreaming(false);
+    setIsStarting(false);
+    console.log("📴 Camera stopped");
   }, []);
-
-  // Toggle camera
-  const toggleCamera = useCallback(() => {
-    if (isStreaming) {
-      stopCamera();
-    } else {
-      startCamera();
-    }
-    onToggle();
-  }, [isStreaming, startCamera, stopCamera, onToggle]);
-
-  // Flip camera (front/back)
-  const flipCamera = useCallback(() => {
-    stopCamera();
-    setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
-  }, [stopCamera]);
 
   // Capture photo
   const capturePhoto = useCallback(() => {
@@ -125,21 +150,26 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
     setCapturedImage(null);
   }, []);
 
-  // Start camera when component becomes active
-  useEffect(() => {
-    if (isActive && !isStreaming && !capturedImage) {
+  // Manual start camera function (called by button)
+  const handleStartCamera = useCallback(() => {
+    if (!isStreaming && !isStarting) {
       startCamera();
-    } else if (!isActive && isStreaming) {
-      stopCamera();
     }
-  }, [isActive, isStreaming, capturedImage, startCamera, stopCamera]);
+  }, [isStreaming, isStarting, startCamera]);
 
-  // Start camera when facing mode changes
-  useEffect(() => {
+  // Manual flip camera function
+  const handleFlipCamera = useCallback(async () => {
     if (isStreaming) {
-      startCamera();
+      console.log("🔄 Flipping camera...");
+      setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
+      // Stop current stream
+      stopCamera();
+      // Small delay then restart with new facing mode
+      setTimeout(() => {
+        startCamera();
+      }, 300);
     }
-  }, [facingMode, startCamera, isStreaming]);
+  }, [isStreaming, stopCamera, startCamera]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -152,15 +182,31 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
     <div className={`relative w-full max-w-md mx-auto ${className}`}>
       {/* Video stream */}
       <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-[4/3]">
-        {isStreaming && !capturedImage && (
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-cover"
-          />
-        )}
+        {/* Debug states */}
+        {(() => {
+          console.log("🎭 Render states:", {
+            isStreaming,
+            capturedImage,
+            isStarting,
+            error,
+          });
+          return null;
+        })()}
+
+        {/* Video element - always rendered but conditionally visible */}
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className={`w-full h-full object-cover ${
+            isStreaming && !capturedImage ? "block" : "hidden"
+          }`}
+          onLoadStart={() => console.log("📹 Video loadStart")}
+          onCanPlay={() => console.log("📹 Video canPlay")}
+          onPlay={() => console.log("📹 Video playing")}
+          onError={(e) => console.error("📹 Video error:", e)}
+        />
 
         {/* Captured image preview */}
         {capturedImage && (
@@ -178,7 +224,7 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
               <CameraOff className="w-12 h-12 mx-auto mb-2 text-gray-400" />
               <p className="text-sm">{error}</p>
               <button
-                onClick={startCamera}
+                onClick={handleStartCamera}
                 className="mt-2 px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
               >
                 Try Again
@@ -187,12 +233,30 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
           </div>
         )}
 
-        {/* Loading state */}
-        {!isStreaming && !capturedImage && !error && (
+        {/* Loading/Starting state */}
+        {isStarting && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
             <div className="text-center text-white">
-              <Camera className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+              <Camera className="w-12 h-12 mx-auto mb-2 text-gray-400 animate-pulse" />
               <p className="text-sm">Starting camera...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Idle state - show start button */}
+        {!isStreaming && !isStarting && !capturedImage && !error && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+            <div className="text-center text-white">
+              <Camera className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <button
+                onClick={handleStartCamera}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              >
+                Start Camera
+              </button>
+              <p className="text-xs mt-2 text-gray-400">
+                Click to begin CCCD scanning
+              </p>
             </div>
           </div>
         )}
@@ -216,26 +280,31 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
       <div className="mt-4 flex justify-center space-x-4">
         {!capturedImage ? (
           <>
-            <button
-              onClick={toggleCamera}
-              className={`p-3 rounded-full ${
-                isStreaming
-                  ? "bg-red-600 hover:bg-red-700 text-white"
-                  : "bg-green-600 hover:bg-green-700 text-white"
-              }`}
-              title={isStreaming ? "Stop Camera" : "Start Camera"}
-            >
-              {isStreaming ? (
-                <CameraOff className="w-6 h-6" />
-              ) : (
+            {/* Start/Stop Camera Button */}
+            {!isStreaming && !isStarting ? (
+              <button
+                onClick={handleStartCamera}
+                className="p-3 bg-green-600 hover:bg-green-700 text-white rounded-full"
+                title="Start Camera"
+              >
                 <Camera className="w-6 h-6" />
-              )}
-            </button>
+              </button>
+            ) : (
+              <button
+                onClick={stopCamera}
+                className="p-3 bg-red-600 hover:bg-red-700 text-white rounded-full"
+                title="Stop Camera"
+                disabled={isStarting}
+              >
+                <CameraOff className="w-6 h-6" />
+              </button>
+            )}
 
+            {/* Camera Controls - only show when streaming */}
             {isStreaming && (
               <>
                 <button
-                  onClick={flipCamera}
+                  onClick={handleFlipCamera}
                   className="p-3 bg-gray-600 hover:bg-gray-700 text-white rounded-full"
                   title="Flip Camera"
                 >

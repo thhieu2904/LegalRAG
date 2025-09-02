@@ -1,29 +1,10 @@
 """
-OCR Microservice - Independen    try:
-        # Initialize Redis cache
-        logger.info("🔧 Initializing Redis cache...")
-        # await init_cache()
-        logger.info("✅ Redis cache initialized (skipped)")
-        
-        # Initialize OCR engine (CPU-optimized)
-        logger.info("🔧 Initializing OCR engine (CPU-optimized)...")
-        engine = await get_ocr_engine()
-        logger.info("✅ OCR engine initialized on CPU")
-        
-        # Initialize OCR service
-        logger.info("🔧 Initializing OCR service...")
-        # await ocr_service.initialize()
-        logger.info("✅ OCR service initialized (skipped)")
-        
-        # Background cleanup task
-        # cleanup_task_handle = asyncio.create_task(cleanup_task())
-        # logger.info("✅ Background cleanup task started")Service
-CPU-optimized for text recognition and image processing
+CCCD OCR Microservice
+Dịch vụ nhận dạng văn bản từ Căn cước công dân
 """
 
 import logging
 import uvicorn
-import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,12 +12,10 @@ from fastapi.responses import JSONResponse
 import time
 
 from app.core.config import settings
-# from app.core.cache import init_cache, close_cache, cleanup_task
-from app.services.ocr_engine import get_ocr_engine
-# from app.services.ocr_service import ocr_service
-from app.api.routes import router
+from app.services.simple_ocr_service import get_ocr_service
+from app.api.simple_routes import router
 
-# Configure logging
+# Cấu hình logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -45,59 +24,124 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Manage application lifecycle"""
-    # Startup
-    logger.info("🚀 Starting OCR Microservice...")
+    """Quản lý vòng đời ứng dụng"""
+    # Khởi động
+    logger.info("🚀 Đang khởi động dịch vụ OCR...")
     
     try:
-        # Initialize Redis cache
-        logger.info("🔧 Initializing Redis cache...")
-        # await init_cache()  # Skip cache for now
-        logger.info("✅ Redis cache initialized (skipped)")
+        # Khởi tạo OCR service
+        logger.info("🔧 Khởi tạo OCR service...")
+        service = await get_ocr_service()
+        await service.initialize()
+        logger.info("✅ OCR service đã sẵn sàng")
         
-        # Initialize OCR engine (CPU-optimized)
-        logger.info("🔧 Initializing OCR engine (CPU-optimized)...")
-        engine = await get_ocr_engine()
-        logger.info("✅ OCR engine initialized on CPU")
-        
-        # Initialize OCR service
-        logger.info("🔧 Initializing OCR service...")
-        # await ocr_service.initialize()  # Skip for now
-        logger.info("✅ OCR service initialized (skipped)")
-        
-        # Start background cleanup task
-        # cleanup_task_handle = asyncio.create_task(cleanup_task())  # Skip for now
-        logger.info("✅ Background cleanup task started (skipped)")
-        
-        # Log service info
-        logger.info("🎉 OCR Microservice started successfully!")
-        logger.info(f"📡 Service URL: http://{settings.host}:{settings.port}")
-        logger.info(f"📚 API Docs: http://{settings.host}:{settings.port}/docs")
-        logger.info(f"🏥 Health Check: http://{settings.host}:{settings.port}/health")
-        logger.info(f"🔍 OCR Endpoint: http://{settings.host}:{settings.port}/api/v1/ocr")
+        # Thông tin dịch vụ
+        logger.info("🎉 Dịch vụ OCR khởi động thành công!")
+        logger.info(f"📡 URL dịch vụ: http://{settings.host}:{settings.port}")
+        logger.info(f"📚 Tài liệu API: http://{settings.host}:{settings.port}/docs")
+        logger.info(f"🏥 Kiểm tra sức khỏe: http://{settings.host}:{settings.port}/api/v1/health")
         
     except Exception as e:
-        logger.error(f"❌ Failed to start OCR microservice: {e}")
+        logger.error(f"❌ Lỗi khởi động dịch vụ OCR: {e}")
         raise
     
     yield
     
-    # Shutdown
-    logger.info("🔄 Shutting down OCR Microservice...")
+    # Tắt dịch vụ
+    logger.info("🔄 Đang tắt dịch vụ OCR...")
+
+# Tạo ứng dụng FastAPI
+app = FastAPI(
+    title="CCCD OCR Service",
+    version="1.0.0",
+    description="""
+    🆔 **Dịch vụ nhận dạng văn bản CCCD**
+    
+    Dịch vụ chuyên dụng để nhận dạng và trích xuất thông tin từ 
+    Căn cước công dân Việt Nam.
+    
+    ## � Chức năng:
+    - **📄 Nhận dạng CCCD**: Trích xuất thông tin từ mặt trước và sau
+    - **📷 Xử lý ảnh**: Tiền xử lý để cải thiện độ chính xác
+    - **💾 Quản lý phiên**: Lưu trữ tạm thời trong bộ nhớ
+    
+    ## 🚀 Cách sử dụng:
+    1. **Tạo phiên**: `POST /api/v1/sessions`
+    2. **Tải ảnh**: `POST /api/v1/upload`
+    3. **Xử lý OCR**: `POST /api/v1/process/{session_id}`  
+    4. **Lấy kết quả**: `GET /api/v1/results/{session_id}`
+    """,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    lifespan=lifespan
+)
+
+# Thêm CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+# Middleware ghi log request
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    logger.info(f"{request.method} {request.url.path} - Status: {response.status_code} - Time: {process_time:.3f}s")
+    return response
+
+# Bao gồm các routes
+app.include_router(router, prefix="/api/v1")
+
+# Endpoint gốc
+@app.get("/")
+async def root():
+    return {
+        "service": "CCCD OCR Service",
+        "version": "1.0.0",
+        "status": "running",
+        "description": "Dịch vụ nhận dạng văn bản CCCD",
+        "endpoints": {
+            "health": "/api/v1/health",
+            "docs": "/docs",
+            "sessions": "/api/v1/sessions",
+            "upload": "/api/v1/upload",
+            "process": "/api/v1/process/{session_id}",
+            "results": "/api/v1/results/{session_id}"
+        }
+    }
+
+# Xử lý lỗi
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Lỗi: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "error": "Lỗi hệ thống",
+            "message": str(exc),
+            "service": "cccd-ocr-service"
+        }
+    )
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",
+        host=settings.host,
+        port=settings.port,
+        reload=settings.debug
+    )
     
     try:
         # Cancel cleanup task
         # cleanup_task_handle.cancel()  # Skip for now
         
         # Close cache
-        # await close_cache()
-        logger.info("✅ Redis cache closed (skipped)")
-        
-        # Cleanup OCR engine
-        from app.services.ocr_engine import cleanup_ocr_engine
-        await cleanup_ocr_engine()
-        logger.info("✅ OCR engine cleaned up")
-        
         logger.info("✅ OCR Microservice shutdown completed")
         
     except Exception as e:

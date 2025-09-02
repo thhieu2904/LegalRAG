@@ -8,11 +8,12 @@ import type {
   ProcessingStatus,
 } from "../types/ocr";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+// Use environment variable or default to localhost:8001
+const OCR_API_URL = import.meta.env.VITE_OCR_API_URL || "http://localhost:8001";
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
+// Create a dedicated axios instance for OCR service
+const ocrClient = axios.create({
+  baseURL: OCR_API_URL,
   timeout: 30000, // 30 seconds timeout
   headers: {
     "Content-Type": "application/json",
@@ -20,13 +21,13 @@ const api = axios.create({
 });
 
 // Add request interceptor for logging
-api.interceptors.request.use((config) => {
+ocrClient.interceptors.request.use((config) => {
   console.log(`[OCR API] ${config.method?.toUpperCase()} ${config.url}`);
   return config;
 });
 
 // Add response interceptor for error handling
-api.interceptors.response.use(
+ocrClient.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error("[OCR API Error]", error.response?.data || error.message);
@@ -75,7 +76,7 @@ export const ocrService: OCRService = {
    */
   async uploadImage(request: ImageUploadRequest): Promise<APIResponse> {
     try {
-      const response = await api.post("/api/ocr/upload-image", request);
+      const response = await ocrClient.post("/api/v1/upload", request);
       return response.data;
     } catch (error) {
       throw new Error(`Failed to upload image: ${error}`);
@@ -90,8 +91,8 @@ export const ocrService: OCRService = {
     processBothSides = true
   ): Promise<APIResponse> {
     try {
-      const response = await api.post(`/api/ocr/process/${sessionId}`, null, {
-        params: { process_both_sides: processBothSides },
+      const response = await ocrClient.post(`/api/v1/process/${sessionId}`, {
+        process_both_sides: processBothSides,
       });
       return response.data;
     } catch (error) {
@@ -112,7 +113,7 @@ export const ocrService: OCRService = {
     }>
   > {
     try {
-      const response = await api.get(`/api/ocr/results/${sessionId}`);
+      const response = await ocrClient.get(`/api/v1/results/${sessionId}`);
       return response.data;
     } catch (error) {
       throw new Error(`Failed to get OCR results: ${error}`);
@@ -133,7 +134,9 @@ export const ocrService: OCRService = {
     }>
   > {
     try {
-      const response = await api.get(`/api/ocr/session/${sessionId}/status`);
+      const response = await ocrClient.get(
+        `/api/v1/sessions/${sessionId}/status`
+      );
       return response.data;
     } catch (error) {
       throw new Error(`Failed to get session status: ${error}`);
@@ -145,7 +148,7 @@ export const ocrService: OCRService = {
    */
   async createSession(sessionId?: string): Promise<APIResponse<CCCDSession>> {
     try {
-      const response = await api.post("/api/ocr/session/create", {
+      const response = await ocrClient.post("/api/v1/sessions", {
         session_id: sessionId,
       });
       return response.data;
@@ -159,7 +162,7 @@ export const ocrService: OCRService = {
    */
   async deleteSession(sessionId: string): Promise<APIResponse> {
     try {
-      const response = await api.delete(`/api/ocr/session/${sessionId}`);
+      const response = await ocrClient.delete(`/api/v1/sessions/${sessionId}`);
       return response.data;
     } catch (error) {
       throw new Error(`Failed to delete session: ${error}`);
@@ -171,7 +174,7 @@ export const ocrService: OCRService = {
    */
   async getServiceStats(): Promise<APIResponse> {
     try {
-      const response = await api.get("/api/ocr/stats");
+      const response = await ocrClient.get("/api/v1/stats");
       return response.data;
     } catch (error) {
       throw new Error(`Failed to get service stats: ${error}`);
@@ -187,7 +190,7 @@ export const ocrService: OCRService = {
     ocr_initialized: boolean;
   }> {
     try {
-      const response = await api.get("/api/ocr/health");
+      const response = await ocrClient.get("/api/v1/health");
       return response.data;
     } catch (error) {
       throw new Error(`Health check failed: ${error}`);

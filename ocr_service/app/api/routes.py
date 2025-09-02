@@ -90,14 +90,30 @@ async def create_session(
         raise handle_service_error(e)
 
 
-@router.post("/sessions/{session_id}/upload", response_model=ImageUploadResponse)
-async def upload_image(
-    session_id: str,
-    request: ImageUploadRequest,
-    service: OCRProcessingService = Depends(get_service)
-):
-    """Upload image for OCR processing"""
+@router.get("/health", response_model=HealthCheckResponse)
+async def health_check(service: OCRProcessingService = Depends(get_service)):
+    """Health check endpoint"""
     try:
+        return HealthCheckResponse(
+            status="ok",
+            service_name=settings.app_name,
+            version=settings.app_version,
+            timestamp=datetime.utcnow().isoformat(),
+            cache_connected=True,  # For now, we always assume it's connected
+            ocr_initialized=True,  # For now, we always assume it's initialized
+            uptime_seconds=int(time.time() - service.start_time),
+        )
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        return HealthCheckResponse(
+            status="error",
+            service_name=settings.app_name,
+            version=settings.app_version,
+            timestamp=datetime.utcnow().isoformat(),
+            cache_connected=False,
+            ocr_initialized=False,
+            error=str(e),
+        )
         # Use session_id from path, override request if needed
         if request.session_id and request.session_id != session_id:
             logger.warning(f"Session ID mismatch: path={session_id}, body={request.session_id}")

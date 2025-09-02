@@ -34,7 +34,6 @@ export const OCRInterface: React.FC<OCRInterfaceProps> = ({
   >("front");
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [backImage, setBackImage] = useState<string | null>(null);
-  const [isCameraActive, setIsCameraActive] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [processingStatus, setProcessingStatus] =
     useState<ProcessingStatus>("pending");
@@ -214,18 +213,12 @@ export const OCRInterface: React.FC<OCRInterfaceProps> = ({
     setCurrentStep("front");
     setFrontImage(null);
     setBackImage(null);
-    setIsCameraActive(false);
     setProcessingStatus("pending");
     setExtractedData(null);
     setConfidenceScores(null);
     setError(null);
     setProcessingTime(null);
   }, [sessionId]);
-
-  // Camera toggle handler
-  const handleCameraToggle = useCallback(() => {
-    setIsCameraActive((prev) => !prev);
-  }, []);
 
   // Initialize session on mount
   useEffect(() => {
@@ -397,8 +390,6 @@ export const OCRInterface: React.FC<OCRInterfaceProps> = ({
             <CameraComponent
               onCapture={handleImageCapture}
               onError={(error) => setError(error)}
-              isActive={isCameraActive}
-              onToggle={handleCameraToggle}
             />
 
             {isUploading && (

@@ -15,7 +15,8 @@ import numpy as np
 from PIL import Image
 import io
 
-from ..core.cache import get_cache_manager
+# Switch from Redis to in-memory cache
+from ..core.memory_cache import get_cache_manager
 from ..models.schemas import (
     OCRSession, CCCDExtractedData, ConfidenceScores, 
     ProcessingStatus, CCCDSide
