@@ -286,13 +286,13 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
             {!cameraStarted && !error && (
               <div className="camera-start">
                 <Camera className="start-icon" />
-                <p>Ready to scan QR code</p>
+                <p>Sẵn sàng để quét</p>
                 <button
                   onClick={startCamera}
                   className="start-camera-button"
                   disabled={isStarting}
                 >
-                  {isStarting ? "Starting..." : "🎥 Start Camera"}
+                  {isStarting ? "Starting..." : "🎥 Mở Camera"}
                 </button>
               </div>
             )}
@@ -302,7 +302,7 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
                 <CameraOff className="error-icon" />
                 <p>{error}</p>
                 <button onClick={startCamera} className="retry-button">
-                  Try Again
+                  Thử lại
                 </button>
               </div>
             )}
@@ -310,7 +310,7 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
             {isStarting && (
               <div className="camera-loading">
                 <Camera className="loading-icon" />
-                <p>Starting camera...</p>
+                <p>Đang khởi động camera...</p>
               </div>
             )}
 

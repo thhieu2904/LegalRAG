@@ -112,7 +112,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
   return (
     <div className={`qr-scanner ${className}`}>
       {/* Header */}
-      <div className="qr-scanner-header">
+      {/* <div className="qr-scanner-header">
         <div className="header-content">
           <div className="title-section">
             <QrCode className="title-icon" />
@@ -122,7 +122,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
             <ServiceTester />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="qr-scanner-content">
@@ -141,7 +141,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
                   onError={handleError}
                   isCapturing={isScanning}
                   captureButtonText={
-                    isScanning ? "Processing..." : "Scan QR Code"
+                    isScanning ? "Processing..." : "Đang quét..."
                   }
                 />
               </div>
@@ -149,7 +149,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
               {isScanning && (
                 <div className="processing-indicator">
                   <Loader className="spinning" />
-                  <span>Processing QR code...</span>
+                  <span>Đang xử lý...</span>
                 </div>
               )}
 
@@ -157,22 +157,11 @@ export const QRScanner: React.FC<QRScannerProps> = ({
                 <div className="error-message">
                   <AlertCircle className="error-icon" />
                   <div className="error-content">
-                    <h4>Scanning Failed</h4>
+                    <h4>Quét thất bại</h4>
                     <p>{error}</p>
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Instructions */}
-            <div className="instructions">
-              <h4>📋 Instructions</h4>
-              <ul>
-                <li>Place your CCCD flat on a well-lit surface</li>
-                <li>Ensure the QR code is clearly visible and not blurry</li>
-                <li>Avoid shadows or reflections on the card</li>
-                <li>Hold the camera steady when capturing</li>
-              </ul>
             </div>
           </>
         ) : (
@@ -180,7 +169,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
           <div className="results-section">
             <div className="success-header">
               <CheckCircle className="success-icon" />
-              <h3>QR Code Scanned Successfully!</h3>
+              <h3>Quét thành công</h3>
             </div>
 
             <div className="cccd-data">
@@ -225,7 +214,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
 
               {processingTime && (
                 <div className="processing-time">
-                  ⏱️ Processing time: {processingTime}ms
+                  ⏱️ Thời gian xử lý: {processingTime}ms
                 </div>
               )}
             </div>
@@ -233,7 +222,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
             <div className="action-buttons">
               <button onClick={reset} className="reset-button">
                 <RefreshCcw className="button-icon" />
-                Scan Another
+                Quét lại
               </button>
             </div>
           </div>

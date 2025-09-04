@@ -110,7 +110,7 @@ const IntegratedFormPage = () => {
             <div className="qr-scanner-card">
               {/* QR Scanner Header */}
               <div className="qr-scanner-header">
-                <h2 className="qr-scanner-title">📱 Quét mã QR CCCD</h2>
+                <h2 className="qr-scanner-title">📱 Truy xuất CCCD</h2>
                 <p className="qr-scanner-subtitle">
                   Quét trực tiếp từ camera hoặc tải ảnh CCCD để tự động điền
                   thông tin
@@ -154,7 +154,7 @@ const IntegratedFormPage = () => {
                         <>
                           <div className="qr-upload-icon">📷</div>
                           <p className="qr-upload-text">
-                            Chọn ảnh CCCD để quét mã QR
+                            Chọn ảnh CCCD để quét
                           </p>
                           <input
                             type="file"
@@ -175,14 +175,16 @@ const IntegratedFormPage = () => {
                       {qrScanStatus === "scanning" && (
                         <div className="qr-scanning-state">
                           <div className="qr-scanning-spinner"></div>
-                          <p className="qr-scanning-text">Đang quét mã QR...</p>
+                          <p className="qr-scanning-text">Đang quét...</p>
                         </div>
                       )}
 
                       {qrScanStatus === "error" && (
                         <div className="qr-error-state">
                           <div className="qr-error-icon">❌</div>
-                          <p className="qr-error-text">Không thể quét mã QR</p>
+                          <p className="qr-error-text">
+                            Không thể trích xuất thông tin
+                          </p>
                           <button
                             onClick={resetQRScan}
                             className="qr-retry-button"

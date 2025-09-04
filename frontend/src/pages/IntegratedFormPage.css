@@ -9,21 +9,25 @@
 .integrated-form-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh; /* Fix: Use 100vh instead of min-height */
   background: #f8fafc;
 }
 
 .integrated-form-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 24px;
-  overflow: auto; /* Enable scrolling */
+  min-height: 0; /* Important: Allow shrinking */
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .integrated-form-layout {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 450px 1fr; /* Increase QR section width */
   gap: 24px;
   width: 100%;
+  height: 100%; /* Take full available height */
   min-height: 0; /* Allow content to shrink */
 }
 
@@ -33,6 +37,8 @@
 .qr-scanner-section {
   display: flex;
   flex-direction: column;
+  height: 100%; /* Take full height */
+  min-height: 0; /* Allow shrinking */
 }
 
 .qr-scanner-card {
@@ -40,7 +46,10 @@
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   padding: 20px;
-  height: fit-content;
+  height: 100%; /* Take full height */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Enable scrolling if needed */
 }
 
 .qr-scanner-header {
@@ -102,6 +111,17 @@
 
 .qr-scanner-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Allow shrinking */
+}
+
+/* CCCD Information */
+.cccd-info-section {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 20px;
+  margin-top: auto; /* Push to bottom if there's space */
+  flex-shrink: 0; /* Don't shrink this section */
 }
 
 /* QR Upload Area */
@@ -286,7 +306,8 @@
 .form-display-section {
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  height: 100%; /* Take full height */
+  min-height: 0; /* Allow shrinking */
 }
 
 .form-display-card {
@@ -295,7 +316,8 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  min-height: 600px; /* Set minimum height instead of fixed height */
+  height: 100%; /* Take full height */
+  min-height: 0; /* Allow shrinking */
 }
 
 .form-display-header {
@@ -395,8 +417,19 @@
 .form-renderer-container {
   flex: 1;
   padding: 20px;
-  overflow-y: auto;
-  min-height: 0;
+  overflow-y: auto; /* Enable vertical scrolling */
+  min-height: 0; /* Important: Allow content to shrink */
+  max-height: 100%; /* Prevent growing beyond container */
+}
+
+/* Fix for FormRenderer component */
+.form-renderer-container .form-renderer {
+  height: auto !important; /* Override any fixed height */
+  max-width: none !important; /* Remove max-width constraints */
+}
+
+.form-renderer-container .form-content {
+  overflow: visible !important; /* Ensure content is visible */
 }
 
 .no-form-selected {
