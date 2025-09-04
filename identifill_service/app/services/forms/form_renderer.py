@@ -52,11 +52,24 @@ class FormRenderingService:
             
             file_path = file_info["data"]["file_path"]
             
-            # Convert DOCX to HTML using Mammoth
+            # Convert DOCX to HTML using Mammoth với cấu hình tối giản
+            # để tránh lỗi alignment và checkbox
             with open(file_path, "rb") as docx_file:
-                result = mammoth.convert_to_html(docx_file)
+                # Chỉ sử dụng default style map và không convert images
+                options = {
+                    "include_default_style_map": True,
+                    "ignore_empty_paragraphs": False,
+                    # KHÔNG set transform_document để tránh lỗi alignment
+                    # KHÔNG set style_map để dùng default
+                    # KHÔNG set convert_image để preserve checkboxes
+                }
+                
+                result = mammoth.convert_to_html(docx_file, **options)
                 html_content = result.value  # Clean HTML
                 conversion_messages = result.messages
+                
+                # Post-process HTML to fix checkboxes and preserve alignment
+                html_content = self._post_process_html(html_content)
             
             # Apply basic styling wrapper
             styled_html = self._apply_basic_styling(html_content)
@@ -90,6 +103,73 @@ class FormRenderingService:
         Chỉ wrap HTML trong container div
         """
         return f'<div class="legal-form-content">{html_content}</div>'
+    
+    def _post_process_html(self, html_content: str) -> str:
+        """
+        Post-process HTML để fix các vấn đề:
+        1. Thay thế broken images thành checkbox symbols
+        2. Fix alignment được gán sai
+        """
+        import re
+        
+        # Fix broken checkboxes - replace with proper checkbox symbols
+        html_content = re.sub(
+            r'<img src="data:image/png;base64," />',
+            '☐',  # Unicode checkbox symbol
+            html_content
+        )
+        
+        # Fix any other broken base64 images
+        html_content = re.sub(
+            r'<img src="data:image/[^"]*;base64,[^"]+" />',
+            '☐',
+            html_content
+        )
+        
+        # Fix lỗi tất cả đều căn giữa hoặc thiếu alignment
+        # Kiểm tra nếu tất cả các <p> đều có style="text-align: center;"
+        if html_content.count('style="text-align: center;"') > 10:
+            # Remove all center alignment
+            html_content = html_content.replace(' style="text-align: center;"', '')
+        
+        # Áp dụng căn giữa chỉ cho các header (luôn luôn chạy)
+        html_content = re.sub(
+            r'<p><strong>(CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM)</strong></p>',
+            r'<p style="text-align: center;"><strong>\1</strong></p>',
+            html_content
+        )
+        html_content = re.sub(
+            r'<p><strong>(Độc lập - Tự do - Hạnh phúc)</strong></p>',
+            r'<p style="text-align: center;"><strong>\1</strong></p>',
+            html_content
+        )
+        html_content = re.sub(
+            r'<p><strong>(TỜ KHAI ĐĂNG KÝ KHAI SINH)</strong></p>',
+            r'<p style="text-align: center;"><strong>\1</strong></p>',
+            html_content
+        )
+        
+        # Phần người yêu cầu căn giữa
+        html_content = re.sub(
+            r'<p><strong>(Người yêu cầu)</strong></p>',
+            r'<p style="text-align: center;"><strong>\1</strong></p>',
+            html_content
+        )
+        
+        # Phần "Làm tại" căn phải  
+        html_content = re.sub(
+            r'<p>([\s]*Làm tại:[^<]*)</p>',
+            r'<p style="text-align: right;">\1</p>',
+            html_content
+        )
+        
+        # Convert CSS classes to inline styles (fallback)
+        html_content = html_content.replace('<p class="center">', '<p style="text-align: center;">')
+        html_content = html_content.replace('<p class="right">', '<p style="text-align: right;">')
+        html_content = html_content.replace('<p class="left">', '<p style="text-align: left;">')
+        html_content = html_content.replace('<p class="justify">', '<p style="text-align: justify;">')
+        
+        return html_content
     
     def extract_text_placeholders(self, html_content: str) -> List[str]:
         """
