@@ -34,13 +34,22 @@ export function ChatHeader() {
                 Hệ thống hỗ trợ thông tin thủ tục hành chính
               </div>
             </div>
-            <Link
-              to="/admin"
-              className="chat-header-settings-button"
-              title="Quản trị hệ thống"
-            >
-              <Settings className="chat-header-settings-icon" />
-            </Link>
+            <div className="chat-header-nav-buttons">
+              <Link
+                to="/forms"
+                className="chat-header-nav-button"
+                title="Biểu mẫu hành chính"
+              >
+                📄 Biểu mẫu
+              </Link>
+              <Link
+                to="/admin"
+                className="chat-header-settings-button"
+                title="Quản trị hệ thống"
+              >
+                <Settings className="chat-header-settings-icon" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

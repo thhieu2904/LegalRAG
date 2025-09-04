@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { QRScanner } from "../components/qrscan/QRScanner";
 import { QRFileUpload } from "../components/qrscan/QRFileUpload";
 import { qrScannerAPI } from "../api/qr-scanner-api";
-import { Camera, Upload } from "lucide-react";
+import { formAPI } from "../api/form-api";
+import { Camera, Upload, FileText, Zap } from "lucide-react";
 import type { CCCDData } from "../api/qr-scanner-api";
+import type { FormRenderResult, AutoFillResult } from "../api/form-api";
 import "./QRScanPage.css";
 import "../components/qrscan/QRFileUpload.css";
 

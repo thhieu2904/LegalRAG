@@ -74,6 +74,34 @@
 }
 
 /* Settings Button */
+.chat-header-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.chat-header-nav-button {
+  padding: var(--spacing-2) var(--spacing-3);
+  color: var(--color-text-tertiary);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: all var(--duration-fast) var(--ease-out);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.chat-header-nav-button:hover {
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-200);
+}
+
 .chat-header-settings-button {
   padding: var(--spacing-2);
   color: var(--color-text-tertiary);
