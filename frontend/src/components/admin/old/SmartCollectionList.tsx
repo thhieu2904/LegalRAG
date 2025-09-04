@@ -11,7 +11,7 @@ import {
   type BackendCollection,
   type DisplayCollection,
   type CollectionMapping,
-} from "../services/CollectionMappingService";
+} from "../../../services/CollectionMappingService";
 
 // API service to fetch business data from backend
 class CollectionBusinessAPI {

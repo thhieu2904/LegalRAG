@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import SpeechControlsSimple from "../SpeechControlsSimple";
+import SpeechControlsSimple from "../admin/old/SpeechControlsSimple";
 import logoHCC from "../../assets/LOGO_HCC.jpg";
 import { User, FileText } from "lucide-react";
 

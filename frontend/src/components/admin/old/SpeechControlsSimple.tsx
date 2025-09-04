@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   textToSpeechService,
   type SpeechStatus,
-} from "../services/textToSpeech";
+} from "../../../services/textToSpeech";
 
 interface SpeechControlsSimpleProps {
   text: string;

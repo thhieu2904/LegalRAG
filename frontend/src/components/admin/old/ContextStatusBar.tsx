@@ -1,5 +1,5 @@
 import React from "react";
-import type { ContextSummary } from "../services/chatService";
+import type { ContextSummary } from "../../../services/chatService";
 
 interface ContextStatusBarProps {
   contextSummary: ContextSummary | null;

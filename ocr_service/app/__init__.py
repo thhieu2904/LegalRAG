@@ -1,3 +1,0 @@
-"""
-OCR Microservice Core Package
-"""

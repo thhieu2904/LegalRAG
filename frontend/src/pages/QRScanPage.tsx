@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-import { QRScanner } from "../components/ocr/QRScanner";
-import { QRFileUpload } from "../components/ocr/QRFileUpload";
-import { identifillService } from "../services/identifillService";
+import { QRScanner } from "../components/qrscan/QRScanner";
+import { QRFileUpload } from "../components/qrscan/QRFileUpload";
+import { qrScannerAPI } from "../api/qr-scanner-api";
 import { Camera, Upload } from "lucide-react";
-import type { CCCDExtractedData } from "../types/ocr";
+import type { CCCDData } from "../api/qr-scanner-api";
 import "./QRScanPage.css";
-import "../components/ocr/QRFileUpload.css";
+import "../components/qrscan/QRFileUpload.css";
 
 type ScanMethod = "camera" | "upload";
 
 const QRScanPage: React.FC = () => {
-  const [extractedData, setExtractedData] = useState<CCCDExtractedData | null>(
-    null
-  );
+  const [extractedData, setExtractedData] = useState<CCCDData | null>(null);
   const [scanMethod, setScanMethod] = useState<ScanMethod>("camera");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleResult = (data: CCCDExtractedData) => {
+  const handleResult = (data: CCCDData) => {
     setExtractedData(data);
     console.log("QR Scan Result:", data);
   };
@@ -32,13 +30,8 @@ const QRScanPage: React.FC = () => {
   const handleFileUpload = async (imageData: string) => {
     setIsProcessing(true);
     try {
-      // First try normal QR scan
-      let result = await identifillService.scanQRCode(imageData);
-
-      // If failed, try enhanced scan
-      if (!result.success) {
-        result = await identifillService.scanQRCodeEnhanced(imageData);
-      }
+      // Use the new unified QR scanning API
+      const result = await qrScannerAPI.scanQRCode(imageData);
 
       if (result.success && result.data) {
         handleResult(result.data);
@@ -147,9 +140,7 @@ const QRScanPage: React.FC = () => {
                 <div className="data-grid">
                   <div className="data-item">
                     <label>Số CCCD:</label>
-                    <span>
-                      {extractedData.citizen_id || extractedData.id_number}
-                    </span>
+                    <span>{extractedData.citizen_id}</span>
                   </div>
 
                   <div className="data-item">
@@ -169,9 +160,7 @@ const QRScanPage: React.FC = () => {
 
                   <div className="data-item">
                     <label>Địa chỉ:</label>
-                    <span>
-                      {extractedData.address || extractedData.residence}
-                    </span>
+                    <span>{extractedData.address}</span>
                   </div>
 
                   <div className="data-item">

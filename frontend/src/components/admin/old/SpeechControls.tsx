@@ -3,7 +3,7 @@ import {
   textToSpeechService,
   type SpeechStatus,
   type TextToSpeechConfig,
-} from "../services/textToSpeech";
+} from "../../../services/textToSpeech";
 
 interface SpeechControlsProps {
   text: string;

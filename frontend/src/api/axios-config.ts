@@ -13,6 +13,15 @@ export const ragAPI = axios.create({
   },
 });
 
+// Cấu hình cho Identifill Service (Port 8002) - QR Scanner
+export const identifillAPI = axios.create({
+  baseURL: "http://localhost:8002",
+  timeout: 30000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 // Cấu hình cho OCR Service (Port 8001)
 export const ocrAPI = axios.create({
   baseURL: "http://localhost:8001",
@@ -37,6 +46,23 @@ ragAPI.interceptors.request.use(
   },
   (error) => {
     console.error("❌ RAG API Request Error:", error);
+    return Promise.reject(error);
+  }
+);
+
+identifillAPI.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    console.log(
+      `🚀 Identifill API Call: ${config.method?.toUpperCase()} ${config.url}`
+    );
+    return config;
+  },
+  (error) => {
+    console.error("❌ Identifill API Request Error:", error);
     return Promise.reject(error);
   }
 );
@@ -71,6 +97,25 @@ ragAPI.interceptors.response.use(
 
     if (error.response?.status === 401) {
       // Redirect to login or refresh token
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+identifillAPI.interceptors.response.use(
+  (response) => {
+    console.log(
+      `✅ Identifill API Success: ${response.status} ${response.config.url}`
+    );
+    return response;
+  },
+  (error) => {
+    console.error("❌ Identifill API Response Error:", error);
+
+    if (error.response?.status === 401) {
       localStorage.removeItem("token");
       window.location.href = "/login";
     }

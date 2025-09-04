@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { ChatService, type ContextSummary } from "../services/chatService";
+import {
+  ChatService,
+  type ContextSummary,
+} from "../../../services/chatService";
 import { ContextStatusBar } from "./ContextStatusBar";
 
 export const ContextDebugComponent: React.FC = () => {

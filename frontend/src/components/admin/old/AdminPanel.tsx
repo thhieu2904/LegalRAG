@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import {
   textToSpeechService,
   type TextToSpeechConfig,
-} from "../services/textToSpeech";
+} from "../../../services/textToSpeech";
 import SpeechControls from "./SpeechControls";
-import { ContextInfoModal } from "./chat/ContextInfoModal";
+import { ContextInfoModal } from "../../chat/ContextInfoModal";
 
 interface AdminPanelProps {
   onBack: () => void;

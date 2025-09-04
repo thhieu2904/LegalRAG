@@ -1,0 +1,107 @@
+/**
+ * 📷 QR SCANNER API - TẤT CẢ CALLS ĐẾN IDENTIFILL SERVICE (PORT 8002)
+ * QR code scanning for CCCD
+ */
+import { identifillAPI } from "./axios-config";
+
+// ========================================
+// Interfaces
+// ========================================
+export interface CCCDData {
+  citizen_id: string;
+  old_id?: string;
+  full_name: string;
+  date_of_birth: string;
+  gender: string;
+  address: string;
+  issue_date: string;
+}
+
+export interface QRScanResult {
+  success: boolean;
+  data?: CCCDData;
+  message?: string;
+  processing_time?: number;
+  confidence?: number;
+}
+
+export type ScanMode = "qr";
+
+// ========================================
+// QR Scanner API Service
+// ========================================
+export const qrScannerAPI = {
+  // Quét QR code từ ảnh
+  scanQRCode: async (
+    imageData: string,
+    scanMode: ScanMode = "qr"
+  ): Promise<QRScanResult> => {
+    try {
+      const response = await identifillAPI.post("/api/v1/qr/scan", {
+        image_data: imageData,
+        scan_mode: scanMode,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      if (err.response?.data) {
+        // Nếu server trả về lỗi được format
+        return {
+          success: false,
+          message: err.response.data.detail || "Không thể quét mã QR",
+        };
+      }
+      console.error("QR Scan API Error:", error);
+      return {
+        success: false,
+        message: "Lỗi kết nối đến máy chủ",
+      };
+    }
+  },
+
+  // Kiểm tra trạng thái QR service
+  getServiceStatus: async (): Promise<{ message: string; status: string }> => {
+    try {
+      const response = await identifillAPI.get("/api/v1/qr/test");
+      return response.data;
+    } catch (error) {
+      console.error("QR Scanner Service Status API Error:", error);
+      throw error;
+    }
+  },
+
+  // Phát hiện thẻ CCCD trong ảnh
+  detectCard: async (
+    imageData: string,
+    autoCrop: boolean = true
+  ): Promise<{
+    success: boolean;
+    card_detected: boolean;
+    cropped_image?: string;
+    confidence?: number;
+    message?: string;
+  }> => {
+    try {
+      const response = await identifillAPI.post("/api/v1/card/detect", {
+        image_data: imageData,
+        auto_crop: autoCrop,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      if (err.response?.data) {
+        return {
+          success: false,
+          card_detected: false,
+          message: err.response.data.detail || "Không thể phát hiện thẻ CCCD",
+        };
+      }
+      console.error("Card Detection API Error:", error);
+      return {
+        success: false,
+        card_detected: false,
+        message: "Lỗi kết nối đến máy chủ",
+      };
+    }
+  },
+};

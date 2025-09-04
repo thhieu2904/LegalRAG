@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { QRScanner } from "../components/ocr/QRScanner";
+import { QRScanner } from "../components/qrscan/QRScanner";
 import type { CCCDExtractedData } from "../types/ocr";
 import "./OCRPage.css";
 

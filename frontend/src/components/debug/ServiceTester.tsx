@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { identifillService } from "../../services/identifillService";
+import { qrScannerAPI } from "../../api/qr-scanner-api";
 
 export const ServiceTester: React.FC = () => {
   const [connectionStatus, setConnectionStatus] = useState<
@@ -10,8 +10,8 @@ export const ServiceTester: React.FC = () => {
   const testConnection = async () => {
     setIsLoading(true);
     try {
-      const isConnected = await identifillService.testConnection();
-      setConnectionStatus(isConnected ? "connected" : "failed");
+      const result = await qrScannerAPI.getServiceStatus();
+      setConnectionStatus(result.status === "ok" ? "connected" : "failed");
     } catch (error) {
       setConnectionStatus("failed");
       console.error("Connection test failed:", error);
