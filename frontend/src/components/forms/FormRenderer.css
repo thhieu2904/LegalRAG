@@ -1,43 +1,27 @@
 /**
- * FormRenderer CSS - Styling chung cho tất cả legal forms
- * Đảm bảo tính nhất quán và chính xác so với file Word gốc
+ * FormRenderer CSS - Styling khổ A4 cho legal forms
+ * Đảm bảo hiển thị chuẩn như văn bản pháp luật thật
  */
 
 .form-renderer {
-  width:/* Checkbox styling */ .form-content {
-    font-feature-settings: normal;
-  }
-
-  /* Ensure checkbox symbols are visible and properly sized */
-  .form-content p {
-    font-family: "Times New Roman", serif, "Segoe UI Symbol", "Arial Unicode MS";
-  }
-
-  /* Style checkbox symbols specifically */
-  .form-content p:has(☐),
-  .form-content td:has(☐) {
-    font-size: 14px;
-    line-height: 1.4;
-  }
-
-  /* Custom checkbox styling (Định dạng checkbox hình vuông) */
-  .form-content p:contains("☐"),
-  .form-content td:contains("☐") {
-    line-height: 1.8;
-  }
-
-  /* Make checkboxes more visible */
-  .form-content ☐ {
-    font-size: 1.2em;
-    vertical-align: middle;
-    margin: 0 0.2em;
-  }
-  th: 900px;
+  /* A4 dimensions với tỷ lệ linh hoạt: chiều cao = chiều rộng * 1.414 */
+  width: min(95%, 1050px); /* Tăng từ 900px lên 1050px để form lớn hơn */
+  min-height: calc(min(95%, 1050px) * 1.414); /* Tỷ lệ A4: 1:1.414 */
   margin: 0 auto;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Shadow như giấy thật */
+  overflow: visible; /* Cho phép hiển thị đầy đủ */
+
+  /* Responsive: Scale down on smaller screens */
+  max-width: 100%;
+  transform-origin: top center;
+} /* Scale down on smaller screens while maintaining A4 ratio */
+@media (max-width: 1070px) {
+  .form-renderer {
+    width: 95vw;
+    min-height: calc(95vw * 1.414); /* Tỷ lệ A4: 1:1.414 */
+  }
 }
 
 /* Loading State */
@@ -121,15 +105,20 @@
   font-size: 14px;
 }
 
-/* Main Form Content - Styling cho HTML từ Mammoth */
+/* Main Form Content - A4 styling cải tiến */
 .form-content {
-  padding: 30px 40px;
+  /* A4 margins tỷ lệ: 2.5cm top/bottom, 2cm left/right */
+  padding: 8% 6%; /* Sử dụng % thay vì px cho responsive */
   font-family: "Times New Roman", serif;
-  line-height: 1.6;
-  color: #333;
-}
+  font-size: 14pt; /* Tăng từ 13pt lên 14pt để dễ đọc hơn */
+  line-height: 1.5; /* Line spacing chuẩn */
+  color: #000; /* Màu đen chuẩn */
+  min-height: calc(100% - 16%); /* Height trừ đi top/bottom padding */
 
-/* Preserve alignment từ DOCX - CSS classes từ style-map */
+  /* Print-like appearance */
+  background: white;
+  box-sizing: border-box;
+} /* Preserve alignment từ DOCX - CSS classes từ style-map */
 .form-content p.center {
   text-align: center !important;
 }
@@ -354,11 +343,43 @@
   }
 }
 
+/* Checkbox styling for A4 forms */
+.form-content {
+  font-feature-settings: normal;
+}
+
+/* Ensure checkbox symbols are visible and properly sized */
+.form-content p {
+  font-family: "Times New Roman", serif, "Segoe UI Symbol", "Arial Unicode MS";
+}
+
+/* Style checkbox symbols specifically */
+.form-content p:has(☐),
+.form-content td:has(☐) {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Custom checkbox styling (Định dạng checkbox hình vuông) */
+.form-content p:contains("☐"),
+.form-content td:contains("☐") {
+  line-height: 1.8;
+}
+
+/* Make checkboxes more visible */
+.form-content ☐ {
+  font-size: 1.2em;
+  vertical-align: middle;
+  margin: 0 0.2em;
+}
+
 /* Print styles */
 @media print {
   .form-renderer {
     box-shadow: none;
     border: none;
+    width: 100%;
+    max-width: none;
   }
 
   .form-header {
@@ -370,7 +391,7 @@
   }
 
   .form-content {
-    padding: 0;
-    font-size: 12px;
+    padding: 2cm 1.5cm; /* Print margins */
+    font-size: 12pt;
   }
 }

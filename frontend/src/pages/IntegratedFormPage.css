@@ -24,7 +24,7 @@
 
 .integrated-form-layout {
   display: grid;
-  grid-template-columns: 450px 1fr; /* Increase QR section width */
+  grid-template-columns: 520px 1fr; /* Tăng từ 450px lên 520px cho camera */
   gap: 24px;
   width: 100%;
   height: 100%; /* Take full available height */
@@ -32,13 +32,13 @@
 }
 
 /* ========================================
-   QR SCANNER SECTION (Left)
+   QR SCANNER SECTION (Left) - Redesigned
    ======================================== */
 .qr-scanner-section {
   display: flex;
   flex-direction: column;
-  height: 100%; /* Take full height */
-  min-height: 0; /* Allow shrinking */
+  height: 100%;
+  min-height: 0;
 }
 
 .qr-scanner-card {
@@ -46,39 +46,40 @@
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   padding: 20px;
-  height: 100%; /* Take full height */
+  height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* Enable scrolling if needed */
+  gap: 16px;
 }
 
+/* QR Scanner Header - Compact */
 .qr-scanner-header {
-  margin-bottom: 20px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .qr-scanner-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #1e293b;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
 }
 
 .qr-scanner-subtitle {
-  font-size: 14px;
+  font-size: 13px;
   color: #64748b;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
-/* Scan Method Tabs */
+/* Scan Method Tabs - Redesigned */
 .scan-method-tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  padding: 4px;
+  gap: 6px;
+  padding: 3px;
   background: #f1f5f9;
   border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .method-tab {
@@ -86,16 +87,34 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 6px;
+  padding: 6px 10px;
   border: none;
   background: transparent;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: #64748b;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.method-tab.active {
+  background: white;
+  color: #2563eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* QR Scanner Content - 2 parts: Scan area + Info display */
+.qr-scanner-content {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
 .method-tab:hover {
@@ -118,25 +137,38 @@
 
 /* CCCD Information */
 .cccd-info-section {
-  border-top: 1px solid #e2e8f0;
-  padding-top: 20px;
-  margin-top: auto; /* Push to bottom if there's space */
-  flex-shrink: 0; /* Don't shrink this section */
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* QR Upload Area */
+/* QR Upload Area - Redesigned for compact layout */
 .qr-upload-area {
-  margin-bottom: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
 }
 
 .qr-upload-zone {
   border: 2px dashed #cbd5e1;
   border-radius: 8px;
-  padding: 32px 20px;
+  padding: 20px 16px;
   text-align: center;
   transition: all 0.3s ease;
   cursor: pointer;
   background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px; /* Tăng từ 160px lên 200px */
+  flex: 1;
 }
 
 .qr-upload-zone:hover {
@@ -160,27 +192,40 @@
 }
 
 .qr-upload-icon {
-  font-size: 32px;
-  margin-bottom: 12px;
+  font-size: 24px;
+  margin-bottom: 8px;
 }
 
 .qr-upload-text {
-  font-size: 14px;
+  font-size: 13px;
   color: #64748b;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
 }
 
 .qr-upload-input {
   display: none;
 }
 
+/* ========================================
+   OVERRIDE: disable .results-section when used inside the integrated form page
+   This prevents the QR scanner's .results-section from visually overriding
+   the integrated form results. Remove or change `display` if you prefer a
+   visual-less but still-present container.
+   ======================================== */
+
+/* ========================================
+   OVERRIDE: Hide QRScanner component's visual results 
+   to prevent duplicate green CCCD info display
+   ======================================== */
+
 .qr-upload-button {
   display: inline-block;
   background: #3b82f6;
   color: white;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -259,45 +304,57 @@
   background: #2563eb;
 }
 
-/* CCCD Information */
+/* CCCD Information - Redesigned cho layout mới */
 .cccd-info-section {
   border-top: 1px solid #e2e8f0;
-  padding-top: 20px;
+  padding-top: 16px;
+  margin-top: auto; /* Push to bottom if there's space */
+  flex-shrink: 0; /* Don't shrink this section */
 }
 
 .cccd-info-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #1e293b;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .cccd-info-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .cccd-info-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cccd-info-item:last-child {
+  border-bottom: none;
 }
 
 .cccd-info-label {
-  font-size: 13px;
+  font-size: 12px;
   color: #64748b;
   font-weight: 500;
-  min-width: 80px;
+  min-width: 60px;
   flex-shrink: 0;
 }
 
 .cccd-info-value {
-  font-size: 13px;
+  font-size: 12px;
   color: #1e293b;
   text-align: right;
   word-break: break-word;
+  font-weight: 500;
 }
 
 /* ========================================
@@ -413,25 +470,47 @@
   border-radius: 4px;
 }
 
-/* Form Renderer Container */
+/* Form Renderer Container - Optimized for A4 display */
 .form-renderer-container {
   flex: 1;
-  padding: 20px;
+  padding: 8px; /* Giảm từ 20px xuống 8px để form hiển thị lớn hơn */
   overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: auto; /* Enable horizontal scrolling for A4 width */
   min-height: 0; /* Important: Allow content to shrink */
   max-height: 100%; /* Prevent growing beyond container */
+  background: #f5f5f5; /* Light background like document viewer */
 }
 
-/* Fix for FormRenderer component */
+/* Fix for FormRenderer component - A4 optimized */
 .form-renderer-container .form-renderer {
   height: auto !important; /* Override any fixed height */
   max-width: none !important; /* Remove max-width constraints */
+  margin: 0 auto; /* Center A4 form */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); /* Stronger shadow for document effect */
 }
 
 .form-renderer-container .form-content {
   overflow: visible !important; /* Ensure content is visible */
 }
 
+/* Smooth scrolling for better UX */
+.form-renderer-container {
+  scroll-behavior: smooth;
+}
+
+/* A4 form centering on large screens */
+@media (min-width: 1200px) {
+  .form-renderer-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 16px 8px; /* Giảm padding trên màn hình lớn */
+  }
+
+  .form-renderer-container .form-renderer {
+    margin: 0;
+  }
+}
 .no-form-selected {
   display: flex;
   align-items: center;
@@ -444,6 +523,12 @@
 /* ========================================
    RESPONSIVE DESIGN
    ======================================== */
+@media (max-width: 1200px) {
+  .integrated-form-layout {
+    grid-template-columns: 480px 1fr; /* Tăng nhẹ QR section trên màn hình vừa */
+  }
+}
+
 @media (max-width: 1024px) {
   .integrated-form-layout {
     grid-template-columns: 1fr;

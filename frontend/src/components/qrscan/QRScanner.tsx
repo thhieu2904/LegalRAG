@@ -2,14 +2,7 @@ import React, { useState, useCallback } from "react";
 import { CameraComponent } from "./CameraComponent";
 import { ServiceTester } from "../debug/ServiceTester";
 import { qrScannerAPI } from "../../api/qr-scanner-api";
-import {
-  QrCode,
-  Camera,
-  CheckCircle,
-  AlertCircle,
-  Loader,
-  RefreshCcw,
-} from "lucide-react";
+import { QrCode, AlertCircle, Loader } from "lucide-react";
 import type { CCCDData } from "../../api/qr-scanner-api";
 import "./QRScanner.css";
 
@@ -25,9 +18,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
   className = "",
 }) => {
   const [isScanning, setIsScanning] = useState(false);
-  const [scannedData, setScannedData] = useState<CCCDData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [processingTime, setProcessingTime] = useState<number | null>(null);
 
   const handleImageCapture = useCallback(
     async (imageData: string) => {
@@ -41,20 +32,12 @@ export const QRScanner: React.FC<QRScannerProps> = ({
         // Log first few characters to see format
         console.log("📄 Image format:", imageData.substring(0, 50));
 
-        const startTime = Date.now();
-
         // Use the new unified QR scanning API
         console.log("🔍 Scanning QR code with new API...");
         const result = await qrScannerAPI.scanQRCode(imageData);
 
-        const endTime = Date.now();
-        const processingTimeMs = endTime - startTime;
-        setProcessingTime(processingTimeMs);
-
         if (result.success && result.data) {
           console.log("✅ QR scan successful:", result.data);
-          setScannedData(result.data);
-          setProcessingTime(result.processing_time || processingTimeMs);
           onResult?.(result.data);
         } else {
           const errorMessage = result.message || "Failed to scan QR code";
@@ -103,12 +86,6 @@ export const QRScanner: React.FC<QRScannerProps> = ({
     [onError]
   );
 
-  const reset = useCallback(() => {
-    setScannedData(null);
-    setError(null);
-    setProcessingTime(null);
-  }, []);
-
   return (
     <div className={`qr-scanner ${className}`}>
       {/* Header */}
@@ -126,107 +103,34 @@ export const QRScanner: React.FC<QRScannerProps> = ({
 
       {/* Main Content */}
       <div className="qr-scanner-content">
-        {!scannedData ? (
-          <>
-            {/* Camera Section */}
-            <div className="camera-section">
-              <div className="camera-header">
-                <Camera className="section-icon" />
-                <h3>Capture CCCD Image</h3>
-              </div>
-
-              <div className="camera-wrapper">
-                <CameraComponent
-                  onImageCapture={handleImageCapture}
-                  onError={handleError}
-                  isCapturing={isScanning}
-                  captureButtonText={
-                    isScanning ? "Processing..." : "Đang quét..."
-                  }
-                />
-              </div>
-
-              {isScanning && (
-                <div className="processing-indicator">
-                  <Loader className="spinning" />
-                  <span>Đang xử lý...</span>
-                </div>
-              )}
-
-              {error && (
-                <div className="error-message">
-                  <AlertCircle className="error-icon" />
-                  <div className="error-content">
-                    <h4>Quét thất bại</h4>
-                    <p>{error}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </>
-        ) : (
-          /* Results Section */
-          <div className="results-section">
-            <div className="success-header">
-              <CheckCircle className="success-icon" />
-              <h3>Quét thành công</h3>
-            </div>
-
-            <div className="cccd-data">
-              <div className="data-grid">
-                <div className="data-item">
-                  <label>Citizen ID:</label>
-                  <span>{scannedData.citizen_id}</span>
-                </div>
-
-                <div className="data-item">
-                  <label>Full Name:</label>
-                  <span>{scannedData.full_name}</span>
-                </div>
-
-                <div className="data-item">
-                  <label>Date of Birth:</label>
-                  <span>{scannedData.date_of_birth}</span>
-                </div>
-
-                <div className="data-item">
-                  <label>Gender:</label>
-                  <span>{scannedData.gender}</span>
-                </div>
-
-                <div className="data-item">
-                  <label>Address:</label>
-                  <span>{scannedData.address}</span>
-                </div>
-
-                <div className="data-item">
-                  <label>Issue Date:</label>
-                  <span>{scannedData.issue_date}</span>
-                </div>
-
-                {scannedData.old_id && (
-                  <div className="data-item">
-                    <label>Old ID:</label>
-                    <span>{scannedData.old_id}</span>
-                  </div>
-                )}
-              </div>
-
-              {processingTime && (
-                <div className="processing-time">
-                  ⏱️ Thời gian xử lý: {processingTime}ms
-                </div>
-              )}
-            </div>
-
-            <div className="action-buttons">
-              <button onClick={reset} className="reset-button">
-                <RefreshCcw className="button-icon" />
-                Quét lại
-              </button>
-            </div>
+        {/* Camera Section - Always visible */}
+        <div className="camera-section">
+          <div className="camera-wrapper">
+            <CameraComponent
+              onImageCapture={handleImageCapture}
+              onError={handleError}
+              isCapturing={isScanning}
+              captureButtonText={isScanning ? "Đang xử lý..." : "Đang quét..."}
+            />
           </div>
-        )}
+
+          {isScanning && (
+            <div className="processing-indicator">
+              <Loader className="spinning" />
+              <span>Đang xử lý QR code...</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="error-message">
+              <AlertCircle className="error-icon" />
+              <div className="error-content">
+                <h4>Quét thất bại</h4>
+                <p>{error}</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

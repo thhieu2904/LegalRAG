@@ -322,18 +322,19 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
               className={`camera-video ${isStreaming ? "active" : "hidden"}`}
             />
 
-            {/* Camera viewfinder overlay */}
+            {/* Modern Camera overlay for CCCD scanning */}
             {isStreaming && !error && (
-              <div className="viewfinder-overlay">
-                <div className="viewfinder-frame">
-                  <div className="frame-corner frame-corner-tl"></div>
-                  <div className="frame-corner frame-corner-tr"></div>
-                  <div className="frame-corner frame-corner-bl"></div>
-                  <div className="frame-corner frame-corner-br"></div>
-                </div>
-                <div className="viewfinder-guide">
-                  <p>Position your CCCD within the frame</p>
-                  <p>Ensure QR code is visible and clear</p>
+              <div className="camera-overlay">
+                <div className="overlay-frame">
+                  <div className="overlay-corners">
+                    <div className="corner top-left"></div>
+                    <div className="corner top-right"></div>
+                    <div className="corner bottom-left"></div>
+                    <div className="corner bottom-right"></div>
+                  </div>
+                  <div className="overlay-text">
+                    Đặt CCCD vào khung và đảm bảo QR code rõ nét
+                  </div>
                 </div>
               </div>
             )}
