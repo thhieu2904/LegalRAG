@@ -176,6 +176,14 @@ app.add_middleware(
 app.include_router(rag.router)
 app.include_router(documents.router)
 
+# Include Forms API for IdentiFill service
+try:
+    from app.api.forms import router as forms_router
+    app.include_router(forms_router, prefix="/api/forms", tags=["forms"])
+    logger.info("✅ Forms API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Forms API not available: {e}")
+
 # Include Router CRUD API (minimal endpoints for clarification)
 try:
     from app.api.router_crud import router as router_crud_router
