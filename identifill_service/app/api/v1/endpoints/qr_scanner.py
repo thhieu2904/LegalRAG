@@ -14,7 +14,8 @@ qr_scanner = QRCodeScanner()
 @router.post("/scan", response_model=QRScanResponse)
 async def scan_qr_code(request: QRScanRequest):
     """
-    Scan QR code from CCCD image using advanced detection
+    Production CCCD QR code scanning endpoint.
+    Uses optimized region extraction for maximum accuracy.
     """
     try:
         logger.info(f"Received QR scan request with mode: {request.scan_mode}")
