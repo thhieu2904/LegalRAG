@@ -1,0 +1,120 @@
+# QR Scanner Configuration File
+# This file contains all configurable parameters for the QR scanning system
+
+[image_preprocessing]
+# Image normalization settings
+target_width = 1200          # Preferred width for processed images
+max_width = 1600            # Images larger than this will be resized
+min_width = 800             # Images smaller than this will be upscaled
+noise_reduction_strength = "medium"  # Options: "light", "medium", "strong"
+
+# Quality enhancement thresholds
+low_contrast_threshold = 50.0      # Apply CLAHE if contrast RMS < this value
+low_sharpness_threshold = 100.0    # Apply unsharp mask if sharpness < this value
+
+[qr_detection]
+# Detection pipeline settings
+enable_preprocessing = true     # Use image preprocessing pipeline
+enable_fast_scan = true        # Enable fast scan stage
+enable_enhanced_scan = true    # Enable enhanced full image scan
+enable_card_detection = true   # Enable card detection fallback
+enable_corner_scan = true      # Enable corner scan as last resort
+
+# Performance settings
+max_enhancement_methods = 6    # Maximum number of enhancement methods to try
+early_termination = true      # Stop when first successful detection is made
+
+# Detection method priorities (1 = highest priority)
+pyzbar_priority = 1
+opencv_priority = 2
+
+[card_detection]
+# Card detection parameters
+min_card_area = 10000                    # Minimum area for card detection
+aspect_ratio_min = 1.4                   # Minimum aspect ratio for card
+aspect_ratio_max = 1.8                   # Maximum aspect ratio for card
+contour_area_threshold_ratio = 0.8       # Contour solidity threshold
+corner_size_ratio = 0.25                 # Corner size as fraction of smaller dimension
+
+# Edge detection parameters
+canny_low_threshold = 75
+canny_high_threshold = 200
+gaussian_blur_kernel = 5
+dilate_iterations = 1
+
+[enhancement_methods]
+# Image enhancement techniques and their parameters
+
+[enhancement_methods.adaptive_threshold]
+enabled = true
+max_value = 255
+adaptive_method = "ADAPTIVE_THRESH_GAUSSIAN_C"
+threshold_type = "THRESH_BINARY" 
+block_size = 11
+c_constant = 2
+
+[enhancement_methods.sharpen]
+enabled = true
+kernel = [[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]]
+
+[enhancement_methods.clahe]
+enabled = true
+clip_limit = 2.0
+tile_grid_size = [8, 8]
+
+[enhancement_methods.otsu]
+enabled = true
+threshold_value = 0
+max_value = 255
+threshold_type = "THRESH_BINARY_OTSU"
+
+[enhancement_methods.canny_edge]
+enabled = true
+low_threshold = 100
+high_threshold = 200
+dilate_kernel_size = 3
+dilate_iterations = 1
+
+[enhancement_methods.contrast_otsu]
+enabled = true
+# Combines CLAHE with Otsu thresholding
+
+[logging]
+# Logging configuration
+log_level = "INFO"              # Options: DEBUG, INFO, WARNING, ERROR
+log_preprocessing = false       # Log preprocessing steps
+log_detection_stages = true     # Log detection stage results
+log_timing = true              # Log timing information
+log_image_properties = false    # Log detailed image analysis
+
+[performance]
+# Performance optimization settings
+max_processing_time = 10.0     # Maximum processing time per image (seconds)
+memory_limit_mb = 500          # Memory limit per request (MB)
+enable_caching = false         # Enable result caching (future feature)
+
+# Timeouts for different stages (seconds)
+fast_scan_timeout = 2.0
+enhanced_scan_timeout = 5.0
+card_detection_timeout = 3.0
+
+[api]
+# API-related settings
+default_processing_mode = "auto"    # Options: "fast", "thorough", "auto"
+return_debug_info = false          # Include debug information in responses
+return_processing_stats = true      # Include processing statistics
+max_image_size_mb = 10             # Maximum allowed image size
+
+[testing]
+# Testing and validation settings
+test_images_dir = "test_images"
+generate_performance_reports = true
+benchmark_mode = false
+save_debug_images = false
+
+[experimental]
+# Experimental features (use with caution)
+enable_hough_lines = false         # Use Hough line detection for card detection
+enable_template_matching = false   # Use template matching for card detection
+enable_color_segmentation = false  # Use color-based segmentation
+enable_grid_scanning = false      # Enable grid-based fallback scanning

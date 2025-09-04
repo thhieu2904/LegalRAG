@@ -2,9 +2,10 @@ import base64
 import cv2
 import numpy as np
 from pyzbar import pyzbar
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Dict, Any
 import time
 import logging
+import os
 from app.models.schemas import CCCDData, QRScanResponse
 from app.services.qr_parser import QRCodeParser
 
@@ -101,7 +102,48 @@ class QRCodeScanner:
         except Exception as e:
             logger.error(f"Error decoding base64 image: {e}")
             return None
-
+    
+    def _try_pyzbar_detect(self, image: np.ndarray) -> Optional[str]:
+        """Try to decode QR code using pyzbar"""
+        try:
+            # Convert to grayscale if needed
+            if len(image.shape) == 3:
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            else:
+                gray = image
+                
+            # Scan for QR codes
+            qr_codes = pyzbar.decode(gray)
+            
+            if qr_codes:
+                # Process the first QR code found
+                qr_code = qr_codes[0]
+                qr_data = qr_code.data.decode('utf-8')
+                return qr_data
+            
+            return None
+        except Exception as e:
+            logger.debug(f"Pyzbar detection error: {e}")
+            return None
+    
+    def _try_opencv_qr_detect(self, image: np.ndarray) -> Tuple[bool, List[str], Optional[np.ndarray], Optional[List[np.ndarray]]]:
+        """Try to detect and decode QR code using OpenCV"""
+        try:
+            # Convert to grayscale if needed
+            if len(image.shape) == 3:
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            else:
+                gray = image
+                
+            # Detect and decode
+            result = self.qr_detector.detectAndDecodeMulti(gray)
+            points = result[2] if result[2] is not None else None
+            straight_codes = list(result[3]) if result[3] is not None else None
+            return result[0], list(result[1]), points, straight_codes
+        except Exception as e:
+            logger.debug(f"OpenCV QR detection error: {e}")
+            return False, [], None, None
+    
     def _extract_cccd_qr_regions(self, image: np.ndarray) -> List[Tuple[str, np.ndarray]]:
         """
         Extract potential QR regions from CCCD card based on known positions
@@ -169,7 +211,256 @@ class QRCodeScanner:
             logger.debug(f"OpenCV detection error: {e}")
         
         return None
-
+        """Extract QR code region using detected points"""
+        try:
+            # Ensure points is properly shaped
+            if points.shape[1] < 4:
+                return None
+                
+            # Get bounding rectangle
+            rect = cv2.boundingRect(points)
+            x, y, w, h = rect
+            
+            # Add some margin (10%)
+            margin_x = int(w * 0.1)
+            margin_y = int(h * 0.1)
+            
+            # Ensure boundaries are within image
+            start_x = max(0, x - margin_x)
+            start_y = max(0, y - margin_y)
+            end_x = min(image.shape[1], x + w + margin_x)
+            end_y = min(image.shape[0], y + h + margin_y)
+            
+            # Crop image
+            qr_region = image[start_y:end_y, start_x:end_x]
+            
+            return qr_region
+        except Exception as e:
+            logger.debug(f"Error extracting QR region: {e}")
+            return None
+    
+    def _get_enhanced_versions(self, image: np.ndarray) -> List[np.ndarray]:
+        """Generate multiple enhanced versions of the image for QR detection"""
+        enhanced_images = []
+        
+        try:
+            # Convert to grayscale
+            if len(image.shape) == 3:
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            else:
+                gray = image
+            
+            # Add original grayscale
+            enhanced_images.append(gray)
+            
+            # 1. Basic enhancement with adaptive threshold
+            blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+            thresh = cv2.adaptiveThreshold(
+                blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                cv2.THRESH_BINARY, 11, 2
+            )
+            enhanced_images.append(thresh)
+            
+            # 2. Sharpen the image
+            kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+            sharpened = cv2.filter2D(gray, -1, kernel)
+            enhanced_images.append(sharpened)
+            
+            # 3. Contrast enhancement
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+            enhanced_contrast = clahe.apply(gray)
+            enhanced_images.append(enhanced_contrast)
+            
+            # 4. Thresholding with Otsu's method
+            _, otsu = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            enhanced_images.append(otsu)
+            
+            # 5. Edge enhancement
+            edges = cv2.Canny(gray, 100, 200)
+            kernel = np.ones((3, 3), np.uint8)
+            dilated_edges = cv2.dilate(edges, kernel, iterations=1)
+            inverted = cv2.bitwise_not(dilated_edges)  # Invert for QR detection
+            enhanced_images.append(inverted)
+            
+            # 6. Combining methods (threshold after contrast enhancement)
+            _, thresh2 = cv2.threshold(enhanced_contrast, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            enhanced_images.append(thresh2)
+            
+            return enhanced_images
+            
+        except Exception as e:
+            logger.debug(f"Error in image enhancement: {e}")
+            return [image] if len(image.shape) == 2 else [cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)]
+    
+    def _try_detect_card(self, image: np.ndarray) -> Optional[np.ndarray]:
+        """
+        Try to detect and extract the ID card from the image
+        Uses advanced contour filtering with solidity check
+        """
+        try:
+            # Convert to grayscale
+            if len(image.shape) == 3:
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            else:
+                gray = image
+            
+            # Apply Gaussian blur
+            blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+            
+            # Apply Canny edge detection
+            edges = cv2.Canny(blurred, 75, 200)
+            
+            # Dilate edges to connect broken lines
+            kernel = np.ones((3, 3), np.uint8)
+            dilated = cv2.dilate(edges, kernel, iterations=1)
+            
+            # Find contours
+            contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            
+            # Sort contours by area (largest first) - the card should be one of the largest contours
+            contours = sorted(contours, key=cv2.contourArea, reverse=True)
+            
+            # Take the top 5 contours (increased from 3)
+            for contour in contours[:5]:
+                # Get area
+                area = cv2.contourArea(contour)
+                
+                # Skip small contours
+                if area < 10000:  # Adjust threshold based on typical card size
+                    continue
+                
+                # Calculate solidity (area / convex hull area)
+                hull = cv2.convexHull(contour)
+                hull_area = cv2.contourArea(hull)
+                solidity = float(area) / hull_area if hull_area > 0 else 0
+                
+                # Skip if solidity is too low (not solid enough to be a card)
+                if solidity < 0.8:
+                    continue
+                
+                # Approximate the contour to a polygon
+                peri = cv2.arcLength(contour, True)
+                approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
+                
+                # If the polygon has 4 points, it might be the card
+                if len(approx) == 4:
+                    # Create a mask for the card
+                    mask = np.zeros_like(gray)
+                    cv2.drawContours(mask, [approx], 0, (255, 255, 255), -1)
+                    
+                    # Extract the card region
+                    card_region = cv2.bitwise_and(image, image, mask=mask)
+                    
+                    # Get bounding rectangle
+                    x, y, w, h = cv2.boundingRect(approx)
+                    
+                    # Check aspect ratio (typical ID cards have ratio around 1.5-1.6)
+                    aspect_ratio = float(w) / h
+                    if aspect_ratio < 1.3 or aspect_ratio > 1.9:
+                        continue
+                    
+                    # Get the card region
+                    card_region = image[y:y+h, x:x+w]
+                    
+                    return card_region
+            
+            # If no suitable contour found, try Hough Line method
+            return self._try_detect_card_with_hough_lines(image)
+            
+        except Exception as e:
+            logger.debug(f"Error in card detection: {e}")
+            return None
+    
+    def _try_detect_card_with_hough_lines(self, image: np.ndarray) -> Optional[np.ndarray]:
+        """Alternative card detection using Hough Line Transform"""
+        try:
+            # Convert to grayscale
+            if len(image.shape) == 3:
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            else:
+                gray = image
+            
+            # Apply Gaussian blur
+            blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+            
+            # Apply Canny edge detection
+            edges = cv2.Canny(blurred, 50, 150)
+            
+            # Find lines using Hough Transform
+            lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
+            
+            if lines is None or len(lines) < 4:
+                return None
+            
+            # Create a blank image to draw lines
+            line_image = np.zeros_like(gray)
+            
+            # Draw lines
+            for line in lines:
+                x1, y1, x2, y2 = line[0]
+                cv2.line(line_image, (x1, y1), (x2, y2), (255,), 2)
+            
+            # Dilate lines to connect gaps
+            kernel = np.ones((5, 5), np.uint8)
+            dilated_lines = cv2.dilate(line_image, kernel, iterations=1)
+            
+            # Find contours in the line image
+            contours, _ = cv2.findContours(dilated_lines, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            
+            if not contours:
+                return None
+            
+            # Find the largest contour
+            largest_contour = max(contours, key=cv2.contourArea)
+            
+            # Approximate the contour to a polygon
+            peri = cv2.arcLength(largest_contour, True)
+            approx = cv2.approxPolyDP(largest_contour, 0.02 * peri, True)
+            
+            # If the polygon has 4 points, it might be the card
+            if len(approx) == 4:
+                # Get bounding rectangle
+                x, y, w, h = cv2.boundingRect(approx)
+                
+                # Check aspect ratio
+                aspect_ratio = float(w) / h
+                if aspect_ratio < 1.3 or aspect_ratio > 1.9:
+                    return None
+                
+                # Get the card region
+                card_region = image[y:y+h, x:x+w]
+                
+                return card_region
+            
+            return None
+            
+        except Exception as e:
+            logger.debug(f"Error in Hough line detection: {e}")
+            return None
+    
+    def _extract_card_corners(self, card_image: np.ndarray) -> List[np.ndarray]:
+        """Extract the four corners of the card image where QR codes are typically located"""
+        corners = []
+        try:
+            h, w = card_image.shape[:2]
+            
+            # Define corner size (25% of the smaller dimension)
+            corner_size = min(h, w) // 4
+            
+            # Extract four corners
+            top_left = card_image[0:corner_size, 0:corner_size]
+            top_right = card_image[0:corner_size, w-corner_size:w]
+            bottom_left = card_image[h-corner_size:h, 0:corner_size]
+            bottom_right = card_image[h-corner_size:h, w-corner_size:w]
+            
+            corners = [top_left, top_right, bottom_left, bottom_right]
+            
+            return corners
+            
+        except Exception as e:
+            logger.debug(f"Error extracting corners: {e}")
+            return corners
+    
     def _create_success_response(self, qr_data: str) -> QRScanResponse:
         """Create success response with parsed QR data"""
         try:
@@ -194,7 +485,7 @@ class QRCodeScanner:
                 success=True,
                 data=cccd_data,
                 message="QR code scanned successfully",
-                confidence=1.0
+                confidence=1.0  # QR codes have high confidence when decoded
             )
             
         except Exception as e:
