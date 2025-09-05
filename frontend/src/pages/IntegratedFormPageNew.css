@@ -129,6 +129,13 @@
   color: #065f46;
 }
 
+/* Action buttons for download functionality */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .auto-fill-status {
   font-size: 12px;
   color: #059669;
@@ -143,6 +150,49 @@
   background: #f1f5f9;
   padding: 4px 8px;
   border-radius: 4px;
+}
+
+/* Download button styling */
+.download-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.download-button:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.download-button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.download-button .spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Form Renderer Container */
