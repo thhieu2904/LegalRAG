@@ -368,3 +368,113 @@ async def health_check(
             "storage_exists": storage_root.exists() if storage_root else False,
             "storage_writable": False
         }
+
+# ============================================================================
+# Template Operations - NHIỆM VỤ 1
+# ============================================================================
+
+@router.get("/{collection_id}/{document_id}/template")
+async def get_template_file(
+    collection_id: str,
+    document_id: str,
+    template_name: Optional[str] = None
+):
+    """
+    Endpoint để lấy file template .docx
+    Tìm file template tương ứng trong thư mục templates/
+    
+    Args:
+        collection_id: ID của collection
+        document_id: ID của document  
+        template_name: Tên template cụ thể (optional). Nếu không có sẽ tìm file đầu tiên
+        
+    Returns:
+        File .docx template để download
+    """
+    try:
+        # Tìm đường dẫn đến thư mục templates - KHÔNG cần validate document
+        from pathlib import Path
+        from ..core.config import settings
+        
+        storage_path = settings.base_dir / settings.storage_dir
+        template_dir = storage_path / "collections" / collection_id / "documents" / document_id / "templates"
+        
+        if not template_dir.exists():
+            raise HTTPException(status_code=404, detail="Templates directory not found")
+        
+        # Tìm file template
+        template_file = None
+        if template_name:
+            # Tìm file cụ thể
+            template_file = template_dir / template_name
+            if not template_file.exists():
+                raise HTTPException(status_code=404, detail=f"Template file '{template_name}' not found")
+        else:
+            # Tìm file template đầu tiên (thường là file có _template.docx)
+            template_files = list(template_dir.glob("*_template.docx"))
+            if not template_files:
+                # Fallback: tìm bất kỳ file .docx nào
+                template_files = list(template_dir.glob("*.docx"))
+            
+            if not template_files:
+                raise HTTPException(status_code=404, detail="No template files found")
+            
+            template_file = template_files[0]
+        
+        logger.info(f"Serving template file: {template_file}")
+        
+        return FileResponse(
+            path=str(template_file),
+            filename=template_file.name,
+            media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error serving template: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@router.get("/{collection_id}/{document_id}/templates")
+async def list_template_files(
+    collection_id: str,
+    document_id: str
+):
+    """
+    Liệt kê tất cả template files có sẵn
+    
+    Args:
+        collection_id: ID của collection
+        document_id: ID của document
+        
+    Returns:
+        Danh sách các template files
+    """
+    try:
+        from pathlib import Path
+        from ..core.config import settings
+        
+        storage_path = settings.base_dir / settings.storage_dir
+        template_dir = storage_path / "collections" / collection_id / "documents" / document_id / "templates"
+        
+        if not template_dir.exists():
+            return {"templates": [], "count": 0}
+        
+        templates = []
+        for template_file in template_dir.glob("*.docx"):
+            templates.append({
+                "filename": template_file.name,
+                "size": template_file.stat().st_size,
+                "modified": template_file.stat().st_mtime
+            })
+        
+        return {
+            "templates": templates,
+            "count": len(templates),
+            "template_dir": str(template_dir)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error listing templates: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

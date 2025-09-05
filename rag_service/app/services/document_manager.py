@@ -26,8 +26,14 @@ class DocumentManagerService:
     """
     
     def __init__(self, storage_root: Optional[str] = None):
-        self.storage_root = Path(storage_root or settings.data_root_dir) / "storage"
+        if storage_root:
+            self.storage_root = Path(storage_root)
+        else:
+            # Use the correct storage path from settings
+            self.storage_root = settings.base_dir / settings.storage_dir / "collections"
+        
         self.storage_root.mkdir(parents=True, exist_ok=True)
+        logger.info(f"DocumentManagerService initialized with storage_root: {self.storage_root}")
         
         # Mapping collection names
         self.collection_mappings = {

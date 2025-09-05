@@ -176,6 +176,14 @@ app.add_middleware(
 app.include_router(rag.router)
 app.include_router(documents.router)
 
+# Include Templates API
+try:
+    from app.api.templates import router as templates_router
+    app.include_router(templates_router)
+    logger.info("✅ Templates API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Templates API not available: {e}")
+
 # Include Forms API for IdentiFill service
 try:
     from app.api.forms import router as forms_router

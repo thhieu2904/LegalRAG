@@ -866,7 +866,7 @@ class RAGService:
                     
                     return self._generate_smart_clarification(routing_result, query, session_id, start_time)
                     
-                elif confidence_level in ['low_confidence', 'insufficient_context']:
+                elif confidence_level in ['low_confidence', 'insufficient_context', 'low']:
                     # LOW CONFIDENCE - Hỏi lại user, không route
                     logger.info(f"🤔 LOW CONFIDENCE ({confidence_level}) - hỏi lại user thay vì route")
                     

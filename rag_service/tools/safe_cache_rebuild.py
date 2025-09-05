@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def clean_old_cache():
     """Clean old cache files"""
-    cache_dir = "../data/cache"
+    cache_dir = "data/cache"
     if os.path.exists(cache_dir):
         cache_files = glob.glob(f"{cache_dir}/*")
         for cache_file in cache_files:
@@ -37,7 +37,7 @@ def load_new_structure():
     questions_data = {}
     
     # Find all questions.json files
-    questions_files = glob.glob("../data/**/*questions.json", recursive=True)
+    questions_files = glob.glob("data/**/*questions.json", recursive=True)
     
     logger.info(f"📁 Found {len(questions_files)} questions.json files")
     
@@ -183,7 +183,7 @@ def generate_embeddings_safe(questions_data):
         # Approach 1: Load local Vietnamese_Embedding_v2
         try:
             from sentence_transformers import SentenceTransformer
-            local_path = "../data/models/hf_cache/hub/models--AITeamVN--Vietnamese_Embedding_v2/snapshots/18b44161e041bf1d3a333ab5144b5b7b93f914d2"
+            local_path = "data/models/hf_cache/hub/models--AITeamVN--Vietnamese_Embedding_v2/snapshots/18b44161e041bf1d3a333ab5144b5b7b93f914d2"
             model = SentenceTransformer(local_path)
             logger.info("✅ Loaded local Vietnamese_Embedding_v2 from snapshot")
         except Exception as e1:
@@ -288,7 +288,7 @@ def create_text_based_cache(questions_data):
 def save_cache(cache_data):
     """Save cache to file"""
     try:
-        cache_dir = "../data/cache"
+        cache_dir = "data/cache"
         os.makedirs(cache_dir, exist_ok=True)
         
         cache_file = os.path.join(cache_dir, "router_embeddings.pkl")
@@ -325,7 +325,7 @@ def save_cache(cache_data):
 def validate_cache():
     """Validate cache integrity"""
     try:
-        cache_file = "../data/cache/router_embeddings.pkl"
+        cache_file = "data/cache/router_embeddings.pkl"
         
         if not os.path.exists(cache_file):
             logger.error("❌ Cache file not found")
