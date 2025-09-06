@@ -11,13 +11,13 @@ class ScanMode(str, Enum):
 
 class CCCDData(BaseModel):
     """Căn cước công dân data extracted from QR code"""
-    citizen_id: str  # Số căn cước công dân
-    old_id: Optional[str] = None  # Số CMND cũ  
-    full_name: str  # Họ và tên
-    date_of_birth: str  # Ngày sinh (DD/MM/YYYY)
-    gender: str  # Giới tính
-    address: str  # Địa chỉ
-    issue_date: str  # Ngày cấp (DD/MM/YYYY)
+    scan_cccd: str  # Số căn cước công dân
+    scan_cmnd: Optional[str] = None  # Số CMND cũ  
+    scan_ho_ten: str  # Họ và tên
+    scan_ngay_sinh: str  # Ngày sinh (DD/MM/YYYY)
+    scan_gioi_tinh: str  # Giới tính
+    scan_dia_chi: str  # Địa chỉ
+    scan_ngay_cap: str  # Ngày cấp (DD/MM/YYYY)
 
 
 class QRScanRequest(BaseModel):

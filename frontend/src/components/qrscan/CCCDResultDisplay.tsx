@@ -70,44 +70,44 @@ export const CCCDResultDisplay: React.FC<CCCDResultDisplayProps> = ({
     {
       icon: Hash,
       label: "Số CCCD",
-      value: data.citizen_id,
+      value: data.scan_cccd,
       important: true,
     },
     {
       icon: User,
       label: "Họ và tên",
-      value: data.full_name,
+      value: data.scan_ho_ten,
       important: true,
     },
     {
       icon: Calendar,
       label: "Ngày sinh",
-      value: formatDate(data.date_of_birth),
+      value: formatDate(data.scan_ngay_sinh),
     },
     {
       icon: User,
       label: "Giới tính",
-      value: formatGender(data.gender),
+      value: formatGender(data.scan_gioi_tinh),
     },
     {
       icon: MapPin,
       label: "Địa chỉ",
-      value: data.address,
+      value: data.scan_dia_chi,
       multiline: true,
     },
     {
       icon: Clock,
       label: "Ngày cấp",
-      value: formatDate(data.issue_date),
+      value: formatDate(data.scan_ngay_cap),
     },
   ];
 
   // Add old ID if available
-  if (data.old_id) {
+  if (data.scan_cmnd) {
     dataItems.splice(2, 0, {
       icon: Hash,
       label: "Số CMND cũ",
-      value: data.old_id,
+      value: data.scan_cmnd,
       important: false,
     });
   }

@@ -199,27 +199,27 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
             <div className="info-grid">
               <div className="info-item">
                 <span className="info-label">Họ tên:</span>
-                <span className="info-value">{cccdData.full_name}</span>
+                <span className="info-value">{cccdData.scan_ho_ten}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Ngày sinh:</span>
-                <span className="info-value">{cccdData.date_of_birth}</span>
+                <span className="info-value">{cccdData.scan_ngay_sinh}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Địa chỉ:</span>
-                <span className="info-value">{cccdData.address}</span>
+                <span className="info-value">{cccdData.scan_dia_chi}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Số CCCD:</span>
-                <span className="info-value">{cccdData.citizen_id}</span>
+                <span className="info-value">{cccdData.scan_cccd}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Giới tính:</span>
-                <span className="info-value">{cccdData.gender}</span>
+                <span className="info-value">{cccdData.scan_gioi_tinh}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Ngày cấp:</span>
-                <span className="info-value">{cccdData.issue_date}</span>
+                <span className="info-value">{cccdData.scan_ngay_cap}</span>
               </div>
             </div>
           </div>

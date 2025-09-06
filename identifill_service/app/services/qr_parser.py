@@ -37,13 +37,13 @@ class QRCodeParser:
                 return None
             
             return CCCDData(
-                citizen_id=citizen_id.strip(),
-                old_id=old_id.strip() if old_id.strip() else None,
-                full_name=full_name.strip(),
-                date_of_birth=dob_formatted,
-                gender=gender.strip(),
-                address=address.strip(), 
-                issue_date=issue_date_formatted
+                scan_cccd=citizen_id.strip(),
+                scan_cmnd=old_id.strip() if old_id.strip() else None,
+                scan_ho_ten=full_name.strip(),
+                scan_ngay_sinh=dob_formatted,
+                scan_gioi_tinh=gender.strip(),
+                scan_dia_chi=address.strip(), 
+                scan_ngay_cap=issue_date_formatted
             )
             
         except Exception as e:
@@ -72,22 +72,22 @@ class QRCodeParser:
         """Validate extracted CCCD data"""
         try:
             # Check citizen ID format
-            if not re.match(r'^\d{12}$', data.citizen_id):
+            if not re.match(r'^\d{12}$', data.scan_cccd):
                 return False
                 
             # Check name (contains letters and common Vietnamese characters)
-            if not re.match(r'^[a-zA-ZÀ-ỹ\s]+$', data.full_name):
+            if not re.match(r'^[a-zA-ZÀ-ỹ\s]+$', data.scan_ho_ten):
                 return False
                 
             # Check gender
-            if data.gender.lower() not in ['nam', 'nữ', 'male', 'female']:
+            if data.scan_gioi_tinh.lower() not in ['nam', 'nữ', 'male', 'female']:
                 return False
                 
             # Check date format
-            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.date_of_birth):
+            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.scan_ngay_sinh):
                 return False
                 
-            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.issue_date):
+            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.scan_ngay_cap):
                 return False
                 
             return True

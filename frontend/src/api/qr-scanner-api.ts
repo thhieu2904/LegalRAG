@@ -8,13 +8,13 @@ import { identifillAPI } from "./axios-config";
 // Interfaces
 // ========================================
 export interface CCCDData {
-  citizen_id: string;
-  old_id?: string;
-  full_name: string;
-  date_of_birth: string;
-  gender: string;
-  address: string;
-  issue_date: string;
+  scan_cccd: string;
+  scan_cmnd?: string;
+  scan_ho_ten: string;
+  scan_ngay_sinh: string;
+  scan_gioi_tinh: string;
+  scan_dia_chi: string;
+  scan_ngay_cap: string;
 }
 
 export interface QRScanResult {

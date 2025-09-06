@@ -4,6 +4,7 @@ Simple API để share form resources between services
 """
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
 from pathlib import Path
 import json
 import logging
@@ -70,32 +71,6 @@ async def get_form_data(collection_id: str, doc_id: str, form_filename: str):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.get("/mapping/{collection_id}/{doc_id}")
-async def get_form_mapping_only(collection_id: str, doc_id: str):
-    """
-    Chỉ lấy mapping configuration (không cần form file)
-    
-    Returns:
-        Pure mapping data từ mapping.json
-    """
-    try:
-        mapping_path = FORMS_BASE_PATH / collection_id / "documents" / doc_id / "forms" / "mapping.json"
-        
-        if not mapping_path.exists():
-            raise HTTPException(status_code=404, detail="Form mapping not found")
-        
-        async with aiofiles.open(mapping_path, 'r', encoding='utf-8') as f:
-            content = await f.read()
-            mapping_data = json.loads(content)
-        
-        return {
-            "success": True,
-            "data": mapping_data
-        }
-        
-    except Exception as e:
-        logger.error(f"Error getting mapping: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/file/{collection_id}/{doc_id}/{form_filename}")
@@ -157,6 +132,35 @@ async def list_forms_in_document(collection_id: str, doc_id: str):
         
     except Exception as e:
         logger.error(f"Error listing forms: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/file/{collection_id}/{doc_id}/{form_filename}/download")
+async def download_form_file(collection_id: str, doc_id: str, form_filename: str):
+    """
+    Download form file content for identifill_service to fill
+    Returns actual file content for template filling
+    """
+    try:
+        form_path = FORMS_BASE_PATH / collection_id / "documents" / doc_id / "forms" / form_filename
+        
+        if not form_path.exists():
+            raise HTTPException(status_code=404, detail="Form file not found")
+        
+        if not form_path.is_file():
+            raise HTTPException(status_code=400, detail="Path is not a file")
+        
+        logger.info(f"Serving form file for download: {form_path}")
+        return FileResponse(
+            path=str(form_path),
+            filename=form_filename,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error downloading form file: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

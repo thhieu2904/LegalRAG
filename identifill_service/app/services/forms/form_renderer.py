@@ -109,6 +109,7 @@ class FormRenderingService:
         Post-process HTML để fix các vấn đề:
         1. Thay thế broken images thành checkbox symbols
         2. Fix alignment được gán sai
+        3. Wrap {{placeholder}} với class cho frontend styling
         """
         import re
         
@@ -125,6 +126,23 @@ class FormRenderingService:
             '☐',
             html_content
         )
+        
+        # 🎯 NEW: Wrap {{placeholder}} với class để frontend dễ styling
+        # Pattern: {{scan_ho_ten}} → <span class="placeholder_scan_ho_ten">{{scan_ho_ten}}</span>
+        def wrap_placeholder(match):
+            placeholder_full = match.group(0)  # {{scan_ho_ten}}
+            placeholder_name = match.group(1)  # scan_ho_ten
+            class_name = f"placeholder_{placeholder_name}"
+            return f'<span class="{class_name}">{placeholder_full}</span>'
+        
+        # Wrap tất cả {{placeholder}} patterns
+        html_content = re.sub(
+            r'\{\{([^}]+)\}\}',
+            wrap_placeholder,
+            html_content
+        )
+        
+        logger.info("🎨 Wrapped placeholders with CSS classes for frontend styling")
         
         # Fix lỗi tất cả đều căn giữa hoặc thiếu alignment
         # Kiểm tra nếu tất cả các <p> đều có style="text-align: center;"
@@ -156,9 +174,16 @@ class FormRenderingService:
             html_content
         )
         
-        # Phần "Làm tại" căn phải  
+        # Phần "Làm tại" căn phải - Fixed regex để handle các <p> có attributes
         html_content = re.sub(
-            r'<p>([\s]*Làm tại:[^<]*)</p>',
+            r'<p[^>]*>(.*Làm tại[^<]*)</p>',
+            r'<p style="text-align: right;">\1</p>',
+            html_content
+        )
+        
+        # Thêm pattern cho các dòng có format ngày tháng năm (thường căn phải)
+        html_content = re.sub(
+            r'<p[^>]*>(.*ngày.*tháng.*năm[^<]*)</p>',
             r'<p style="text-align: right;">\1</p>',
             html_content
         )

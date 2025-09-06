@@ -6,11 +6,47 @@ import logging
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/templates", tags=["templates"])
 
-# Template directory path
-TEMPLATE_DIR = Path(__file__).parent.parent.parent / "data" / "storage" / "templates"
+# Template directory paths
+COLLECTIONS_DIR = Path(__file__).parent.parent.parent / "data" / "storage" / "collections"
+TEMPLATE_DIR = Path(__file__).parent.parent.parent / "data" / "storage" / "templates"  # For legacy support
 
+@router.get("/{collection_id}/{doc_id}/{template_name}")
+async def get_collection_template(collection_id: str, doc_id: str, template_name: str):
+    """
+    Download a template file from specific collection/document
+    """
+    try:
+        # Validate inputs (basic security)
+        for param in [collection_id, doc_id, template_name]:
+            if ".." in param or "/" in param or "\\" in param:
+                raise HTTPException(status_code=400, detail="Invalid parameter")
+        
+        # Template path in collection structure - use forms directory since we don't separate forms/templates anymore
+        template_path = COLLECTIONS_DIR / collection_id / "documents" / doc_id / "forms" / template_name
+        
+        if not template_path.exists():
+            logger.error(f"Template not found: {template_path}")
+            raise HTTPException(status_code=404, detail=f"Template '{template_name}' not found in {collection_id}/{doc_id}")
+        
+        if not template_path.is_file():
+            raise HTTPException(status_code=400, detail=f"'{template_name}' is not a file")
+        
+        logger.info(f"Serving collection template: {template_path}")
+        return FileResponse(
+            path=str(template_path),
+            filename=template_name,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error serving template {template_name}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# Legacy global template endpoint (fallback)
 @router.get("/{template_name}")
-async def get_template(template_name: str):
+async def get_global_template(template_name: str):
     """
     Download a template file by name
     """

@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { CameraComponent } from "./CameraComponent";
-import { ServiceTester } from "../debug/ServiceTester";
 import { qrScannerAPI } from "../../api/qr-scanner-api";
-import { QrCode, AlertCircle, Loader } from "lucide-react";
+import { AlertCircle, Loader } from "lucide-react";
 import type { CCCDData } from "../../api/qr-scanner-api";
 import "./QRScanner.css";
 

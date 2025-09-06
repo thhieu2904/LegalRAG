@@ -118,7 +118,7 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
       />
 
       {/* Debug info (development only) */}
-      {process.env.NODE_ENV === "development" && formMetadata && (
+      {import.meta.env.DEV && formMetadata && (
         <div className="form-debug">
           <details>
             <summary>🔧 Debug Info</summary>

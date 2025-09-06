@@ -45,7 +45,7 @@ class AutoFillService:
             "address": [
                 "dia_chi", "noi_cu_tru", "cho_o_hien_tai", "que_quan"
             ],
-            "issue_date": [
+            "scan_ngay_cap": [
                 "ngay_cap", "ngay_cap_cccd"
             ],
             "issue_place": [
@@ -145,24 +145,7 @@ class AutoFillService:
         
         return None
     
-    def _is_field_match(self, placeholder_name: str, cccd_field: str) -> bool:
-        """
-        Check fuzzy matching between placeholder and CCCD field
-        """
-        keywords_map = {
-            "full_name": ["ho", "ten", "name"],
-            "citizen_id": ["cccd", "cmt", "cmnd", "id"],
-            "date_of_birth": ["sinh", "birth", "ngay"],
-            "gender": ["gioi", "tinh", "phai", "sex"],
-            "address": ["dia", "chi", "address", "cu", "tru"],
-            "issue_date": ["cap", "issue"],
-        }
-        
-        if cccd_field in keywords_map:
-            keywords = keywords_map[cccd_field]
-            return any(keyword in placeholder_name for keyword in keywords)
-        
-        return False
+    
     
     def _create_input_field(self, field_name: str, field_type: str, field_value: str) -> str:
         """
