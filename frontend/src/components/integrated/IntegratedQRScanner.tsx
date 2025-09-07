@@ -69,23 +69,21 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("http://localhost:8002/api/v1/qr/scan", {
-        method: "POST",
-        body: formData,
+      // Convert file to base64
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data) {
-          onResult?.(result.data);
-        } else {
-          throw new Error(result.message || "QR scan failed");
-        }
+      // Use the QR scanner API service instead of direct fetch
+      const result = await qrScannerAPI.scanQRCode(base64Data);
+
+      if (result.success && result.data) {
+        onResult?.(result.data);
       } else {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(result.message || "QR scan failed");
       }
     } catch (error) {
       const errorMessage =

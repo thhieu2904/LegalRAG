@@ -150,19 +150,19 @@ class FormRenderingService:
             # Remove all center alignment
             html_content = html_content.replace(' style="text-align: center;"', '')
         
-        # Áp dụng căn giữa chỉ cho các header (luôn luôn chạy)
+        # Áp dụng căn giữa chỉ cho các header (luôn luôn chạy) - Fixed to handle existing style attributes
         html_content = re.sub(
-            r'<p><strong>(CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM)</strong></p>',
+            r'<p[^>]*><strong>(CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM)</strong></p>',
             r'<p style="text-align: center;"><strong>\1</strong></p>',
             html_content
         )
         html_content = re.sub(
-            r'<p><strong>(Độc lập - Tự do - Hạnh phúc)</strong></p>',
+            r'<p[^>]*><strong>(Độc lập - Tự do - Hạnh phúc)</strong></p>',
             r'<p style="text-align: center;"><strong>\1</strong></p>',
             html_content
         )
         html_content = re.sub(
-            r'<p><strong>(TỜ KHAI ĐĂNG KÝ KHAI SINH)</strong></p>',
+            r'<p[^>]*><strong>(TỜ KHAI ĐĂNG KÝ KHAI SINH)</strong></p>',
             r'<p style="text-align: center;"><strong>\1</strong></p>',
             html_content
         )
@@ -176,14 +176,15 @@ class FormRenderingService:
         
         # Phần "Làm tại" căn phải - Fixed regex để handle các <p> có attributes
         html_content = re.sub(
-            r'<p[^>]*>(.*Làm tại[^<]*)</p>',
+            r'<p[^>]*>(\s*Làm tại[^<]*)</p>',
             r'<p style="text-align: right;">\1</p>',
             html_content
         )
         
-        # Thêm pattern cho các dòng có format ngày tháng năm (thường căn phải)
+        # Thêm pattern cho các dòng có format ngày tháng năm (chỉ những dòng thực sự chứa ngày tháng làm việc)
+        # Chỉ match những dòng bắt đầu với khoảng trắng hoặc dấu chấm để tránh match title
         html_content = re.sub(
-            r'<p[^>]*>(.*ngày.*tháng.*năm[^<]*)</p>',
+            r'<p[^>]*>(\s+.*ngày\s+\.\.\.\s+tháng\s+\.\.\.\s+năm[^<]*)</p>',
             r'<p style="text-align: right;">\1</p>',
             html_content
         )
