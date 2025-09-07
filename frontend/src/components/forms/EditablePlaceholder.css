@@ -1,0 +1,248 @@
+/**
+ * EditablePlaceholder Component Styles
+ * Styling cho inline editing với Popover UI
+ */
+
+.editable-placeholder-container {
+  display: inline-block;
+  position: relative;
+}
+
+/* Main placeholder element */
+.editable-placeholder {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  min-width: 60px;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Placeholder states */
+.editable-placeholder.needs-input {
+  background: #fff3cd;
+  border: 1px dashed #ffc107;
+  color: #856404;
+}
+
+.editable-placeholder.has-value {
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+}
+
+.editable-placeholder.has-cccd {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+/* Hover effects */
+.editable-placeholder:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.editable-placeholder.needs-input:hover {
+  background: #ffeaa7;
+  border-color: #f39c12;
+}
+
+.editable-placeholder.has-value:hover {
+  background: #b8daff;
+  border-color: #007bff;
+}
+
+.editable-placeholder.has-cccd:hover {
+  background: #b7e4c7;
+  border-color: #28a745;
+}
+
+/* Edit icon */
+.edit-icon {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.editable-placeholder:hover .edit-icon {
+  opacity: 0.6;
+}
+
+/* Popover overlay */
+.popover-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Popover content */
+.popover-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  min-width: 300px;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: popoverAppear 0.2s ease-out;
+}
+
+@keyframes popoverAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Popover header */
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f8f9fa;
+}
+
+.popover-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+/* Popover body */
+.popover-body {
+  padding: 16px;
+}
+
+.field-label {
+  display: block;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* CCCD Reference */
+.cccd-reference {
+  background: #e8f5e8;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.cccd-label {
+  font-weight: 500;
+  color: #155724;
+  margin-right: 8px;
+}
+
+.cccd-value {
+  color: #28a745;
+  font-family: monospace;
+  font-weight: 500;
+}
+
+/* Input */
+.popover-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.popover-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Popover footer */
+.popover-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 16px;
+  border-top: 1px solid #e0e0e0;
+  background: #f8f9fa;
+}
+
+.cancel-button,
+.save-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cancel-button {
+  background: #6c757d;
+  color: white;
+}
+
+.cancel-button:hover {
+  background: #5a6268;
+}
+
+.save-button {
+  background: #007bff;
+  color: white;
+}
+
+.save-button:hover {
+  background: #0056b3;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .popover-content {
+    min-width: 280px;
+    margin: 20px;
+  }
+
+  .popover-overlay {
+    padding: 20px;
+  }
+}

@@ -3,7 +3,7 @@
  * Giao diện thống nhất: QR scan bên trái + Form render bên phải + Download button
  * Cấu trúc: Header + Content (2 cột) + Footer
  */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChatHeader } from "../components/chat/ChatHeader";
 import { ChatFooter } from "../components/chat/ChatFooter";
 import { FormRenderer } from "../components/forms/FormRenderer";
@@ -33,71 +33,17 @@ const IntegratedFormPage = () => {
   const [isFormLoaded, setIsFormLoaded] = useState<boolean>(false);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
-  // 🎨 Auto Form Preview - Generic placeholder filling (no hardcode mapping!)
-  const highlightFormFields = (cccdData: CCCDData) => {
-    console.log("🎨 Generic filling placeholders with CCCD data:", cccdData);
+  // 🎯 PHASE 3: State trung tâm cho manual data
+  const [manualData, setManualData] = useState<Record<string, string>>({});
 
-    const formContainer = document.querySelector(".form-renderer-container");
-    if (!formContainer) {
-      console.warn("⚠️ Form container not found for placeholder replacement");
-      return;
-    }
-
-    // Tìm tất cả placeholder elements [class^="placeholder_"]
-    const placeholderElements = formContainer.querySelectorAll(
-      '[class^="placeholder_"]'
-    );
-
-    placeholderElements.forEach((element) => {
-      // Extract placeholder name từ class
-      const className = Array.from(element.classList).find((cls) =>
-        cls.startsWith("placeholder_")
-      );
-      if (!className) return;
-
-      const fieldName = className.replace("placeholder_", ""); // scan_ho_ten, scan_cccd, etc.
-
-      // 🎯 GENERIC: Direct mapping từ placeholder name tới CCCD field
-      const cccdValue = (cccdData as unknown as Record<string, string>)[
-        fieldName
-      ];
-
-      if (cccdValue) {
-        // Lưu original text nếu chưa có
-        if (!element.getAttribute("data-original-text")) {
-          element.setAttribute("data-original-text", element.textContent || "");
-        }
-
-        // 🎯 UX: Thay thế {{placeholder}} với CCCD data hoặc ẩn nếu empty
-        const originalText = element.textContent || "";
-        if (originalText.includes("{{") && originalText.includes("}}")) {
-          // Thay thế placeholder với data
-          const newText = originalText.replace(/\{\{[^}]+\}\}/g, cccdValue);
-          element.textContent = newText;
-        }
-
-        // 🎯 CSS STATE: Mark element as filled để trigger CSS styling
-        element.setAttribute("data-filled", "true");
-        element.classList.add("filled");
-        element.setAttribute("data-cccd-value", cccdValue);
-        element.setAttribute("title", `CCCD: ${cccdValue}`);
-
-        console.log(`🔄 Filled "${className}": ${fieldName} → "${cccdValue}"`);
-      }
-    });
-
-    console.log("✅ Auto form preview completed with class-based approach");
+  // 🎯 PHASE 3: Callback để cập nhật manual data từ EditablePlaceholder
+  const handleManualDataChange = (fieldName: string, value: string) => {
+    setManualData((prev) => ({
+      ...prev,
+      [fieldName]: value,
+    }));
+    console.log(`✏️ Manual data updated: ${fieldName} = "${value}"`);
   };
-
-  // Auto-highlight when CCCD is scanned
-  useEffect(() => {
-    if (cccdData && isFormLoaded) {
-      // Small delay to ensure form is fully rendered
-      setTimeout(() => {
-        highlightFormFields(cccdData);
-      }, 500);
-    }
-  }, [cccdData, isFormLoaded]);
 
   // Xử lý kết quả QR scan
   const handleQRScanResult = (data: CCCDData) => {
@@ -113,6 +59,8 @@ const IntegratedFormPage = () => {
   // Reset QR scan
   const resetQRScan = () => {
     setCccdData(null);
+    // 🎯 PHASE 3: Reset manual data khi reset QR scan (optional)
+    // setManualData({}); // Uncomment if you want to clear manual data on QR reset
   };
 
   // Xử lý form load complete
@@ -122,20 +70,27 @@ const IntegratedFormPage = () => {
 
   // Download filled form - NHIỆM VỤ 3
   const handleDownloadFilledForm = async () => {
-    if (!cccdData) {
-      alert("Vui lòng quét CCCD trước khi tải về");
+    // 🎯 PHASE 3: Merge CCCD data với manual data
+    const finalData = {
+      ...cccdData, // CCCD data làm base
+      ...manualData, // Manual data có priority cao hơn (override CCCD nếu có)
+    };
+
+    if (!cccdData && Object.keys(manualData).length === 0) {
+      alert("Vui lòng quét CCCD hoặc nhập thông tin thủ công trước khi tải về");
       return;
     }
 
     setIsDownloading(true);
     try {
       console.log("🔄 Bắt đầu tải file Word...");
+      console.log("📋 Final data to send:", finalData);
 
       // Dùng cùng file cho cả hiển thị và fill/download
       const templateName = selectedForm.formFilename;
       console.log(`📋 Using same file for display and fill: ${templateName}`);
 
-      // Call identifill_service API
+      // Call identifill_service API với merged data
       const response = await fetch(
         `http://localhost:8002/api/v1/forms/fill-and-download/${selectedForm.collectionId}/${selectedForm.docId}`,
         {
@@ -144,11 +99,7 @@ const IntegratedFormPage = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            scan_ho_ten: cccdData.scan_ho_ten,
-            scan_ngay_sinh: cccdData.scan_ngay_sinh,
-            scan_dia_chi: cccdData.scan_dia_chi,
-            scan_cccd: cccdData.scan_cccd,
-            scan_gioi_tinh: cccdData.scan_gioi_tinh,
+            ...finalData, // Spread merged data
             template_name: templateName, // Dynamic template mapping
           }),
         }
@@ -221,13 +172,21 @@ const IntegratedFormPage = () => {
                   {isFormLoaded ? "✅ Form đã tải" : "⏳ Đang tải form..."}
                 </div>
 
-                {cccdData ? (
-                  <div className="action-buttons">
+                {/* Action buttons - Updated với manual data logic */}
+                <div className="action-buttons">
+                  {cccdData && (
                     <div className="auto-fill-status">
                       🎯 Auto preview đang hiển thị
                     </div>
+                  )}
 
-                    {/* Download Button */}
+                  {Object.keys(manualData).length > 0 && (
+                    <div className="manual-fill-status">
+                      ✏️ Có {Object.keys(manualData).length} thông tin thủ công
+                    </div>
+                  )}
+
+                  {(cccdData || Object.keys(manualData).length > 0) && (
                     <button
                       onClick={handleDownloadFilledForm}
                       disabled={isDownloading}
@@ -245,12 +204,14 @@ const IntegratedFormPage = () => {
                         </>
                       )}
                     </button>
-                  </div>
-                ) : (
-                  <div className="manual-fill-status">
-                    ✏️ Quét CCCD để auto-fill
-                  </div>
-                )}
+                  )}
+
+                  {!cccdData && Object.keys(manualData).length === 0 && (
+                    <div className="manual-fill-status">
+                      ✏️ Quét CCCD hoặc click để nhập thông tin
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Form Renderer - Simple display */}
@@ -260,6 +221,13 @@ const IntegratedFormPage = () => {
                   docId={selectedForm.docId}
                   formFilename={selectedForm.formFilename}
                   onLoadComplete={handleFormLoadComplete}
+                  manualData={manualData}
+                  onManualDataChange={handleManualDataChange}
+                  cccdData={
+                    cccdData
+                      ? (cccdData as unknown as Record<string, string>)
+                      : {}
+                  }
                 />
               </div>
             </div>

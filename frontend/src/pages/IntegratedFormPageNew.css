@@ -237,7 +237,8 @@
 /* 🎯 CSS SMART LOGIC cho placeholder states */
 
 /* 📋 STATE 1: Empty hoặc chứa {{placeholder}} - Chỉ hiển thị border */
-[class^="placeholder_"] {
+/* ⚠️ IMPORTANT: Only apply to NON-REACT placeholders */
+[class^="placeholder_"]:not(.react-hydrated) {
   /* Default: Ẩn text, chỉ hiển thị border dashed */
   background: transparent !important;
   border: 1px dashed #d1d5db !important;
@@ -249,7 +250,7 @@
 }
 
 /* Placeholder hint cho empty state - INLINE và không gây xô lệch */
-[class^="placeholder_"]::before {
+[class^="placeholder_"]:not(.react-hydrated)::before {
   content: "[Cần điền]";
   font-size: 11px !important;
   color: #9ca3af;
@@ -258,8 +259,8 @@
 }
 
 /* 📋 STATE 2: Đã fill data - Background vàng tươi + hiển thị text */
-[class^="placeholder_"][data-filled="true"],
-[class^="placeholder_"].filled {
+[class^="placeholder_"][data-filled="true"]:not(.react-hydrated),
+[class^="placeholder_"].filled:not(.react-hydrated) {
   /* Màu vàng tươi sáng nhưng vẫn đọc được chữ đen */
   background: #fef08a !important; /* Vàng tươi hơn #ffeb3b */
   border: 1px solid #eab308 !important;
@@ -271,18 +272,18 @@
 }
 
 /* Ẩn placeholder hint khi đã fill */
-[class^="placeholder_"][data-filled="true"]::before,
-[class^="placeholder_"].filled::before {
+[class^="placeholder_"][data-filled="true"]:not(.react-hydrated)::before,
+[class^="placeholder_"].filled:not(.react-hydrated)::before {
   display: none;
 }
 
-/* Hover states */
-[class^="placeholder_"]:hover {
+/* Hover states - chỉ cho non-React elements */
+[class^="placeholder_"]:not(.react-hydrated):hover {
   border-color: #fbbf24 !important;
 }
 
-[class^="placeholder_"][data-filled="true"]:hover,
-[class^="placeholder_"].filled:hover {
+[class^="placeholder_"][data-filled="true"]:not(.react-hydrated):hover,
+[class^="placeholder_"].filled:not(.react-hydrated):hover {
   background: #fde047 !important; /* Vàng sáng hơn khi hover */
 }
 
