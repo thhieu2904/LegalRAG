@@ -87,7 +87,7 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
     };
   }, []);
 
-  // BƯỚC 1: Hydration Logic - "Thủy hóa" placeholder thành React components
+  // BƯỚC 1: Hydration Logic - CHỈ hydrate form placeholders
   const hydratePlaceholders = useCallback(() => {
     // 🎯 PREVENT multiple hydration calls
     if (isHydratedRef.current) {
@@ -103,25 +103,25 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
       return;
     }
 
-    // Tìm tất cả placeholder elements [class^="placeholder_"]
-    const placeholderElements = formContainer.querySelectorAll(
-      '[class^="placeholder_"]'
+    // 🎯 CHỈ hydrate FORM placeholders (manual input)
+    const formPlaceholderElements = formContainer.querySelectorAll(
+      '[class^="placeholder_form_"]'
     );
     console.log(
-      `📍 Found ${placeholderElements.length} placeholders to hydrate`
+      `📍 Found ${formPlaceholderElements.length} FORM placeholders to hydrate`
     );
 
     let hydratedCount = 0;
-    placeholderElements.forEach((element) => {
+    formPlaceholderElements.forEach((element) => {
       const htmlElement = element as HTMLElement;
 
-      // Extract field name từ class
+      // Extract field name từ class (placeholder_form_xxx → form_xxx)
       const className = Array.from(htmlElement.classList).find((cls) =>
-        cls.startsWith("placeholder_")
+        cls.startsWith("placeholder_form_")
       );
       if (!className) return;
 
-      const fieldName = className.replace("placeholder_", "");
+      const fieldName = className.replace("placeholder_form_", "form_"); // Chuẩn hóa field name
 
       // Skip nếu đã được hydrate
       if (reactRootsRef.current.has(htmlElement)) {
@@ -150,7 +150,7 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
         );
 
         hydratedCount++;
-        console.log(`✅ Hydrated placeholder: ${fieldName}`);
+        console.log(`✅ Hydrated FORM placeholder: ${fieldName}`);
       } catch (error) {
         console.error(`❌ Error hydrating ${fieldName}:`, error);
       }
@@ -167,15 +167,90 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
 
   // BƯỚC 3: Update React components khi manual data thay đổi (WITHOUT re-hydration)
   const updatePlaceholderValues = useCallback(() => {
-    reactRootsRef.current.forEach((root, element) => {
+    if (!formContentRef.current) return;
+
+    // BƯỚC 1: Update SCAN placeholders (auto-fill từ CCCD)
+    const scanPlaceholderElements = formContentRef.current.querySelectorAll(
+      '[class^="placeholder_scan_"]:not(.react-hydrated)'
+    );
+
+    scanPlaceholderElements.forEach((element) => {
       const className = Array.from(element.classList).find((cls) =>
-        cls.startsWith("placeholder_")
+        cls.startsWith("placeholder_scan_")
       );
       if (!className) return;
 
-      const fieldName = className.replace("placeholder_", "");
+      const fieldName = className.replace("placeholder_scan_", "scan_");
+      const htmlElement = element as HTMLElement;
 
-      // Re-render component với giá trị mới
+      // Lấy value từ cccdData (scan data)
+      const value = cccdData[fieldName] || "";
+
+      if (value) {
+        // Auto-fill SCAN data
+        htmlElement.textContent = value;
+        htmlElement.setAttribute("data-filled", "true");
+        htmlElement.classList.add("filled");
+        console.log(`✅ Auto-filled SCAN ${fieldName} = "${value}"`);
+      } else {
+        // Reset về placeholder state
+        htmlElement.textContent = `{{${className}}}`;
+        htmlElement.removeAttribute("data-filled");
+        htmlElement.classList.remove("filled");
+      }
+    });
+
+    // BƯỚC 2: Update FORM placeholders (non-React ones)
+    const formPlaceholderElements = formContentRef.current.querySelectorAll(
+      '[class^="placeholder_form_"]:not(.react-hydrated)'
+    );
+
+    formPlaceholderElements.forEach((element) => {
+      const className = Array.from(element.classList).find((cls) =>
+        cls.startsWith("placeholder_form_")
+      );
+      if (!className) return;
+
+      const fieldName = className.replace("placeholder_form_", "form_");
+      const htmlElement = element as HTMLElement;
+
+      // Lấy value từ manualData (manual input)
+      const value = manualData[fieldName] || "";
+
+      if (value) {
+        // Fill manual data
+        htmlElement.textContent = value;
+        htmlElement.setAttribute("data-filled", "true");
+        htmlElement.classList.add("filled");
+        console.log(`✅ Filled FORM ${fieldName} = "${value}"`);
+      } else {
+        // Reset về placeholder state
+        htmlElement.textContent = `{{${className}}}`;
+        htmlElement.removeAttribute("data-filled");
+        htmlElement.classList.remove("filled");
+      }
+    });
+
+    // BƯỚC 3: Update React components (CHỈ FORM placeholders)
+    reactRootsRef.current.forEach((root, element) => {
+      const className = Array.from(element.classList).find((cls) =>
+        cls.startsWith("placeholder_form_")
+      );
+      if (!className) return;
+
+      const fieldName = className.replace("placeholder_form_", "form_");
+      const value = manualData[fieldName] || "";
+
+      // Đánh dấu filled state cho React element (chỉ attributes, KHÔNG textContent)
+      if (value) {
+        element.setAttribute("data-filled", "true");
+        element.classList.add("filled");
+      } else {
+        element.removeAttribute("data-filled");
+        element.classList.remove("filled");
+      }
+
+      // Re-render React component với giá trị mới
       root.render(
         <EditablePlaceholder
           fieldName={fieldName}
@@ -187,11 +262,18 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
           placeholder={`Nhập ${fieldName.replace(/_/g, " ")}`}
         />
       );
-    });
-    console.log("🔄 Updated placeholder values without re-hydration");
-  }, [manualData, cccdData, onManualDataChange]);
 
-  // BƯỚC 3: Set HTML content chỉ 1 lần và hydrate
+      console.log(
+        `✅ Updated React component ${fieldName} with CCCD: ${
+          cccdData[fieldName] || "none"
+        }`
+      );
+    });
+
+    console.log(
+      "🔄 Updated both HTML content (non-React) and React components separately"
+    );
+  }, [manualData, cccdData, onManualDataChange]); // BƯỚC 3: Set HTML content chỉ 1 lần và hydrate
   useEffect(() => {
     if (
       htmlContent &&

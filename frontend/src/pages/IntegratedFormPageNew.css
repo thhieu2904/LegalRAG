@@ -231,39 +231,70 @@
 }
 
 /* ========================================
-   🎨 SIMPLE PLACEHOLDER HIGHLIGHTING - Giống Microsoft Word
+   🎨 PLACEHOLDER HIGHLIGHTING - Phân biệt SCAN vs FORM
    ======================================== */
 
-/* 🎯 CSS SMART LOGIC cho placeholder states */
-
-/* 📋 STATE 1: Empty hoặc chứa {{placeholder}} - Chỉ hiển thị border */
-/* ⚠️ IMPORTANT: Only apply to NON-REACT placeholders */
-[class^="placeholder_"]:not(.react-hydrated) {
-  /* Default: Ẩn text, chỉ hiển thị border dashed */
-  background: transparent !important;
+/* 📋 SCAN PLACEHOLDERS - Auto-fill từ CCCD, không cần edit */
+[class^="placeholder_scan_"]:not(.react-hydrated) {
+  background: #f3f4f6 !important; /* Background xám nhẹ cho empty */
   border: 1px dashed #d1d5db !important;
-  border-radius: 3px !important;
   padding: 1px 4px !important;
-  font-size: 0 !important; /* Ẩn tất cả text bên trong */
+  border-radius: 3px !important;
   transition: all 0.2s ease;
-  position: relative;
 }
 
-/* Placeholder hint cho empty state - INLINE và không gây xô lệch */
-[class^="placeholder_"]:not(.react-hydrated)::before {
-  content: "[Cần điền]";
-  font-size: 11px !important;
-  color: #9ca3af;
-  font-style: italic;
-  white-space: nowrap;
+/* SCAN - Đã fill data từ CCCD */
+[class^="placeholder_scan_"][data-filled="true"]:not(.react-hydrated),
+[class^="placeholder_scan_"].filled:not(.react-hydrated) {
+  background: #d1fae5 !important; /* Xanh lá - đã auto-fill */
+  border: 1px solid #10b981 !important;
+  color: #1f2937 !important;
+  font-weight: 500 !important;
 }
 
-/* 📋 STATE 2: Đã fill data - Background vàng tươi + hiển thị text */
+/* 📝 FORM PLACEHOLDERS - Manual input, cần React components */
+[class^="placeholder_form_"]:not(.react-hydrated) {
+  background: #fef3c7 !important; /* Background vàng nhẹ cho form fields */
+  border: 1px dashed #f59e0b !important;
+  padding: 1px 4px !important;
+  border-radius: 3px !important;
+  transition: all 0.2s ease;
+}
+
+/* FORM - Đã có manual input */
+[class^="placeholder_form_"][data-filled="true"]:not(.react-hydrated),
+[class^="placeholder_form_"].filled:not(.react-hydrated) {
+  background: #dbeafe !important; /* Xanh dương - manual input */
+  border: 1px solid #3b82f6 !important;
+  color: #1f2937 !important;
+  font-weight: 500 !important;
+}
+
+/* Hover states */
+[class^="placeholder_scan_"]:not(.react-hydrated):hover {
+  border-color: #10b981 !important;
+  background: #ecfdf5 !important;
+}
+
+[class^="placeholder_form_"]:not(.react-hydrated):hover {
+  border-color: #f59e0b !important;
+  background: #fffbeb !important;
+}
+
+/* Placeholder styling cho empty state - chỉ background, không có text */
+[class^="placeholder_"]:not(.react-hydrated) {
+  background: #f3f4f6 !important; /* Background xám nhẹ cho empty state */
+  border: 1px dashed #d1d5db !important;
+  padding: 1px 4px !important;
+  border-radius: 3px !important;
+}
+
+/* 📋 STATE 2: Đã fill data - Background xanh lá nhẹ + hiển thị text */
 [class^="placeholder_"][data-filled="true"]:not(.react-hydrated),
 [class^="placeholder_"].filled:not(.react-hydrated) {
-  /* Màu vàng tươi sáng nhưng vẫn đọc được chữ đen */
-  background: #fef08a !important; /* Vàng tươi hơn #ffeb3b */
-  border: 1px solid #eab308 !important;
+  /* Màu xanh lá nhẹ để biết đã điền */
+  background: #d1fae5 !important; /* Xanh lá nhẹ thay vì vàng */
+  border: 1px solid #10b981 !important;
   color: #1f2937 !important; /* Chữ đen đậm để đọc rõ */
   font-size: inherit !important; /* Dùng font-size gốc */
   font-weight: 500 !important;
@@ -271,20 +302,15 @@
   border-radius: 3px !important;
 }
 
-/* Ẩn placeholder hint khi đã fill */
-[class^="placeholder_"][data-filled="true"]:not(.react-hydrated)::before,
-[class^="placeholder_"].filled:not(.react-hydrated)::before {
-  display: none;
-}
-
 /* Hover states - chỉ cho non-React elements */
 [class^="placeholder_"]:not(.react-hydrated):hover {
-  border-color: #fbbf24 !important;
+  border-color: #9ca3af !important;
+  background: #e5e7eb !important;
 }
 
 [class^="placeholder_"][data-filled="true"]:not(.react-hydrated):hover,
 [class^="placeholder_"].filled:not(.react-hydrated):hover {
-  background: #fde047 !important; /* Vàng sáng hơn khi hover */
+  background: #a7f3d0 !important; /* Xanh lá sáng hơn khi hover */
 }
 
 /* Enhanced action buttons layout */
