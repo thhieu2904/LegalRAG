@@ -2544,6 +2544,10 @@ class RAGService:
             # Get the main response from clarification service
             response = clarification_response.copy()
             
+            # 🔧 DEBUG: Log clarification service response
+            logger.info(f"📋 Clarification service response target_collection: {clarification_response.get('target_collection')}")
+            logger.info(f"📋 Routing result target_collection: {routing_result.get('target_collection')}")
+            
             # Add required fields that API expects
             response.update({
                 "session_id": session_id,
@@ -2554,6 +2558,10 @@ class RAGService:
                     "status": "smart_clarification"
                 }
             })
+            
+            # 🔧 FIX: Ensure target_collection is at top level (don't override from clarification service)
+            if 'target_collection' not in response or response.get('target_collection') is None:
+                response['target_collection'] = routing_result.get('target_collection')
             
             # 🔧 STORE ROUTING CONTEXT: Save original routing info to session for Step 2→3 similarity matching
             session = self.get_session(session_id)

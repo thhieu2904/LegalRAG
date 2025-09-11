@@ -225,6 +225,7 @@ class ClarificationService:
             "type": "context_gathering_needed",
             "confidence_level": "insufficient_context",
             "confidence": float(confidence),
+            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
             "clarification": {
                 "message": message,
                 "options": options,
@@ -251,10 +252,16 @@ class ClarificationService:
         best_question = best_match.get('question', '')
         target_collection = routing_result.get('target_collection')
         
+        # 🔧 DEBUG: Log target_collection value
+        logger.info(f"🔍 DEBUG _generate_confirmation_clarification:")
+        logger.info(f"  - routing_result keys: {list(routing_result.keys())}")
+        logger.info(f"  - target_collection: {target_collection}")
+        logger.info(f"  - best_match: {best_match}")
+        
         # Nếu không có best_match, thử fallback
         if not source_procedure or source_procedure == 'thủ tục này':
             # Try to get collection display name
-            collection_display = self.category_suggestions.get(target_collection, {})
+            collection_display = self.category_suggestions.get(target_collection or '', {})
             source_procedure = collection_display.get('title', target_collection or 'thủ tục này')
         
         message = level_config.message_template.format(
@@ -298,6 +305,7 @@ class ClarificationService:
             "type": "clarification_needed",
             "confidence_level": "medium_high_confidence",
             "confidence": float(confidence),
+            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
             "clarification": {
                 "message": message,
                 "options": options,
@@ -353,6 +361,7 @@ class ClarificationService:
             "type": "clarification_needed",
             "confidence_level": "medium_confidence",
             "confidence": float(confidence),
+            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
             "clarification": {
                 "message": message,
                 "options": options,
@@ -417,6 +426,7 @@ class ClarificationService:
             "type": "clarification_needed",
             "confidence_level": "low_confidence",
             "confidence": float(confidence),
+            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
             "clarification": {
                 "message": message,
                 "options": options,
@@ -437,6 +447,7 @@ class ClarificationService:
             "type": "clarification_needed",
             "confidence_level": "fallback",
             "confidence": float(confidence),
+            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
             "clarification": {
                 "message": "Xin lỗi, tôi cần thêm thông tin để hiểu rõ câu hỏi của bạn.",
                 "options": [
