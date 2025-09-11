@@ -126,26 +126,24 @@ const MainChatPage = () => {
 
               {/* 🔧 Fix: Render current clarification if exists */}
               {currentClarification && (
-                <div className="clarification-wrapper">
-                  <div className="clarification-layout">
-                    <img
-                      src={logoHCC}
-                      alt="Trợ lý AI"
-                      className="clarification-avatar"
-                    />
-                    <div className="clarification-content">
-                      <div className="clarification-header">
-                        <span className="clarification-name">Trợ lý AI</span>
+                <div className="bot-message-layout">
+                  <img
+                    src={logoHCC}
+                    alt="Trợ lý AI"
+                    className="message-avatar"
+                  />
+                  <div className="bot-message-content">
+                    <div className="bot-message-header">
+                      <span className="bot-message-name">Trợ lý AI</span>
+                    </div>
+                    <div className="bot-message-bubble">
+                      <div className="clarification-message">
+                        {currentClarification.clarification.message}
                       </div>
-                      <div className="clarification-bubble">
-                        <div className="clarification-message">
-                          {currentClarification.clarification.message}
-                        </div>
-                        <ClarificationOptions
-                          clarification={currentClarification.clarification}
-                          onOptionSelect={handleClarificationOption}
-                        />
-                      </div>
+                      <ClarificationOptions
+                        clarification={currentClarification.clarification}
+                        onOptionSelect={handleClarificationOption}
+                      />
                     </div>
                   </div>
                 </div>

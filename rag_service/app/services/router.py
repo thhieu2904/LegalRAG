@@ -1028,6 +1028,109 @@ class QueryRouter:
             relevance += 0.5
         
         return min(1.0, relevance)  # Giới hạn 0-1
+    
+    def get_document_similarities_in_collection(
+        self, 
+        collection_name: str, 
+        query: str, 
+        limit: int = 10
+    ) -> List[Tuple[Dict[str, Any], float]]:
+        """
+        🎯 Rank documents trong collection theo similarity với query
+        Returns: List of (document_info, similarity_score) tuples, sorted by score desc
+        """
+        try:
+            logger.info(f"🔍 Ranking documents in collection '{collection_name}' for query: '{query}'")
+            
+            # Get all documents trong collection
+            all_documents = self.get_collection_documents_directly(collection_name)
+            
+            if not all_documents:
+                logger.warning(f"No documents found in collection '{collection_name}'")
+                return []
+            
+            # Calculate query embedding
+            query_embedding = self.embedding_model.encode([query])
+            document_scores = []
+            
+            # Check if we can use cached embeddings for faster computation
+            if hasattr(self, 'cached_embeddings') and self.cached_embeddings.get(collection_name):
+                logger.info("🚀 Using cached embeddings for document ranking")
+                cached_collection = self.cached_embeddings[collection_name]
+                
+                for doc_info in all_documents:
+                    doc_name = doc_info.get('name') or doc_info.get('filename', 'unknown')
+                    
+                    if doc_name in cached_collection:
+                        # Use cached embeddings
+                        doc_embeddings = cached_collection[doc_name]['embeddings']
+                        questions = cached_collection[doc_name]['questions']
+                        
+                        # Calculate similarity with all questions in document
+                        similarities = cosine_similarity(query_embedding, doc_embeddings)[0]
+                        
+                        # Get max similarity score
+                        max_similarity = float(max(similarities))
+                        best_question_idx = int(similarities.argmax())
+                        
+                        # Boost if matching main question (index 0)
+                        if best_question_idx == 0 and max_similarity > 0.6:
+                            max_similarity = min(1.0, max_similarity * 1.15)
+                        
+                        # Add confidence percentage to doc_info
+                        enhanced_doc_info = doc_info.copy()
+                        enhanced_doc_info['confidence_percent'] = round(max_similarity * 100, 1)
+                        enhanced_doc_info['best_matching_question'] = questions[best_question_idx]
+                        
+                        document_scores.append((enhanced_doc_info, max_similarity))
+                        logger.debug(f"  📄 {doc_info['title'][:30]}... → {max_similarity:.3f} ({enhanced_doc_info['confidence_percent']}%)")
+                    else:
+                        # Fallback: basic title similarity for uncached documents
+                        doc_text = doc_info['title']
+                        doc_embedding = self.embedding_model.encode([doc_text])
+                        similarity = float(cosine_similarity(query_embedding, doc_embedding)[0][0])
+                        
+                        enhanced_doc_info = doc_info.copy()
+                        enhanced_doc_info['confidence_percent'] = round(similarity * 100, 1)
+                        enhanced_doc_info['best_matching_question'] = doc_info['title']
+                        
+                        document_scores.append((enhanced_doc_info, similarity))
+                        logger.debug(f"  📄 {doc_info['title'][:30]}... → {similarity:.3f} (title-only)")
+            else:
+                # Fallback: calculate embeddings real-time (slower)
+                logger.warning("⚠️ No cached embeddings - using real-time calculation")
+                
+                for doc_info in all_documents:
+                    # Use title as search text
+                    search_text = doc_info['title']
+                    if doc_info.get('description'):
+                        search_text += f" {doc_info['description']}"
+                    
+                    # Calculate embedding and similarity
+                    doc_embedding = self.embedding_model.encode([search_text])
+                    similarity = float(cosine_similarity(query_embedding, doc_embedding)[0][0])
+                    
+                    enhanced_doc_info = doc_info.copy()
+                    enhanced_doc_info['confidence_percent'] = round(similarity * 100, 1)
+                    enhanced_doc_info['best_matching_question'] = search_text
+                    
+                    document_scores.append((enhanced_doc_info, similarity))
+                    logger.debug(f"  📄 {doc_info['title'][:30]}... → {similarity:.3f}")
+            
+            # Sort by similarity (highest first) and limit results
+            document_scores.sort(key=lambda x: x[1], reverse=True)
+            result = document_scores[:limit]
+            
+            logger.info(f"📊 Top documents ranked by similarity:")
+            for i, (doc_info, score) in enumerate(result[:3], 1):
+                confidence_percent = doc_info.get('confidence_percent', round(score * 100, 1))
+                logger.info(f"  {i}. {doc_info['title'][:40]}... → {score:.3f} ({confidence_percent}%)")
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"❌ Error ranking documents in collection '{collection_name}': {e}")
+            return []
 
 class RouterBasedQueryService:
     """Service for handling ambiguous queries using router"""

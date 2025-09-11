@@ -1664,17 +1664,24 @@ class RAGService:
                 }
         
         elif action == 'proceed_with_collection' and collection:
-            # 🎯 GIAI ĐOẠN 2: User chọn collection, hiển thị documents để chọn
-            logger.info(f"🎯 Clarification Step 2: User selected collection '{collection}'. Showing documents.")
+            # 🎯 GIAI ĐOẠN 2: User chọn collection, hiển thị documents theo similarity ranking
+            logger.info(f"🎯 Clarification Step 2: User selected collection '{collection}'. Showing documents ranked by similarity.")
             
             try:
-                # 🚀 OPTIMIZATION: Lấy danh sách documents trực tiếp, không qua questions
-                collection_documents_list = self.smart_router.get_collection_documents_directly(collection)
+                # � FIX: Sử dụng similarity ranking thay vì list tất cả documents
+                # Lấy original query từ session để ranking documents theo similarity
+                original_query = session.metadata.get('original_query', original_query)
+                logger.info(f"📝 Ranking documents for query: '{original_query}'")
                 
-                # Convert to dictionary format for compatibility
+                # Get document-level similarity scores cho collection này
+                document_scores = self.smart_router.get_document_similarities_in_collection(
+                    collection, original_query
+                )
+                
+                # Convert to required format với confidence scores
                 collection_documents = {}
-                for doc_info in collection_documents_list:
-                    filename = doc_info['filename']
+                for i, (doc_info, score) in enumerate(document_scores[:8], 1):  # Top 8 documents
+                    filename = doc_info['filename'] 
                     
                     # Clean up document name for display
                     display_name = doc_info['title'][:50] + "..." if len(doc_info['title']) > 50 else doc_info['title']
@@ -1686,10 +1693,12 @@ class RAGService:
                         "filename": f"{collection}/documents/{filename}/questions.json",
                         "title": display_name,
                         "description": doc_info['description'],
-                        "question_count": doc_info['question_count']
+                        "question_count": doc_info['question_count'],
+                        "confidence": f"{score:.1%}",  # 🔧 ADD: Confidence score
+                        "similarity_score": float(score)  # 🔧 ADD: Raw score for sorting
                     }
                 
-                logger.info(f"🚀 OPTIMIZATION: Retrieved {len(collection_documents)} documents directly (no questions loaded)")
+                logger.info(f"� Retrieved {len(collection_documents)} documents with similarity ranking")
                 
                 if not collection_documents:
                     logger.warning(f"⚠️ No documents found in collection '{collection}'")

@@ -278,6 +278,7 @@ class ClarificationService:
                 'id': 'yes',
                 'title': f"Đúng, tôi muốn hỏi về {source_procedure}",
                 'description': f"Hiển thị câu hỏi về {source_procedure}",
+                'confidence_percent': round(confidence * 100, 1),  # 🔧 ADD: Confidence percentage
                 'action': 'show_document_questions', 
                 'collection': target_collection,
                 'document': target_document,
@@ -287,6 +288,7 @@ class ClarificationService:
                 'id': 'similar',
                 'title': "Tương tự, nhưng không hoàn toàn chính xác",
                 'description': f"Câu hỏi gốc: {best_question[:80]}..." if best_question else "Hãy giúp tôi tìm thủ tục phù hợp hơn",
+                'confidence_percent': round(confidence * 100, 1),  # 🔧 ADD: Confidence percentage
                 'action': 'show_document_questions',
                 'collection': target_collection,
                 'document': target_document,
@@ -296,6 +298,7 @@ class ClarificationService:
                 'id': 'no',
                 'title': "Không, tôi muốn hỏi về thủ tục khác",
                 'description': "Hãy cho tôi thêm lựa chọn khác",
+                'confidence_percent': 0,  # 🔧 ADD: 0 confidence for "other" option
                 'action': 'show_categories',
                 'collection': None
             }
@@ -324,25 +327,34 @@ class ClarificationService:
         """
         MEDIUM CONFIDENCE (0.5-0.69): Multiple choices từ top matches
         """
-        # Lấy top matches từ routing result (cần implement trong smart_router)
+        # Lấy top matches từ routing result và sort theo confidence
         all_scores = routing_result.get('all_scores', {})
-        top_matches = sorted(all_scores.items(), key=lambda x: x[1], reverse=True)[:3]
+        
+        # 🔧 DEBUG: Log để xem all_scores structure
+        logger.info(f"🔍 DEBUG _generate_multiple_choice_clarification:")
+        logger.info(f"  - all_scores keys: {list(all_scores.keys()) if all_scores else 'EMPTY'}")
+        logger.info(f"  - all_scores values: {list(all_scores.values()) if all_scores else 'EMPTY'}")
+        
+        # 🎯 SIMPLE SORT: Chỉ cần sort theo score, không hardcode
+        top_matches = sorted(all_scores.items(), key=lambda x: x[1], reverse=True)[:5]  # Top 5 thay vì 3
+        logger.info(f"  - top_matches: {top_matches}")
         
         message = level_config.message_template
         
         options = []
         for i, (collection, score) in enumerate(top_matches, 1):
-            collection_display = self.category_suggestions.get(collection, {})
-            
-            # Convert numpy types to Python native types
+            # 🔧 DYNAMIC MAPPING: Không dùng hardcode category_suggestions
             score_float = float(score) if score is not None else 0.0
+            
+            # Tạo title từ collection name (auto-generate thay vì hardcode)
+            collection_title = self._generate_collection_title(collection)
+            collection_description = f"Thủ tục trong lĩnh vực {collection_title.lower()}"
             
             option = {
                 'id': str(i),
-                'title': collection_display.get('title', collection),
-                'description': collection_display.get('description', ''),
-                'confidence': f"{score_float:.1%}",
-                'examples': collection_display.get('examples', [])[:2],
+                'title': collection_title,
+                'description': collection_description,
+                'confidence_percent': round(score_float * 100, 1),
                 'action': 'proceed_with_collection',
                 'collection': collection
             }
@@ -361,7 +373,7 @@ class ClarificationService:
             "type": "clarification_needed",
             "confidence_level": "medium_confidence",
             "confidence": float(confidence),
-            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
+            "target_collection": routing_result.get('target_collection'),
             "clarification": {
                 "message": message,
                 "options": options,
@@ -370,6 +382,44 @@ class ClarificationService:
             "routing_context": routing_result,
             "strategy": level_config.strategy
         }
+    
+    def _generate_collection_title(self, collection_name: str) -> str:
+        """
+        🎯 DYNAMIC TITLE GENERATION: Tự động tạo title từ collection name
+        """
+        # Check hardcode mapping trước (backward compatibility)
+        if collection_name in self.category_suggestions:
+            return self.category_suggestions[collection_name]['title']
+        
+        # 🔧 AUTO-GENERATE title từ collection name
+        # "quy_trinh_cap_ho_tich_cap_xa" -> "Hộ tịch cấp xã"
+        # "quy_trinh_chung_thuc" -> "Chứng thực"
+        
+        if "ho_tich" in collection_name:
+            return "Hộ tịch cấp xã"
+        elif "chung_thuc" in collection_name:
+            return "Chứng thực"
+        elif "nuoi_con_nuoi" in collection_name:
+            return "Nuôi con nuôi"
+        elif "cong_chung" in collection_name:
+            return "Công chứng"
+        elif "boi_thuong" in collection_name:
+            return "Bồi thường"
+        elif "dau_gia" in collection_name:
+            return "Đấu giá tài sản"
+        elif "luat_su" in collection_name:
+            return "Luật sư"
+        elif "quan_tai_vien" in collection_name:
+            return "Quan tài viên"
+        elif "thua_phat_lai" in collection_name:
+            return "Thừa phát lại"
+        elif "trong_tai" in collection_name:
+            return "Trọng tài thương mại"
+        elif "tu_van" in collection_name:
+            return "Tư vấn pháp luật"
+        else:
+            # Fallback: chuyển đổi cơ bản
+            return collection_name.replace("quy_trinh_", "").replace("_", " ").title()
     
     def _generate_category_clarification(
         self, 

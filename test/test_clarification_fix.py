@@ -12,9 +12,8 @@ import time
 def test_clarification_service():
     """Test clarification service với medium confidence query"""
     
-    # Test query được expect là medium confidence
-    # test_query = "đăng ký khai sinh mà có mẹ là người nước ngoài"  # Bây giờ có high confidence (0.8188)
-    test_query = "muốn làm giấy tờ gì đó về hộ tịch"  # Query mơ hồ hơn để trigger clarification
+    # Test query để trigger MEDIUM_CONFIDENCE (0.50-0.64) cho multiple choice
+    test_query = "thủ tục"  # Query cực kỳ mơ hồ để lower confidence
     
     url = "http://localhost:8000/api/v1/query"  # 🔧 Fix: Correct API endpoint
     payload = {
