@@ -48,17 +48,18 @@ class SimpleFormDetectionService:
         
         for i, doc_path in enumerate(source_documents):
             if isinstance(doc_path, str):
-                # Extract document title từ file path
-                doc_title = self._extract_document_title_from_path(doc_path)
+                # 🔧 FIX: Extract document info từ actual JSON file thay vì filename
+                doc_info = self._extract_document_info_from_json_path(doc_path)
                 
                 # Get collection (dùng first collection làm default)
                 collection_id = source_collections[0] if source_collections else "unknown"
                 
-                if doc_title:
+                if doc_info:
                     documents.append({
-                        "title": doc_title,
+                        "title": doc_info["title"],
                         "collection_id": collection_id,
-                        "source_path": doc_path
+                        "source_path": doc_path,
+                        "doc_id": doc_info["doc_id"]  # Add doc_id for easier lookup
                     })
         
         return documents
@@ -87,34 +88,87 @@ class SimpleFormDetectionService:
             logger.error(f"Error extracting title from path {file_path}: {e}")
             return None
     
-    def check_document_has_form(self, collection_id: str, document_title: str) -> bool:
+    def _extract_document_info_from_json_path(self, json_file_path: str) -> Optional[Dict[str, str]]:
+        """
+        Extract document info (title, doc_id) từ actual JSON file
+        
+        Args:
+            json_file_path: Đường dẫn đến file JSON
+            
+        Returns:
+            Dict với title và doc_id hoặc None nếu lỗi
+        """
+        try:
+            from pathlib import Path
+            import json
+            
+            json_path = Path(json_file_path)
+            if not json_path.exists():
+                logger.debug(f"JSON file not found: {json_file_path}")
+                return None
+            
+            # Extract doc_id from path (DOC_XXX)
+            doc_id = json_path.parent.name  # e.g., DOC_002
+            
+            # Load metadata từ JSON file
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            metadata = data.get("metadata", {})
+            title = metadata.get("title", "")
+            
+            if not title:
+                logger.debug(f"No title found in metadata for {json_file_path}")
+                return None
+            
+            return {
+                "title": title,
+                "doc_id": doc_id
+            }
+            
+        except Exception as e:
+            logger.error(f"Error extracting document info from {json_file_path}: {e}")
+            return None
+    
+    def check_document_has_form(self, collection_id: str, document_title: Optional[str] = None, doc_json_path: Optional[str] = None) -> bool:
         """
         Check nếu document có form bằng cách:
         1. Load metadata từ JSON file
         2. Check has_form = true
         3. Check thư mục forms/ có file không
+        
+        Args:
+            collection_id: ID của collection
+            document_title: Title của document (optional nếu có doc_json_path)
+            doc_json_path: Đường dẫn trực tiếp đến JSON file (ưu tiên)
         """
         try:
-            # Find document JSON file
-            doc_json_path = self._find_document_json_path(collection_id, document_title)
-            if not doc_json_path or not doc_json_path.exists():
+            # 🔧 FIX: Ưu tiên sử dụng đường dẫn trực tiếp nếu có
+            if doc_json_path:
+                from pathlib import Path
+                json_path = Path(doc_json_path)
+            else:
+                # Fallback to find by title
+                json_path = self._find_document_json_path(collection_id, document_title)
+                
+            if not json_path or not json_path.exists():
                 logger.debug(f"Document JSON not found for {collection_id}/{document_title}")
                 return False
             
             # Load metadata
             import json
-            with open(doc_json_path, 'r', encoding='utf-8') as f:
+            with open(json_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
             metadata = data.get("metadata", {})
             has_form_flag = metadata.get("has_form", False)
             
             if not has_form_flag:
-                logger.debug(f"Document {document_title} has has_form=false")
+                logger.debug(f"Document {document_title or json_path.name} has has_form=false")
                 return False
             
             # Check forms directory có file không
-            forms_dir = doc_json_path.parent / "forms"
+            forms_dir = json_path.parent / "forms"
             if not forms_dir.exists():
                 logger.debug(f"Forms directory not found: {forms_dir}")
                 return False
@@ -127,7 +181,7 @@ class SimpleFormDetectionService:
                 logger.debug(f"No form files found in: {forms_dir}")
                 return False
             
-            logger.debug(f"✅ Document {document_title} has form: {len(form_files)} files")
+            logger.debug(f"✅ Document {document_title or json_path.name} has form: {len(form_files)} files")
             return True
             
         except Exception as e:
@@ -159,11 +213,47 @@ class SimpleFormDetectionService:
             logger.error(f"Error getting form files for {collection_id}/{document_title}: {e}")
             return []
     
-    def _find_document_json_path(self, collection_id: str, document_title: str) -> Optional[Path]:
+    def _get_form_files_from_path(self, json_file_path: str) -> List[Path]:
+        """
+        Get form files directly từ JSON file path
+        
+        Args:
+            json_file_path: Đường dẫn đến JSON file
+            
+        Returns:
+            List of form file paths
+        """
+        try:
+            from pathlib import Path
+            
+            json_path = Path(json_file_path)
+            if not json_path.exists():
+                return []
+            
+            forms_dir = json_path.parent / "forms"
+            if not forms_dir.exists():
+                return []
+            
+            # Get all files trong forms directory
+            form_files = []
+            for file_path in forms_dir.glob("*"):
+                if file_path.is_file():
+                    form_files.append(file_path)
+            
+            return form_files
+            
+        except Exception as e:
+            logger.error(f"Error getting form files from path {json_file_path}: {e}")
+            return []
+    
+    def _find_document_json_path(self, collection_id: str, document_title: Optional[str]) -> Optional[Path]:
         """
         Find JSON file path cho document
         """
         try:
+            if not document_title:
+                return None
+                
             collection_dir = self.storage_base_path / collection_id / "documents"
             if not collection_dir.exists():
                 return None
@@ -226,11 +316,12 @@ class SimpleFormDetectionService:
             for doc_info in documents:
                 collection_id = doc_info["collection_id"]
                 doc_title = doc_info["title"]
+                source_path = doc_info["source_path"]
                 
-                # Check nếu document có form
-                if self.check_document_has_form(collection_id, doc_title):
-                    # Get form files
-                    form_files = self.get_form_files(collection_id, doc_title)
+                # 🔧 FIX: Sử dụng đường dẫn trực tiếp thay vì title lookup
+                if self.check_document_has_form(collection_id, doc_title, source_path):
+                    # Get form files directly từ source_path
+                    form_files = self._get_form_files_from_path(source_path)
                     
                     for form_file_path in form_files:
                         # Generate download URL
@@ -238,7 +329,7 @@ class SimpleFormDetectionService:
                         
                         # Create FormAttachment
                         form_attachment = FormAttachment(
-                            document_id=f"{collection_id}_{doc_title}",
+                            document_id=f"{collection_id}_{doc_info.get('doc_id', 'unknown')}",
                             document_title=doc_title,
                             form_filename=form_file_path.name,
                             form_url=download_url,

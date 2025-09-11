@@ -926,7 +926,8 @@ class RAGService:
                 # Skip to context expansion
                 logger.info(f"🔒 SESSION CONTINUITY: Skipping vector search and reranking for preserved document")
                 expanded_context = self.context_expansion_service.expand_context_with_nucleus(
-                    nucleus_chunks=nucleus_chunks
+                    nucleus_chunks=nucleus_chunks,
+                    query=query  # 🎯 Pass query for prioritization
                 )
                 
                 # Skip ahead to context building
@@ -1271,7 +1272,8 @@ class RAGService:
             logger.info("Context expansion: Loading TOÀN BỘ DOCUMENT để đảm bảo ngữ cảnh pháp luật đầy đủ")
             
             expanded_context = self.context_expansion_service.expand_context_with_nucleus(
-                nucleus_chunks=nucleus_chunks
+                nucleus_chunks=nucleus_chunks,
+                query=query  # 🎯 Pass query for prioritization
             )
             
             # 🎯 PHASE 1: Apply highlighting cho nucleus chunks
@@ -2179,13 +2181,10 @@ class RAGService:
                 logger.info(f"🔍 Nucleus chunk keys: {list(nucleus_chunk.keys())}")
                 logger.info(f"🔍 Nucleus chunk content preview: {nucleus_chunk.get('content', 'NO_CONTENT')[:100]}...")
                 
-                highlighted_text = self.context_expansion_service._build_highlighted_context(
-                    full_content=text,
-                    nucleus_chunk=nucleus_chunk
-                )
+                # Use simplified text directly without highlighting
                 # 🧹 PHASE 3: Clean format - bỏ dấu ===
-                context_parts.append(f"Tài liệu: {source} ({chunk_count} đoạn)\n{highlighted_text}")
-                logger.info("✅ Applied highlighting to nucleus chunk in context")
+                context_parts.append(f"Tài liệu: {source} ({chunk_count} đoạn)\n{text}")
+                logger.info("✅ Used simplified content directly without highlighting")
             else:
                 # 🧹 PHASE 3: Clean format - bỏ dấu ===
                 context_parts.append(f"Tài liệu: {source} ({chunk_count} đoạn)\n{text}")
@@ -2348,8 +2347,8 @@ class RAGService:
                 "metrics": self.metrics,
                 "router_ready": hasattr(self, 'smart_router') and self.smart_router is not None,
                 "context_expansion": {
-                    "total_chunks_cached": len(self.context_expansion_service.document_metadata_cache),
-                    **self.context_expansion_service.get_stats()
+                    "simplified_mode": True,
+                    "strategy": "content_first"
                 },
                 "ambiguous_patterns": 0  # Placeholder
             }

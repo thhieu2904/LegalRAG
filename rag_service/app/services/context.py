@@ -16,132 +16,13 @@ class ContextExpander:
     def __init__(self, vectordb_service, documents_dir: str):
         self.vectordb_service = vectordb_service
         self.documents_dir = Path(documents_dir)
-        
-        # Cache metadata của documents
-        self.document_metadata_cache = {}
-        self._build_document_metadata_cache()
-    
-    def _build_document_metadata_cache(self):
-        """Xây dựng cache metadata để map chunk -> document"""
-        try:
-            # Lấy tất cả collections
-            collections = self.vectordb_service.list_collections()
-            
-            for collection_info in collections:
-                collection_name = collection_info["name"]
-                collection = self.vectordb_service.get_collection(collection_name)
-                
-                # Lấy tất cả documents trong collection
-                try:
-                    results = collection.get()
-                    
-                    for i, chunk_id in enumerate(results["ids"]):
-                        metadata = results.get("metadatas", [{}])[i] if i < len(results.get("metadatas", [])) else {}
-                        
-                        if metadata and "source" in metadata:
-                            source_file = metadata["source"]
-                            
-                            # Build cache entry
-                            self.document_metadata_cache[chunk_id] = {
-                                "source_file": source_file,
-                                "collection": collection_name,
-                                "metadata": metadata,
-                                "chunk_index": metadata.get("chunk_index", 0)
-                            }
-                            
-                except Exception as e:
-                    logger.warning(f"Could not process collection {collection_name}: {e}")
-                    
-            logger.info(f"Built metadata cache for {len(self.document_metadata_cache)} chunks")
-            
-        except Exception as e:
-            logger.error(f"Error building document metadata cache: {e}")
 
-    def _build_highlighted_context(self, full_content: str, nucleus_chunk: Dict) -> str:
-        """
-        🎯 PHASE 2: Highlight nucleus chunk trong full content để AI focus đúng chỗ
-        🚀 IMPROVED: Better content matching for full document content
-        """
-        nucleus_content = nucleus_chunk.get('content', '')
-        
-        if not nucleus_content:
-            logger.warning("Nucleus chunk không có content để highlight")
-            return full_content
-        
-        # 🔍 DEBUG: Log nucleus content for troubleshooting
-        logger.debug(f"🔍 Nucleus content (first 200 chars): {nucleus_content[:200]}...")
-        logger.debug(f"🔍 Full content (first 200 chars): {full_content[:200]}...")
-        
-        # 🚀 PHASE 2: Try exact match with nucleus content
-        if nucleus_content in full_content:
-            highlighted_content = full_content.replace(
-                nucleus_content,
-                f"[THÔNG TIN CHÍNH]\n{nucleus_content}\n[/THÔNG TIN CHÍNH]"
-            )
-            logger.info("✅ Successfully highlighted nucleus chunk trong full context")
-            return highlighted_content
-        
-        # 🚀 PHASE 2: Try to find content from nucleus chunk metadata
-        nucleus_source = nucleus_chunk.get('source', {})
-        nucleus_metadata = nucleus_chunk.get('metadata', {})
-        
-        # Try to find content in nucleus chunk metadata
-        nucleus_text_content = ""
-        if nucleus_metadata.get('fused_text'):
-            nucleus_text_content = nucleus_metadata['fused_text']
-        elif nucleus_source.get('fused_text'):
-            nucleus_text_content = nucleus_source['fused_text']
-        
-        # If we have fused text, try to extract content part
-        if nucleus_text_content and " | CONTENT: " in nucleus_text_content:
-            content_part = nucleus_text_content.split(" | CONTENT: ")[-1]
-            if content_part in full_content:
-                highlighted_content = full_content.replace(
-                    content_part,
-                    f"[THÔNG TIN CHÍNH]\n{content_part}\n[/THÔNG TIN CHÍNH]"
-                )
-                logger.info("✅ Successfully highlighted content from fused text")
-                return highlighted_content
-        
-        # 🚀 PHASE 2: Try partial matching with nucleus content (improved)
-        # Split nucleus content into sentences for better matching
-        nucleus_sentences = nucleus_content.split('.')
-        if len(nucleus_sentences) > 1:
-            # Try to match first few sentences
-            first_sentences = '. '.join(nucleus_sentences[:3])  # First 3 sentences
-            if first_sentences in full_content:
-                highlighted_content = full_content.replace(
-                    first_sentences,
-                    f"[THÔNG TIN CHÍNH]\n{first_sentences}\n[/THÔNG TIN CHÍNH]"
-                )
-                logger.info("✅ Found match with first 3 sentences, using sentence-based highlighting")
-                return highlighted_content
-        
-        # 🚀 PHASE 2: Try word-based matching (improved)
-        nucleus_words = nucleus_content.split()[:30]  # Increased from 20 to 30
-        partial_match = ' '.join(nucleus_words)
-        
-        if partial_match in full_content:
-            highlighted_content = full_content.replace(
-                partial_match,
-                f"[THÔNG TIN CHÍNH]\n{partial_match}\n[/THÔNG TIN CHÍNH]"
-            )
-            logger.info("✅ Found partial match with first 30 words, using word-based highlighting")
-            return highlighted_content
-        
-        # 🚀 PHASE 2: Final fallback - add nucleus at top with better logging
-        logger.warning(f"⚠️ No match found for nucleus chunk. Nucleus length: {len(nucleus_content)}, Full content length: {len(full_content)}")
-        logger.info("⚠️ Nucleus chunk không tìm thấy trong full content, thêm lên đầu")
-        
-        # Create highlighted content with nucleus at top
-        highlighted_content = f"[THÔNG TIN CHÍNH]\n{nucleus_content}\n[/THÔNG TIN CHÍNH]\n\n{full_content}"
-        return highlighted_content
-    
     def expand_context_with_nucleus(
         self,
         nucleus_chunks: List[Dict[str, Any]], 
         max_context_length: int = 8000,  # INCREASED: Tăng từ 3000 lên 8000 để đủ context
-        include_full_document: bool = True
+        include_full_document: bool = True,
+        query: str = ""  # 🎯 NEW: Query for prioritization
     ) -> Dict[str, Any]:
         """
         Mở rộng ngữ cảnh dựa trên nucleus chunks - STRATEGY: 1 CHUNK → TOÀN BỘ DOCUMENT
@@ -328,12 +209,10 @@ class ContextExpander:
                 logger.error(f"⚠️ Error resolving file path: {e}")
                 # Keep original path if there's an error
             
-            logger.info("Loading FULL DOCUMENT content để đảm bảo ngữ cảnh pháp luật đầy đủ")
-            
             # TRIẾT LÝ THIẾT KẾ: Load toàn bộ document gốc từ file JSON
             # Không cắt ghép, không smart expansion - chỉ FULL DOCUMENT
-            final_content, structured_metadata = self._load_full_document_and_metadata(source_file)
-            expansion_strategy = "full_document_legal_context"
+            final_content, structured_metadata = self._load_full_document_and_metadata(source_file, query)
+            expansion_strategy = "simplified_content_first"
             
             # Truncate CHỈ KHI document quá dài (giữ tối đa thông tin)
             if len(final_content) > max_context_length:
@@ -372,9 +251,16 @@ class ContextExpander:
                 "structured_metadata": {}  # ✅ THÊM: Empty metadata for fallback
             }
     
-    def _load_full_document_and_metadata(self, file_path: str) -> Tuple[str, Dict[str, Any]]:
+    def _load_full_document_and_metadata(self, file_path: str, query: str = "") -> Tuple[str, Dict[str, Any]]:
         """
-        Load TOÀN BỘ nội dung document + metadata có cấu trúc
+        🎯 SIMPLIFIED: Load content chunks + minimal metadata only
+        
+        NEW STRATEGY:
+        - Focus on content_chunks (actual information)
+        - Minimal metadata (only essential fields)
+        - Query-aware chunk prioritization
+        - Clean, simple formatting
+        
         Returns: (content, structured_metadata)
         """
         try:
@@ -384,94 +270,145 @@ class ContextExpander:
             if not file_path_obj.exists():
                 logger.warning(f"Source file not found: {file_path}")
                 
-                # Try to extract filename from path for fallback search
+                # Simple fallback search
                 filename = file_path_obj.name
-                logger.info(f"🔍 Fallback - searching for file: {filename}")
-                
-                # Search for the file in all collections
                 base_path = Path(__file__).parent.parent.parent
                 collections_path = base_path / "data" / "storage" / "collections"
                 
                 if collections_path.exists():
-                    # Search all collections for the file
                     found_files = list(collections_path.glob(f"**/{filename}"))
-                    
                     if found_files:
                         file_path_obj = found_files[0]
-                        logger.info(f"✅ Found file via fallback search: {file_path_obj}")
+                        logger.info(f"✅ Found fallback file: {file_path_obj}")
                     else:
-                        logger.warning(f"⚠️ Fallback search failed, file not found: {filename}")
                         return self._generate_fallback_content(file_path)
                 else:
-                    logger.warning(f"⚠️ Collections directory not found: {collections_path}")
                     return self._generate_fallback_content(file_path)
             
-            logger.info(f"Loading COMPLETE document content and metadata from: {file_path_obj}")
+            logger.info(f"Loading SIMPLIFIED document content from: {file_path_obj}")
             
             with open(file_path_obj, 'r', encoding='utf-8') as f:
                 json_data = json.load(f)
             
-            # Extract metadata and content
+            # Extract data
             metadata = json_data.get('metadata', {})
             content_chunks = json_data.get('content_chunks', [])
             
-            # Build complete content với CLEAN FORMATTING - PHASE 3
-            complete_parts = []
+            # 🎯 PHASE 1: CONTENT CHUNKS FIRST (prioritized by query)
+            content_parts = []
             
-            # 🧹 PHASE 3: NATURAL metadata formatting - tránh raw output
-            if metadata:
-                natural_metadata_parts = []
+            if content_chunks:
+                # Prioritize chunks based on query
+                prioritized_chunks = self._prioritize_chunks_by_query(content_chunks, query)
                 
-                # Format từng field thành câu văn tự nhiên
-                if metadata.get('fee_vnd') is not None and metadata['fee_vnd'] != 0:
-                    fee_text = f"Thủ tục này có phí {metadata['fee_vnd']:,} đồng"
-                    if metadata.get('fee_text'):
-                        fee_text += f" ({metadata['fee_text']})"
-                    natural_metadata_parts.append(fee_text)
+                for chunk in prioritized_chunks:
+                    section_title = chunk.get('section_title', '')
+                    content = chunk.get('content', '')
+                    
+                    if content.strip():
+                        if section_title.strip():
+                            content_parts.append(f"**{section_title}:**")
+                        content_parts.append(content.strip())
+                        content_parts.append("")  # spacing
+            
+            # 🎯 PHASE 2: MINIMAL METADATA (only essential info at the end)
+            if metadata:
+                essential_info = []
+                
+                # Only include truly essential metadata
+                if metadata.get('fee_vnd') and metadata['fee_vnd'] > 0:
+                    essential_info.append(f"Lệ phí: {metadata['fee_vnd']:,} đồng")
                 
                 if metadata.get('processing_time_text'):
-                    natural_metadata_parts.append(f"Thời gian xử lý: {metadata['processing_time_text']}")
+                    essential_info.append(f"Thời gian xử lý: {metadata['processing_time_text']}")
                 
                 if metadata.get('executing_agency'):
-                    natural_metadata_parts.append(f"Cơ quan thực hiện: {metadata['executing_agency']}")
+                    essential_info.append(f"Cơ quan thực hiện: {metadata['executing_agency']}")
                 
-                if metadata.get('jurisdiction'):
-                    natural_metadata_parts.append(f"Thẩm quyền: {metadata['jurisdiction']}")
-                
-                if metadata.get('applicant_type'):
-                    applicant_str = ", ".join(metadata['applicant_type']) if isinstance(metadata['applicant_type'], list) else metadata['applicant_type']
-                    natural_metadata_parts.append(f"Đối tượng áp dụng: {applicant_str}")
-                
-                if metadata.get('requirements_conditions'):
-                    natural_metadata_parts.append(f"Yêu cầu: {metadata['requirements_conditions']}")
-                
-                # Join natural metadata
-                if natural_metadata_parts:
-                    complete_parts.append("Thông tin thủ tục:")
-                    complete_parts.extend(natural_metadata_parts)
-                    complete_parts.append("")  # Empty line separator
+                # Add essential info at the end (low priority)
+                if essential_info:
+                    content_parts.append("---")
+                    content_parts.extend(essential_info)
             
-            # 🧹 PHASE 3: Clean content formatting - bỏ dấu ===
-            if content_chunks:
-                complete_parts.append("Nội dung chi tiết:")
-                for chunk in content_chunks:
-                    if chunk.get('content'):
-                        complete_parts.append(chunk['content'])
-                    if chunk.get('subcontent'):
-                        for sub in chunk['subcontent']:
-                            if sub.get('content'):
-                                complete_parts.append(sub['content'])
-                complete_parts.append("")
+            # Build final content
+            final_content = "\n".join(content_parts).strip()
             
-            # Join tất cả content
-            complete_content = "\n".join(complete_parts)
+            # Return minimal metadata for other services (fee service, etc.)
+            minimal_metadata = {
+                'title': metadata.get('title', ''),
+                'fee_vnd': metadata.get('fee_vnd', 0),
+                'processing_time_text': metadata.get('processing_time_text', ''),
+                'executing_agency': metadata.get('executing_agency', ''),
+                'has_form': metadata.get('has_form', False)
+            }
             
-            logger.info(f"Loaded COMPLETE document: {len(complete_content)} characters + structured metadata")
-            return complete_content, metadata
+            logger.info(f"✅ Loaded SIMPLIFIED content: {len(final_content)} chars, {len(content_chunks)} chunks")
+            return final_content, minimal_metadata
             
         except Exception as e:
-            logger.error(f"Error loading document and metadata: {e}")
+            logger.error(f"Error loading simplified document: {e}")
             return self._generate_fallback_content(file_path)
+    
+    def _prioritize_chunks_by_query(self, chunks: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
+        """
+        🎯 Prioritize chunks based on query keywords
+        
+        Args:
+            chunks: List of content chunks
+            query: User query for prioritization
+            
+        Returns:
+            Prioritized list of chunks
+        """
+        if not query.strip():
+            return chunks
+        
+        # Query keyword to section mapping
+        priority_keywords = {
+            # Documents/Requirements queries
+            "giấy tờ|hồ sơ|thành phần|tài liệu|cần chuẩn bị": ["thành phần hồ sơ", "hồ sơ", "tài liệu"],
+            
+            # Fee queries  
+            "phí|lệ phí|chi phí|tiền|đóng": ["lệ phí", "chi phí", "phí"],
+            
+            # Time queries
+            "thời gian|thời hạn|bao lâu|khi nào": ["thời hạn", "thời gian"],
+            
+            # Authority queries
+            "cơ quan|nơi làm|đâu|ở đâu": ["cơ quan", "thực hiện"],
+            
+            # Result queries
+            "kết quả|nhận|được gì": ["kết quả", "thực hiện thủ tục"]
+        }
+        
+        query_lower = query.lower()
+        priority_chunks = []
+        other_chunks = []
+        
+        # Find matching priority chunks
+        for chunk in chunks:
+            section_title = chunk.get('section_title', '').lower()
+            is_priority = False
+            
+            for keyword_pattern, priority_sections in priority_keywords.items():
+                # Check if query contains any keyword
+                if any(keyword in query_lower for keyword in keyword_pattern.split('|')):
+                    # Check if chunk section matches priority
+                    if any(priority_section in section_title for priority_section in priority_sections):
+                        priority_chunks.append(chunk)
+                        is_priority = True
+                        break
+            
+            if not is_priority:
+                other_chunks.append(chunk)
+        
+        # Return prioritized chunks first, then others
+        prioritized = priority_chunks + other_chunks
+        
+        if priority_chunks:
+            logger.info(f"🎯 Prioritized {len(priority_chunks)} chunks for query: {query[:50]}...")
+        
+        return prioritized
     
     def _generate_fallback_content(self, file_path: str) -> Tuple[str, Dict[str, Any]]:
         """
@@ -595,126 +532,3 @@ class ContextExpander:
         except Exception as e:
             logger.error(f"Error loading document: {e}")
             return ""
-    
-    def _get_all_chunks_from_document(self, source_file: str) -> List[Dict[str, Any]]:
-        """Lấy tất cả chunks từ một document"""
-        document_chunks = []
-        
-        for chunk_id, metadata in self.document_metadata_cache.items():
-            if metadata["source_file"] == source_file:
-                # Lấy chunk content từ vector database
-                try:
-                    collection = self.vectordb_service.get_collection(metadata["collection"])
-                    result = collection.get(ids=[chunk_id])
-                    
-                    if result["documents"]:
-                        document_chunks.append({
-                            "id": chunk_id,
-                            "content": result["documents"][0],
-                            "metadata": metadata,
-                            "chunk_index": metadata["chunk_index"]
-                        })
-                        
-                except Exception as e:
-                    logger.warning(f"Could not retrieve chunk {chunk_id}: {e}")
-        
-        # Sắp xếp theo chunk_index
-        document_chunks.sort(key=lambda x: x["chunk_index"])
-        
-        return document_chunks
-    
-    def _get_surrounding_chunks(self, source_file: str, nucleus_chunks: List[Dict[str, Any]], window_size: int = 2) -> List[Dict[str, Any]]:
-        """Lấy các chunks xung quanh nucleus chunks"""
-        # Tìm nucleus chunk indices trong document này
-        nucleus_indices = set()
-        for nucleus_chunk in nucleus_chunks:
-            chunk_id = nucleus_chunk.get("id", "")
-            if chunk_id in self.document_metadata_cache:
-                metadata = self.document_metadata_cache[chunk_id]
-                if metadata["source_file"] == source_file:
-                    nucleus_indices.add(metadata["chunk_index"])
-        
-        if not nucleus_indices:
-            return []
-        
-        # Xác định range để lấy surrounding chunks
-        min_index = min(nucleus_indices) - window_size
-        max_index = max(nucleus_indices) + window_size
-        
-        # Lấy chunks trong range
-        surrounding_chunks = []
-        for chunk_id, metadata in self.document_metadata_cache.items():
-            if metadata["source_file"] == source_file:
-                chunk_idx = metadata["chunk_index"]
-                if min_index <= chunk_idx <= max_index:
-                    try:
-                        collection = self.vectordb_service.get_collection(metadata["collection"])
-                        result = collection.get(ids=[chunk_id])
-                        
-                        if result["documents"]:
-                            surrounding_chunks.append({
-                                "id": chunk_id,
-                                "content": result["documents"][0],
-                                "metadata": metadata,
-                                "chunk_index": chunk_idx
-                            })
-                            
-                    except Exception as e:
-                        logger.warning(f"Could not retrieve chunk {chunk_id}: {e}")
-        
-        # Sắp xếp theo chunk_index
-        surrounding_chunks.sort(key=lambda x: x["chunk_index"])
-        
-        return surrounding_chunks
-    
-    def _merge_document_chunks(self, chunks: List[Dict[str, Any]], source_file: str) -> Dict[str, Any]:
-        """Merge các chunks thành một document context"""
-        if not chunks:
-            return {}
-        
-        merged_text = "\n\n".join([chunk["content"] for chunk in chunks])
-        
-        return {
-            "text": merged_text,
-            "source": source_file,
-            "chunk_count": len(chunks),
-            "chunk_indices": [chunk["chunk_index"] for chunk in chunks],
-            "total_chars": len(merged_text)
-        }
-    
-    def get_document_summary(self, source_file: str) -> Dict[str, Any]:
-        """Lấy thông tin tóm tắt về một document"""
-        chunks = self._get_all_chunks_from_document(source_file)
-        
-        if not chunks:
-            return {"error": f"No chunks found for {source_file}"}
-        
-        return {
-            "source_file": source_file,
-            "total_chunks": len(chunks),
-            "total_length": sum(len(chunk["content"]) for chunk in chunks),
-            "chunk_indices": [chunk["chunk_index"] for chunk in chunks],
-            "collections": list(set(self.document_metadata_cache[chunk["id"]]["collection"] for chunk in chunks))
-        }
-    
-    def rebuild_metadata_cache(self):
-        """Rebuild metadata cache (sau khi có documents mới)"""
-        self.document_metadata_cache.clear()
-        self._build_document_metadata_cache()
-        
-    def get_stats(self) -> Dict[str, Any]:
-        """Thống kê context expansion service"""
-        source_files = set()
-        collections = set()
-        
-        for metadata in self.document_metadata_cache.values():
-            source_files.add(metadata["source_file"])
-            collections.add(metadata["collection"])
-        
-        return {
-            "total_chunks": len(self.document_metadata_cache),
-            "total_documents": len(source_files),
-            "total_collections": len(collections),
-            "documents": list(source_files),
-            "collections": list(collections)
-        }

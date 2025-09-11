@@ -177,7 +177,7 @@ class RerankerService:
             return []
         
         # 🛡️ ROUTER TRUST MODE: Khi router có HIGH confidence, tin tưởng router hơn
-        trust_router = (router_confidence_level == 'high' and router_confidence and router_confidence >= 0.85)
+        trust_router = (router_confidence_level == 'high' and router_confidence and router_confidence >= 0.8)
         if trust_router:
             logger.info(f"🛡️ ROUTER TRUST MODE: Router confidence {router_confidence:.3f} (HIGH) - Minimal rerank interference")
         
@@ -279,8 +279,8 @@ class RerankerService:
             return None
         
         # ⚡ ROUTER TRUST MODE: Nếu router có confidence cao, tin tưởng router decision
-        if router_confidence and router_confidence > 0.85:
-            logger.info(f"🎯 ROUTER TRUST MODE: High confidence {router_confidence:.3f} > 0.85 - Using router decision")
+        if router_confidence and router_confidence > 0.8:
+            logger.info(f"🎯 ROUTER TRUST MODE: High confidence {router_confidence:.3f} > 0.8 - Using router decision")
             
             # 🔍 FIXED: Tìm chunk từ document mà router đã chọn
             if router_selected_document:
