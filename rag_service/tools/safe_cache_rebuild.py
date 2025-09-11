@@ -131,29 +131,43 @@ def _create_fused_text_like_vectordb(questions, metadata, content_data):
             logger.warning(f"⚠️ Empty text content for document")
             text_content = ""
         
-        # Step 2: Create fused text (same as vector DB)
+        # Step 2: Create WEIGHTED fused text (title priority)
         fused_text = ""
         
-        # Add questions first (main_question gets priority)
-        if questions.get("main_question"):
-            fused_text = questions["main_question"]
-            if questions.get("question_variants"):
-                fused_text += " | " + " | ".join(questions["question_variants"])
+        # 🎯 TITLE FIRST (highest priority)
+        if metadata and 'title' in metadata:
+            fused_text = f"TITLE: {metadata['title']}"
         
-        # Add metadata if available
+        # Add questions second (main_question gets priority)
+        if questions.get("main_question"):
+            if fused_text:
+                fused_text += f" | {questions['main_question']}"
+            else:
+                fused_text = questions["main_question"]
+                
+            if questions.get("question_variants"):
+                fused_text += " | " + " | ".join(questions["question_variants"][:3])  # Limit variants
+        
+        # Add ONLY important metadata fields (reduce noise)
+        important_fields = ['title', 'code', 'requirements_conditions']
         if metadata:
             metadata_items = []
-            for k, v in metadata.items():
-                if isinstance(v, (str, list)) and str(v).strip():
-                    if isinstance(v, list):
-                        v = " ".join(str(item) for item in v)
-                    metadata_items.append(f"{k}: {str(v)}")
+            
+            # Title gets highest priority (first position)
+            if 'title' in metadata and str(metadata['title']).strip():
+                metadata_items.append(f"TITLE: {metadata['title']}")
+            
+            # Add other important fields
+            for field in ['code', 'requirements_conditions']:
+                if field in metadata and str(metadata[field]).strip():
+                    metadata_items.append(f"{field}: {metadata[field]}")
+            
             if metadata_items:
                 metadata_str = " | ".join(metadata_items)
                 if fused_text:
-                    fused_text += " | METADATA: " + metadata_str
+                    fused_text += " | " + metadata_str
                 else:
-                    fused_text = "METADATA: " + metadata_str
+                    fused_text = metadata_str
         
         # Add content last
         if fused_text and text_content:
@@ -162,10 +176,12 @@ def _create_fused_text_like_vectordb(questions, metadata, content_data):
             fused_text = text_content
         
         # Limit fused text length (same as vector DB)
+        original_length = len(fused_text)
         if len(fused_text) > 2000:
             fused_text = fused_text[:2000]
-        
-        logger.info(f"✅ Created fused text: {len(fused_text)} chars")
+            logger.info(f"✅ Created fused text: {original_length} chars (truncated to {len(fused_text)})")
+        else:
+            logger.info(f"✅ Created fused text: {len(fused_text)} chars")
         return fused_text
         
     except Exception as e:
@@ -187,6 +203,15 @@ def generate_embeddings_safe(questions_data):
         
         model = None
         
+        # 🎮 GPU OPTIMIZATION - Use GPU for faster embedding generation
+        try:
+            import torch
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        except ImportError:
+            device = 'cpu'
+        
+        logger.info(f"🎮 Using {device.upper()} for embedding generation")
+        
         # Strategy 1: Load từ explicit local cache path (same as VectorDBService)
         try:
             cache_path = settings.hf_cache_path / "hub"
@@ -201,8 +226,8 @@ def generate_embeddings_safe(questions_data):
                     snapshot_path = str(snapshots[0])
                     logger.info(f"Loading embedding model from local cache: {embedding_model_name}")
                     logger.info(f"Loading from explicit path: {snapshot_path}")
-                    model = SentenceTransformer(snapshot_path, device='cpu')
-                    logger.info("✅ Loaded local Vietnamese_Embedding_v2 from snapshot")
+                    model = SentenceTransformer(snapshot_path, device=device)
+                    logger.info(f"✅ Loaded local Vietnamese_Embedding_v2 from snapshot on {device.upper()}")
                 else:
                     raise FileNotFoundError(f"No snapshots found in {model_folder}")
             else:
@@ -213,11 +238,18 @@ def generate_embeddings_safe(questions_data):
             
             # Strategy 2: Try loading with local_files_only (same as VectorDBService)
             try:
-                model = SentenceTransformer(settings.embedding_model_name, local_files_only=True, device='cpu')
-                logger.info("✅ Fallback: loaded with local_files_only")
+                model = SentenceTransformer(settings.embedding_model_name, local_files_only=True, device=device)
+                logger.info(f"✅ Fallback: loaded with local_files_only on {device.upper()}")
             except Exception as e2:
                 logger.warning(f"⚠️  Local files only failed: {e2}")
                 
+                # Strategy 3: Final fallback to CPU
+                try:
+                    model = SentenceTransformer(settings.embedding_model_name, device='cpu')
+                    logger.info("✅ Final fallback: loaded on CPU")
+                except Exception as e3:
+                    logger.error(f"❌ All loading strategies failed: {e3}")
+                    return None
                 # Strategy 3: Create simple text-based cache without embeddings
                 logger.info("🔄 Creating text-based cache without embeddings...")
                 return create_text_based_cache(questions_data)

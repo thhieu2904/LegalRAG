@@ -1,0 +1,32 @@
+[
+  {
+    "test_case": 1,
+    "query": "tôi cần làm giấy khai sinh cho con trai tôi, cha nó là người nước ngoài",
+    "expected": "quy_trinh_cap_ho_tich_cap_xa/DOC_002",
+    "actual": "quy_trinh_cap_ho_tich_cap_xa/DOC_008",
+    "confidence": 0.7932845950126648,
+    "status": "routed",
+    "correct": false,
+    "description": "Birth registration for child with foreign father"
+  },
+  {
+    "test_case": 2,
+    "query": "làm giấy khai sinh cho trẻ em có cha mẹ nước ngoài",
+    "expected": "quy_trinh_cap_ho_tich_cap_xa/DOC_002",
+    "actual": "quy_trinh_cap_ho_tich_cap_xa/DOC_002",
+    "confidence": 0.8396084904670715,
+    "status": "routed",
+    "correct": true,
+    "description": "Birth registration for child with foreign parents"
+  },
+  {
+    "test_case": 3,
+    "query": "thủ tục khai sinh khi có cha nước ngoài",
+    "expected": "quy_trinh_cap_ho_tich_cap_xa/DOC_002",
+    "actual": "quy_trinh_cap_ho_tich_cap_xa/DOC_002",
+    "confidence": 0.9189196825027466,
+    "status": "routed",
+    "correct": true,
+    "description": "Birth registration procedure with foreign father"
+  }
+]

@@ -274,14 +274,18 @@ class ModernizedVectorDBBuilder:
                         if questions.get("question_variants"):
                             fused_text += " | " + " | ".join(questions["question_variants"])
                     
-                    # Add metadata if available
+                    # Add filtered metadata (PHASE 1 OPTIMIZATION - same as router cache)
                     if content.get("metadata"):
+                        # Filter to only essential metadata fields to reduce noise
+                        essential_fields = ['title', 'code', 'requirements_conditions']
                         metadata_items = []
-                        for k, v in content["metadata"].items():
-                            if isinstance(v, (str, list)) and str(v).strip():
-                                if isinstance(v, list):
-                                    v = " ".join(str(item) for item in v)
-                                metadata_items.append(f"{k}: {str(v)}")
+                        for k in essential_fields:
+                            if k in content["metadata"]:
+                                v = content["metadata"][k]
+                                if isinstance(v, (str, list)) and str(v).strip():
+                                    if isinstance(v, list):
+                                        v = " ".join(str(item) for item in v)
+                                    metadata_items.append(f"{k}: {str(v)}")
                         if metadata_items:
                             metadata_str = " | ".join(metadata_items)
                             if fused_text:
@@ -295,9 +299,13 @@ class ModernizedVectorDBBuilder:
                     else:
                         fused_text = text_content
                     
-                    # Limit fused text length
+                    # Limit fused text length (same as router cache)
+                    original_length = len(fused_text)
                     if len(fused_text) > 2000:
                         fused_text = fused_text[:2000]
+                        logger.info(f"✅ Created fused text: {original_length} chars (truncated to {len(fused_text)}) for {doc['doc_id']}")
+                    else:
+                        logger.info(f"✅ Created fused text: {len(fused_text)} chars for {doc['doc_id']}")
                     
                     texts.append(fused_text)  # Index fused text instead of just content
                     
