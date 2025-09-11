@@ -261,6 +261,35 @@
   transition: all 0.2s ease;
 }
 
+/* 📱 SCAN PLACEHOLDERS - Auto-fill từ CCCD, readonly */
+[class^="placeholder_scan_"]:not([data-scanned]):not(.react-hydrated) {
+  background: #fef3c7 !important; /* Background vàng giống form - "Cần quét" */
+  border: 1px dashed #f59e0b !important;
+  padding: 1px 4px !important;
+  border-radius: 3px !important;
+  transition: all 0.2s ease;
+  color: transparent !important; /* Ẩn {{placeholder_scan_xxx}} text */
+}
+
+/* Hiển thị text "Cần quét" giống style "Cần điền" nhưng không thay đổi layout */
+[class^="placeholder_scan_"]:not([data-scanned]):not(.react-hydrated)::before {
+  content: "Cần quét";
+  color: #92400e; /* Tông vàng/brown giống "Cần điền" */
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.95em;
+  margin-right: 4px;
+  display: inline-block;
+}
+
+/* SCAN - Đã quét CCCD thành công */
+[class^="placeholder_scan_"][data-scanned="true"]:not(.react-hydrated) {
+  background: #d1fae5 !important; /* Xanh lá - đã auto-fill từ CCCD */
+  border: 1px solid #10b981 !important;
+  color: #1f2937 !important;
+  font-weight: 500 !important;
+}
+
 /* FORM - Đã có manual input */
 [class^="placeholder_form_"][data-filled="true"]:not(.react-hydrated),
 [class^="placeholder_form_"].filled:not(.react-hydrated) {
@@ -388,4 +417,42 @@
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+/* ==================== SMART PLACEHOLDER STYLING ==================== */
+/* Base styling chung cho tất cả placeholders - DRY principle */
+[class^="placeholder_"] {
+  border-radius: 3px;
+  padding: 1px 4px;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+/* ==================== SCAN PLACEHOLDERS - Auto-fill từ CCCD ==================== */
+/* Màu xanh: Auto-fill data từ CCCD scan */
+[class^="placeholder_scan_"]:not([data-scanned]) {
+  color: transparent; /* Ẩn {{placeholder_scan_xxx}} text */
+  background-color: #f0fdf4; /* Background xanh nhạt */
+  border: 1px dashed #bbf7d0; /* Border xanh */
+}
+
+[class^="placeholder_scan_"][data-scanned="true"] {
+  background-color: #dcfce7; /* Background xanh đậm hơn khi có data */
+  color: #065f46; /* Text xanh đậm */
+  border: 1px solid #16a34a; /* Border xanh đậm */
+  font-weight: 500;
+}
+
+/* ==================== FORM PLACEHOLDERS - Manual input ==================== */
+/* Màu vàng/xanh dương: Manual input từ user */
+[class^="placeholder_form_"]:not(.react-hydrated) {
+  background-color: #fef3c7; /* Background vàng nhẹ */
+  border: 1px dashed #f59e0b; /* Border vàng */
+}
+
+[class^="placeholder_form_"][data-filled="true"]:not(.react-hydrated) {
+  background-color: #dbeafe; /* Background xanh dương khi filled */
+  border: 1px solid #3b82f6; /* Border xanh dương */
+  color: #1f2937;
+  font-weight: 500;
 }

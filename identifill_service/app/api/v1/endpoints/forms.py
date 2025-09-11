@@ -16,22 +16,21 @@ form_renderer = FormRenderingService(rag_service_url="http://localhost:8000")
 template_filler = TemplateFillingService(rag_service_url="http://localhost:8000")
 
 # Request models
-class CCCDFillRequest(BaseModel):
-    """Request model for filling template with CCCD data"""
-    scan_ho_ten: Optional[str] = None
-    scan_ngay_sinh: Optional[str] = None  
-    scan_dia_chi: Optional[str] = None
-    scan_cccd: Optional[str] = None
-    scan_gioi_tinh: Optional[str] = None
+class CombinedFillRequest(BaseModel):
+    """Request model for filling template with combined scan + form data
     
-    # Alternative field names for compatibility
-    name: Optional[str] = None
-    birth_date: Optional[str] = None
-    address: Optional[str] = None
-    citizen_id: Optional[str] = None
-    gender: Optional[str] = None
+    Template-driven approach: Field names come from template placeholders
+    - scan_xxx: Auto-filled from CCCD QR scan
+    - form_xxx: Manual input from user
+    - Template placeholders define exact field names needed
+    """
+    # Only essential fields for API routing
+    template_name: Optional[str] = None
     
-    template_name: Optional[str] = None  # Optional specific template name
+    # Accept ALL fields dynamically - template-driven approach
+    # Frontend sends fields based on template placeholder extraction
+    # Backend processes whatever fields the template needs
+    model_config = {"extra": "allow"}
 
 
 @router.get("/render/{collection_id}/{doc_id}/{form_filename}")
@@ -97,17 +96,17 @@ async def test_forms_endpoint():
 async def fill_and_download_form(
     collection_id: str,
     doc_id: str, 
-    request: CCCDFillRequest
+    request: CombinedFillRequest
 ):
     """
-    NHIỆM VỤ 2: Fill template with CCCD data and return for download
+    NHIỆM VỤ 2: Fill template with combined scan + form data and return for download
     
-    Main endpoint cho việc điền form với dữ liệu CCCD được quét
+    Main endpoint cho việc điền form với dữ liệu từ CCCD scan + manual input
     
     Args:
         collection_id: ID collection
         doc_id: Document ID
-        request: CCCD data và template options
+        request: Combined scan + form data và template options
         
     Returns:
         Filled .docx file ready for download
@@ -116,14 +115,14 @@ async def fill_and_download_form(
         logger.info(f"Fill and download request: {collection_id}/{doc_id}")
         logger.info(f"CCCD data received: {request.dict()}")
         
-        # Convert request to dict for processing
-        cccd_data = request.dict()
+        # Convert request to dict for processing - includes all scan + form fields
+        combined_data = request.dict()
         
-        # Fill template with CCCD data
+        # Fill template with combined data (scan_xxx + form_xxx)
         filled_content = await template_filler.fill_template_with_cccd_data(
             collection_id=collection_id,
             doc_id=doc_id,
-            cccd_data=cccd_data,
+            combined_data=combined_data,
             template_name=request.template_name
         )
         

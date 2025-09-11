@@ -20,17 +20,7 @@ class TemplateFillingService:
     def __init__(self, rag_service_url: str = "http://localhost:8000"):
         self.rag_service_url = rag_service_url
         self.placeholder_pattern = re.compile(r'\{\{([^}]+)\}\}')
-        # Default CCCD field mapping
-        self.cccd_field_mapping = {
-            "scan_ho_ten": ["ho_ten", "ho_va_ten", "full_name"],
-            "scan_cccd": ["so_cccd", "cccd", "citizen_id"],
-            "scan_ngay_sinh": ["ngay_sinh", "date_of_birth"],
-            "scan_gioi_tinh": ["gioi_tinh", "gender"],
-            "scan_dia_chi": ["dia_chi", "address"],
-            "scan_ngay_cap": ["ngay_cap"],
-            "scan_noi_cap": ["noi_cap"]
-        }
-        logger.info("TemplateFillingService initialized with unified logic")
+        logger.info("TemplateFillingService initialized with direct mapping logic")
         
     async def download_template(self, collection_id: str, doc_id: str, template_name: Optional[str] = None) -> bytes:
         """
@@ -127,87 +117,60 @@ class TemplateFillingService:
             logger.error(f"Error extracting placeholders: {e}")
             return {"scan_fields": [], "form_fields": [], "all_fields": []}
 
-    def prepare_smart_cccd_context(self, cccd_data: Dict[str, Any], template_placeholders: Optional[List[str]] = None) -> Dict[str, Any]:
+    def prepare_smart_cccd_context(self, input_data: Dict[str, Any], template_placeholders: Optional[List[str]] = None) -> Dict[str, Any]:
         """
-        Smart context preparation using scan_xxx and form_xxx logic
-        Auto-maps CCCD data to template placeholders intelligently
+        Smart context preparation using direct {{placeholder}} mapping
+        No hard-coded field mapping needed - template placeholders are self-descriptive
         
         Args:
-            cccd_data: Raw CCCD data from scan
-            template_placeholders: Optional list of placeholders from template
+            input_data: Combined data from frontend (scan_xxx + form_xxx fields)
+            template_placeholders: List of placeholders from template ({{scan_xxx}}, {{form_xxx}})
             
         Returns:
-            Smart-mapped context for template filling
+            Direct-mapped context for template filling
         """
         context = {}
         
-        # 1. Direct mapping for scan_* fields (CCCD auto-fill)
-        for scan_field, possible_keys in self.cccd_field_mapping.items():
-            # Try direct scan_* key first
-            if scan_field in cccd_data:
-                context[scan_field] = cccd_data[scan_field]
-            else:
-                # Try alternative keys
-                for key in possible_keys:
-                    if key in cccd_data:
-                        context[scan_field] = cccd_data[key]
-                        break
-                else:
-                    context[scan_field] = ""  # Empty if not found
-        
-        # 2. Add any additional data as-is (for form_* fields if provided)
-        for key, value in cccd_data.items():
-            if key not in context:
-                context[key] = value
-        
-        # 3. Template-specific mapping if placeholders provided
+        # Direct mapping: input field name = template placeholder name
         if template_placeholders:
             for placeholder in template_placeholders:
-                if placeholder not in context:
-                    # Try to find matching value from cccd_data
-                    context[placeholder] = self._find_best_match(placeholder, cccd_data)
+                # Direct lookup - no conversion needed
+                if placeholder in input_data:
+                    context[placeholder] = str(input_data[placeholder])
+                else:
+                    context[placeholder] = ""  # Empty if not provided
+                    
+            logger.info(f"🎯 Direct context mapping: {len([k for k, v in context.items() if v])} fields filled")
+        else:
+            # Fallback: use all input data as-is
+            for key, value in input_data.items():
+                context[key] = str(value) if value is not None else ""
+            
+            logger.info(f"🎯 Fallback context mapping: {len(context)} fields total")
         
-        logger.info(f"🎯 Smart context prepared: {len(context)} fields mapped")
         logger.debug(f"Context details: {context}")
         return context
     
-    def _find_best_match(self, placeholder: str, cccd_data: Dict[str, Any]) -> str:
-        """Find best matching value for a placeholder from CCCD data"""
-        # Direct match first
-        if placeholder in cccd_data:
-            return str(cccd_data[placeholder])
-        
-        # Pattern matching for common variations
-        placeholder_lower = placeholder.lower()
-        for key, value in cccd_data.items():
-            key_lower = key.lower()
-            if (placeholder_lower in key_lower or 
-                key_lower in placeholder_lower or
-                any(part in key_lower for part in placeholder_lower.split('_'))):
-                return str(value)
-        
-        return ""  # Default empty
-
-    def prepare_cccd_context(self, cccd_data: Dict[str, Any]) -> Dict[str, Any]:
+    def prepare_cccd_context(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Legacy method - redirects to smart context preparation
         """
-        return self.prepare_smart_cccd_context(cccd_data)
+        return self.prepare_smart_cccd_context(input_data)
     
     async def fill_template_with_cccd_data(
         self, 
         collection_id: str, 
         doc_id: str, 
-        cccd_data: Dict[str, Any],
+        combined_data: Dict[str, Any],
         template_name: Optional[str] = None
     ) -> bytes:
         """
-        Main method: Download template and fill with CCCD data
+        Main method: Download template and fill with combined scan + form data
         
         Args:
             collection_id: Collection ID
             doc_id: Document ID  
-            cccd_data: CCCD data from scan
+            combined_data: Combined data (scan_xxx + form_xxx fields)
             template_name: Optional specific template name
             
         Returns:
@@ -217,14 +180,14 @@ class TemplateFillingService:
             # Step 1: Download template from rag_service
             template_content = await self.download_template(collection_id, doc_id, template_name)
             
-            # Step 2: Extract placeholders from template for smart mapping
+            # Step 2: Extract placeholders from template for direct mapping
             placeholder_info = self.extract_placeholders_from_docx(template_content)
             logger.info(f"📋 Template analysis: {len(placeholder_info['scan_fields'])} scan fields, {len(placeholder_info['form_fields'])} form fields")
             
-            # Step 3: Prepare smart CCCD context using extracted placeholders
-            context = self.prepare_smart_cccd_context(cccd_data, placeholder_info['all_fields'])
+            # Step 3: Prepare direct context mapping (no hard-coded conversion)
+            context = self.prepare_smart_cccd_context(combined_data, placeholder_info['all_fields'])
             
-            # Step 4: Fill template with smart-mapped data
+            # Step 4: Fill template with direct-mapped data
             filled_content = await self._fill_docx_template(template_content, context)
             
             return filled_content

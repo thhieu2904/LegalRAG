@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def clean_old_cache():
     """Clean old cache files"""
-    cache_dir = "data/cache"
+    cache_dir = "../data/cache"  # Fixed path from tools directory
     if os.path.exists(cache_dir):
         cache_files = glob.glob(f"{cache_dir}/*")
         for cache_file in cache_files:
@@ -36,8 +36,8 @@ def load_new_structure():
     """Load questions from new structure"""
     questions_data = {}
     
-    # Find all questions.json files
-    questions_files = glob.glob("data/**/*questions.json", recursive=True)
+    # Find all questions.json files - FIXED PATH from tools directory
+    questions_files = glob.glob("../data/storage/collections/*/documents/*/questions.json", recursive=True)
     
     logger.info(f"📁 Found {len(questions_files)} questions.json files")
     
@@ -173,30 +173,52 @@ def _create_fused_text_like_vectordb(questions, metadata, content_data):
         return ""
 
 def generate_embeddings_safe(questions_data):
-    """Generate embeddings cho questions with safe model loading"""
+    """Generate embeddings cho questions with safe model loading - sử dụng cùng logic như app/services/vector.py"""
     try:
         logger.info("🔄 Attempting to load embedding model safely...")
         
-        # Try multiple approaches
+        # Import settings và vector service
+        import sys
+        from pathlib import Path
+        sys.path.append(str(Path(__file__).parent.parent))
+        
+        from app.core.config import settings
+        from sentence_transformers import SentenceTransformer
+        
         model = None
         
-        # Approach 1: Load local Vietnamese_Embedding_v2
+        # Strategy 1: Load từ explicit local cache path (same as VectorDBService)
         try:
-            from sentence_transformers import SentenceTransformer
-            local_path = "data/models/hf_cache/hub/models--AITeamVN--Vietnamese_Embedding_v2/snapshots/18b44161e041bf1d3a333ab5144b5b7b93f914d2"
-            model = SentenceTransformer(local_path)
-            logger.info("✅ Loaded local Vietnamese_Embedding_v2 from snapshot")
-        except Exception as e1:
-            logger.warning(f"⚠️  Local load failed: {e1}")
+            cache_path = settings.hf_cache_path / "hub"
+            embedding_model_name = settings.embedding_model_name
+            model_folders = list(cache_path.glob(f"models--{embedding_model_name.replace('/', '--')}"))
             
-            # Approach 2: Try different model
-            try:
-                model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-                logger.info("✅ Fallback model loaded")
-            except Exception as e2:
-                logger.warning(f"⚠️  Approach 2 failed: {e2}")
+            if model_folders:
+                model_folder = model_folders[0]
+                snapshots = list((model_folder / "snapshots").iterdir())
                 
-                # Approach 3: Create simple text-based cache without embeddings
+                if snapshots:
+                    snapshot_path = str(snapshots[0])
+                    logger.info(f"Loading embedding model from local cache: {embedding_model_name}")
+                    logger.info(f"Loading from explicit path: {snapshot_path}")
+                    model = SentenceTransformer(snapshot_path, device='cpu')
+                    logger.info("✅ Loaded local Vietnamese_Embedding_v2 from snapshot")
+                else:
+                    raise FileNotFoundError(f"No snapshots found in {model_folder}")
+            else:
+                raise FileNotFoundError(f"No cached model found for {embedding_model_name}")
+                
+        except Exception as e1:
+            logger.warning(f"⚠️  Local cache load failed: {e1}")
+            
+            # Strategy 2: Try loading with local_files_only (same as VectorDBService)
+            try:
+                model = SentenceTransformer(settings.embedding_model_name, local_files_only=True, device='cpu')
+                logger.info("✅ Fallback: loaded with local_files_only")
+            except Exception as e2:
+                logger.warning(f"⚠️  Local files only failed: {e2}")
+                
+                # Strategy 3: Create simple text-based cache without embeddings
                 logger.info("🔄 Creating text-based cache without embeddings...")
                 return create_text_based_cache(questions_data)
         
@@ -288,7 +310,7 @@ def create_text_based_cache(questions_data):
 def save_cache(cache_data):
     """Save cache to file"""
     try:
-        cache_dir = "data/cache"
+        cache_dir = "../data/cache"  # Fixed path from tools directory
         os.makedirs(cache_dir, exist_ok=True)
         
         cache_file = os.path.join(cache_dir, "router_embeddings.pkl")
@@ -325,7 +347,7 @@ def save_cache(cache_data):
 def validate_cache():
     """Validate cache integrity"""
     try:
-        cache_file = "data/cache/router_embeddings.pkl"
+        cache_file = "../data/cache/router_embeddings.pkl"  # Fixed path from tools directory
         
         if not os.path.exists(cache_file):
             logger.error("❌ Cache file not found")

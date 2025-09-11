@@ -190,12 +190,14 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
         // Auto-fill SCAN data
         htmlElement.textContent = value;
         htmlElement.setAttribute("data-filled", "true");
+        htmlElement.setAttribute("data-scanned", "true"); // 🎯 CSS hook for scan styling
         htmlElement.classList.add("filled");
         console.log(`✅ Auto-filled SCAN ${fieldName} = "${value}"`);
       } else {
         // Reset về placeholder state
         htmlElement.textContent = `{{${className}}}`;
         htmlElement.removeAttribute("data-filled");
+        htmlElement.removeAttribute("data-scanned"); // 🎯 Remove CSS hook
         htmlElement.classList.remove("filled");
       }
     });
