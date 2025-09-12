@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Smart Clarification Service for LegalRAG
-========================================
+Smart Clarification Service for LegalRAG V2
+===========================================
 
-5-Layer Clarification System:
+5-Layer Clarification System for 13 Collections:
 - High confidence (≥0.80): Auto route - no clarification needed
 - Medium-High confidence (0.65-0.79): Confirm with best questions
 - Medium confidence (0.50-0.64): Multiple choice options
@@ -21,16 +21,36 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ClarificationLevel:
-    """Định nghĩa các mức clarification"""
+    """Define clarification levels"""
     min_confidence: float
     max_confidence: float
     strategy: str
     message_template: str
 
 class ClarificationService:
-    """Service tạo clarification thông minh dựa trên confidence levels"""
+    """
+    🎯 ENHANCED CLARIFICATION SERVICE with Embedding Intelligence
+    - 5-layer confidence system for 13 collections
+    - Similarity ranking for better question suggestions  
+    - Scale-ready, clean architecture
+    """
     
-    def __init__(self):
+    def __init__(self, embedding_model=None):
+        # Store embedding model for similarity calculations
+        self.embedding_model = embedding_model
+        
+        # Try to import sklearn for similarity calculations
+        try:
+            from sklearn.metrics.pairwise import cosine_similarity
+            import numpy as np
+            self.similarity_available = True
+            self.cosine_similarity = cosine_similarity
+            self.np = np
+        except ImportError:
+            self.similarity_available = False
+            logger.warning("⚠️  sklearn not available - using fallback ranking")
+        
+        # 5-Layer clarification system
         self.clarification_levels = {
             'high_confidence': ClarificationLevel(
                 min_confidence=0.80,
@@ -64,47 +84,19 @@ class ClarificationService:
             )
         }
         
+        # 🎯 NO HARDCORE MAPPINGS - Use router results directly!
+
         # Category mappings cho low confidence - UPDATED FOR NEW STRUCTURE
         self.category_suggestions = {
-            # Old structure compatibility
-            'ho_tich_cap_xa': {
-                'title': 'Hộ tịch cấp xã',
-                'description': 'Khai sinh, kết hôn, khai tử, thay đổi hộ tịch',
-                'examples': ['khai sinh con', 'đăng ký kết hôn', 'làm lại giấy khai sinh']
-            },
-            'chung_thuc': {
-                'title': 'Chứng thực',
-                'description': 'Chứng thực hợp đồng, chữ ký, bản sao giấy tờ',
-                'examples': ['chứng thực hợp đồng mua bán', 'chứng thực chữ ký', 'chứng thực bản sao']
-            },
-            'nuoi_con_nuoi': {
-                'title': 'Nuôi con nuôi',
-                'description': 'Thủ tục nhận con nuôi, giám hộ',
-                'examples': ['nhận con nuôi', 'thủ tục nuôi con nuôi', 'giám hộ trẻ em']
-            },
-            # New structure mappings
-            'quy_trinh_cap_ho_tich_cap_xa': {
-                'title': 'Hộ tịch cấp xã',
-                'description': 'Khai sinh, kết hôn, khai tử, thay đổi hộ tịch',
-                'examples': ['khai sinh con', 'đăng ký kết hôn', 'làm lại giấy khai sinh']
-            },
-            'quy_trinh_chung_thuc': {
-                'title': 'Chứng thực',
-                'description': 'Chứng thực hợp đồng, chữ ký, bản sao giấy tờ, di chúc',
-                'examples': ['chứng thực hợp đồng mua bán', 'chứng thực di chúc', 'chứng thực bản sao']
-            },
-            'quy_trinh_nuoi_con_nuoi': {
-                'title': 'Nuôi con nuôi',
-                'description': 'Thủ tục nhận con nuôi, giám hộ',
-                'examples': ['nhận con nuôi', 'thủ tục nuôi con nuôi', 'giám hộ trẻ em']
-            }
+            
         }
     
     def generate_clarification(
         self, 
         confidence: float,
         routing_result: Dict[str, Any],
-        query: str
+        query: str,
+        session_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Tạo clarification thông minh dựa trên confidence level
@@ -121,23 +113,24 @@ class ClarificationService:
             
             # Generate theo strategy - 5-LAYER SYSTEM
             if level_config.strategy == 'auto_route':
-                return self._generate_auto_route_response(confidence, routing_result, level_config)
-            
+                result = self._generate_auto_route_response(confidence, routing_result, level_config)
             elif level_config.strategy == 'confirm_with_best_questions':
-                return self._generate_confirmation_clarification(confidence, routing_result, level_config)
-            
+                result = self._generate_confirmation_clarification(confidence, routing_result, level_config)
             elif level_config.strategy == 'multiple_choices':
-                return self._generate_multiple_choice_clarification(confidence, routing_result, level_config)
-            
+                result = self._generate_multiple_choice_clarification(confidence, routing_result, level_config)
             elif level_config.strategy == 'category_suggestions':
-                return self._generate_category_clarification(confidence, routing_result, level_config)
-            
+                result = self._generate_category_clarification(confidence, routing_result, level_config)
             elif level_config.strategy == 'context_gathering':
-                return self._generate_context_gathering_clarification(confidence, routing_result, level_config)
-            
+                result = self._generate_context_gathering_clarification(confidence, routing_result, level_config)
             else:
                 # Fallback
-                return self._generate_fallback_clarification(confidence, routing_result)
+                result = self._generate_fallback_clarification(confidence, routing_result)
+            
+            # 🔧 FIX: Always ensure session_id is present
+            if session_id:
+                result['session_id'] = session_id
+            
+            return result
                 
         except Exception as e:
             logger.error(f"Error generating smart clarification: {e}")
@@ -260,9 +253,8 @@ class ClarificationService:
         
         # Nếu không có best_match, thử fallback
         if not source_procedure or source_procedure == 'thủ tục này':
-            # Try to get collection display name
-            collection_display = self.category_suggestions.get(target_collection or '', {})
-            source_procedure = collection_display.get('title', target_collection or 'thủ tục này')
+            # 🔧 FIX: Simple fallback without hardcore mapping
+            source_procedure = target_collection or 'thủ tục này'
         
         message = level_config.message_template.format(
             procedure=source_procedure,
@@ -343,11 +335,10 @@ class ClarificationService:
         
         options = []
         for i, (collection, score) in enumerate(top_matches, 1):
-            # 🔧 DYNAMIC MAPPING: Không dùng hardcode category_suggestions
             score_float = float(score) if score is not None else 0.0
             
-            # Tạo title từ collection name (auto-generate thay vì hardcode)
-            collection_title = self._generate_collection_title(collection)
+            # 🎯 USE ROUTER DATA: Simple title from collection name
+            collection_title = collection.replace('quy_trinh_', '').replace('_', ' ').title()
             collection_description = f"Thủ tục trong lĩnh vực {collection_title.lower()}"
             
             option = {
@@ -383,44 +374,6 @@ class ClarificationService:
             "strategy": level_config.strategy
         }
     
-    def _generate_collection_title(self, collection_name: str) -> str:
-        """
-        🎯 DYNAMIC TITLE GENERATION: Tự động tạo title từ collection name
-        """
-        # Check hardcode mapping trước (backward compatibility)
-        if collection_name in self.category_suggestions:
-            return self.category_suggestions[collection_name]['title']
-        
-        # 🔧 AUTO-GENERATE title từ collection name
-        # "quy_trinh_cap_ho_tich_cap_xa" -> "Hộ tịch cấp xã"
-        # "quy_trinh_chung_thuc" -> "Chứng thực"
-        
-        if "ho_tich" in collection_name:
-            return "Hộ tịch cấp xã"
-        elif "chung_thuc" in collection_name:
-            return "Chứng thực"
-        elif "nuoi_con_nuoi" in collection_name:
-            return "Nuôi con nuôi"
-        elif "cong_chung" in collection_name:
-            return "Công chứng"
-        elif "boi_thuong" in collection_name:
-            return "Bồi thường"
-        elif "dau_gia" in collection_name:
-            return "Đấu giá tài sản"
-        elif "luat_su" in collection_name:
-            return "Luật sư"
-        elif "quan_tai_vien" in collection_name:
-            return "Quan tài viên"
-        elif "thua_phat_lai" in collection_name:
-            return "Thừa phát lại"
-        elif "trong_tai" in collection_name:
-            return "Trọng tài thương mại"
-        elif "tu_van" in collection_name:
-            return "Tư vấn pháp luật"
-        else:
-            # Fallback: chuyển đổi cơ bản
-            return collection_name.replace("quy_trinh_", "").replace("_", " ").title()
-    
     def _generate_category_clarification(
         self, 
         confidence: float, 
@@ -429,39 +382,46 @@ class ClarificationService:
     ) -> Dict[str, Any]:
         """
         LOW CONFIDENCE (0.30-0.49): Category-based suggestions
+        🎯 USE ROUTER DATA: Get collections from router instead of hardcode
         """
         message = level_config.message_template
         
-        options = []
-        # Chỉ hiển thị 3 collections chính (bỏ qua duplicates)
-        main_collections = {
-            'quy_trinh_cap_ho_tich_cap_xa': {
-                'title': 'Hộ tịch cấp xã',
-                'description': 'Khai sinh, kết hôn, khai tử, thay đổi hộ tịch',
-                'examples': ['khai sinh con', 'đăng ký kết hôn', 'làm lại giấy khai sinh']
-            },
-            'quy_trinh_chung_thuc': {
-                'title': 'Chứng thực',
-                'description': 'Chứng thực hợp đồng, chữ ký, bản sao giấy tờ, di chúc',
-                'examples': ['chứng thực hợp đồng mua bán', 'chứng thực di chúc', 'chứng thực bản sao']
-            },
-            'quy_trinh_nuoi_con_nuoi': {
-                'title': 'Nuôi con nuôi',
-                'description': 'Thủ tục nhận con nuôi, giám hộ',
-                'examples': ['nhận con nuôi', 'thủ tục nuôi con nuôi', 'giám hộ trẻ em']
-            }
-        }
+        # 🎯 GET COLLECTIONS FROM ROUTER: Use router's all_scores if available
+        all_scores = routing_result.get('all_scores', {})
         
-        for i, (collection_id, category_info) in enumerate(main_collections.items(), 1):
-            option = {
-                'id': str(i),
-                'title': category_info['title'],
-                'description': category_info['description'],
-                'examples': category_info['examples'],
-                'action': 'proceed_with_collection',
-                'collection': collection_id
-            }
-            options.append(option)
+        if all_scores:
+            # Use top collections from router
+            top_collections = sorted(all_scores.items(), key=lambda x: x[1], reverse=True)[:5]
+            options = []
+            for i, (collection, score) in enumerate(top_collections, 1):
+                collection_title = collection.replace('quy_trinh_', '').replace('_', ' ').title()
+                option = {
+                    'id': str(i),
+                    'title': collection_title,
+                    'description': f"Thủ tục trong lĩnh vực {collection_title.lower()}",
+                    'examples': [],  # Router không có examples - để frontend tự lấy
+                    'action': 'proceed_with_collection',
+                    'collection': collection
+                }
+                options.append(option)
+        else:
+            # Fallback: basic options
+            options = [
+                {
+                    'id': '1',
+                    'title': 'Hộ tịch',
+                    'description': 'Thủ tục về khai sinh, kết hôn, khai tử',
+                    'action': 'proceed_with_collection',
+                    'collection': 'quy_trinh_cap_ho_tich_cap_xa'
+                },
+                {
+                    'id': '2', 
+                    'title': 'Chứng thực',
+                    'description': 'Thủ tục chứng thực giấy tờ, hợp đồng',
+                    'action': 'proceed_with_collection',
+                    'collection': 'quy_trinh_chung_thuc'
+                }
+            ]
         
         # Add manual input option
         options.append({
@@ -469,14 +429,14 @@ class ClarificationService:
             'title': "Tôi muốn mô tả rõ hơn",
             'description': "Để tôi diễn đạt lại câu hỏi một cách chi tiết hơn",
             'action': 'manual_input',
-            'collection': None
+            'collection': ''  # Empty string thay vì None
         })
         
         return {
             "type": "clarification_needed",
             "confidence_level": "low_confidence",
             "confidence": float(confidence),
-            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
+            "target_collection": routing_result.get('target_collection'),
             "clarification": {
                 "message": message,
                 "options": options,
@@ -514,6 +474,193 @@ class ClarificationService:
             "strategy": "fallback"
         }
     
+    def handle_user_selection(
+        self, 
+        selected_option: Dict[str, Any], 
+        session_id: str,
+        smart_router = None
+    ) -> Dict[str, Any]:
+        """
+        🎯 CENTRALIZED USER SELECTION HANDLING
+        Handle all user selections for clarification flow
+        """
+        try:
+            action = selected_option.get('action')
+            collection = selected_option.get('collection')
+            
+            if action == 'show_document_questions':
+                return self._handle_show_document_questions(selected_option, session_id, smart_router)
+            elif action == 'proceed_with_question':
+                return self._handle_proceed_with_question(selected_option, session_id)
+            elif action == 'proceed_with_collection':
+                return self._handle_proceed_with_collection(selected_option, session_id, smart_router)
+            elif action == 'show_categories':
+                return self._handle_show_categories(selected_option, session_id)
+            elif action == 'manual_input':
+                return self._handle_manual_input(selected_option, session_id)
+            else:
+                return self._handle_unknown_action(selected_option, session_id)
+                
+        except Exception as e:
+            logger.error(f"❌ Error handling user selection: {e}")
+            return self._generate_error_response(str(e), session_id)
+    
+    def _handle_show_document_questions(
+        self, 
+        selected_option: Dict[str, Any], 
+        session_id: str,
+        smart_router = None
+    ) -> Dict[str, Any]:
+        """Handle show_document_questions action - MOVED FROM RAG ENGINE"""
+        try:
+            collection = selected_option.get('collection')
+            document = selected_option.get('document', '')
+            procedure = selected_option.get('procedure', '')
+            
+            logger.info(f"🎯 ClarificationService: Showing questions for '{procedure}' in document '{document}'")
+            
+            if not smart_router:
+                return self._generate_error_response("Smart router not available", session_id)
+            
+            # Get questions from specific document
+            if document:
+                document_filename = f"{document}"
+                matching_questions = smart_router.get_questions_from_specific_document(collection, document_filename)
+                logger.info(f"🚀 Retrieved {len(matching_questions)} questions from document {document_filename}")
+            else:
+                # Fallback: Get procedure-related questions
+                matching_questions = smart_router.get_procedure_questions_limited(
+                    collection_name=collection,
+                    procedure=procedure,
+                    limit=20
+                )
+                logger.info(f"🚀 Retrieved {len(matching_questions)} procedure-related questions")
+            
+            if not matching_questions:
+                logger.warning(f"⚠️ No questions found for procedure '{procedure}' in document '{document}'")
+                # Fallback to collection questions
+                collection_questions = smart_router.get_example_questions_for_collection(collection)
+                matching_questions = collection_questions[:10]
+                logger.info(f"🔄 Fallback: Loaded {len(matching_questions)} questions")
+            
+            # Create standardized question options
+            options = []
+            for i, q in enumerate(matching_questions[:8]):  # Top 8 questions
+                question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
+                options.append({
+                    "id": str(i + 1),
+                    "title": question_text,
+                    "description": f"Câu hỏi về {procedure}",
+                    "action": "proceed_with_question",
+                    "collection": collection,
+                    "document": document,
+                    "procedure": procedure,
+                    "question_text": question_text,
+                    "source_file": q.get('source', '') if isinstance(q, dict) else '',
+                    "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+                })
+            
+            # Add manual input option
+            options.append({
+                "id": str(len(options) + 1),
+                "title": "Câu hỏi khác...",
+                "description": f"Tôi muốn hỏi về vấn đề khác trong {procedure}",
+                "action": "manual_input",
+                "collection": collection,
+                "document": document,
+                "procedure": procedure
+            })
+            
+            # Return standardized response
+            return {
+                "type": "clarification_needed",
+                "confidence": None,  # No confidence at this stage
+                "answer": f"Đây là các câu hỏi về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
+                "clarification": {
+                    "message": f"Đây là các câu hỏi về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
+                    "options": options,
+                    "show_manual_input": True,
+                    "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {procedure}...",
+                    "context": "document_questions",
+                    "style": "document_questions",
+                    "metadata": {
+                        "collection": collection,
+                        "document": document,
+                        "procedure": procedure,
+                        "stage": "document_questions"
+                    }
+                },
+                "session_id": session_id,
+                "routing_info": None,  # No routing info at this stage
+                "target_collection": collection
+            }
+            
+        except Exception as e:
+            logger.error(f"❌ Error showing document questions: {e}")
+            return self._generate_error_response(str(e), session_id)
+    
+    def _handle_proceed_with_question(self, selected_option: Dict[str, Any], session_id: str) -> Dict[str, Any]:
+        """Handle proceed_with_question action - STANDARDIZED RESPONSE"""
+        return {
+            "type": "proceed_with_question",
+            "final_query": selected_option.get('question_text', ''),
+            "collection": selected_option.get('collection'),
+            "document": selected_option.get('document'),
+            "procedure": selected_option.get('procedure'),
+            "session_id": session_id,
+            "message": "Proceeding with selected question for RAG processing"
+        }
+    
+    def _handle_proceed_with_collection(self, selected_option: Dict[str, Any], session_id: str, smart_router = None) -> Dict[str, Any]:
+        """Handle proceed_with_collection action"""
+        collection = selected_option.get('collection')
+        
+        # Get collection overview or top documents
+        if smart_router:
+            collection_questions = smart_router.get_example_questions_for_collection(collection)[:10]
+        else:
+            collection_questions = []
+        
+        return {
+            "type": "collection_overview", 
+            "collection": collection,
+            "questions": collection_questions,
+            "session_id": session_id,
+            "message": f"Showing overview for collection: {collection}"
+        }
+    
+    def _handle_show_categories(self, selected_option: Dict[str, Any], session_id: str) -> Dict[str, Any]:
+        """Handle show_categories action"""
+        return self._generate_category_clarification(
+            confidence=0.0,
+            routing_result={},
+            level_config=self.clarification_levels['low_confidence']
+        )
+    
+    def _handle_manual_input(self, selected_option: Dict[str, Any], session_id: str) -> Dict[str, Any]:
+        """Handle manual_input action"""
+        return {
+            "type": "manual_input_request",
+            "message": "Please provide your specific question",
+            "collection": selected_option.get('collection'),
+            "document": selected_option.get('document'),
+            "procedure": selected_option.get('procedure'),
+            "session_id": session_id
+        }
+    
+    def _handle_unknown_action(self, selected_option: Dict[str, Any], session_id: str) -> Dict[str, Any]:
+        """Handle unknown actions"""
+        return self._generate_error_response(f"Unknown action: {selected_option.get('action')}", session_id)
+    
+    def _generate_error_response(self, error_message: str, session_id: str) -> Dict[str, Any]:
+        """Generate standardized error response"""
+        return {
+            "type": "error",
+            "error": error_message,
+            "session_id": session_id,
+            "message": "An error occurred during clarification processing"
+        }
+    
     def get_related_procedures(self, collection: str, procedure: str, limit: int = 3) -> List[Dict[str, Any]]:
         """
         Lấy các thủ tục liên quan trong cùng collection
@@ -521,3 +668,134 @@ class ClarificationService:
         """
         # Placeholder - sẽ integrate với smart_router
         return []
+    
+    # 🔥 NEW: EMBEDDING SIMILARITY METHODS
+    def get_similarity_ranked_questions(
+        self, 
+        query: str, 
+        collection: str, 
+        document: Optional[str] = None,
+        limit: int = 5,
+        smart_router = None
+    ) -> List[Dict[str, Any]]:
+        """
+        🔥 ENHANCED: Get questions ranked by embedding similarity
+        """
+        try:
+            if not self.similarity_available or not self.embedding_model:
+                # Fallback to simple retrieval if no embedding model
+                return self._get_fallback_questions(collection, document, limit, smart_router)
+            
+            # Get questions from router
+            if document and smart_router:
+                questions = smart_router.get_questions_from_specific_document(collection, document)
+            elif smart_router:
+                questions = smart_router.get_example_questions_for_collection(collection)
+            else:
+                return []
+            
+            if not questions:
+                return []
+            
+            # 🔧 EMBEDDING SIMILARITY CALCULATION
+            query_embedding = self.embedding_model.encode([query])
+            
+            # Extract question texts and compute embeddings
+            question_texts = []
+            question_data = []
+            
+            for q in questions:
+                if isinstance(q, dict):
+                    text = q.get('text', '')
+                    question_texts.append(text)
+                    question_data.append(q)
+                else:
+                    text = str(q)
+                    question_texts.append(text)
+                    question_data.append({'text': text})
+            
+            if not question_texts:
+                return []
+            
+            # Compute similarities
+            question_embeddings = self.embedding_model.encode(question_texts)
+            similarities = self.cosine_similarity(query_embedding, question_embeddings)[0]
+            
+            # Combine with similarity scores and sort
+            ranked_questions = []
+            for i, (question, similarity) in enumerate(zip(question_data, similarities)):
+                question_copy = question.copy() if isinstance(question, dict) else {'text': str(question)}
+                question_copy['similarity_score'] = float(similarity)
+                question_copy['similarity_percent'] = round(float(similarity) * 100, 1)
+                ranked_questions.append(question_copy)
+            
+            # Sort by similarity descending
+            ranked_questions.sort(key=lambda x: x['similarity_score'], reverse=True)
+            
+            logger.info(f"🔥 Similarity ranking: {len(ranked_questions)} questions ranked for query")
+            
+            return ranked_questions[:limit]
+            
+        except Exception as e:
+            logger.error(f"❌ Error in similarity ranking: {e}")
+            return self._get_fallback_questions(collection, document, limit, smart_router)
+    
+    def _get_fallback_questions(
+        self, 
+        collection: str, 
+        document: Optional[str] = None,
+        limit: int = 5,
+        smart_router = None
+    ) -> List[Dict[str, Any]]:
+        """Fallback question retrieval without similarity"""
+        try:
+            if document and smart_router:
+                questions = smart_router.get_questions_from_specific_document(collection, document)
+            elif smart_router:
+                questions = smart_router.get_example_questions_for_collection(collection)
+            else:
+                return []
+            
+            # Convert to standard format
+            standardized = []
+            for q in questions[:limit]:
+                if isinstance(q, dict):
+                    standardized.append(q)
+                else:
+                    standardized.append({'text': str(q), 'similarity_percent': 0})
+            
+            return standardized
+            
+        except Exception as e:
+            logger.error(f"❌ Error in fallback questions: {e}")
+            return []
+    
+    def calculate_query_collection_relevance(self, query: str, collection: str) -> float:
+        """
+        🔧 ENHANCED: Calculate relevance between query and collection
+        Simple keyword-based approach for now, can be enhanced with embeddings
+        """
+        try:
+            # Basic keyword matching
+            query_lower = query.lower()
+            collection_lower = collection.lower().replace('quy_trinh_', '').replace('_', ' ')
+            
+            # Count keyword matches
+            collection_words = collection_lower.split()
+            matches = sum(1 for word in collection_words if word in query_lower)
+            
+            # Calculate relevance
+            if len(collection_words) == 0:
+                return 0.0
+            
+            relevance = matches / len(collection_words)
+            
+            # Bonus for exact phrase match
+            if collection_lower in query_lower:
+                relevance += 0.3
+            
+            return min(1.0, relevance)
+            
+        except Exception as e:
+            logger.error(f"❌ Error calculating relevance: {e}")
+            return 0.0

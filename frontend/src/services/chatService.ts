@@ -21,7 +21,12 @@ export interface ClarificationOption {
   document_title?: string; // 🔥 NEW: For exact document filtering
   source_file?: string; // 🔥 NEW: Full source path
   similarity?: number; // 🔥 NEW: Similarity score
+  similarity_percent?: number; // 🔥 ENHANCED: Similarity percentage for display
+  relevance_percent?: number; // 🔥 ENHANCED: Relevance score for categories
+  router_confidence?: number; // 🔥 ENHANCED: Router confidence score
   category?: string;
+  procedure?: string; // 🔥 NEW: Procedure info
+  document?: string; // 🔥 NEW: Document info
 }
 
 export interface ClarificationData {
@@ -31,6 +36,9 @@ export interface ClarificationData {
   stage?: number;
   collection?: string;
   original_query?: string;
+  sorting_note?: string; // 🔥 ENHANCED: Info about how options are sorted
+  sorting_info?: string; // 🔥 ENHANCED: Additional sorting information
+  enhanced?: boolean; // 🔥 ENHANCED: Flag for enhanced clarification
 }
 
 export interface ContextInfo {
