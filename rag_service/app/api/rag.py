@@ -114,7 +114,89 @@ async def handle_clarification(
             original_query=request.original_query
         )
         
-        return QueryResponse(**result)
+        # Convert ClarificationService result to QueryResponse format
+        if isinstance(result, dict):
+            # Determine response type and create appropriate QueryResponse
+            response_type = result.get("type", "clarification_needed")
+            
+            # Base required fields for QueryResponse
+            query_response = {
+                "type": response_type,
+                "session_id": request.session_id,
+                "processing_time": result.get("processing_time", 0.0),
+                "routing_info": result.get("routing_info", {}),
+                "session_cleared": result.get("session_cleared", False),
+                "context_preserved": result.get("context_preserved", True),
+                "preserved_collection": result.get("collection")
+            }
+            
+            # Handle different response types
+            if response_type == "proceed_with_question":
+                # This means we should trigger a new RAG query with the final_query
+                final_query = result.get("final_query", "")
+                if final_query:
+                    # Execute RAG query with the final question
+                    rag_result = service.process_query(
+                        query=final_query,
+                        session_id=request.session_id,
+                        forced_collection=result.get("collection")
+                    )
+                    return QueryResponse(**rag_result)
+                else:
+                    query_response["type"] = "error"
+                    query_response["error"] = "No final query provided"
+                    
+            elif response_type == "manual_input_request":
+                query_response["type"] = "clarification_needed"
+                query_response["message"] = result.get("message", "Please provide your specific question")
+                query_response["clarification"] = {
+                    "message": result.get("message", "Please provide your specific question"),
+                    "options": [],
+                    "show_manual_input": True,
+                    "manual_input_placeholder": "Please type your specific question...",
+                    "context": "manual_input",
+                    "metadata": {
+                        "collection": result.get("collection"),
+                        "document": result.get("document"),
+                        "procedure": result.get("procedure")
+                    }
+                }
+                
+            elif response_type == "error":
+                query_response["error"] = result.get("error", "An error occurred")
+                
+            else:
+                # For clarification_needed and other types
+                query_response["message"] = result.get("message", "")
+                query_response["answer"] = result.get("answer", "")
+                query_response["clarification"] = result.get("clarification", {})
+                query_response["confidence"] = result.get("confidence")
+                query_response["category"] = result.get("category")
+                query_response["generated_questions"] = result.get("generated_questions", [])
+                query_response["context_info"] = result.get("context_info", {})
+                query_response["form_attachments"] = result.get("form_attachments", [])
+            
+            return QueryResponse(**query_response)
+        else:
+            # Fallback for non-dict responses
+            return QueryResponse(
+                type="error",
+                answer=None,
+                message=None,
+                error="Invalid response format from clarification service",
+                category=None,
+                confidence=None,
+                clarification=None,
+                generated_questions=None,
+                context_info=None,
+                form_attachments=None,
+                session_id=request.session_id,
+                processing_time=0.0,
+                routing_info={},
+                session_cleared=False,
+                context_preserved=True,
+                preserved_collection=None
+            )
         
     except Exception as e:
         logger.error(f"Error handling clarification: {e}")

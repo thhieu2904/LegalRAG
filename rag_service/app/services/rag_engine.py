@@ -1908,27 +1908,78 @@ class RAGService:
             # Merge clarification response with required fields
             processing_time = time.time() - start_time
             
-            # Get the main response from clarification service
-            response = clarification_response.copy()
+            # Convert Pydantic object to dict for processing
+            if hasattr(clarification_response, 'model_dump'):
+                # Pydantic v2
+                clarification_data = clarification_response.model_dump()
+            elif hasattr(clarification_response, 'dict'):
+                # Pydantic v1
+                clarification_data = clarification_response.dict()
+            else:
+                # Fallback: assume it's already a dict
+                clarification_data = clarification_response.copy() if hasattr(clarification_response, 'copy') else dict(clarification_response)
             
             # 🔧 DEBUG: Log clarification service response
-            logger.info(f"📋 Clarification service response target_collection: {clarification_response.get('target_collection')}")
+            logger.info(f"📋 Clarification service response target_collection: {clarification_data.get('target_collection')}")
             logger.info(f"📋 Routing result target_collection: {routing_result.get('target_collection')}")
             
-            # Add required fields that API expects
-            response.update({
+            # 🔥 NEW: Map ClarificationService response to QueryResponse format
+            query_response = {
+                "type": "clarification_needed",
+                "answer": None,
+                "message": clarification_data.get('message', ''),
+                "error": None,
+                "category": None,
+                "confidence": clarification_data.get('confidence', routing_result.get('confidence', 0.0)),
+                "generated_questions": None,
+                "context_info": None,
+                "form_attachments": None,
                 "session_id": session_id,
                 "processing_time": processing_time,
                 "routing_info": {
                     "target_collection": routing_result.get('target_collection'),
                     "router_confidence": routing_result.get('confidence', 0.0),
                     "status": "smart_clarification"
-                }
-            })
+                },
+                "session_cleared": None,
+                "context_preserved": None,
+                "preserved_collection": routing_result.get('target_collection')
+            }
             
-            # 🔧 FIX: Ensure target_collection is at top level (don't override from clarification service)
-            if 'target_collection' not in response or response.get('target_collection') is None:
-                response['target_collection'] = routing_result.get('target_collection')
+            # 🔥 CRITICAL FIX: Build clarification object from ClarificationService response
+            clarification_obj = {
+                "message": clarification_data.get('message', ''),
+                "options": [],
+                "show_manual_input": clarification_data.get('show_manual_input', False),
+                "manual_input_placeholder": clarification_data.get('manual_input_placeholder', ''),
+                "style": clarification_data.get('style', ''),
+                "context": clarification_data.get('style', ''),
+                "metadata": {
+                    "collection": clarification_data.get('target_collection'),
+                    "document": clarification_data.get('document'),
+                    "procedure": clarification_data.get('procedure'),
+                    "confidence_level": clarification_data.get('confidence_level'),
+                    "stage": "clarification"
+                }
+            }
+            
+            # Convert ClarificationOption objects to dict format for frontend
+            if 'options' in clarification_data and clarification_data['options']:
+                for option in clarification_data['options']:
+                    if hasattr(option, 'model_dump'):
+                        # Pydantic v2
+                        option_dict = option.model_dump()
+                    elif hasattr(option, 'dict'):
+                        # Pydantic v1
+                        option_dict = option.dict()
+                    else:
+                        # Already dict
+                        option_dict = option
+                    
+                    clarification_obj["options"].append(option_dict)
+            
+            # Set the clarification object (this fixes the null issue)
+            query_response["clarification"] = clarification_obj
             
             # 🔧 STORE ROUTING CONTEXT: Save original routing info to session for Step 2→3 similarity matching
             session = self.get_session(session_id)
@@ -1937,7 +1988,7 @@ class RAGService:
                 session.metadata['original_query'] = query
                 logger.info(f"💾 Stored original routing context for session {session_id}")
             
-            return convert_numpy_types(response)
+            return convert_numpy_types(query_response)
             
         except Exception as e:
             logger.error(f"Error generating smart clarification: {e}")
@@ -1945,28 +1996,45 @@ class RAGService:
             
             fallback_response = {
                 "type": "clarification_needed",
+                "answer": None,
+                "message": "Xin lỗi, tôi không rõ ý định của câu hỏi. Bạn có thể diễn đạt rõ hơn không?",
+                "error": None,
+                "category": None,
                 "confidence": routing_result.get('confidence', 0.0),
                 "clarification": {
                     "message": "Xin lỗi, tôi không rõ ý định của câu hỏi. Bạn có thể diễn đạt rõ hơn không?",
                     "options": [
                         {
-                            'id': 'retry',
-                            'title': "Hãy diễn đạt lại câu hỏi",
-                            'description': "Tôi sẽ cố gắng hiểu rõ hơn",
-                            'action': 'manual_input'
+                            "id": "1",
+                            "title": "Hãy giúp tôi tìm thủ tục phù hợp",
+                            "description": "Tôi sẽ giúp bạn tìm thủ tục cần thiết",
+                            "action": "show_categories"
                         }
                     ],
-                    "style": "fallback"
+                    "show_manual_input": True,
+                    "manual_input_placeholder": "Mô tả chi tiết câu hỏi của bạn...",
+                    "style": "fallback",
+                    "context": "error_fallback",
+                    "metadata": {
+                        "collection": routing_result.get('target_collection'),
+                        "stage": "error_fallback"
+                    }
                 },
+                "generated_questions": None,
+                "context_info": None,
+                "form_attachments": None,
                 "session_id": session_id,
                 "processing_time": processing_time,
                 "routing_info": {
                     "target_collection": routing_result.get('target_collection'),
                     "router_confidence": routing_result.get('confidence', 0.0),
-                    "status": "smart_clarification_error",
-                    "error": str(e)
-                }
+                    "status": "error_fallback"
+                },
+                "session_cleared": None,
+                "context_preserved": None,
+                "preserved_collection": routing_result.get('target_collection')
             }
+            
             return convert_numpy_types(fallback_response)
     
     def _activate_vector_backup_strategy(self, routing_result: Dict[str, Any], query: str, session_id: str, start_time: float) -> Dict[str, Any]:

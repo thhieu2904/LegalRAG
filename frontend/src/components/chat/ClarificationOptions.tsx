@@ -128,7 +128,26 @@ export function ClarificationOptions({
                   </span>
                 )}
 
-                {/* 🔥 NEW: Similarity percentage badge */}
+                {/* 🔥 NEW: Confidence percentage from new schema */}
+                {option.confidence_percent !== undefined &&
+                  option.confidence_percent !== null &&
+                  option.confidence_percent > 0 && (
+                    <span
+                      className={`confidence-badge px-2 py-1 text-xs rounded-full font-medium ${
+                        option.confidence_percent >= 90
+                          ? "bg-green-100 text-green-800"
+                          : option.confidence_percent >= 70
+                          ? "bg-blue-100 text-blue-800"
+                          : option.confidence_percent >= 50
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      📊 {option.confidence_percent}%
+                    </span>
+                  )}
+
+                {/* 🔥 LEGACY: Similarity percentage badge for backward compatibility */}
                 {option.similarity_percent !== undefined &&
                   option.similarity_percent > 0 && (
                     <span
@@ -216,6 +235,58 @@ export function ClarificationOptions({
           <span className="enhanced-indicator">
             🚀 Được tối ưu bằng AI với embedding similarity
           </span>
+        </div>
+      )}
+
+      {/* 🔥 NEW: Additional help from backend */}
+      {clarification.additional_help && (
+        <div className="additional-help bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+          <div className="flex items-start gap-2">
+            <span className="text-blue-500 text-sm">💡</span>
+            <p className="text-blue-700 text-sm">
+              {clarification.additional_help}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 🔥 NEW: Manual input area if required */}
+      {clarification.show_manual_input && (
+        <div className="manual-input-area bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+          <label
+            htmlFor="manual-input"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Hoặc mô tả chi tiết câu hỏi của bạn:
+          </label>
+          <textarea
+            id="manual-input"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows={3}
+            placeholder={
+              clarification.manual_input_placeholder ||
+              "Mô tả chi tiết câu hỏi của bạn..."
+            }
+          />
+          <button
+            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            onClick={() => {
+              const textarea = document.getElementById(
+                "manual-input"
+              ) as HTMLTextAreaElement;
+              if (textarea && textarea.value.trim()) {
+                onOptionSelect({
+                  id: "manual_input",
+                  title: "Câu hỏi tự nhập",
+                  description: textarea.value,
+                  action: "manual_input",
+                  question_text: textarea.value,
+                });
+              }
+            }}
+          >
+            Gửi câu hỏi
+          </button>
         </div>
       )}
     </div>

@@ -6,16 +6,26 @@ Smart Clarification Service for LegalRAG V2
 5-Layer Clarification System for 13 Collections:
 - High confidence (≥0.80): Auto route - no clarification needed
 - Medium-High confidence (0.65-0.79): Confirm with best questions
-- Medium confidence (0.50-0.64): Multiple choice options
+- Medium confidence (0.50-0.64): Multiple choice from top matches
 - Low confidence (0.30-0.49): Category-based suggestions
 - Insufficient context (<0.30): Context gathering
 
 Author: LegalRAG Team
 """
 
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional, Tuple, Union, cast
 import logging
+import os
+import json
 from dataclasses import dataclass
+
+from app.utils.collection_utils import CollectionManager
+from app.utils.clarification_config import ClarificationConfig
+from app.models.schemas import (
+    ClarificationOption, StandardClarificationResponse,
+    ClarificationActionResponse, ProceedWithQuestionResponse, 
+    CollectionOverviewResponse, ManualInputResponse, ClarificationErrorResponse
+)
 
 logger = logging.getLogger(__name__)
 
@@ -30,14 +40,30 @@ class ClarificationLevel:
 class ClarificationService:
     """
     🎯 ENHANCED CLARIFICATION SERVICE with Embedding Intelligence
-    - 5-layer confidence system for 13 collections
+    - 5-layer confidence system cho nhiều collections
     - Similarity ranking for better question suggestions  
     - Scale-ready, clean architecture
+    - Dựa trên schema chuẩn hóa và cấu hình ngoài
+    - Tự động đọc collections từ data/storage
     """
     
-    def __init__(self, embedding_model=None):
+    def __init__(self, embedding_model=None, config_path: Optional[str] = None, storage_path: Optional[str] = None):
+        """
+        Khởi tạo ClarificationService với các tùy chọn cấu hình
+        
+        Args:
+            embedding_model: Model để embedding câu hỏi và tính similarity
+            config_path: Đường dẫn đến file cấu hình (json), nếu không có sẽ dùng default
+            storage_path: Đường dẫn đến thư mục storage, mặc định là "data/storage"
+        """
         # Store embedding model for similarity calculations
         self.embedding_model = embedding_model
+        
+        # Load config từ file cấu hình hoặc default
+        self.config = ClarificationConfig(config_path)
+        
+        # Khởi tạo Collection Manager để lấy thông tin collections
+        self.collection_manager = CollectionManager(storage_path if storage_path else "data/storage/collections")
         
         # Try to import sklearn for similarity calculations
         try:
@@ -50,46 +76,23 @@ class ClarificationService:
             self.similarity_available = False
             logger.warning("⚠️  sklearn not available - using fallback ranking")
         
-        # 5-Layer clarification system
-        self.clarification_levels = {
-            'high_confidence': ClarificationLevel(
-                min_confidence=0.80,
-                max_confidence=1.00,
-                strategy='auto_route',
-                message_template="Routing automatically with high confidence (confidence: {confidence:.1%})"
-            ),
-            'medium_high_confidence': ClarificationLevel(
-                min_confidence=0.65,
-                max_confidence=0.79,
-                strategy='confirm_with_best_questions', 
-                message_template="Tôi nghĩ bạn muốn hỏi về '{procedure}' (độ tin cậy: {confidence:.1%}). Đúng không?"
-            ),
-            'medium_confidence': ClarificationLevel(
-                min_confidence=0.50,
-                max_confidence=0.64,
-                strategy='multiple_choices',
-                message_template="Câu hỏi của bạn có thể liên quan đến các thủ tục sau. Bạn muốn hỏi về:"
-            ),
-            'low_confidence': ClarificationLevel(
-                min_confidence=0.30,
-                max_confidence=0.49,
-                strategy='category_suggestions',
-                message_template="Tôi chưa hiểu rõ ý bạn. Bạn có thể cho biết bạn quan tâm đến lĩnh vực nào?"
-            ),
-            'insufficient_context': ClarificationLevel(
-                min_confidence=0.00,
-                max_confidence=0.29,
-                strategy='context_gathering',
-                message_template="Tôi cần thêm thông tin để hiểu rõ câu hỏi của bạn. Bạn có thể:"
+        # 5-Layer clarification system - load từ config
+        self.clarification_levels = {}
+        # Load từ config ngoài
+        levels_config = self.config.get_clarification_levels()
+        for level_name, level_data in levels_config.items():
+            self.clarification_levels[level_name] = ClarificationLevel(
+                min_confidence=level_data.get("min_confidence", 0.0),
+                max_confidence=level_data.get("max_confidence", 1.0),
+                strategy=level_data.get("strategy", "fallback"),
+                message_template=level_data.get("message_template", "No message template provided")
             )
-        }
         
         # 🎯 NO HARDCORE MAPPINGS - Use router results directly!
 
-        # Category mappings cho low confidence - UPDATED FOR NEW STRUCTURE
-        self.category_suggestions = {
-            
-        }
+        # Load collections từ storage
+        self.collections = self.collection_manager.get_all_collections()
+        logger.info(f"✅ Loaded {len(self.collections)} collections dynamically from storage")
     
     def generate_clarification(
         self, 
@@ -97,9 +100,10 @@ class ClarificationService:
         routing_result: Dict[str, Any],
         query: str,
         session_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Union[StandardClarificationResponse, Dict[str, Any]]:
         """
         Tạo clarification thông minh dựa trên confidence level
+        Trả về StandardClarificationResponse hoặc dict tương thích
         """
         try:
             # Convert numpy types to Python native types để tránh lỗi serialization
@@ -126,8 +130,11 @@ class ClarificationService:
                 # Fallback
                 result = self._generate_fallback_clarification(confidence, routing_result)
             
-            # 🔧 FIX: Always ensure session_id is present
-            if session_id:
+            # Nếu là StandardClarificationResponse, set session_id
+            if isinstance(result, StandardClarificationResponse) and session_id:
+                result.session_id = session_id
+            # Nếu là dict, set session_id theo cách cũ
+            elif isinstance(result, dict) and session_id:
                 result['session_id'] = session_id
             
             return result
@@ -158,84 +165,99 @@ class ClarificationService:
         confidence: float, 
         routing_result: Dict[str, Any], 
         level_config: ClarificationLevel
-    ) -> Dict[str, Any]:
+    ) -> StandardClarificationResponse:
         """
         HIGH CONFIDENCE (≥0.80): Auto route without clarification
+        Sử dụng schema chuẩn hóa
         """
-        return {
-            "type": "auto_route",
-            "confidence_level": "high_confidence",
-            "confidence": float(confidence),
-            "target_collection": routing_result.get('target_collection'),
-            "message": level_config.message_template.format(confidence=confidence),
-            "routing_context": routing_result,
-            "strategy": level_config.strategy
-        }
+        target_collection = routing_result.get('target_collection')
+        message = level_config.message_template.format(confidence=confidence)
+        
+        # Lấy document và procedure từ routing_result nếu có
+        best_match = routing_result.get('best_match', {})
+        document = best_match.get('document', None)
+        procedure = best_match.get('question', None)
+        
+        # Sử dụng StandardClarificationResponse cho output chuẩn hóa
+        return StandardClarificationResponse(
+            type="auto_route",
+            confidence_level="high_confidence",
+            confidence=float(confidence),
+            target_collection=target_collection,
+            document=document,
+            procedure=procedure,
+            message=message,
+            options=[],  # Không có options vì auto route
+            style="auto_route",
+            manual_input_placeholder=None,
+            routing_context=routing_result,
+            strategy=level_config.strategy,
+            session_id=None,  # Session ID sẽ được set ở hàm generate_clarification
+            additional_help=None,
+            requires_user_input=False,
+            show_manual_input=False
+        )
     
     def _generate_context_gathering_clarification(
         self, 
         confidence: float, 
         routing_result: Dict[str, Any], 
         level_config: ClarificationLevel
-    ) -> Dict[str, Any]:
+    ) -> StandardClarificationResponse:
         """
         INSUFFICIENT CONTEXT (0.00-0.29): Thu thập thêm context
         """
         message = level_config.message_template
+        target_collection = routing_result.get('target_collection')
         
-        options = [
-            {
-                'id': 'provide_more_details',
-                'title': "Mô tả chi tiết hơn về tình huống",
-                'description': "Ví dụ: Bạn đang làm thủ tục gì? Cần giấy tờ gì?",
-                'action': 'request_more_context',
-                'context_type': 'situation_description'
-            },
-            {
-                'id': 'select_document_type',
-                'title': "Chọn loại giấy tờ bạn cần",
-                'description': "Giấy khai sinh, chứng minh nhân dân, sổ hộ khẩu...",
-                'action': 'request_document_type',
-                'context_type': 'document_type'
-            },
-            {
-                'id': 'select_urgency',
-                'title': "Mức độ khẩn cấp",
-                'description': "Cần gấp trong ngày, tuần này, hay không gấp?",
-                'action': 'request_urgency',
-                'context_type': 'urgency_level'
-            },
-            {
-                'id': 'manual_description',
-                'title': "Tôi muốn mô tả chi tiết",
-                'description': "Hãy cho tôi nhập câu hỏi cụ thể hơn",
-                'action': 'manual_input',
-                'context_type': 'detailed_description'
-            }
-        ]
+        # Lấy options từ config thay vì hardcode
+        option_configs = self.config.get_context_gathering_options()
+        options = []
         
-        return {
-            "type": "context_gathering_needed",
-            "confidence_level": "insufficient_context",
-            "confidence": float(confidence),
-            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
-            "clarification": {
-                "message": message,
-                "options": options,
-                "style": "context_gathering",
-                "requires_user_input": True,
-                "additional_help": "Bạn có thể mô tả cụ thể hơn về tình huống hoặc giấy tờ bạn cần làm"
-            },
-            "routing_context": routing_result,
-            "strategy": level_config.strategy
-        }
+        # Chuyển đổi từ config sang ClarificationOption
+        clarification_options = []
+        for opt_config in option_configs:
+            clarification_options.append(ClarificationOption(
+                id=opt_config.get("id", ""),
+                title=opt_config.get("title", ""),
+                description=opt_config.get("description"),
+                action=opt_config.get("action", ""),
+                collection=None,
+                document=None,
+                procedure=None,
+                question_text=None,
+                confidence_percent=None,
+                source_file=None,
+                context_type=opt_config.get("context_type"),
+                category=None
+            ))
+        
+        # Sử dụng schema chuẩn hóa
+        return StandardClarificationResponse(
+            type="context_gathering_needed",
+            confidence_level="insufficient_context",
+            confidence=float(confidence),
+            message=message,
+            target_collection=target_collection,
+            document=None,
+            procedure=None,
+            options=clarification_options,
+            requires_user_input=True,
+            show_manual_input=True,
+            manual_input_placeholder="Mô tả chi tiết tình huống của bạn...",
+            style="context_gathering",
+            routing_context=routing_result,
+            strategy=level_config.strategy,
+            session_id=None,
+            additional_help="Bạn có thể cung cấp thêm thông tin về tình huống của mình để chúng tôi hỗ trợ tốt hơn."
+        )
 
     def _generate_confirmation_clarification(
         self, 
         confidence: float, 
         routing_result: Dict[str, Any], 
         level_config: ClarificationLevel
-    ) -> Dict[str, Any]:
+    ) -> StandardClarificationResponse:
         """
         MEDIUM-HIGH CONFIDENCE (0.65-0.79): Xác nhận với câu hỏi gần nhất
         """
@@ -265,62 +287,89 @@ class ClarificationService:
         # Lấy document từ best_match 
         target_document = best_match.get('document', '')
         
-        options = [
-            {
-                'id': 'yes',
-                'title': f"Đúng, tôi muốn hỏi về {source_procedure}",
-                'description': f"Hiển thị câu hỏi về {source_procedure}",
-                'confidence_percent': round(confidence * 100, 1),  # 🔧 ADD: Confidence percentage
-                'action': 'show_document_questions', 
-                'collection': target_collection,
-                'document': target_document,
-                'procedure': source_procedure
-            },
-            {
-                'id': 'similar',
-                'title': "Tương tự, nhưng không hoàn toàn chính xác",
-                'description': f"Câu hỏi gốc: {best_question[:80]}..." if best_question else "Hãy giúp tôi tìm thủ tục phù hợp hơn",
-                'confidence_percent': round(confidence * 100, 1),  # 🔧 ADD: Confidence percentage
-                'action': 'show_document_questions',
-                'collection': target_collection,
-                'document': target_document,
-                'procedure': source_procedure
-            },
-            {
-                'id': 'no',
-                'title': "Không, tôi muốn hỏi về thủ tục khác",
-                'description': "Hãy cho tôi thêm lựa chọn khác",
-                'confidence_percent': 0,  # 🔧 ADD: 0 confidence for "other" option
-                'action': 'show_categories',
-                'collection': None
-            }
-        ]
+        # Tạo danh sách options sử dụng schema mới
+        clarification_options = []
         
-        return {
-            "type": "clarification_needed",
-            "confidence_level": "medium_high_confidence",
-            "confidence": float(confidence),
-            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
-            "clarification": {
-                "message": message,
-                "options": options,
-                "style": "confirmation"
-            },
-            "routing_context": routing_result,
-            "strategy": level_config.strategy
-        }
+        # Option 1: Xác nhận lựa chọn
+        clarification_options.append(ClarificationOption(
+            id='yes',
+            title=f"Đúng, tôi muốn hỏi về {source_procedure}",
+            description=f"Hiển thị câu hỏi về {source_procedure}",
+            action='show_document_questions',
+            collection=target_collection,
+            document=target_document,
+            procedure=source_procedure,
+            confidence_percent=round(confidence * 100, 1),
+            question_text=None,
+            source_file=None,
+            context_type=None,
+            category=None
+        ))
+        
+        # Option 2: Tương tự nhưng không chính xác
+        clarification_options.append(ClarificationOption(
+            id='similar',
+            title="Tương tự, nhưng không hoàn toàn chính xác",
+            description=f"Câu hỏi gốc: {best_question[:80]}..." if best_question else "Hãy giúp tôi tìm thủ tục phù hợp hơn",
+            action='show_document_questions',
+            collection=target_collection,
+            document=target_document,
+            procedure=source_procedure,
+            confidence_percent=round(confidence * 100, 1),
+            question_text=None,
+            source_file=None,
+            context_type=None,
+            category=None
+        ))
+        
+        # Option 3: Từ chối và chọn thủ tục khác
+        clarification_options.append(ClarificationOption(
+            id='no',
+            title="Không, tôi muốn hỏi về thủ tục khác",
+            description="Hãy cho tôi thêm lựa chọn khác",
+            action='show_categories',
+            collection=None,
+            document=None,
+            procedure=None,
+            confidence_percent=0,
+            question_text=None,
+            source_file=None,
+            context_type=None,
+            category=None
+        ))
+        
+        # Sử dụng schema chuẩn hóa
+        return StandardClarificationResponse(
+            type="clarification_needed",
+            confidence_level="medium_high_confidence",
+            confidence=float(confidence),
+            message=message,
+            target_collection=target_collection,
+            document=target_document,
+            procedure=source_procedure,
+            options=clarification_options,
+            requires_user_input=False,
+            show_manual_input=False,
+            manual_input_placeholder=None,
+            style="confirmation",
+            routing_context=routing_result,
+            strategy=level_config.strategy,
+            session_id=None,
+            additional_help=None
+        )
     
     def _generate_multiple_choice_clarification(
         self, 
         confidence: float, 
         routing_result: Dict[str, Any], 
         level_config: ClarificationLevel
-    ) -> Dict[str, Any]:
+    ) -> StandardClarificationResponse:
         """
         MEDIUM CONFIDENCE (0.5-0.69): Multiple choices từ top matches
         """
         # Lấy top matches từ routing result và sort theo confidence
         all_scores = routing_result.get('all_scores', {})
+        target_collection = routing_result.get('target_collection')
         
         # 🔧 DEBUG: Log để xem all_scores structure
         logger.info(f"🔍 DEBUG _generate_multiple_choice_clarification:")
@@ -333,7 +382,10 @@ class ClarificationService:
         
         message = level_config.message_template
         
-        options = []
+        # Tạo danh sách options sử dụng schema mới
+        clarification_options = []
+        
+        # Thêm các lựa chọn từ top matches
         for i, (collection, score) in enumerate(top_matches, 1):
             score_float = float(score) if score is not None else 0.0
             
@@ -341,169 +393,254 @@ class ClarificationService:
             collection_title = collection.replace('quy_trinh_', '').replace('_', ' ').title()
             collection_description = f"Thủ tục trong lĩnh vực {collection_title.lower()}"
             
-            option = {
-                'id': str(i),
-                'title': collection_title,
-                'description': collection_description,
-                'confidence_percent': round(score_float * 100, 1),
-                'action': 'proceed_with_collection',
-                'collection': collection
-            }
-            options.append(option)
+            clarification_options.append(ClarificationOption(
+                id=str(i),
+                title=collection_title,
+                description=collection_description,
+                action='proceed_with_collection',
+                collection=collection,
+                document=None,
+                procedure=None,
+                confidence_percent=round(score_float * 100, 1),
+                question_text=None,
+                source_file=None,
+                context_type=None,
+                category=None
+            ))
         
         # Add "none of the above" option
-        options.append({
-            'id': 'other',
-            'title': "Không có thủ tục nào phù hợp",
-            'description': "Tôi muốn hỏi về thủ tục khác",
-            'action': 'manual_input',
-            'collection': None
-        })
+        clarification_options.append(ClarificationOption(
+            id='other',
+            title="Không có thủ tục nào phù hợp",
+            description="Tôi muốn hỏi về thủ tục khác",
+            action='manual_input',
+            collection=None,
+            document=None,
+            procedure=None,
+            confidence_percent=0,
+            question_text=None,
+            source_file=None,
+            context_type=None,
+            category=None
+        ))
         
-        return {
-            "type": "clarification_needed",
-            "confidence_level": "medium_confidence",
-            "confidence": float(confidence),
-            "target_collection": routing_result.get('target_collection'),
-            "clarification": {
-                "message": message,
-                "options": options,
-                "style": "multiple_choice"
-            },
-            "routing_context": routing_result,
-            "strategy": level_config.strategy
-        }
+        # Sử dụng schema chuẩn hóa
+        return StandardClarificationResponse(
+            type="clarification_needed",
+            confidence_level="medium_confidence",
+            confidence=float(confidence),
+            message=message,
+            target_collection=target_collection,
+            document=None,
+            procedure=None,
+            options=clarification_options,
+            requires_user_input=False,
+            show_manual_input=False,
+            manual_input_placeholder=None,
+            style="multiple_choice",
+            routing_context=routing_result,
+            strategy=level_config.strategy,
+            session_id=None,
+            additional_help=None
+        )
     
     def _generate_category_clarification(
         self, 
         confidence: float, 
         routing_result: Dict[str, Any], 
         level_config: ClarificationLevel
-    ) -> Dict[str, Any]:
+    ) -> StandardClarificationResponse:
         """
         LOW CONFIDENCE (0.30-0.49): Category-based suggestions
         🎯 USE ROUTER DATA: Get collections from router instead of hardcode
         """
         message = level_config.message_template
+        target_collection = routing_result.get('target_collection')
         
         # 🎯 GET COLLECTIONS FROM ROUTER: Use router's all_scores if available
         all_scores = routing_result.get('all_scores', {})
         
+        # Tạo danh sách options sử dụng schema mới
+        clarification_options = []
+        
         if all_scores:
             # Use top collections from router
             top_collections = sorted(all_scores.items(), key=lambda x: x[1], reverse=True)[:5]
-            options = []
             for i, (collection, score) in enumerate(top_collections, 1):
                 collection_title = collection.replace('quy_trinh_', '').replace('_', ' ').title()
-                option = {
-                    'id': str(i),
-                    'title': collection_title,
-                    'description': f"Thủ tục trong lĩnh vực {collection_title.lower()}",
-                    'examples': [],  # Router không có examples - để frontend tự lấy
-                    'action': 'proceed_with_collection',
-                    'collection': collection
-                }
-                options.append(option)
+                score_float = float(score) if score is not None else 0.0
+                
+                clarification_options.append(ClarificationOption(
+                    id=str(i),
+                    title=collection_title,
+                    description=f"Thủ tục trong lĩnh vực {collection_title.lower()}",
+                    action='proceed_with_collection',
+                    collection=collection,
+                    document=None,
+                    procedure=None,
+                    confidence_percent=round(score_float * 100, 1),
+                    question_text=None,
+                    source_file=None,
+                    context_type=None,
+                    category=collection
+                ))
         else:
             # Fallback: basic options
-            options = [
-                {
-                    'id': '1',
-                    'title': 'Hộ tịch',
-                    'description': 'Thủ tục về khai sinh, kết hôn, khai tử',
-                    'action': 'proceed_with_collection',
-                    'collection': 'quy_trinh_cap_ho_tich_cap_xa'
-                },
-                {
-                    'id': '2', 
-                    'title': 'Chứng thực',
-                    'description': 'Thủ tục chứng thực giấy tờ, hợp đồng',
-                    'action': 'proceed_with_collection',
-                    'collection': 'quy_trinh_chung_thuc'
-                }
-            ]
+            clarification_options.append(ClarificationOption(
+                id='1',
+                title='Hộ tịch',
+                description='Thủ tục về khai sinh, kết hôn, khai tử',
+                action='proceed_with_collection',
+                collection='quy_trinh_cap_ho_tich_cap_xa',
+                document=None,
+                procedure=None,
+                confidence_percent=0,
+                question_text=None,
+                source_file=None,
+                context_type=None,
+                category='ho_tich'
+            ))
+            
+            clarification_options.append(ClarificationOption(
+                id='2',
+                title='Chứng thực',
+                description='Thủ tục chứng thực giấy tờ, hợp đồng',
+                action='proceed_with_collection',
+                collection='quy_trinh_chung_thuc',
+                document=None,
+                procedure=None,
+                confidence_percent=0,
+                question_text=None,
+                source_file=None,
+                context_type=None,
+                category='chung_thuc'
+            ))
         
         # Add manual input option
-        options.append({
-            'id': 'manual',
-            'title': "Tôi muốn mô tả rõ hơn",
-            'description': "Để tôi diễn đạt lại câu hỏi một cách chi tiết hơn",
-            'action': 'manual_input',
-            'collection': ''  # Empty string thay vì None
-        })
+        clarification_options.append(ClarificationOption(
+            id='manual',
+            title="Tôi muốn mô tả rõ hơn",
+            description="Để tôi diễn đạt lại câu hỏi một cách chi tiết hơn",
+            action='manual_input',
+            collection='',  # Empty string thay vì None
+            document=None,
+            procedure=None,
+            confidence_percent=0,
+            question_text=None,
+            source_file=None,
+            context_type=None,
+            category=None
+        ))
         
-        return {
-            "type": "clarification_needed",
-            "confidence_level": "low_confidence",
-            "confidence": float(confidence),
-            "target_collection": routing_result.get('target_collection'),
-            "clarification": {
-                "message": message,
-                "options": options,
-                "style": "category_based",
-                "additional_help": "Bạn có thể mô tả cụ thể hơn về tình huống hoặc giấy tờ bạn cần làm"
-            },
-            "routing_context": routing_result,
-            "strategy": level_config.strategy
-        }
+        # Sử dụng schema chuẩn hóa
+        return StandardClarificationResponse(
+            type="clarification_needed",
+            confidence_level="low_confidence",
+            confidence=float(confidence),
+            message=message,
+            target_collection=target_collection,
+            document=None,
+            procedure=None,
+            options=clarification_options,
+            requires_user_input=True,
+            show_manual_input=True,
+            manual_input_placeholder="Mô tả chi tiết tình huống của bạn...",
+            style="category_based",
+            routing_context=routing_result,
+            strategy=level_config.strategy,
+            session_id=None,
+            additional_help="Bạn có thể mô tả cụ thể hơn về tình huống hoặc giấy tờ bạn cần làm"
+        )
     
     def _generate_fallback_clarification(
         self, 
         confidence: float, 
         routing_result: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    ) -> StandardClarificationResponse:
         """Fallback clarification khi có lỗi"""
-        return {
-            "type": "clarification_needed",
-            "confidence_level": "fallback",
-            "confidence": float(confidence),
-            "target_collection": routing_result.get('target_collection'),  # 🔧 Fix: Add target_collection to top level
-            "clarification": {
-                "message": "Xin lỗi, tôi cần thêm thông tin để hiểu rõ câu hỏi của bạn.",
-                "options": [
-                    {
-                        'id': 'retry',
-                        'title': "Hãy diễn đạt lại câu hỏi",
-                        'description': "Tôi sẽ cố gắng hiểu rõ hơn",
-                        'action': 'manual_input'
-                    }
-                ],
-                "style": "fallback"
-            },
-            "routing_context": routing_result,
-            "strategy": "fallback"
-        }
+        message = "Xin lỗi, tôi cần thêm thông tin để hiểu rõ câu hỏi của bạn."
+        target_collection = routing_result.get('target_collection')
+        
+        # Tạo options sử dụng schema chuẩn hóa
+        clarification_options = []
+        
+        clarification_options.append(ClarificationOption(
+            id='retry',
+            title="Hãy diễn đạt lại câu hỏi",
+            description="Tôi sẽ cố gắng hiểu rõ hơn",
+            action='manual_input',
+            collection=None,
+            document=None,
+            procedure=None,
+            confidence_percent=0,
+            question_text=None,
+            source_file=None,
+            context_type=None,
+            category=None
+        ))
+        
+        # Sử dụng schema chuẩn hóa
+        return StandardClarificationResponse(
+            type="clarification_needed",
+            confidence_level="fallback",
+            confidence=float(confidence),
+            message=message,
+            target_collection=target_collection,
+            document=None,
+            procedure=None,
+            options=clarification_options,
+            requires_user_input=True,
+            show_manual_input=True,
+            manual_input_placeholder="Vui lòng mô tả chi tiết hơn về câu hỏi của bạn...",
+            style="fallback",
+            routing_context=routing_result,
+            strategy="fallback",
+            session_id=None,
+            additional_help="Bạn có thể cung cấp thêm thông tin hoặc diễn đạt lại câu hỏi một cách chi tiết hơn."
+        )
     
     def handle_user_selection(
         self, 
         selected_option: Dict[str, Any], 
         session_id: str,
         smart_router = None
-    ) -> Dict[str, Any]:
+    ) -> Union[Dict[str, Any], StandardClarificationResponse]:
         """
         🎯 CENTRALIZED USER SELECTION HANDLING
         Handle all user selections for clarification flow
         """
+        import time
+        start_time = time.time()
+        
         try:
             action = selected_option.get('action')
             collection = selected_option.get('collection')
             
             if action == 'show_document_questions':
-                return self._handle_show_document_questions(selected_option, session_id, smart_router)
+                result = self._handle_show_document_questions(selected_option, session_id, smart_router)
             elif action == 'proceed_with_question':
-                return self._handle_proceed_with_question(selected_option, session_id)
+                result = self._handle_proceed_with_question(selected_option, session_id)
             elif action == 'proceed_with_collection':
-                return self._handle_proceed_with_collection(selected_option, session_id, smart_router)
+                result = self._handle_proceed_with_collection(selected_option, session_id, smart_router)
             elif action == 'show_categories':
-                return self._handle_show_categories(selected_option, session_id)
+                result = self._handle_show_categories(selected_option, session_id)
             elif action == 'manual_input':
-                return self._handle_manual_input(selected_option, session_id)
+                result = self._handle_manual_input(selected_option, session_id)
             else:
-                return self._handle_unknown_action(selected_option, session_id)
+                result = self._handle_unknown_action(selected_option, session_id)
+            
+            # Add processing_time to result
+            if isinstance(result, dict):
+                result["processing_time"] = time.time() - start_time
+                
+            return result
                 
         except Exception as e:
             logger.error(f"❌ Error handling user selection: {e}")
-            return self._generate_error_response(str(e), session_id)
+            error_result = self._generate_error_response(str(e), session_id)
+            if isinstance(error_result, dict):
+                error_result["processing_time"] = time.time() - start_time
+            return error_result
     
     def _handle_show_document_questions(
         self, 
@@ -629,13 +766,17 @@ class ClarificationService:
             "message": f"Showing overview for collection: {collection}"
         }
     
-    def _handle_show_categories(self, selected_option: Dict[str, Any], session_id: str) -> Dict[str, Any]:
+    def _handle_show_categories(self, selected_option: Dict[str, Any], session_id: str) -> StandardClarificationResponse:
         """Handle show_categories action"""
-        return self._generate_category_clarification(
+        # Tạo một đối tượng routing_result trống và thêm session_id
+        routing_result = {"session_id": session_id}
+        
+        response = self._generate_category_clarification(
             confidence=0.0,
-            routing_result={},
+            routing_result=routing_result,
             level_config=self.clarification_levels['low_confidence']
         )
+        return response
     
     def _handle_manual_input(self, selected_option: Dict[str, Any], session_id: str) -> Dict[str, Any]:
         """Handle manual_input action"""
@@ -725,12 +866,14 @@ class ClarificationService:
             ranked_questions = []
             for i, (question, similarity) in enumerate(zip(question_data, similarities)):
                 question_copy = question.copy() if isinstance(question, dict) else {'text': str(question)}
-                question_copy['similarity_score'] = float(similarity)
-                question_copy['similarity_percent'] = round(float(similarity) * 100, 1)
+                similarity_score = float(similarity)
+                # Lưu trữ score dưới dạng string để tránh lỗi typing
+                question_copy['similarity_score'] = str(similarity_score)
+                question_copy['similarity_percent'] = str(round(similarity_score * 100, 1))
                 ranked_questions.append(question_copy)
             
-            # Sort by similarity descending
-            ranked_questions.sort(key=lambda x: x['similarity_score'], reverse=True)
+            # Sort by similarity descending - chuyển về float khi so sánh
+            ranked_questions.sort(key=lambda x: float(x['similarity_score']), reverse=True)
             
             logger.info(f"🔥 Similarity ranking: {len(ranked_questions)} questions ranked for query")
             

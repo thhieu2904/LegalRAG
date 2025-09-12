@@ -172,22 +172,26 @@ export function useChat(options: UseChatOptions = {}) {
             );
             setCurrentClarification(null);
           } else if (
-            apiResponse.type === "clarification_needed" &&
-            apiResponse.clarification
+            apiResponse.type === "clarification_needed" ||
+            apiResponse.type === "context_gathering_needed" ||
+            (apiResponse.clarification && apiResponse.clarification.options)
           ) {
+            // Handle new schema: StandardClarificationResponse directly OR legacy format
+            const clarificationData = apiResponse.clarification || apiResponse;
+
             setCurrentClarification({
-              clarification: apiResponse.clarification,
+              clarification: clarificationData as ClarificationData,
               originalQuery:
-                apiResponse.clarification.original_query || content,
+                (clarificationData as ClarificationData).original_query ||
+                content,
             });
 
             const clarificationMessage =
-              apiResponse.clarification.message ||
-              "Vui lòng chọn một tùy chọn:";
+              clarificationData.message || "Vui lòng chọn một tùy chọn:";
             addMessage(
               clarificationMessage,
               true,
-              apiResponse.clarification,
+              clarificationData as ClarificationData,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments

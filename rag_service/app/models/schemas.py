@@ -146,3 +146,132 @@ class IndexingResponse(BaseModel):
     message: str = Field(..., description="Thông báo chi tiết")
     # Enhanced fields
     timestamp: Optional[datetime] = Field(default_factory=datetime.now)
+
+
+# =====================================================================
+# CLARIFICATION SCHEMAS - STANDARDIZED FOR ALL LEVELS  
+# =====================================================================
+
+class ClarificationOption(BaseModel):
+    """
+    Option chuẩn hóa cho tất cả các tầng clarification
+    Mỗi tầng có thể sử dụng tập con các trường này, nhưng format luôn nhất quán
+    """
+    id: str = Field(..., description="ID của option")
+    title: str = Field(..., description="Tiêu đề hiển thị")
+    description: Optional[str] = Field(None, description="Mô tả chi tiết")
+    action: str = Field(..., description="Hành động khi chọn option")
+    # Data fields - tùy theo tầng, một số trường có thể là None
+    collection: Optional[str] = Field(None, description="Collection liên quan nếu có")
+    document: Optional[str] = Field(None, description="Document liên quan nếu có")
+    procedure: Optional[str] = Field(None, description="Thủ tục liên quan nếu có")
+    question_text: Optional[str] = Field(None, description="Câu hỏi cụ thể nếu có")
+    # Metadata fields
+    confidence_percent: Optional[float] = Field(None, description="Điểm tin cậy nếu có")
+    source_file: Optional[str] = Field(None, description="File nguồn nếu có")
+    context_type: Optional[str] = Field(None, description="Loại context cần thu thập")
+    # Phần mở rộng - để tương thích với frontend hiện tại
+    examples: Optional[List[str]] = Field(default=[], description="Ví dụ cho option")
+    category: Optional[str] = Field(None, description="Danh mục nếu có")
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": "1",
+                "title": "Hộ tịch",
+                "description": "Thủ tục về khai sinh, kết hôn, khai tử",
+                "action": "proceed_with_collection",
+                "collection": "quy_trinh_cap_ho_tich_cap_xa",
+                "confidence_percent": 85.5
+            }
+        }
+
+class StandardClarificationResponse(BaseModel):
+    """
+    Schema chuẩn hóa cho mọi response clarification ở tất cả tầng
+    Đảm bảo tất cả tầng đều có cùng format, frontend dễ xử lý
+    """
+    # Core fields - luôn có
+    type: str = Field(..., description="Loại response (clarification_needed, auto_route, v.v.)")
+    confidence_level: str = Field(..., description="Mức độ tin cậy (high_confidence, medium_high_confidence, v.v.)")
+    confidence: Optional[float] = Field(None, description="Điểm tin cậy (0-1)")
+    message: str = Field(..., description="Thông báo cho người dùng")
+    # Data fields - tùy theo tầng
+    target_collection: Optional[str] = Field(None, description="Collection đích nếu đã xác định")
+    document: Optional[str] = Field(None, description="Document đích nếu đã xác định")
+    procedure: Optional[str] = Field(None, description="Thủ tục liên quan nếu đã xác định")
+    options: List[ClarificationOption] = Field(default=[], description="Các lựa chọn cho người dùng")
+    # Metadata và extension fields
+    requires_user_input: bool = Field(default=False, description="Có yêu cầu người dùng nhập thêm không")
+    show_manual_input: Optional[bool] = Field(default=False, description="Hiển thị ô nhập thủ công")
+    manual_input_placeholder: Optional[str] = Field(None, description="Placeholder cho ô nhập thủ công")
+    style: Optional[str] = Field(None, description="Style hiển thị (confirmation, multiple_choice, v.v.)")
+    routing_context: Optional[Dict[str, Any]] = Field(default={}, description="Context từ router")
+    strategy: Optional[str] = Field(None, description="Chiến lược clarification")
+    session_id: Optional[str] = Field(None, description="Session ID nếu có")
+    additional_help: Optional[str] = Field(None, description="Hướng dẫn bổ sung hiển thị cho người dùng")
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "type": "clarification_needed",
+                "confidence_level": "medium_confidence",
+                "confidence": 0.58,
+                "message": "Câu hỏi của bạn có thể liên quan đến các thủ tục sau. Bạn muốn hỏi về:",
+                "target_collection": "quy_trinh_cap_ho_tich_cap_xa",
+                "options": [
+                    {
+                        "id": "1",
+                        "title": "Hộ Tịch",
+                        "description": "Thủ tục về khai sinh, kết hôn, khai tử",
+                        "action": "proceed_with_collection",
+                        "collection": "quy_trinh_cap_ho_tich_cap_xa",
+                        "confidence_percent": 58.5
+                    }
+                ],
+                "style": "multiple_choice",
+                "session_id": "abc-123"
+            }
+        }
+
+# Action responses - chuẩn hóa cho các action handler
+
+class ClarificationActionResponse(BaseModel):
+    """Base class cho tất cả các action response"""
+    response_type: str = Field(..., description="Loại action response")
+    message: str = Field(..., description="Thông báo cho action")
+    session_id: Optional[str] = Field(None, description="Session ID")
+
+class ProceedWithQuestionResponse(BaseModel):
+    """Response khi người dùng chọn một câu hỏi cụ thể"""
+    response_type: Literal["proceed_with_question"] = "proceed_with_question"
+    message: str = Field(..., description="Thông báo cho action")
+    session_id: Optional[str] = Field(None, description="Session ID")
+    final_query: str = Field(..., description="Câu hỏi cuối cùng để xử lý")
+    collection: Optional[str] = Field(None, description="Collection để tìm câu trả lời")
+    document: Optional[str] = Field(None, description="Document cụ thể nếu có")
+    procedure: Optional[str] = Field(None, description="Thủ tục liên quan")
+
+class CollectionOverviewResponse(BaseModel):
+    """Response khi người dùng muốn xem tổng quan về một collection"""
+    response_type: Literal["collection_overview"] = "collection_overview"
+    message: str = Field(..., description="Thông báo cho action")
+    session_id: Optional[str] = Field(None, description="Session ID")
+    collection: str = Field(..., description="Collection được chọn")
+    questions: List[Dict[str, Any]] = Field(default=[], description="Danh sách câu hỏi mẫu")
+
+class ManualInputResponse(BaseModel):
+    """Response khi yêu cầu người dùng nhập thủ công"""
+    response_type: Literal["manual_input_request"] = "manual_input_request"
+    message: str = Field(..., description="Thông báo cho action")
+    session_id: Optional[str] = Field(None, description="Session ID")
+    collection: Optional[str] = Field(None, description="Collection gợi ý nếu có")
+    document: Optional[str] = Field(None, description="Document gợi ý nếu có")
+    procedure: Optional[str] = Field(None, description="Thủ tục gợi ý nếu có")
+
+class ClarificationErrorResponse(BaseModel):
+    """Response khi có lỗi xảy ra"""
+    response_type: Literal["error"] = "error"
+    message: str = Field(..., description="Thông báo cho action")
+    session_id: Optional[str] = Field(None, description="Session ID")
+    error: str = Field(..., description="Thông báo lỗi chi tiết")
