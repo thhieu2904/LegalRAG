@@ -2,6 +2,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import SpeechControlsSimple from "../admin/old/SpeechControlsSimple";
 import logoHCC from "../../assets/LOGO_HCC.jpg";
 import { User, FileText } from "lucide-react";
+import { ClarificationOptions } from "./ClarificationOptions";
+import type { ClarificationOption } from "../../services/chatService";
 
 // Form attachment interface
 interface FormAttachment {
@@ -27,11 +29,15 @@ interface Message {
 
 interface ChatMessageProps {
   message: Message;
-  onClarificationClick?: (option: any) => void;
+  onClarificationClick?: (option: ClarificationOption) => void;
   logoSrc?: string;
 }
 
-export function ChatMessage({ message, logoSrc = logoHCC }: ChatMessageProps) {
+export function ChatMessage({
+  message,
+  onClarificationClick,
+  logoSrc = logoHCC,
+}: ChatMessageProps) {
   const isBot = message.isBot;
 
   const formatFileName = (filePath: string): string => {
@@ -68,6 +74,16 @@ export function ChatMessage({ message, logoSrc = logoHCC }: ChatMessageProps) {
 
               <div className="bot-message-bubble">
                 <div className="message-text">{message.content}</div>
+
+                {/* Display clarification options if available */}
+                {message.clarification && onClarificationClick && (
+                  <div className="clarification-options">
+                    <ClarificationOptions
+                      clarification={message.clarification}
+                      onOptionSelect={onClarificationClick}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Attachments Section */}

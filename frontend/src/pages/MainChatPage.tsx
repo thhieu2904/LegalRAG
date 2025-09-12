@@ -6,7 +6,6 @@
 import { useRef, useEffect } from "react";
 import { ChatHeader } from "../components/chat/ChatHeader";
 import { ChatMessage } from "../components/chat/ChatMessage";
-import { ClarificationOptions } from "../components/chat/ClarificationOptions"; // 🔧 Fix: Add ClarificationOptions import
 import { ChatInput } from "../components/chat/ChatInput";
 import { ChatFooter } from "../components/chat/ChatFooter";
 import { ScrollArea } from "../components/ui/scroll-area";
@@ -19,16 +18,11 @@ const MainChatPage = () => {
     "Xin chào! Tôi là trợ lý pháp luật AI có thể giúp bạn tra cứu thủ tục hành chính như đăng ký khai sinh, chứng thực giấy tờ hoặc nuôi con nuôi. Bạn có câu hỏi gì không?";
 
   // State management - MainChatPage làm parent quản lý
-  const {
-    messages,
-    isLoading,
-    sendMessage,
-    handleClarificationOption,
-    currentClarification, // 🔧 Fix: Add currentClarification to destructure
-  } = useChat({
-    initialMessage,
-    onError: (error) => console.error("Chat error:", error),
-  });
+  const { messages, isLoading, sendMessage, handleClarificationOption } =
+    useChat({
+      initialMessage,
+      onError: (error) => console.error("Chat error:", error),
+    });
 
   const { isVoiceEnabled, speakText } = useVoice();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -124,30 +118,7 @@ const MainChatPage = () => {
                 </div>
               )}
 
-              {/* 🔧 Fix: Render current clarification if exists */}
-              {currentClarification && (
-                <div className="bot-message-layout">
-                  <img
-                    src={logoHCC}
-                    alt="Trợ lý AI"
-                    className="message-avatar"
-                  />
-                  <div className="bot-message-content">
-                    <div className="bot-message-header">
-                      <span className="bot-message-name">Trợ lý AI</span>
-                    </div>
-                    <div className="bot-message-bubble">
-                      <div className="clarification-message">
-                        {currentClarification.clarification.message}
-                      </div>
-                      <ClarificationOptions
-                        clarification={currentClarification.clarification}
-                        onOptionSelect={handleClarificationOption}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Clarification is now handled directly in ChatMessage component */}
             </div>
           </ScrollArea>
 

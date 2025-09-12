@@ -1075,7 +1075,7 @@ class QueryRouter:
                         
                         # Boost if matching main question (index 0)
                         if best_question_idx == 0 and max_similarity > 0.6:
-                            max_similarity = min(1.0, max_similarity * 1.15)
+                            max_similarity = min(1.0, max_similarity * 1.5)
                         
                         # Add confidence percentage to doc_info
                         enhanced_doc_info = doc_info.copy()
