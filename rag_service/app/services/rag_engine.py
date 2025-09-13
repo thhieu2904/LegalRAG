@@ -1480,53 +1480,6 @@ class RAGService:
                 "processing_time": time.time() - start_time
             }
             
-    def handle_clarification(
-        self,
-        session_id: str,
-        selected_option: Dict[str, Any],  # 🔧 CHANGE: Nhận full option object thay vì string
-        original_query: str
-    ) -> Dict[str, Any]:
-        """
-        🎯 SIMPLIFIED CLARIFICATION HANDLING - DELEGATE TO CLARIFICATION SERVICE
-        RAG Engine chỉ xử lý final answer generation, delegate clarification logic
-        """
-        start_time = time.time()
-        session = self.get_session(session_id)
-        if not session:
-            return {
-                "type": "error", 
-                "error": f"Session {session_id} not found",
-                "session_id": session_id,
-                "processing_time": 0.0
-            }
-            
-        action = selected_option.get('action')
-        
-        # 🎯 DELEGATE TO ENHANCED CLARIFICATION SERVICE 
-        logger.info(f"🔄 Delegating action '{action}' to Enhanced ClarificationService")
-        
-        # Import clarification service with embedding enhancement
-        from .clarification import ClarificationService
-        
-        # 🔥 ENHANCED: Initialize with embedding model from router for similarity ranking
-        embedding_model = getattr(self.smart_router, 'embedding_model', None)
-        clarification_service = ClarificationService(embedding_model=embedding_model)
-        
-        if embedding_model:
-            logger.info("🔥 Enhanced ClarificationService initialized with embedding model for similarity ranking")
-        else:
-            logger.warning("⚠️  ClarificationService using standard ranking (no embedding model)")
-        
-        # Delegate to clarification service with original query context
-        original_query = session.query_history[-1].get('query', '') if session.query_history else original_query
-        selected_option['original_query'] = original_query  # Pass original query for similarity
-        
-        result = clarification_service.handle_user_selection(
-            selected_option=selected_option,
-            session_id=session_id,
-            smart_router=self.smart_router
-        )
-        return result
         
     def _build_context_from_expanded(self, expanded_context: Dict[str, Any], nucleus_chunks: Optional[List[Dict]] = None) -> str:
         """

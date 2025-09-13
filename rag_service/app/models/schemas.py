@@ -3,9 +3,18 @@ from typing import List, Optional, Dict, Any, Literal
 from datetime import datetime
 
 class QueryRequest(BaseModel):
-    question: str = Field(..., description="Câu hỏi của người dùng")
+    """UNIFIED: Handles both initial queries and clarification responses"""
+    query: str = Field(..., description="Câu hỏi của người dùng hoặc text từ clarification")
+    session_id: Optional[str] = Field(None, description="Session ID cho conversation history")
+    forced_collection: Optional[str] = Field(None, description="Collection bắt buộc nếu có")
+    
+    # Clarification fields - Optional, chỉ có khi đây là clarification response
+    selected_option: Optional[Dict[str, Any]] = Field(None, description="Option được chọn từ clarification")
+    original_query: Optional[str] = Field(None, description="Query gốc khi có clarification")
+    
+    # Query processing options
     max_tokens: Optional[int] = Field(2048, description="Số token tối đa cho response")
-    temperature: Optional[float] = Field(0.1, description="Temperature cho generation (thấp để bám sát văn bản)")
+    temperature: Optional[float] = Field(0.1, description="Temperature cho generation")
     top_k: Optional[int] = Field(5, description="Số lượng document liên quan")
 
 # =====================================================================
@@ -106,15 +115,56 @@ class FormAttachment(BaseModel):
     collection_id: str = Field(..., description="Collection chứa form")
 
 class QueryResponse(BaseModel):
-    answer: str = Field(..., description="Câu trả lời của AI với nguồn tham khảo")
-    sources: List[DocumentChunk] = Field(..., description="Các chunk tài liệu tham khảo")
-    source_files: List[str] = Field(default=[], description="Danh sách tên file tham khảo")
-    # Form attachments
-    form_attachments: List[FormAttachment] = Field(default=[], description="Danh sách form đi kèm")
+    """UNIFIED: Supports both answer and clarification responses - ALL FIELDS OPTIONAL"""
+    # Core response metadata
+    type: str = Field(..., description="Type of response (clarification_needed, answer, error)")
+    session_id: Optional[str] = Field(None, description="Session ID")
+    processing_time: float = Field(default=0.0, description="Thời gian xử lý (giây)")
+    message: Optional[str] = Field(None, description="User-facing message")
+    
+    # Answer fields - for type="answer"
+    answer: Optional[str] = Field(None, description="Câu trả lời của AI với nguồn tham khảo")
+    sources: Optional[List[DocumentChunk]] = Field(default=[], description="Các chunk tài liệu tham khảo")
+    source_files: Optional[List[str]] = Field(default=[], description="Danh sách tên file tham khảo")
+    form_attachments: Optional[List[FormAttachment]] = Field(default=[], description="Danh sách form đi kèm")
     collections_used: Optional[List[str]] = Field(default=[], description="Danh sách collection đã sử dụng")
+    
+    # Clarification fields - for type="clarification_needed" (DIRECT STRUCTURE)
+    options: Optional[List["ClarificationOption"]] = Field(default=[], description="Clarification options - DIRECT ACCESS")
+    confidence: Optional[float] = Field(None, description="Confidence score")
+    show_manual_input: Optional[bool] = Field(default=False, description="Show manual input option")
+    manual_input_placeholder: Optional[str] = Field(None, description="Placeholder for manual input")
+    style: Optional[str] = Field(None, description="UI style hint")
+    target_collection: Optional[str] = Field(None, description="Target collection if determined")
+    document: Optional[str] = Field(None, description="Target document if determined")
+    procedure: Optional[str] = Field(None, description="Target procedure if determined")
+    
+    # Error fields - for type="error"
+    error: Optional[str] = Field(None, description="Error message if any")
+    
+    # Legacy fields for backward compatibility
+    category: Optional[str] = Field(None, description="Response category")
+    generated_questions: Optional[List[str]] = Field(default=[], description="Generated questions")
+    context_info: Optional[dict] = Field(default={}, description="Context information")
+    
+    # Metadata
     routing_info: Optional[dict] = Field(default={}, description="Thông tin về query routing")
-    processing_time: float = Field(..., description="Thời gian xử lý (giây)")
+    session_cleared: Optional[bool] = Field(default=False, description="Session cleared status")
+    context_preserved: Optional[bool] = Field(default=True, description="Context preserved status")
+    preserved_collection: Optional[str] = Field(None, description="Preserved collection")
     timestamp: datetime = Field(default_factory=datetime.now)
+    
+    # DIRECT CLARIFICATION FIELDS - Support for direct structure
+    options: Optional[List['ClarificationOption']] = Field(default=[], description="Direct clarification options")
+    show_manual_input: Optional[bool] = Field(False, description="Show manual input option")
+    manual_input_placeholder: Optional[str] = Field(None, description="Manual input placeholder")
+    style: Optional[str] = Field(None, description="Style for display")
+    target_collection: Optional[str] = Field(None, description="Target collection")
+    document: Optional[str] = Field(None, description="Target document")
+    procedure: Optional[str] = Field(None, description="Target procedure")
+    
+    # LEGACY NESTED STRUCTURE - For backward compatibility
+    clarification: Optional[dict] = Field(default={}, description="Legacy nested clarification structure")
 
 class HealthResponse(BaseModel):
     status: str = Field(..., description="Trạng thái service")
@@ -193,23 +243,29 @@ class StandardClarificationResponse(BaseModel):
     """
     # Core fields - luôn có
     type: str = Field(..., description="Loại response (clarification_needed, auto_route, v.v.)")
-    confidence_level: str = Field(..., description="Mức độ tin cậy (high_confidence, medium_high_confidence, v.v.)")
+    confidence_level: Optional[str] = Field(None, description="Mức độ tin cậy (high_confidence, medium_high_confidence, v.v.)")
     confidence: Optional[float] = Field(None, description="Điểm tin cậy (0-1)")
     message: str = Field(..., description="Thông báo cho người dùng")
-    # Data fields - tùy theo tầng
+    answer: Optional[str] = Field(None, description="Câu trả lời tạm thời hoặc thông báo")
+    
+    # DIRECT DATA FIELDS - Simplified structure  
+    options: List[ClarificationOption] = Field(default=[], description="Các lựa chọn cho người dùng - DIRECT ACCESS")
+    
+    # Context fields
     target_collection: Optional[str] = Field(None, description="Collection đích nếu đã xác định")
     document: Optional[str] = Field(None, description="Document đích nếu đã xác định")
     procedure: Optional[str] = Field(None, description="Thủ tục liên quan nếu đã xác định")
-    options: List[ClarificationOption] = Field(default=[], description="Các lựa chọn cho người dùng")
     # Metadata và extension fields
     requires_user_input: bool = Field(default=False, description="Có yêu cầu người dùng nhập thêm không")
     show_manual_input: Optional[bool] = Field(default=False, description="Hiển thị ô nhập thủ công")
     manual_input_placeholder: Optional[str] = Field(None, description="Placeholder cho ô nhập thủ công")
     style: Optional[str] = Field(None, description="Style hiển thị (confirmation, multiple_choice, v.v.)")
     routing_context: Optional[Dict[str, Any]] = Field(default={}, description="Context từ router")
+    routing_info: Optional[Dict[str, Any]] = Field(default={}, description="Thông tin routing")
     strategy: Optional[str] = Field(None, description="Chiến lược clarification")
     session_id: Optional[str] = Field(None, description="Session ID nếu có")
     additional_help: Optional[str] = Field(None, description="Hướng dẫn bổ sung hiển thị cho người dùng")
+    processing_time: Optional[float] = Field(None, description="Thời gian xử lý")
     
     class Config:
         schema_extra = {
@@ -218,8 +274,7 @@ class StandardClarificationResponse(BaseModel):
                 "confidence_level": "medium_confidence",
                 "confidence": 0.58,
                 "message": "Câu hỏi của bạn có thể liên quan đến các thủ tục sau. Bạn muốn hỏi về:",
-                "target_collection": "quy_trinh_cap_ho_tich_cap_xa",
-                "options": [
+                "options": [  # ← DIRECT ACCESS - No nesting!
                     {
                         "id": "1",
                         "title": "Hộ Tịch",
@@ -229,6 +284,7 @@ class StandardClarificationResponse(BaseModel):
                         "confidence_percent": 58.5
                     }
                 ],
+                "target_collection": "quy_trinh_cap_ho_tich_cap_xa",
                 "style": "multiple_choice",
                 "session_id": "abc-123"
             }

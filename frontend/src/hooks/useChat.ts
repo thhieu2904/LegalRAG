@@ -174,16 +174,35 @@ export function useChat(options: UseChatOptions = {}) {
           } else if (
             apiResponse.type === "clarification_needed" ||
             apiResponse.type === "context_gathering_needed" ||
+            (apiResponse.options && apiResponse.options.length > 0) ||
             (apiResponse.clarification && apiResponse.clarification.options)
           ) {
-            // Handle new schema: StandardClarificationResponse directly OR legacy format
-            const clarificationData = apiResponse.clarification || apiResponse;
+            // UPDATED: Handle both direct and legacy structure
+            let clarificationData: ClarificationData;
+
+            if (apiResponse.options && apiResponse.options.length > 0) {
+              // Direct structure - new format
+              clarificationData = {
+                type: apiResponse.type,
+                confidence_level: apiResponse.confidence_level || "medium",
+                confidence: apiResponse.confidence,
+                message: apiResponse.message || "",
+                options: apiResponse.options,
+                target_collection: apiResponse.target_collection,
+                document: apiResponse.document,
+                procedure: apiResponse.procedure,
+                show_manual_input: apiResponse.show_manual_input,
+                manual_input_placeholder: apiResponse.manual_input_placeholder,
+                style: apiResponse.style,
+              };
+            } else {
+              // Legacy nested structure
+              clarificationData = apiResponse.clarification!;
+            }
 
             setCurrentClarification({
-              clarification: clarificationData as ClarificationData,
-              originalQuery:
-                (clarificationData as ClarificationData).original_query ||
-                content,
+              clarification: clarificationData,
+              originalQuery: clarificationData.original_query || content,
             });
 
             const clarificationMessage =
@@ -336,16 +355,39 @@ export function useChat(options: UseChatOptions = {}) {
               "🔄 Setting new currentClarification for next step:",
               apiResponse.clarification
             );
+            // UPDATED: Handle both direct and legacy clarification
+            let clarificationData: ClarificationData;
+
+            if (apiResponse.options && apiResponse.options.length > 0) {
+              // Direct structure
+              clarificationData = {
+                type: apiResponse.type,
+                confidence_level: apiResponse.confidence_level || "medium",
+                confidence: apiResponse.confidence,
+                message: apiResponse.message || "",
+                options: apiResponse.options,
+                target_collection: apiResponse.target_collection,
+                document: apiResponse.document,
+                procedure: apiResponse.procedure,
+                show_manual_input: apiResponse.show_manual_input,
+                manual_input_placeholder: apiResponse.manual_input_placeholder,
+                style: apiResponse.style,
+                original_query: originalQuery,
+              };
+            } else {
+              // Legacy nested structure
+              clarificationData = apiResponse.clarification!;
+            }
+
             setCurrentClarification({
-              clarification: apiResponse.clarification,
-              originalQuery:
-                apiResponse.clarification.original_query || originalQuery,
+              clarification: clarificationData,
+              originalQuery: clarificationData.original_query || originalQuery,
             });
 
             addMessage(
-              apiResponse.clarification.message,
+              clarificationData.message,
               true,
-              apiResponse.clarification,
+              clarificationData,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments

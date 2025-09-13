@@ -17,6 +17,7 @@ from typing import Dict, List, Any, Optional, Tuple, Union, cast
 import logging
 import os
 import json
+import pickle
 from dataclasses import dataclass
 
 from app.utils.collection_utils import CollectionManager
@@ -28,6 +29,102 @@ from app.models.schemas import (
 )
 
 logger = logging.getLogger(__name__)
+
+class ClarifyCache:
+    """
+    Cache manager for clarify embeddings
+    Loads and manages pre-computed document embeddings for confidence calculation
+    """
+    
+    def __init__(self, cache_path: str = "data/cache/clarify_embeddings.pkl"):
+        """
+        Initialize clarify cache
+        
+        Args:
+            cache_path: Path to clarify embeddings cache file
+        """
+        self.cache_path = cache_path
+        self.cache_data = None
+        self.similarity_available = False
+        
+        # Try to import required modules for similarity calculation
+        try:
+            from sklearn.metrics.pairwise import cosine_similarity
+            import numpy as np
+            self.cosine_similarity = cosine_similarity
+            self.np = np
+            self.similarity_available = True
+        except ImportError:
+            logger.warning("⚠️ sklearn/numpy not available for similarity calculation")
+        
+        # Load cache on initialization
+        self._load_cache()
+    
+    def _load_cache(self) -> bool:
+        """Load clarify cache from pickle file"""
+        try:
+            if not os.path.exists(self.cache_path):
+                logger.warning(f"⚠️ Clarify cache not found: {self.cache_path}")
+                return False
+            
+            with open(self.cache_path, 'rb') as f:
+                cache_with_metadata = pickle.load(f)
+            
+            self.cache_data = cache_with_metadata.get('data', {})
+            cache_metadata = cache_with_metadata.get('metadata', {})
+            
+            total_docs = sum(len(docs) for docs in self.cache_data.values())
+            logger.info(f"✅ Loaded clarify cache: {len(self.cache_data)} collections, {total_docs} documents")
+            logger.info(f"🔧 Cache type: {cache_metadata.get('cache_type', 'unknown')}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Error loading clarify cache: {e}")
+            return False
+    
+    def get_documents_for_collection(self, collection: str) -> List[Dict[str, Any]]:
+        """Get all documents for a collection with their cached data"""
+        if not self.cache_data or collection not in self.cache_data:
+            logger.warning(f"⚠️ Collection '{collection}' not found in clarify cache")
+            return []
+        
+        documents = []
+        for doc_id, doc_data in self.cache_data[collection].items():
+            documents.append({
+                'document_id': doc_id,
+                'title': doc_data.get('title', 'Untitled'),
+                'has_form': doc_data.get('has_form', False),
+                'metadata': doc_data.get('metadata', {}),
+                'embedding': doc_data.get('embedding'),
+                'fused_text': doc_data.get('fused_text', '')
+            })
+        
+        return documents
+    
+    def calculate_similarity(self, query_embedding, document_embedding) -> float:
+        """Calculate cosine similarity between query and document embeddings"""
+        if not self.similarity_available or query_embedding is None or document_embedding is None:
+            return 0.5  # Fallback confidence
+        
+        try:
+            # Reshape embeddings for sklearn
+            query_emb = self.np.array(query_embedding).reshape(1, -1)
+            doc_emb = self.np.array(document_embedding).reshape(1, -1)
+            
+            similarity = self.cosine_similarity(query_emb, doc_emb)[0][0]
+            
+            # Convert to confidence score (0-1 range)
+            confidence = (similarity + 1) / 2  # Convert from [-1,1] to [0,1]
+            return max(0.0, min(1.0, confidence))  # Clamp to [0,1]
+            
+        except Exception as e:
+            logger.error(f"❌ Error calculating similarity: {e}")
+            return 0.5  # Fallback confidence
+    
+    def is_available(self) -> bool:
+        """Check if cache is loaded and available"""
+        return self.cache_data is not None and len(self.cache_data) > 0
 
 @dataclass
 class ClarificationLevel:
@@ -58,6 +155,9 @@ class ClarificationService:
         """
         # Store embedding model for similarity calculations
         self.embedding_model = embedding_model
+        
+        # Initialize ClarifyCache for real confidence calculation
+        self.clarify_cache = ClarifyCache()
         
         # Load config từ file cấu hình hoặc default
         self.config = ClarificationConfig(config_path)
@@ -93,6 +193,314 @@ class ClarificationService:
         # Load collections từ storage
         self.collections = self.collection_manager.get_all_collections()
         logger.info(f"✅ Loaded {len(self.collections)} collections dynamically from storage")
+    
+    # =====================================================================
+    # INDEPENDENT CLARIFY DATA METHODS - NO EXTERNAL DEPENDENCIES
+    # =====================================================================
+    
+    def _calculate_question_confidence_real_time(self, original_query: str, question_texts: List[str]) -> List[float]:
+        """
+        Calculate real confidence for questions using embedding similarity
+        
+        Args:
+            original_query: Original user query
+            question_texts: List of question texts to compare against
+            
+        Returns:
+            List of confidence scores (0.0-1.0) for each question
+        """
+        try:
+            import numpy as np
+            from sklearn.metrics.pairwise import cosine_similarity
+            
+            if not self.embedding_model or not original_query.strip() or not question_texts:
+                return [0.7 for _ in question_texts]  # Fallback
+            
+            # Encode original query
+            query_embedding = self.embedding_model.encode([original_query.strip()])
+            
+            # Encode all questions
+            question_embeddings = self.embedding_model.encode(question_texts)
+            
+            # Calculate cosine similarity
+            similarities = cosine_similarity(query_embedding, question_embeddings)[0]
+            
+            # Convert similarities to confidence scores
+            # Apply sigmoid-like transformation to spread scores better
+            confidences = []
+            for sim in similarities:
+                # Transform similarity (-1 to 1) to confidence (0.5 to 0.95)
+                # Use exponential scaling to reward high similarities
+                confidence = 0.5 + (sim + 1.0) / 2.0 * 0.45  # Map to 0.5-0.95 range
+                confidence = min(0.95, max(0.5, confidence))  # Clamp to range
+                confidences.append(float(confidence))
+            
+            # Sort by confidence and apply small penalty for lower ranks
+            sorted_indices = sorted(range(len(confidences)), key=lambda i: confidences[i], reverse=True)
+            adjusted_confidences = [0.0] * len(confidences)
+            
+            for rank, idx in enumerate(sorted_indices):
+                # Apply small ranking penalty (max 5% reduction)
+                rank_penalty = rank * 0.01  # 1% per rank
+                adjusted_confidences[idx] = max(0.5, confidences[idx] - rank_penalty)
+            
+            logger.info(f"🎯 Real confidence calculated: min={min(adjusted_confidences):.3f}, max={max(adjusted_confidences):.3f}, avg={np.mean(adjusted_confidences):.3f}")
+            return adjusted_confidences
+            
+        except Exception as e:
+            logger.error(f"Error calculating real question confidence: {e}")
+            # Fallback to decreasing confidence
+            return [max(0.5, 0.9 - (i * 0.05)) for i in range(len(question_texts))]
+    
+    
+    def _normalize_document_metadata(self, doc_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Normalize document metadata to consistent format
+        Only keep essential fields: id, title, source, has_form
+        """
+        return {
+            "id": doc_data.get("id", ""),
+            "title": doc_data.get("title", "Tài liệu không tên"),
+            "source": doc_data.get("source", ""),
+            "has_form": doc_data.get("has_form", False),
+            "code": doc_data.get("code", ""),  # Keep code for additional context
+        }
+    
+    def _calculate_real_confidence(self, user_query: str, collection: str) -> List[Dict[str, Any]]:
+        """
+        Calculate real confidence scores using embeddings similarity
+        
+        Args:
+            user_query: The user's query
+            collection: Target collection name
+            
+        Returns:
+            List of documents with real confidence scores based on similarity
+        """
+        try:
+            # Check if clarify cache is available
+            if not self.clarify_cache.is_available():
+                logger.warning("⚠️ Clarify cache not available, falling back to simple ranking")
+                return self._get_documents_for_clarify(collection)
+            
+            # Get cached documents for the collection
+            cached_docs = self.clarify_cache.get_documents_for_collection(collection)
+            
+            if not cached_docs:
+                logger.warning(f"⚠️ No cached docs for collection '{collection}', using fallback")
+                return self._get_documents_for_clarify(collection)
+            
+            # Generate query embedding if embedding model is available
+            query_embedding = None
+            if self.embedding_model:
+                try:
+                    query_embedding = self.embedding_model.encode([user_query])[0]
+                except Exception as e:
+                    logger.error(f"❌ Error generating query embedding: {e}")
+            
+            # Calculate confidence for each document
+            documents_with_confidence = []
+            
+            for doc in cached_docs:
+                doc_embedding = doc.get('embedding')
+                
+                # Calculate similarity-based confidence
+                if query_embedding is not None and doc_embedding is not None:
+                    confidence = self.clarify_cache.calculate_similarity(query_embedding, doc_embedding)
+                else:
+                    # Fallback to simple confidence based on order
+                    confidence = 0.8 - (len(documents_with_confidence) * 0.1)
+                    confidence = max(0.5, confidence)
+                
+                documents_with_confidence.append({
+                    "document": doc['document_id'],
+                    "title": doc['title'],
+                    "has_form": doc['has_form'],
+                    "code": doc.get('metadata', {}).get('code', ''),
+                    "confidence": confidence
+                })
+            
+            # Sort by confidence (highest first)
+            documents_with_confidence.sort(key=lambda x: x['confidence'], reverse=True)
+            
+            # Limit to top 6 documents
+            limited_docs = documents_with_confidence[:6]
+            
+            logger.info(f"✅ Calculated real confidence for {len(limited_docs)} documents in '{collection}'")
+            logger.debug(f"🎯 Top document confidence: {limited_docs[0]['confidence']:.3f}" if limited_docs else "No documents")
+            
+            return limited_docs
+            
+        except Exception as e:
+            logger.error(f"❌ Error calculating real confidence: {e}")
+            # Fallback to simple method
+            return self._get_documents_for_clarify(collection)
+    
+    def _get_documents_for_clarify_with_real_confidence(self, collection: str, user_query: str = "") -> List[Dict[str, Any]]:
+        """
+        Get documents for clarify flow with real confidence calculation
+        This method replaces the old _get_documents_for_clarify with embedding-based confidence
+        
+        Args:
+            collection: Target collection name
+            user_query: User's query for similarity calculation
+            
+        Returns:
+            List of documents with real confidence scores
+        """
+        if user_query and user_query.strip():
+            # Use real confidence calculation when query is available
+            return self._calculate_real_confidence(user_query, collection)
+        else:
+            # Fallback to simple method when no query
+            return self._get_documents_for_clarify(collection)
+    
+    def _get_documents_for_clarify(self, collection: str) -> List[Dict[str, Any]]:
+        """
+        Independent method to get documents for clarify flow
+        Uses metadata.json for reliable document information
+        """
+        try:
+            import os
+            import json
+            
+            # Direct path to collection metadata
+            metadata_file = f"data/storage/collections/{collection}/metadata.json"
+            
+            if not os.path.exists(metadata_file):
+                logger.warning(f"Metadata file not found: {metadata_file}")
+                return self._get_fallback_documents()
+            
+            # Read metadata.json
+            with open(metadata_file, 'r', encoding='utf-8') as f:
+                metadata = json.load(f)
+            
+            documents = []
+            for i, doc_data in enumerate(metadata.get('documents', [])[:6]):  # Limit to 6 documents
+                # Normalize document metadata
+                normalized_doc = self._normalize_document_metadata(doc_data)
+                
+                # Calculate simple confidence based on order
+                confidence = 0.9 - (i * 0.1)  # First doc gets 0.9, second gets 0.8, etc.
+                
+                documents.append({
+                    "document": normalized_doc["id"],
+                    "title": normalized_doc["title"],
+                    "has_form": normalized_doc["has_form"],
+                    "code": normalized_doc["code"],
+                    "confidence": max(0.5, confidence)  # Minimum 0.5
+                })
+            
+            return documents if documents else self._get_fallback_documents()
+            
+        except Exception as e:
+            logger.error(f"Error getting documents for clarify: {e}")
+            return self._get_fallback_documents()
+    
+    def _get_questions_for_clarify(self, collection: str, document: str, original_query: str = "") -> List[Dict[str, Any]]:
+        """
+        Independent method to get questions for clarify flow
+        Uses direct filesystem access, not router dependencies
+        
+        Args:
+            collection: Collection name
+            document: Document name  
+            original_query: Original user query for similarity calculation
+        """
+        try:
+            import os
+            import json
+            
+            # Direct path to document questions
+            questions_file = f"data/storage/collections/{collection}/documents/{document}/questions.json"
+            
+            if not os.path.exists(questions_file):
+                logger.warning(f"Questions file not found: {questions_file}")
+                return self._get_fallback_questions_simple()
+            
+            with open(questions_file, 'r', encoding='utf-8') as f:
+                questions_data = json.load(f)
+            
+            if not questions_data:
+                return self._get_fallback_questions_simple()
+            
+            # Ensure questions_data is a list
+            if isinstance(questions_data, dict):
+                # If it's a dict with 'main_question' and 'question_variants'
+                questions_list = []
+                if 'main_question' in questions_data and questions_data['main_question']:
+                    questions_list.append(questions_data['main_question'])
+                if 'question_variants' in questions_data:
+                    questions_list.extend(questions_data['question_variants'])
+                questions_data = questions_list
+            elif not isinstance(questions_data, list):
+                questions_data = [questions_data]
+            
+            questions = []
+            question_texts = []
+            
+            # Extract question texts for batch similarity calculation
+            for i, q_data in enumerate(questions_data[:8]):  # Limit to 8 questions
+                if isinstance(q_data, dict):
+                    question_text = q_data.get('text', q_data.get('question', f'Câu hỏi {i+1}'))
+                else:
+                    question_text = str(q_data)
+                question_texts.append(question_text)
+            
+            # Calculate real confidence using embedding similarity
+            if original_query.strip() and self.embedding_model and question_texts:
+                try:
+                    confidences = self._calculate_question_confidence_real_time(original_query, question_texts)
+                    logger.info(f"✅ Calculated real confidence for {len(question_texts)} questions using embedding similarity")
+                except Exception as e:
+                    logger.warning(f"Failed to calculate real confidence, using fallback: {e}")
+                    confidences = [0.9 - (i * 0.05) for i in range(len(question_texts))]  # Fallback
+            else:
+                # Fallback: Simple confidence based on order in file
+                confidences = [0.9 - (i * 0.05) for i in range(len(question_texts))]  # First question gets 0.9, decreasing by 0.05
+                if original_query.strip():
+                    logger.info(f"📝 Using fallback confidence (no embedding model available)")
+                else:
+                    logger.info(f"📝 Using fallback confidence (no original query)")
+            
+            # Build questions with calculated confidence
+            for i, q_data in enumerate(questions_data[:8]):
+                if isinstance(q_data, dict):
+                    question_text = q_data.get('text', q_data.get('question', f'Câu hỏi {i+1}'))
+                else:
+                    question_text = str(q_data)
+                
+                confidence = max(0.5, confidences[i])  # Minimum 0.5
+                
+                questions.append({
+                    "text": question_text,
+                    "confidence": confidence,
+                    "source": f"{collection}/documents/{document}/questions.json",
+                    "category": "general"
+                })
+            
+            return questions if questions else self._get_fallback_questions_simple()
+            
+        except Exception as e:
+            logger.error(f"Error getting questions for clarify: {e}")
+            return self._get_fallback_questions_simple()
+    
+    def _get_fallback_documents(self) -> List[Dict[str, Any]]:
+        """Fallback documents when filesystem access fails"""
+        return [
+            {"document": "DOC_001", "title": "Tài liệu chính", "confidence": 0.9},
+            {"document": "DOC_002", "title": "Tài liệu hướng dẫn", "confidence": 0.8},
+            {"document": "DOC_003", "title": "Tài liệu bổ sung", "confidence": 0.7}
+        ]
+    
+    def _get_fallback_questions_simple(self) -> List[Dict[str, Any]]:
+        """Fallback questions when filesystem access fails"""
+        return [
+            {"text": "Thủ tục này thực hiện như thế nào?", "confidence": 0.9, "source": "fallback", "category": "general"},
+            {"text": "Cần những giấy tờ gì?", "confidence": 0.8, "source": "fallback", "category": "general"},
+            {"text": "Thời gian xử lý bao lâu?", "confidence": 0.7, "source": "fallback", "category": "general"},
+            {"text": "Lệ phí bao nhiêu?", "confidence": 0.6, "source": "fallback", "category": "general"}
+        ]
     
     def generate_clarification(
         self, 
@@ -622,6 +1030,8 @@ class ClarificationService:
                 result = self._handle_proceed_with_question(selected_option, session_id)
             elif action == 'proceed_with_collection':
                 result = self._handle_proceed_with_collection(selected_option, session_id, smart_router)
+            elif action == 'proceed_with_document':
+                result = self._handle_proceed_with_document(selected_option, session_id, smart_router)
             elif action == 'show_categories':
                 result = self._handle_show_categories(selected_option, session_id)
             elif action == 'manual_input':
@@ -648,39 +1058,25 @@ class ClarificationService:
         session_id: str,
         smart_router = None
     ) -> Dict[str, Any]:
-        """Handle show_document_questions action - MOVED FROM RAG ENGINE"""
+        """Handle show_document_questions action - INDEPENDENT CLARIFY METHOD"""
         try:
             collection = selected_option.get('collection')
             document = selected_option.get('document', '')
             procedure = selected_option.get('procedure', '')
+            original_query = selected_option.get('original_query', '')  # Get from selected_option
             
             logger.info(f"🎯 ClarificationService: Showing questions for '{procedure}' in document '{document}'")
             
-            if not smart_router:
-                return self._generate_error_response("Smart router not available", session_id)
-            
-            # Get questions from specific document
+            # Use independent clarify method with original_query for real confidence calculation
             if document:
-                document_filename = f"{document}"
-                matching_questions = smart_router.get_questions_from_specific_document(collection, document_filename)
-                logger.info(f"🚀 Retrieved {len(matching_questions)} questions from document {document_filename}")
+                matching_questions = self._get_questions_for_clarify(collection or "", document or "", original_query)
+                logger.info(f"🚀 Retrieved {len(matching_questions)} questions from document {document}")
             else:
-                # Fallback: Get procedure-related questions
-                matching_questions = smart_router.get_procedure_questions_limited(
-                    collection_name=collection,
-                    procedure=procedure,
-                    limit=20
-                )
-                logger.info(f"🚀 Retrieved {len(matching_questions)} procedure-related questions")
+                # If no specific document, fallback to questions method
+                matching_questions = self._get_fallback_questions_simple()
+                logger.info(f"🔄 Fallback: Using default questions")
             
-            if not matching_questions:
-                logger.warning(f"⚠️ No questions found for procedure '{procedure}' in document '{document}'")
-                # Fallback to collection questions
-                collection_questions = smart_router.get_example_questions_for_collection(collection)
-                matching_questions = collection_questions[:10]
-                logger.info(f"🔄 Fallback: Loaded {len(matching_questions)} questions")
-            
-            # Create standardized question options
+            # Create standardized question options (already in correct clarify format)
             options = []
             for i, q in enumerate(matching_questions[:8]):  # Top 8 questions
                 question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
@@ -708,28 +1104,25 @@ class ClarificationService:
                 "procedure": procedure
             })
             
-            # Return standardized response
+            # Return standardized DIRECT response
             return {
                 "type": "clarification_needed",
                 "confidence": None,  # No confidence at this stage
+                "message": f"Đây là các câu hỏi về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
                 "answer": f"Đây là các câu hỏi về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
-                "clarification": {
-                    "message": f"Đây là các câu hỏi về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
-                    "options": options,
-                    "show_manual_input": True,
-                    "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {procedure}...",
-                    "context": "document_questions",
-                    "style": "document_questions",
-                    "metadata": {
-                        "collection": collection,
-                        "document": document,
-                        "procedure": procedure,
-                        "stage": "document_questions"
-                    }
-                },
+                "options": options,  # ← DIRECT ACCESS - No nesting!
+                "show_manual_input": True,
+                "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {procedure}...",
+                "style": "document_questions",
+                "target_collection": collection,
+                "document": document,
+                "procedure": procedure,
                 "session_id": session_id,
-                "routing_info": None,  # No routing info at this stage
-                "target_collection": collection
+                "routing_info": {
+                    "context": "document_questions",
+                    "source": "document_questions_handler",
+                    "stage": "document_questions"
+                }
             }
             
         except Exception as e:
@@ -749,21 +1142,119 @@ class ClarificationService:
         }
     
     def _handle_proceed_with_collection(self, selected_option: Dict[str, Any], session_id: str, smart_router = None) -> Dict[str, Any]:
-        """Handle proceed_with_collection action"""
+        """Handle proceed_with_collection action - STEP 2: RETURNS DOCUMENT LIST"""
         collection = selected_option.get('collection')
+        original_query = selected_option.get('original_query', '')
         
-        # Get collection overview or top documents
-        if smart_router:
-            collection_questions = smart_router.get_example_questions_for_collection(collection)[:10]
+        # Use new method with real confidence calculation when original_query is available
+        if original_query and original_query.strip():
+            documents_info = self._get_documents_for_clarify_with_real_confidence(collection or "", original_query)
+            logger.info(f"🎯 Using real confidence calculation for collection '{collection}' with query: '{original_query[:50]}...'")
         else:
-            collection_questions = []
+            # Fallback to simple method when no original query
+            documents_info = self._get_documents_for_clarify(collection or "")
+            logger.info(f"⚠️ Using fallback confidence for collection '{collection}' (no original query)")
         
+        # Create options from documents (already in correct clarify format)
+        options = []
+        for i, doc_info in enumerate(documents_info[:6]):  # Limit to 6 documents
+            document_id = doc_info.get('document', f'DOC_{i+1:03d}')
+            document_title = doc_info.get('title', f'Tài liệu {i+1}')
+            confidence = doc_info.get('confidence', 0.5)
+            
+            options.append({
+                "id": str(i + 1),
+                "title": document_title,
+                "description": f"Tài liệu thuộc {collection} (độ phù hợp: {confidence*100:.1f}%)",
+                "action": "proceed_with_document",
+                "collection": collection,
+                "document": document_id,
+                "confidence_percent": round(confidence * 100, 1)
+            })
+        
+        # Add manual input option for this collection
+        options.append({
+            "id": str(len(options) + 1),
+            "title": "Không thấy tài liệu phù hợp",
+            "description": f"Tôi muốn nhập câu hỏi trực tiếp về {collection}",
+            "action": "manual_input",
+            "collection": collection
+        })
+        
+        # Return document selection step - DIRECT STRUCTURE
         return {
-            "type": "collection_overview", 
-            "collection": collection,
-            "questions": collection_questions,
+            "type": "clarification_needed",
+            "confidence": None,
+            "message": f"Hãy chọn tài liệu trong '{collection}' mà bạn quan tâm:",
+            "answer": f"Hãy chọn tài liệu trong '{collection}' mà bạn quan tâm:",
+            "options": options,  # ← DIRECT ACCESS - No nesting!
+            "show_manual_input": True,
+            "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {collection}...",
+            "style": "document_selection",
+            "target_collection": collection,
             "session_id": session_id,
-            "message": f"Showing overview for collection: {collection}"
+            "routing_info": {
+                "context": "document_selection",
+                "stage": "document_selection"
+            }
+        }
+    
+    def _handle_proceed_with_document(self, selected_option: Dict[str, Any], session_id: str, smart_router = None) -> Dict[str, Any]:
+        """Handle proceed_with_document action - STEP 3: RETURNS QUESTION LIST"""
+        collection = selected_option.get('collection')
+        document = selected_option.get('document')
+        original_query = selected_option.get('original_query', '')  # Get from selected_option
+        
+        # Use independent clarify method with original_query for real confidence calculation
+        document_questions = self._get_questions_for_clarify(collection or "", document or "", original_query)
+        
+        # Create options from document questions (already in correct clarify format)
+        options = []
+        for i, q in enumerate(document_questions[:8]):  # Limit to 8 questions
+            question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
+            confidence = q.get('confidence', 0.5)
+            source_file = q.get('source', f'{collection}/documents/{document}/questions.json')
+            
+            options.append({
+                "id": str(i + 1),
+                "title": question_text,
+                "description": f"Câu hỏi về {document} (độ phù hợp: {confidence*100:.1f}%)",
+                "action": "proceed_with_question",
+                "collection": collection,
+                "document": document,
+                "question_text": question_text,
+                "confidence_percent": round(confidence * 100, 1),
+                "source_file": source_file,
+                "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
+            })
+        
+        # Add manual input option for this document
+        options.append({
+            "id": str(len(options) + 1),
+            "title": "Câu hỏi khác...",
+            "description": f"Tôi muốn hỏi về vấn đề khác trong {document}",
+            "action": "manual_input",
+            "collection": collection,
+            "document": document
+        })
+        
+        # Return question selection step - DIRECT STRUCTURE
+        return {
+            "type": "clarification_needed",
+            "confidence": None,
+            "message": f"Đây là các câu hỏi phổ biến về '{document}'. Hãy chọn câu hỏi phù hợp:",
+            "answer": f"Đây là các câu hỏi phổ biến về '{document}'. Hãy chọn câu hỏi phù hợp:",
+            "options": options,  # ← DIRECT ACCESS - No nesting!
+            "show_manual_input": True,
+            "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {document}...",
+            "style": "document_questions",
+            "target_collection": collection,
+            "document": document,
+            "session_id": session_id,
+            "routing_info": {
+                "context": "document_questions",
+                "stage": "document_questions"
+            }
         }
     
     def _handle_show_categories(self, selected_option: Dict[str, Any], session_id: str) -> StandardClarificationResponse:
@@ -942,3 +1433,61 @@ class ClarificationService:
         except Exception as e:
             logger.error(f"❌ Error calculating relevance: {e}")
             return 0.0
+
+    def handle_clarification(
+        self,
+        session_id: str,
+        selected_option: Dict[str, Any],
+        original_query: str,
+        smart_router=None
+    ) -> Union[Dict[str, Any], StandardClarificationResponse]:
+        """
+        🎯 MAIN CLARIFICATION HANDLER - Moved from RagEngine for proper separation of concerns
+        
+        Handle all clarification logic independently from RAG processing.
+        This method replaces the wrapper in RagEngine.
+        
+        Args:
+            session_id: Current session ID
+            selected_option: User's selected clarification option
+            original_query: Original user query for similarity calculation
+            smart_router: Optional router instance for advanced features
+            
+        Returns:
+            Dict containing clarification response
+        """
+        import time
+        start_time = time.time()
+        
+        try:
+            # Extract action from selected option
+            action = selected_option.get('action')
+            logger.info(f"🎯 Processing clarification action: '{action}' for session {session_id}")
+            
+            # Add original query to selected_option for similarity calculation
+            if original_query and original_query.strip():
+                selected_option['original_query'] = original_query
+                logger.info(f"🔍 Using original query for similarity: '{original_query[:50]}...'")
+            
+            # Delegate to existing user selection handler
+            result = self.handle_user_selection(
+                selected_option=selected_option,
+                session_id=session_id,
+                smart_router=smart_router
+            )
+            
+            # Ensure processing time is included
+            if isinstance(result, dict) and 'processing_time' not in result:
+                result['processing_time'] = time.time() - start_time
+            
+            logger.info(f"✅ Clarification completed for action '{action}' in {time.time() - start_time:.3f}s")
+            return result
+            
+        except Exception as e:
+            logger.error(f"❌ Error handling clarification: {e}")
+            return {
+                "type": "error",
+                "error": f"Clarification processing failed: {str(e)}",
+                "session_id": session_id,
+                "processing_time": time.time() - start_time
+            }

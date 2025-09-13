@@ -9,8 +9,9 @@ from typing import Optional, Dict, Any, List
 import logging
 from ..services.rag_engine import convert_numpy_types
 
-# This will be set by main.py
+# Services - will be set by main.py
 rag_service = None
+clarification_service = None
 
 logger = logging.getLogger(__name__)
 
@@ -108,11 +109,13 @@ async def handle_clarification(
     Xử lý phản hồi clarification từ người dùng
     """
     try:
-        result = service.handle_clarification(
+        result = clarification_service.handle_clarification(
             session_id=request.session_id,
             selected_option=request.selected_option,
             original_query=request.original_query
         )
+        # Ensure numpy types (e.g., np.float32) are converted for JSON/pydantic
+        result = convert_numpy_types(result)
         
         # Convert ClarificationService result to QueryResponse format
         if isinstance(result, dict):
@@ -141,6 +144,8 @@ async def handle_clarification(
                         session_id=request.session_id,
                         forced_collection=result.get("collection")
                     )
+                    # Ensure numpy types are converted before returning
+                    rag_result = convert_numpy_types(rag_result)
                     return QueryResponse(**rag_result)
                 else:
                     query_response["type"] = "error"
@@ -166,15 +171,37 @@ async def handle_clarification(
                 query_response["error"] = result.get("error", "An error occurred")
                 
             else:
-                # For clarification_needed and other types
+                # For clarification_needed and other types - SUPPORT DIRECT OPTIONS
                 query_response["message"] = result.get("message", "")
                 query_response["answer"] = result.get("answer", "")
-                query_response["clarification"] = result.get("clarification", {})
+                
+                # 🎯 FIX: ClarificationService returns DIRECT options structure
+                if "options" in result and result.get("options"):
+                    # Create clarification object with direct options for frontend compatibility
+                    query_response["clarification"] = {
+                        "type": result.get("type", "clarification_needed"),
+                        "message": result.get("message", ""),
+                        "options": result.get("options", []),  # ← DIRECT options from ClarificationService
+                        "show_manual_input": result.get("show_manual_input", False),
+                        "manual_input_placeholder": result.get("manual_input_placeholder", ""),
+                        "style": result.get("style", ""),
+                        "target_collection": result.get("target_collection", ""),
+                        "document": result.get("document", ""),
+                        "procedure": result.get("procedure", ""),
+                        "confidence_level": result.get("confidence_level", "medium")
+                    }
+                else:
+                    # Fallback empty clarification
+                    query_response["clarification"] = {}
+                
                 query_response["confidence"] = result.get("confidence")
                 query_response["category"] = result.get("category")
                 query_response["generated_questions"] = result.get("generated_questions", [])
                 query_response["context_info"] = result.get("context_info", {})
                 query_response["form_attachments"] = result.get("form_attachments", [])
+                
+                # Final safety: convert all numpy types in response dict
+                query_response = convert_numpy_types(query_response)
             
             return QueryResponse(**query_response)
         else:

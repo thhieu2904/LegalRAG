@@ -13,54 +13,32 @@ export interface ClarificationOption {
   id: string;
   title: string;
   description: string;
-  action: string;
-  // Core data fields
-  collection?: string | null;
-  document?: string | null;
-  procedure?: string | null;
-  question_text?: string | null;
-  // Metadata fields
-  confidence_percent?: number | null;
-  source_file?: string | null;
-  context_type?: string | null;
-  category?: string | null;
-  // Legacy fields for backward compatibility
   confidence?: string;
   examples?: string[];
-  document_title?: string;
-  similarity?: number;
-  similarity_percent?: number;
-  relevance_percent?: number;
-  router_confidence?: number;
+  action: string;
+  collection?: string;
+  question_text?: string;
+  document_title?: string; // 🔥 NEW: For exact document filtering
+  source_file?: string; // 🔥 NEW: Full source path
+  similarity?: number; // 🔥 NEW: Similarity score
+  similarity_percent?: number; // 🔥 ENHANCED: Similarity percentage for display
+  relevance_percent?: number; // 🔥 ENHANCED: Relevance score for categories
+  router_confidence?: number; // 🔥 ENHANCED: Router confidence score
+  category?: string;
+  procedure?: string; // 🔥 NEW: Procedure info
+  document?: string; // 🔥 NEW: Document info
 }
 
 export interface ClarificationData {
-  // Core fields từ StandardClarificationResponse
-  type: string;
-  confidence_level: string;
-  confidence?: number | null;
   message: string;
-  // Data fields
-  target_collection?: string | null;
-  document?: string | null;
-  procedure?: string | null;
   options: ClarificationOption[];
-  // Metadata fields
-  requires_user_input?: boolean;
-  show_manual_input?: boolean;
-  manual_input_placeholder?: string | null;
-  style?: string | null;
-  routing_context?: Record<string, unknown>;
-  strategy?: string | null;
-  session_id?: string | null;
-  additional_help?: string | null;
-  // Legacy fields for backward compatibility
+  style: string;
   stage?: number;
   collection?: string;
   original_query?: string;
-  sorting_note?: string;
-  sorting_info?: string;
-  enhanced?: boolean;
+  sorting_note?: string; // 🔥 ENHANCED: Info about how options are sorted
+  sorting_info?: string; // 🔥 ENHANCED: Additional sorting information
+  enhanced?: boolean; // 🔥 ENHANCED: Flag for enhanced clarification
 }
 
 export interface ContextInfo {

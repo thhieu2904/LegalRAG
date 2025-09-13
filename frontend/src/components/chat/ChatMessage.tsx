@@ -173,6 +173,7 @@ export function ChatMessage({
               )}
 
               <div className="bot-message-actions">
+                {/*  */}
                 <SpeechControlsSimple text={message.content} />
               </div>
             </div>

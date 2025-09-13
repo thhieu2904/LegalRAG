@@ -13,6 +13,7 @@ export function ClarificationOptions({
   clarification,
   onOptionSelect,
 }: ClarificationOptionsProps) {
+  // UPDATED: Direct access to options - no nesting!
   if (!clarification?.options || clarification.options.length === 0) {
     return null;
   }

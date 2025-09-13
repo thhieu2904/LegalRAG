@@ -36,6 +36,7 @@ from app.core.config import settings
 from app.services.vector import VectorDBService
 from app.services.language_model import LLMService
 from app.services.rag_engine import RAGService
+from app.services.clarification import ClarificationService
 from app.api import rag
 from app.api import documents
 
@@ -84,6 +85,18 @@ async def lifespan(app: FastAPI):
         
         # Set global service for routes
         rag.rag_service = rag_service
+        
+        # 🎯 NEW: Initialize ClarificationService with embedding model
+        logger.info("🔄 Initializing ClarificationService...")
+        embedding_model = getattr(rag_service.smart_router, 'embedding_model', None) if hasattr(rag_service, 'smart_router') else None
+        
+        clarification_service = ClarificationService(embedding_model=embedding_model)
+        rag.clarification_service = clarification_service
+        
+        if embedding_model:
+            logger.info("✅ ClarificationService initialized with embedding model for real confidence calculation")
+        else:
+            logger.info("✅ ClarificationService initialized with fallback confidence calculation")
         
         # Log system capabilities với thông tin VRAM optimization
         health_status = rag_service.get_health_status()
