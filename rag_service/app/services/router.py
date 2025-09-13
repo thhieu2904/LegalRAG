@@ -349,9 +349,38 @@ class QueryRouter:
         except Exception as e:
             logger.error(f"❌ Cache save error: {e}")
     
-    def route_query(self, query: str, session=None) -> Dict[str, Any]:
-        """Route query to appropriate collection using metadata and semantic matching"""
+    def route_query(self, query: str, session=None, force_collection=None, force_document=None) -> Dict[str, Any]:
+        """Route query to appropriate collection using metadata and semantic matching
+        
+        Args:
+            query: User query
+            session: Session object
+            force_collection: Force routing to specific collection (from clarification)
+            force_document: Force routing to specific document (from clarification)
+        """
         try:
+            # 🔥 CHECK FOR FORCE ROUTING FROM CLARIFICATION
+            if force_collection:
+                logger.info(f"🔒 FORCE ROUTING: Direct routing to collection '{force_collection}' from clarification")
+                
+                # Skip semantic routing, return direct result
+                return {
+                    'status': 'routed',
+                    'confidence': 0.95,  # High confidence for forced routing
+                    'target_collection': force_collection,
+                    'confidence_level': 'forced_high',
+                    'force_routed': True,
+                    'best_match': {
+                        'collection': force_collection,
+                        'document': force_document or 'DOC_001',  # Default if not specified
+                        'question': query,  # Use the manual input as question
+                        'similarity_percent': 95.0,
+                        'question_type': 'manual_input'
+                    },
+                    'all_scores': {force_collection: 0.95},
+                    'matching_details': [f"Forced routing to {force_collection} from clarification"]
+                }
+            
             # Use semantic routing based on document metadata and content
             return self._semantic_route_query(query, session)
             

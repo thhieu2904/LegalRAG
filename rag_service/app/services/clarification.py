@@ -1080,6 +1080,7 @@ class ClarificationService:
             options = []
             for i, q in enumerate(matching_questions[:8]):  # Top 8 questions
                 question_text = q.get('text', str(q)) if isinstance(q, dict) else str(q)
+                confidence = q.get('confidence', 0.5) if isinstance(q, dict) else 0.5
                 options.append({
                     "id": str(i + 1),
                     "title": question_text,
@@ -1089,6 +1090,7 @@ class ClarificationService:
                     "document": document,
                     "procedure": procedure,
                     "question_text": question_text,
+                    "confidence_percent": round(confidence * 100, 1),  # 🔥 ADD CONFIDENCE PERCENT
                     "source_file": q.get('source', '') if isinstance(q, dict) else '',
                     "category": q.get('category', 'general') if isinstance(q, dict) else 'general'
                 })
@@ -1270,14 +1272,29 @@ class ClarificationService:
         return response
     
     def _handle_manual_input(self, selected_option: Dict[str, Any], session_id: str) -> Dict[str, Any]:
-        """Handle manual_input action"""
+        """Handle manual_input action - PRESERVE SELECTED CONTEXT"""
+        collection = selected_option.get('collection')
+        document = selected_option.get('document') 
+        procedure = selected_option.get('procedure')
+        
+        logger.info(f"🔥 Manual input request with preserved context: collection={collection}, document={document}, procedure={procedure}")
+        
         return {
             "type": "manual_input_request",
             "message": "Please provide your specific question",
-            "collection": selected_option.get('collection'),
-            "document": selected_option.get('document'),
-            "procedure": selected_option.get('procedure'),
-            "session_id": session_id
+            "collection": collection,  # Preserve selected collection
+            "document": document,      # Preserve selected document  
+            "procedure": procedure,    # Preserve selected procedure
+            "session_id": session_id,
+            "context_preserved": True,  # Flag to indicate context preservation
+            "force_routing": True,      # Flag to force router into this context
+            "routing_info": {
+                "context": "manual_input_with_context",
+                "source": "manual_input_handler", 
+                "stage": "manual_input",
+                "force_collection": collection,
+                "force_document": document
+            }
         }
     
     def _handle_unknown_action(self, selected_option: Dict[str, Any], session_id: str) -> Dict[str, Any]:

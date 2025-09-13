@@ -7,6 +7,8 @@ export interface ChatRequest {
   query: string;
   session_id?: string | null;
   forced_collection?: string;
+  force_collection?: string; // 🔥 NEW: Consistent naming with backend
+  force_document?: string; // 🔥 NEW: Force document routing
 }
 
 export interface ClarificationOption {
@@ -43,6 +45,9 @@ export interface ClarificationData {
   additional_help?: string; // 🔥 NEW: Additional help text from backend
   show_manual_input?: boolean; // 🔥 NEW: Whether to show manual input option
   manual_input_placeholder?: string; // 🔥 NEW: Placeholder text for manual input
+  target_collection?: string; // 🔥 NEW: Target collection from backend
+  document?: string; // 🔥 NEW: Document from backend
+  procedure?: string; // 🔥 NEW: Procedure from backend
 }
 
 export interface ContextInfo {
@@ -95,6 +100,16 @@ export interface ApiResponse {
   context_info?: ContextInfo;
   form_attachments?: FormAttachment[]; // 🔥 NEW: Form attachments
   error?: string;
+  // 🔥 NEW: Direct clarification fields for compatibility
+  options?: ClarificationOption[];
+  confidence_level?: string;
+  confidence?: number;
+  target_collection?: string;
+  document?: string;
+  procedure?: string;
+  show_manual_input?: boolean;
+  manual_input_placeholder?: string;
+  style?: string;
 }
 
 export interface ChatResponse {
@@ -117,11 +132,17 @@ export interface ChatResponse {
 export class ChatService {
   private static sessionId: string | null = null;
 
-  static async sendMessage(message: string): Promise<ChatResponse> {
+  static async sendMessage(
+    message: string,
+    forceCollection?: string,
+    forceDocument?: string
+  ): Promise<ChatResponse> {
     try {
       const requestData: ChatRequest = {
         query: message,
         session_id: this.sessionId || null, // Use null instead of undefined for consistency
+        force_collection: forceCollection, // 🔥 NEW: Force collection routing
+        force_document: forceDocument, // 🔥 NEW: Force document routing
       };
 
       const response = await axios.post<ApiResponse>(

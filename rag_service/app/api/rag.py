@@ -1,8 +1,13 @@
 """
 API Routes for Optimized Enhanced RAG Service
-Endpoints tối ưu với VRAM-optimized architecture
-"""
-
+Endpoints tối ưu với VRAM-optimized architectu        result = service.process_query(
+            query=request.query,
+            session_id=request.session_id,
+            forced_collection=force_collection,  # Use unified parameter
+            force_collection=force_collection,   # 🔥 NEW: Consistent naming
+            force_document=force_document        # 🔥 NEW: Document forcing
+        )
+        """
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
@@ -25,7 +30,9 @@ class QueryRequest(BaseModel):
     max_context_length: int = Field(8000, ge=500, le=12000, description="Độ dài context tối đa")  # INCREASED: 3000 → 8000
     use_ambiguous_detection: bool = Field(True, description="Có sử dụng phát hiện câu hỏi mơ hồ")
     use_full_document_expansion: bool = Field(True, description="Có mở rộng toàn bộ document")
-    forced_collection: Optional[str] = Field(None, description="Force routing to specific collection (từ clarification)")  # 🔧 NEW
+    forced_collection: Optional[str] = Field(None, description="Force routing to specific collection (từ clarification)")  # 🔧 Legacy support
+    force_collection: Optional[str] = Field(None, description="Force routing to specific collection (từ clarification)")  # 🔥 NEW: Consistent naming
+    force_document: Optional[str] = Field(None, description="Force routing to specific document (từ clarification)")  # 🔥 NEW
 
 class ClarificationRequest(BaseModel):
     """Request model cho clarification response - FIXED STRUCTURE"""
@@ -88,10 +95,16 @@ async def query_endpoint(
     try:
         logger.info(f"Processing optimized query: {request.query[:50]}...")
         
+        # Support both legacy and new parameter names
+        force_collection = request.force_collection or request.forced_collection
+        force_document = request.force_document
+        
         result = service.process_query(
             query=request.query,
             session_id=request.session_id,
-            forced_collection=request.forced_collection  # 🔧 NEW: Pass forced collection
+            forced_collection=request.forced_collection,  # Keep legacy support
+            force_collection=force_collection,  # � NEW: Consistent naming
+            force_document=force_document       # 🔥 NEW: Document forcing
         )
         
         return QueryResponse(**result)
@@ -114,6 +127,14 @@ async def handle_clarification(
             selected_option=request.selected_option,
             original_query=request.original_query
         )
+        
+        # 🔥 NEW: Store routing info from manual_input to session
+        if result.get("type") == "manual_input_request" and result.get("routing_info"):
+            session = service.get_session(request.session_id)
+            if session:
+                session.metadata["routing_info"] = result["routing_info"]
+                logger.info(f"🔄 Stored routing info to session: {result['routing_info']}")
+        
         # Ensure numpy types (e.g., np.float32) are converted for JSON/pydantic
         result = convert_numpy_types(result)
         
@@ -166,6 +187,15 @@ async def handle_clarification(
                         "procedure": result.get("procedure")
                     }
                 }
+                
+                # 🔥 NEW: Store routing_info to session for follow-up queries
+                if result.get("routing_info") and request.session_id:
+                    session = service.get_session(request.session_id)
+                    if session:
+                        session.metadata = session.metadata or {}
+                        session.metadata["routing_info"] = result.get("routing_info")
+                        logger.info(f"📋 STORED routing_info to session: {result.get('routing_info')}")
+                
                 
             elif response_type == "error":
                 query_response["error"] = result.get("error", "An error occurred")

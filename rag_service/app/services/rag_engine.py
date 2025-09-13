@@ -353,7 +353,7 @@ class RAGService:
         # Build inferred filters based on override type
         inferred_filters = {}
         if target_document:
-            inferred_filters["document_title"] = target_document
+            inferred_filters["document_id"] = target_document
             
         # Add any additional filters from kwargs
         inferred_filters.update(kwargs.get('additional_filters', {}))
@@ -744,7 +744,9 @@ class RAGService:
         llm_k: int = 5,
         threshold: float = 0.7,
         forced_collection: Optional[str] = None,  # ⚡ THÊM THAM SỐ ANTI-LOOP
-        forced_document_title: Optional[str] = None  # 🔥 NEW: Force exact document filtering
+        forced_document_title: Optional[str] = None,  # 🔥 NEW: Force exact document filtering
+        force_collection: Optional[str] = None,  # 🔥 NEW: Force routing from clarification
+        force_document: Optional[str] = None     # 🔥 NEW: Force document from clarification  
     ) -> Dict[str, Any]:
         """
         Query chính với tất cả tối ưu hóa - THIẾT KẾ GỐC: FULL DOCUMENT EXPANSION
@@ -784,6 +786,10 @@ class RAGService:
             
             # Check for preserved document context from manual input
             if not forced_document_title and not forced_collection and session:
+                logger.info(f"🔍 DEBUG: Checking session metadata for {session_id}: {bool(session.metadata)}")
+                if session.metadata:
+                    logger.info(f"🔍 DEBUG: Metadata keys: {list(session.metadata.keys())}")
+                
                 preserved_document = session.metadata.get('preserved_document')
                 if preserved_document:
                     logger.info(f"🔄 Found preserved document context: {preserved_document['title']}")
@@ -797,6 +803,16 @@ class RAGService:
                     forced_collection = manual_input_context['collection']
                     # Clear manual input context after use
                     session.metadata.pop('manual_input_context', None)
+                
+                # 🔥 NEW: Check for routing info from clarification (manual input)
+                routing_info = session.metadata.get('routing_info', {})
+                logger.info(f"🔍 DEBUG: Found routing_info: {routing_info}")
+                if routing_info.get('force_collection') and not forced_collection:
+                    forced_collection = routing_info['force_collection']
+                    logger.info(f"🔄 SESSION CONTEXT: Applying preserved routing context: {forced_collection}")
+                    if routing_info.get('force_document'):
+                        forced_document_title = routing_info['force_document']
+                        logger.info(f"🔄 SESSION CONTEXT: Applying preserved document: {forced_document_title}")
             
             # Step 1: Enhanced Smart Query Routing với MULTI-LEVEL Confidence Processing + Stateful Router
             if forced_collection:
@@ -814,28 +830,129 @@ class RAGService:
                 inferred_filters = {}
                 was_overridden = True  # Forced routing có override
                 
-                # 🔥 NEW: Add document title filter if specified
+                # 🔥 NEW: Add document ID filter if specified
                 if forced_document_title:
-                    inferred_filters = {"document_title": forced_document_title}
+                    inferred_filters = {"document_id": forced_document_title}
                     logger.info(f"🎯 Forced document filter: {forced_document_title}")
                 
             else:
-                # 🧠 SMART ROUTING: Sử dụng router bình thường
-                routing_result = self.smart_router.route_query(query, session)
+                # 🧠 SMART ROUTING: Sử dụng router bình thường với force routing support
+                routing_result = self.smart_router.route_query(
+                    query, 
+                    session, 
+                    force_collection=force_collection,
+                    force_document=force_document
+                )
                 confidence_level = routing_result.get('confidence_level', 'low')
                 was_overridden = routing_result.get('was_overridden', False)
+                force_routed = routing_result.get('force_routed', False)  # 🔥 NEW: Check for force routing
                 inferred_filters = routing_result.get('inferred_filters', {})
                 
                 logger.info(f"Router confidence: {confidence_level} (score: {routing_result['confidence']:.3f})")
                 if was_overridden:
                     logger.info(f"🔥 Session-based confidence override applied!")
+                if force_routed:
+                    logger.info(f"🔒 FORCE ROUTING applied from clarification!")  # 🔥 NEW: Log force routing
                 
-                if confidence_level in ['high_confidence', 'high', 'override_high', 'high_followup']:
-                    # HIGH CONFIDENCE (including overridden & follow-up) - Route trực tiếp
+                if confidence_level in ['high_confidence', 'high', 'override_high', 'high_followup', 'forced_high']:
+                    # HIGH CONFIDENCE (including overridden, follow-up, and forced) - Route trực tiếp
                     target_collection = routing_result['target_collection']
                     inferred_filters = routing_result.get('inferred_filters', {})
                     best_collections = [target_collection] if target_collection else [settings.chroma_collection_name]
-                    logger.info(f"✅ HIGH CONFIDENCE ({confidence_level}) routing to: {target_collection}")
+                    
+                    if force_routed:
+                        logger.info(f"🔒 FORCE ROUTING to: {target_collection}")
+                    else:
+                        logger.info(f"✅ HIGH CONFIDENCE ({confidence_level}) routing to: {target_collection}")
+                    
+                    # 🔥 NEW: If force_document specified, load full document directly
+                    if forced_document_title and target_collection:
+                        logger.info(f"🚀 FORCE DOCUMENT: Loading full document {forced_document_title} from {target_collection}")
+                        
+                        try:
+                            # Build document path - need to find the actual JSON file in the folder
+                            doc_folder = f"data/storage/collections/{target_collection}/documents/{forced_document_title}"
+                            
+                            # Look for JSON file in the document folder
+                            import os
+                            json_files = []
+                            if os.path.exists(doc_folder):
+                                for file in os.listdir(doc_folder):
+                                    if file.endswith('.json') and not file == 'questions.json':
+                                        json_files.append(os.path.join(doc_folder, file))
+                            
+                            if not json_files:
+                                logger.warning(f"🔥 NO JSON FILES FOUND in {doc_folder}")
+                                raise FileNotFoundError(f"No document JSON found in {doc_folder}")
+                            
+                            doc_path = json_files[0]  # Use first JSON file found
+                            logger.info(f"🎯 FOUND DOCUMENT PATH: {doc_path}")
+                            
+                            # Create mock nucleus chunk to use existing context expansion logic
+                            mock_nucleus_chunk = {
+                                'source': {
+                                    'file_path': doc_path,
+                                    'collection': target_collection,
+                                    'document_id': forced_document_title
+                                },
+                                'content': '',  # Will be loaded by context expander
+                                'metadata': {
+                                    'collection': target_collection,
+                                    'document_id': forced_document_title
+                                }
+                            }
+                            
+                            # Use context expansion service to load full document
+                            expanded_context = self.context_expansion_service.expand_context_with_nucleus(
+                                nucleus_chunks=[mock_nucleus_chunk],
+                                query=query
+                            )
+                            
+                            if expanded_context and expanded_context.get('expanded_content'):
+                                context_text = expanded_context['expanded_content'][0].get('text', '')
+                                
+                                if context_text:
+                                    logger.info(f"✅ FULL DOCUMENT LOADED: {len(context_text)} chars")
+                                    
+                                    # Generate answer with full document context
+                                    answer = self._generate_answer_with_context(
+                                        query=query,
+                                        context=context_text,
+                                        session=session
+                                    )
+                                    
+                                    processing_time = time.time() - start_time
+                                    
+                                    return {
+                                        "type": "answer",
+                                        "answer": answer,
+                                        "session_id": session_id,
+                                        "processing_time": processing_time,
+                                        "context_info": {
+                                            "nucleus_chunks": 1,
+                                            "context_length": len(context_text),
+                                            "source_collections": [target_collection],
+                                            "source_documents": [f"{target_collection}/{forced_document_title}"],
+                                            "strategy": "full_document_direct"
+                                        },
+                                        "routing_info": {
+                                            "target_collection": target_collection,
+                                            "confidence": 0.95,
+                                            "confidence_level": "forced_high",
+                                            "strategy": "full_document_direct"
+                                        }
+                                    }
+                                else:
+                                    logger.warning(f"🔥 FULL DOCUMENT EMPTY: {forced_document_title}")
+                            else:
+                                logger.warning(f"🔥 FULL DOCUMENT LOAD FAILED: {forced_document_title}")
+                                
+                        except Exception as e:
+                            logger.error(f"🔥 ERROR loading full document {forced_document_title}: {e}")
+                        
+                        # Fallback to normal search if direct loading fails
+                        logger.info(f"🔄 FALLBACK: Using normal search with filters for {forced_document_title}")
+                    
                     
                 elif confidence_level in ['medium_high_confidence', 'medium_high', 'medium-high', 'override_medium_high']:
                     # MEDIUM-HIGH CONFIDENCE - Show questions within best document

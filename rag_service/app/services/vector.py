@@ -523,14 +523,24 @@ class VectorDBService:
                     logger.info(f"🎯 Using HIGH PRECISION filter (string): {filter_result}")
                     return filter_result
             
-            # 🔥 NEW: Support direct document_title filter (for forced routing)
+            # 🔥 NEW: Support direct document_id filter (for forced routing)
+            if 'document_id' in smart_filters and smart_filters['document_id']:
+                doc_id = smart_filters['document_id']
+                if isinstance(doc_id, str) and doc_id.strip():
+                    logger.info(f"🎯 Using FORCED document_id filter: {doc_id}")
+                    return {"document_id": doc_id.strip()}
+                elif isinstance(doc_id, list) and doc_id:
+                    logger.info(f"🎯 Using FORCED document_id filter: {doc_id}")
+                    return {"document_id": {"$in": [t.strip() for t in doc_id if t.strip()]}}
+            
+            # 🔥 LEGACY: Support direct document_title filter (for backwards compatibility)
             if 'document_title' in smart_filters and smart_filters['document_title']:
                 doc_title = smart_filters['document_title']
                 if isinstance(doc_title, str) and doc_title.strip():
-                    logger.info(f"🎯 Using FORCED document filter: {doc_title}")
+                    logger.info(f"🎯 Using FORCED document_title filter: {doc_title}")
                     return {"document_title": doc_title.strip()}
                 elif isinstance(doc_title, list) and doc_title:
-                    logger.info(f"🎯 Using FORCED document filter: {doc_title}")
+                    logger.info(f"🎯 Using FORCED document_title filter: {doc_title}")
                     return {"document_title": {"$in": [t.strip() for t in doc_title if t.strip()]}}
             
             # 🎯 FALLBACK: If no exact_title or document_title, use other filters

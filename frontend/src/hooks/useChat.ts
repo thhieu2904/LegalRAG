@@ -148,14 +148,22 @@ export function useChat(options: UseChatOptions = {}) {
   }, [updateContextSummary]);
 
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (
+      content: string,
+      forceCollection?: string,
+      forceDocument?: string
+    ) => {
       // Add user message
       addMessage(content, false);
       setIsLoading(true);
       setCurrentClarification(null);
 
       try {
-        const response = await ChatService.sendMessage(content);
+        const response = await ChatService.sendMessage(
+          content,
+          forceCollection,
+          forceDocument
+        );
 
         if (response.apiResponse) {
           const apiResponse = response.apiResponse;
@@ -307,8 +315,18 @@ export function useChat(options: UseChatOptions = {}) {
         // Clear current clarification and process as new query
         setCurrentClarification(null);
 
-        // Process the manual input as a new query
-        await sendMessage(option.question_text);
+        // Process the manual input as a new query with force routing from clarification
+        const forceCollection =
+          option.collection ||
+          currentClarification?.clarification?.target_collection;
+        const forceDocument = option.document;
+
+        console.log("🔒 Manual input with force routing:", {
+          forceCollection,
+          forceDocument,
+        });
+
+        await sendMessage(option.question_text, forceCollection, forceDocument);
         return;
       }
 
