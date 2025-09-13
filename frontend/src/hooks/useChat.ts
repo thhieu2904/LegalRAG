@@ -294,7 +294,25 @@ export function useChat(options: UseChatOptions = {}) {
         sessionId: ChatService.getSessionId(),
       });
 
-      // Add user selection message
+      // 🔧 SPECIAL CASE: Handle manual input
+      if (option.action === "manual_input" && option.question_text) {
+        console.log(
+          "🔧 Manual input detected, processing as new query:",
+          option.question_text
+        );
+
+        // Add user selection message with their manual input
+        addMessage(`Câu hỏi: ${option.question_text}`, false);
+
+        // Clear current clarification and process as new query
+        setCurrentClarification(null);
+
+        // Process the manual input as a new query
+        await sendMessage(option.question_text);
+        return;
+      }
+
+      // Add user selection message for normal options
       addMessage(`Đã chọn: ${option.title}`, false);
       setIsLoading(true);
 
@@ -344,8 +362,8 @@ export function useChat(options: UseChatOptions = {}) {
               undefined, // No form attachments for manual input request
               apiResponse
             );
-            // Keep currentClarification for context but allow manual input
-            setCurrentClarification(null);
+            // 🔧 CRITICAL FIX: Keep currentClarification for manual input context
+            // Don't clear currentClarification - user needs it for manual input
           } else if (
             apiResponse.type === "clarification_needed" &&
             apiResponse.clarification
@@ -421,7 +439,7 @@ export function useChat(options: UseChatOptions = {}) {
         updateContextSummary();
       }
     },
-    [currentClarification, addMessage, updateContextSummary]
+    [currentClarification, addMessage, updateContextSummary, sendMessage]
   );
 
   const clearMessages = useCallback(() => {

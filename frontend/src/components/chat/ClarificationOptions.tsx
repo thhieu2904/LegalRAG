@@ -13,30 +13,65 @@ export function ClarificationOptions({
   clarification,
   onOptionSelect,
 }: ClarificationOptionsProps) {
-  // UPDATED: Direct access to options - no nesting!
-  if (!clarification?.options || clarification.options.length === 0) {
+  // UPDATED: Allow render if we have options OR need manual input
+  if (
+    (!clarification?.options || clarification.options.length === 0) &&
+    !clarification?.show_manual_input
+  ) {
     return null;
   }
 
-  // 🔥 NEW: Check if this is an enhanced clarification with similarity scores
+  // 🔥 UPDATED: Check for similarity or confidence scores for sorting
   const hasSimilarityScores = clarification.options.some(
     (opt) => opt.similarity_percent !== undefined && opt.similarity_percent > 0
   );
+  const hasConfidenceScores = clarification.options.some(
+    (opt) => opt.confidence_percent !== undefined && opt.confidence_percent > 0
+  );
 
-  // 🔥 NEW: Check clarification style for enhanced features
+  // 🔥 UPDATED: Check clarification style for enhanced features (include confidence)
   const isEnhancedStyle =
     clarification.style?.includes("similarity") ||
     clarification.style?.includes("enhanced") ||
-    hasSimilarityScores;
+    hasSimilarityScores ||
+    hasConfidenceScores;
 
-  // 🔥 NEW: Sort options by similarity if available
-  const sortedOptions = hasSimilarityScores
-    ? [...clarification.options].sort((a, b) => {
-        const aScore = a.similarity_percent || 0;
-        const bScore = b.similarity_percent || 0;
-        return bScore - aScore; // Descending order
-      })
-    : clarification.options;
+  // 🔥 UPDATED: Sort options by similarity first (if available), then by confidence
+  let sortedOptions = [...clarification.options];
+  if (hasSimilarityScores) {
+    sortedOptions.sort((a, b) => {
+      const aScore = a.similarity_percent || 0;
+      const bScore = b.similarity_percent || 0;
+      return bScore - aScore; // Descending order
+    });
+  } else if (hasConfidenceScores) {
+    sortedOptions.sort((a, b) => {
+      const aScore = a.confidence_percent || 0;
+      const bScore = b.confidence_percent || 0;
+      return bScore - aScore; // Descending order
+    });
+  } else {
+    // Fallback: Keep original order if no scores
+    sortedOptions = clarification.options;
+  }
+
+  // 🔥 DEBUG: Log sorting information
+  console.log("🔍 ClarificationOptions Debug:", {
+    hasSimilarityScores,
+    hasConfidenceScores,
+    originalOptions: clarification.options.map((opt) => ({
+      id: opt.id,
+      title: opt.title.substring(0, 50) + "...",
+      confidence_percent: opt.confidence_percent,
+      similarity_percent: opt.similarity_percent,
+    })),
+    sortedOptions: sortedOptions.map((opt) => ({
+      id: opt.id,
+      title: opt.title.substring(0, 50) + "...",
+      confidence_percent: opt.confidence_percent,
+      similarity_percent: opt.similarity_percent,
+    })),
+  });
 
   return (
     <div className="clarification-options space-y-3 mt-4">
@@ -252,44 +287,45 @@ export function ClarificationOptions({
       )}
 
       {/* 🔥 NEW: Manual input area if required */}
-      {clarification.show_manual_input && (
-        <div className="manual-input-area bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
-          <label
-            htmlFor="manual-input"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Hoặc mô tả chi tiết câu hỏi của bạn:
-          </label>
-          <textarea
-            id="manual-input"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            rows={3}
-            placeholder={
-              clarification.manual_input_placeholder ||
-              "Mô tả chi tiết câu hỏi của bạn..."
-            }
-          />
-          <button
-            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            onClick={() => {
-              const textarea = document.getElementById(
-                "manual-input"
-              ) as HTMLTextAreaElement;
-              if (textarea && textarea.value.trim()) {
-                onOptionSelect({
-                  id: "manual_input",
-                  title: "Câu hỏi tự nhập",
-                  description: textarea.value,
-                  action: "manual_input",
-                  question_text: textarea.value,
-                });
+      {clarification.options.length === 0 &&
+        clarification.show_manual_input && (
+          <div className="manual-input-area bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+            <label
+              htmlFor="manual-input"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {clarification.message || "Vui lòng nhập câu hỏi cụ thể của bạn:"}
+            </label>
+            <textarea
+              id="manual-input"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows={3}
+              placeholder={
+                clarification.manual_input_placeholder ||
+                "Mô tả chi tiết câu hỏi của bạn..."
               }
-            }}
-          >
-            Gửi câu hỏi
-          </button>
-        </div>
-      )}
+            />
+            <button
+              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              onClick={() => {
+                const textarea = document.getElementById(
+                  "manual-input"
+                ) as HTMLTextAreaElement;
+                if (textarea && textarea.value.trim()) {
+                  onOptionSelect({
+                    id: "manual_input",
+                    title: "Câu hỏi tự nhập",
+                    description: textarea.value,
+                    action: "manual_input",
+                    question_text: textarea.value,
+                  });
+                }
+              }}
+            >
+              Gửi câu hỏi
+            </button>
+          </div>
+        )}
     </div>
   );
 }

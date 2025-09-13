@@ -14,6 +14,7 @@ export interface ClarificationOption {
   title: string;
   description: string;
   confidence?: string;
+  confidence_percent?: number; // 🔥 NEW: Numeric confidence from backend
   examples?: string[];
   action: string;
   collection?: string;
@@ -39,6 +40,9 @@ export interface ClarificationData {
   sorting_note?: string; // 🔥 ENHANCED: Info about how options are sorted
   sorting_info?: string; // 🔥 ENHANCED: Additional sorting information
   enhanced?: boolean; // 🔥 ENHANCED: Flag for enhanced clarification
+  additional_help?: string; // 🔥 NEW: Additional help text from backend
+  show_manual_input?: boolean; // 🔥 NEW: Whether to show manual input option
+  manual_input_placeholder?: string; // 🔥 NEW: Placeholder text for manual input
 }
 
 export interface ContextInfo {
