@@ -1,6 +1,6 @@
 /**
- * 📷 QR SCANNER API - TẤT CẢ CALLS ĐẾN IDENTIFILL SERVICE (PORT 8002)
- * QR code scanning for CCCD
+ * 📷 CCCD SCANNER API - TẤT CẢ CALLS ĐẾN IDENTIFILL SERVICE (PORT 8002)
+ * CCCD scanning for Vietnamese ID cards
  */
 import { identifillAPI } from "./axios-config";
 
@@ -17,7 +17,7 @@ export interface CCCDData {
   scan_ngay_cap: string;
 }
 
-export interface QRScanResult {
+export interface CCCDScanResult {
   success: boolean;
   data?: CCCDData;
   message?: string;
@@ -28,16 +28,16 @@ export interface QRScanResult {
 export type ScanMode = "qr";
 
 // ========================================
-// QR Scanner API Service
+// CCCD Scanner API Service
 // ========================================
-export const qrScannerAPI = {
-  // Quét QR code từ ảnh
-  scanQRCode: async (
+export const cccdScannerAPI = {
+  // Quét CCCD từ ảnh
+  scanCCCD: async (
     imageData: string,
     scanMode: ScanMode = "qr"
-  ): Promise<QRScanResult> => {
+  ): Promise<CCCDScanResult> => {
     try {
-      const response = await identifillAPI.post("/api/v1/cccd/qr/scan", {
+      const response = await identifillAPI.post("/api/v1/cccd/scan", {
         image_data: imageData,
         scan_mode: scanMode,
       });
@@ -48,10 +48,10 @@ export const qrScannerAPI = {
         // Nếu server trả về lỗi được format
         return {
           success: false,
-          message: err.response.data.detail || "Không thể quét mã QR",
+          message: err.response.data.detail || "Không thể quét CCCD",
         };
       }
-      console.error("QR Scan API Error:", error);
+      console.error("CCCD Scan API Error:", error);
       return {
         success: false,
         message: "Lỗi kết nối đến máy chủ",
@@ -59,13 +59,13 @@ export const qrScannerAPI = {
     }
   },
 
-  // Kiểm tra trạng thái QR service
+  // Kiểm tra trạng thái CCCD service
   getServiceStatus: async (): Promise<{ message: string; status: string }> => {
     try {
-      const response = await identifillAPI.get("/api/v1/cccd/qr/test");
+      const response = await identifillAPI.get("/api/v1/cccd/test");
       return response.data;
     } catch (error) {
-      console.error("QR Scanner Service Status API Error:", error);
+      console.error("CCCD Scanner Service Status API Error:", error);
       throw error;
     }
   },
@@ -82,7 +82,7 @@ export const qrScannerAPI = {
     message?: string;
   }> => {
     try {
-      const response = await identifillAPI.post("/api/v1/cccd/card/detect", {
+      const response = await identifillAPI.post("/api/v1/cccd/detect", {
         image_data: imageData,
         auto_crop: autoCrop,
       });

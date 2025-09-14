@@ -26,17 +26,17 @@ card_detector = CardDetector()
 
 
 # ==============================================
-# QR SCANNING ENDPOINTS
+# CCCD SCANNING ENDPOINTS
 # ==============================================
 
-@router.post("/qr/scan", response_model=QRScanResponse)
-async def scan_qr_code(request: QRScanRequest):
+@router.post("/scan", response_model=QRScanResponse)
+async def scan_cccd(request: QRScanRequest):
     """
-    Production CCCD QR code scanning endpoint.
+    Production CCCD scanning endpoint.
     Uses optimized region extraction for maximum accuracy.
     """
     try:
-        logger.info(f"Received QR scan request with mode: {request.scan_mode}")
+        logger.info(f"Received CCCD scan request with mode: {request.scan_mode}")
         logger.info(f"Image data length: {len(request.image_data) if request.image_data else 0}")
         
         if request.scan_mode.value != "qr":
@@ -49,7 +49,7 @@ async def scan_qr_code(request: QRScanRequest):
             raise HTTPException(status_code=400, detail="No image data provided")
         
         result = qr_scanner.scan_qr_from_base64(request.image_data)
-        logger.info(f"QR scan result: success={result.success}, message={result.message}")
+        logger.info(f"CCCD scan result: success={result.success}, message={result.message}")
         
         if not result.success:
             raise HTTPException(status_code=400, detail=result.message)
@@ -59,23 +59,23 @@ async def scan_qr_code(request: QRScanRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Unexpected error in QR scan: {str(e)}")
+        logger.error(f"Unexpected error in CCCD scan: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.get("/qr/test")
-async def test_qr_endpoint():
+@router.get("/test")
+async def test_cccd_endpoint():
     """
-    Test endpoint for QR scanner
+    Test endpoint for CCCD scanner
     """
-    return {"message": "QR Scanner API is working", "status": "healthy"}
+    return {"message": "CCCD Scanner API is working", "status": "healthy"}
 
 
 # ==============================================
 # CARD DETECTION ENDPOINTS
 # ==============================================
 
-@router.post("/card/detect", response_model=CardDetectionResponse)
+@router.post("/detect", response_model=CardDetectionResponse)
 async def detect_card(request: CardDetectionRequest):
     """
     Detect and optionally crop ID card from image
@@ -117,9 +117,9 @@ async def cccd_health_check():
             "card_detector": "available"
         },
         "endpoints": {
-            "qr_scan": "/api/v1/cccd/qr/scan",
-            "qr_test": "/api/v1/cccd/qr/test", 
-            "card_detect": "/api/v1/cccd/card/detect",
+            "cccd_scan": "/api/v1/cccd/scan",
+            "cccd_test": "/api/v1/cccd/test", 
+            "card_detect": "/api/v1/cccd/detect",
             "card_test": "/api/v1/cccd/card/test"
         }
     }

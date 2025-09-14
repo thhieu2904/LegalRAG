@@ -14,8 +14,8 @@ export type {
 } from "./rag-api";
 
 // QR Scanner APIs
-export { qrScannerAPI } from "./qr-scanner-api";
-export type { CCCDData, QRScanResult, ScanMode } from "./qr-scanner-api";
+export { cccdScannerAPI } from "./qr-scanner-api";
+export type { CCCDData, CCCDScanResult, ScanMode } from "./qr-scanner-api";
 
 // Form APIs
 export { formAPI } from "./form-api";
@@ -34,7 +34,7 @@ export { ragAPI, identifillAPI, ocrAPI as ocrAxios } from "./axios-config";
 /*
 
 // ✅ ĐÚNG - Import từ api/index.ts
-import { chatAPI, qrScannerAPI, formAPI } from '../api';
+import { chatAPI, cccdScannerAPI, formAPI } from '../api';
 
 // Trong component:
 const handleSendMessage = async (message: string) => {
@@ -46,9 +46,9 @@ const handleSendMessage = async (message: string) => {
   }
 };
 
-const handleScanQR = async (imageData: string) => {
+const handleScanCCCD = async (imageData: string) => {
   try {
-    const result = await qrScannerAPI.scanQRCode(imageData);
+    const result = await cccdScannerAPI.scanCCCD(imageData);
     console.log(result);
   } catch (error) {
     console.error(error);

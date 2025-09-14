@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { CameraComponent } from "./CameraComponent";
-import { qrScannerAPI } from "../../api/qr-scanner-api";
+import { cccdScannerAPI } from "../../api/qr-scanner-api";
 import { AlertCircle, Loader } from "lucide-react";
 import type { CCCDData } from "../../api/qr-scanner-api";
 import "./QRScanner.css";
@@ -33,7 +33,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
 
         // Use the new unified QR scanning API
         console.log("🔍 Scanning QR code with new API...");
-        const result = await qrScannerAPI.scanQRCode(imageData);
+        const result = await cccdScannerAPI.scanCCCD(imageData);
 
         if (result.success && result.data) {
           console.log("✅ QR scan successful:", result.data);

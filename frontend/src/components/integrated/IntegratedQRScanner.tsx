@@ -6,7 +6,7 @@
 import React, { useState, useCallback } from "react";
 import { CameraComponent } from "../qrscan/CameraComponent";
 import { Camera, Upload, Loader, AlertCircle } from "lucide-react";
-import { qrScannerAPI } from "../../api/qr-scanner-api";
+import { cccdScannerAPI } from "../../api/qr-scanner-api";
 import type { CCCDData } from "../../api/qr-scanner-api";
 import "./IntegratedQRScanner.css";
 
@@ -34,21 +34,21 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
       setError(null);
 
       try {
-        console.log("🔍 IntegratedQRScanner: Starting QR scan...");
-        const result = await qrScannerAPI.scanQRCode(imageData);
+        console.log("🔍 IntegratedCCCDScanner: Starting CCCD scan...");
+        const result = await cccdScannerAPI.scanCCCD(imageData);
 
         if (result.success && result.data) {
-          console.log("✅ QR scan successful:", result.data);
+          console.log("✅ CCCD scan successful:", result.data);
           onResult?.(result.data);
         } else {
-          const errorMessage = result.message || "Không thể quét QR code";
+          const errorMessage = result.message || "Không thể quét CCCD";
           setError(errorMessage);
           onError?.(errorMessage);
         }
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Lỗi không xác định";
-        console.error("QR Scanner Error:", err);
+        console.error("CCCD Scanner Error:", err);
         setError(errorMessage);
         onError?.(errorMessage);
       } finally {
@@ -78,12 +78,12 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
       });
 
       // Use the QR scanner API service instead of direct fetch
-      const result = await qrScannerAPI.scanQRCode(base64Data);
+      const result = await cccdScannerAPI.scanCCCD(base64Data);
 
       if (result.success && result.data) {
         onResult?.(result.data);
       } else {
-        throw new Error(result.message || "QR scan failed");
+        throw new Error(result.message || "CCCD scan failed");
       }
     } catch (error) {
       const errorMessage =
