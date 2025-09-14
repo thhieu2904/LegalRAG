@@ -2,39 +2,81 @@
  * 🔗 INTEGRATED FORM PAGE - Tích hợp QR Scan + Form Display + Download
  * Giao diện thống nhất: QR scan bên trái + Form render bên phải + Download button
  * Cấu trúc: Header + Content (2 cột) + Footer
+ * DYNAMIC FORM LOADING: Nhận tham số từ URL thay vì dùng DEFAULT_FORM
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { ChatHeader } from "../components/chat/ChatHeader";
 import { ChatFooter } from "../components/chat/ChatFooter";
 import { FormRenderer } from "../components/forms/FormRenderer";
 import { IntegratedQRScanner } from "../components/integrated/IntegratedQRScanner";
-import { Download, Loader } from "lucide-react";
+import { Download, Loader, AlertCircle } from "lucide-react";
+import { formAPI } from "../api/form-api";
 import type { CCCDData } from "../api/qr-scanner-api";
+import type { FormRenderResult } from "../api/form-api";
 import "./IntegratedFormPageNew.css";
 
-interface FormSelection {
-  collectionId: string;
-  docId: string;
-  formFilename: string;
-  displayName: string;
-}
-
-// Fixed form - không cần chọn nhiều forms
-const DEFAULT_FORM: FormSelection = {
-  collectionId: "quy_trinh_cap_ho_tich_cap_xa",
-  docId: "DOC_001",
-  formFilename: "Khai_sinh.docx",
-  displayName: "Tờ khai đăng ký khai sinh",
-};
-
 const IntegratedFormPage = () => {
-  const [selectedForm] = useState<FormSelection>(DEFAULT_FORM); // Fixed form
+  // 🎯 DYNAMIC ROUTING: Lấy tham số từ URL
+  const { collectionId, docId, formFilename } = useParams<{
+    collectionId: string;
+    docId: string;
+    formFilename: string;
+  }>();
+
+  // States
+  const [formData, setFormData] = useState<FormRenderResult | null>(null);
+  const [formLoading, setFormLoading] = useState<boolean>(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [cccdData, setCccdData] = useState<CCCDData | null>(null);
   const [isFormLoaded, setIsFormLoaded] = useState<boolean>(false);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   // 🎯 PHASE 3: State trung tâm cho manual data
   const [manualData, setManualData] = useState<Record<string, string>>({});
+
+  // Load form khi component mount hoặc tham số thay đổi
+  useEffect(() => {
+    const loadForm = async () => {
+      if (collectionId && docId && formFilename) {
+        await loadFormData();
+      }
+    };
+    loadForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionId, docId, formFilename]);
+
+  // Load form data từ API
+  const loadFormData = async () => {
+    if (!collectionId || !docId || !formFilename) {
+      setFormError("Thiếu tham số form trong URL");
+      return;
+    }
+
+    setFormLoading(true);
+    setFormError(null);
+
+    try {
+      console.log(`🔍 Loading form: ${collectionId}/${docId}/${formFilename}`);
+
+      const result = await formAPI.loadFormComplete(
+        collectionId,
+        docId,
+        formFilename
+      );
+
+      setFormData(result.rendered);
+      setIsFormLoaded(true);
+      console.log("✅ Form loaded successfully");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Lỗi không xác định";
+      setFormError(errorMessage);
+      console.error("❌ Error loading form:", error);
+    } finally {
+      setFormLoading(false);
+    }
+  };
 
   // 🎯 PHASE 3: Callback để cập nhật manual data từ EditablePlaceholder
   const handleManualDataChange = (fieldName: string, value: string) => {
@@ -70,6 +112,11 @@ const IntegratedFormPage = () => {
 
   // Download filled form - NHIỆM VỤ 3
   const handleDownloadFilledForm = async () => {
+    if (!collectionId || !docId || !formFilename) {
+      alert("Thông tin form không đầy đủ");
+      return;
+    }
+
     // 🎯 PHASE 3: Merge CCCD data với manual data
     const finalData = {
       ...cccdData, // CCCD data làm base
@@ -87,12 +134,11 @@ const IntegratedFormPage = () => {
       console.log("📋 Final data to send:", finalData);
 
       // Dùng cùng file cho cả hiển thị và fill/download
-      const templateName = selectedForm.formFilename;
-      console.log(`📋 Using same file for display and fill: ${templateName}`);
+      console.log(`📋 Using same file for display and fill: ${formFilename}`);
 
       // Call identifill_service API với merged data
       const response = await fetch(
-        `http://localhost:8002/api/v1/forms/fill-and-download/${selectedForm.collectionId}/${selectedForm.docId}`,
+        `http://localhost:8002/api/v1/forms/fill-and-download/${collectionId}/${docId}`,
         {
           method: "POST",
           headers: {
@@ -100,7 +146,7 @@ const IntegratedFormPage = () => {
           },
           body: JSON.stringify({
             ...finalData, // Spread merged data
-            template_name: templateName, // Dynamic template mapping
+            template_name: formFilename, // Dynamic template mapping
           }),
         }
       );
@@ -111,7 +157,7 @@ const IntegratedFormPage = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `${selectedForm.displayName}_filled.docx`;
+        a.download = `${formFilename}_filled.docx`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -155,12 +201,28 @@ const IntegratedFormPage = () => {
               {/* Form Header */}
               <div className="form-display-header">
                 <h2 className="form-display-title">
-                  📄 {selectedForm.displayName}
+                  📄 {formFilename || "Biểu mẫu"}
                 </h2>
                 <p className="form-display-subtitle">
-                  {selectedForm.collectionId} / {selectedForm.docId}
+                  {collectionId} / {docId}
                 </p>
               </div>
+
+              {/* Loading State */}
+              {formLoading && (
+                <div className="form-loading-state">
+                  <Loader className="spinning" size={24} />
+                  <span>Đang tải biểu mẫu...</span>
+                </div>
+              )}
+
+              {/* Error State */}
+              {formError && (
+                <div className="form-error-state">
+                  <AlertCircle size={24} />
+                  <span>{formError}</span>
+                </div>
+              )}
 
               {/* Form Status & Download */}
               <div className="form-status-bar">
@@ -216,19 +278,21 @@ const IntegratedFormPage = () => {
 
               {/* Form Renderer - Simple display */}
               <div className="form-renderer-container">
-                <FormRenderer
-                  collectionId={selectedForm.collectionId}
-                  docId={selectedForm.docId}
-                  formFilename={selectedForm.formFilename}
-                  onLoadComplete={handleFormLoadComplete}
-                  manualData={manualData}
-                  onManualDataChange={handleManualDataChange}
-                  cccdData={
-                    cccdData
-                      ? (cccdData as unknown as Record<string, string>)
-                      : {}
-                  }
-                />
+                {formData && !formLoading && !formError && (
+                  <FormRenderer
+                    collectionId={collectionId!}
+                    docId={docId!}
+                    formFilename={formFilename!}
+                    onLoadComplete={handleFormLoadComplete}
+                    manualData={manualData}
+                    onManualDataChange={handleManualDataChange}
+                    cccdData={
+                      cccdData
+                        ? (cccdData as unknown as Record<string, string>)
+                        : {}
+                    }
+                  />
+                )}
               </div>
             </div>
           </div>

@@ -20,6 +20,10 @@ function App() {
 
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/forms" element={<IntegratedFormPage />} />
+            <Route
+              path="/forms/:collectionId/:docId/:formFilename"
+              element={<IntegratedFormPage />}
+            />
           </Routes>
         </div>
       </Router>

@@ -3,6 +3,7 @@ import SpeechControlsSimple from "../admin/old/SpeechControlsSimple";
 import logoHCC from "../../assets/LOGO_HCC.jpg";
 import { User, FileText } from "lucide-react";
 import { ClarificationOptions } from "./ClarificationOptions";
+import { Link } from "react-router-dom";
 import type { ClarificationOption } from "../../services/chatService";
 
 // Form attachment interface
@@ -150,18 +151,13 @@ export function ChatMessage({
                                       </span>
                                     </div>
                                   </div>
-                                  <button
+                                  <Link
+                                    to={`/forms/${form.collection_id}/${form.document_id}/${form.form_filename}`}
                                     className="download-button"
-                                    onClick={() => {
-                                      // TODO: Implement download functionality
-                                      console.log(
-                                        "Download form:",
-                                        form.form_url
-                                      );
-                                    }}
+                                    target="_blank"
                                   >
                                     Xem
-                                  </button>
+                                  </Link>
                                 </div>
                               )
                             )}

@@ -1,27 +1,12 @@
 /**
- * FormRenderer Component - Giai đoạn 2 Implement  // Cleanup React roots khi component unmount
-  useEffect(() => {
-    const currentRoots = reactRootsRef.current;
-    return () => {
-      currentRoots.forEach((root, element) => {
-        try {
-          // Remove React hydrated class
-          element.classList.remove('react-hydrated');
-          root.unmount();
-        } catch (e) {
-          console.warn('Error unmounting React root:', e);
-        }
-      });
-      currentRoots.clear();
-    };
-  }, []);r DOCX form sử dụng dangerouslySetInnerHTML + React Hydration
- * Tạo "Giả Inline Edit" với Popover sử dụng useEffect & createRoot
+ * FormRenderer Component - Giai đoạn 2 Implementation cho DOCX form
+ * Sử dụng formAPI mới và hiển thị HTML form với placeholder hydration
  */
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
-import { identifillAPI } from "../../api/axios-config";
+import { formAPI } from "../../api/form-api";
 import { EditablePlaceholder } from "./EditablePlaceholder";
 import "./FormRenderer.css";
 
@@ -334,22 +319,23 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
         `📡 API Call: Loading form ${collectionId}/${docId}/${formFilename}`
       );
 
-      const response = await identifillAPI.get<{
-        success: boolean;
-        message: string;
-        data: FormRenderResult;
-      }>(`/api/v1/forms/render/${collectionId}/${docId}/${formFilename}`);
+      const result = await formAPI.renderForm(
+        collectionId,
+        docId,
+        formFilename
+      );
 
-      if (response.data.success) {
-        setHtmlContent(response.data.data.html_content);
-        setFormMetadata(response.data.data.form_metadata);
-        onLoadComplete?.(true);
+      setHtmlContent(result.html_content);
+      setFormMetadata({
+        collection_id: result.form_metadata.collection_id,
+        doc_id: result.form_metadata.doc_id,
+        form_filename: result.form_metadata.form_filename,
+        conversion_success: true, // Default to true since API succeeded
+      });
+      onLoadComplete?.(true);
 
-        console.log("✅ Form loaded successfully");
-        console.log("📋 Placeholders found:", response.data.data.placeholders);
-      } else {
-        throw new Error(response.data.message);
-      }
+      console.log("✅ Form loaded successfully");
+      console.log("📋 Placeholders found:", result.placeholders);
     } catch (err: unknown) {
       const error = err as Error;
       const errorMessage = error.message || "Failed to load form";

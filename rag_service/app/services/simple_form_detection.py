@@ -329,7 +329,7 @@ class SimpleFormDetectionService:
                         
                         # Create FormAttachment
                         form_attachment = FormAttachment(
-                            document_id=f"{collection_id}_{doc_info.get('doc_id', 'unknown')}",
+                            document_id=doc_info.get('doc_id', 'unknown'),
                             document_title=doc_title,
                             form_filename=form_file_path.name,
                             form_url=download_url,
