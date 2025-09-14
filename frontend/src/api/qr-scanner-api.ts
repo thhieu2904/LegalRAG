@@ -37,7 +37,7 @@ export const qrScannerAPI = {
     scanMode: ScanMode = "qr"
   ): Promise<QRScanResult> => {
     try {
-      const response = await identifillAPI.post("/api/v1/qr/scan", {
+      const response = await identifillAPI.post("/api/v1/cccd/qr/scan", {
         image_data: imageData,
         scan_mode: scanMode,
       });
@@ -62,7 +62,7 @@ export const qrScannerAPI = {
   // Kiểm tra trạng thái QR service
   getServiceStatus: async (): Promise<{ message: string; status: string }> => {
     try {
-      const response = await identifillAPI.get("/api/v1/qr/test");
+      const response = await identifillAPI.get("/api/v1/cccd/qr/test");
       return response.data;
     } catch (error) {
       console.error("QR Scanner Service Status API Error:", error);
@@ -82,7 +82,7 @@ export const qrScannerAPI = {
     message?: string;
   }> => {
     try {
-      const response = await identifillAPI.post("/api/v1/card/detect", {
+      const response = await identifillAPI.post("/api/v1/cccd/card/detect", {
         image_data: imageData,
         auto_crop: autoCrop,
       });

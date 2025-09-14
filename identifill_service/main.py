@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.api import api_router
-from app.api.form_fields import router as form_fields_router
+from app.api.v1.cccd import router as cccd_router
+from app.api.v1.forms import router as forms_router
 from app.core.config import settings
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="IDentifill Service - QR Code Scanner for CCCD",
-    version="1.0.0",
+    description="IDentifill Service - QR Code Scanner for CCCD (Restructured)",
+    version="2.0.0",
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
@@ -20,8 +20,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(api_router, prefix=settings.API_V1_STR)
-app.include_router(form_fields_router)  # Dynamic form fields API
+# Include routers with new simplified structure
+app.include_router(cccd_router, prefix=f"{settings.API_V1_STR}/cccd", tags=["CCCD Processing"])
+app.include_router(forms_router, prefix=f"{settings.API_V1_STR}/forms", tags=["Forms"])
 
 @app.get("/")
 async def root():
