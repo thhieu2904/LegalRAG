@@ -70,6 +70,8 @@ QUY TẮC:
 3. Trả lời ngắn gọn 7-10 câu, tự nhiên như nói chuyện
 4. Nếu không có thông tin: "Tài liệu không đề cập vấn đề này"
 5. KHÔNG sử dụng emoji, ký tự đặc biệt
+6. KHÔNG đặt câu hỏi ngược lại cho người dùng
+7. KHÔNG tự suy luận thông tin ngoài tài liệu
 
 HƯỚNG DẪN TÌM THÔNG TIN:
 - Phí/lệ phí: Tìm fee_vnd, fee_text trong metadata
@@ -78,9 +80,10 @@ HƯỚNG DẪN TÌM THÔNG TIN:
 - Biểu mẫu: Tìm has_form, form_name, form_url
 
 CHỐNG HALLUCINATION:
-- KHÔNG sử dụng thông tin từ câu hỏi trước
+- KHÔNG sử dụng thông tin từ câu hỏi trước nếu không liên quan
 - KHÔNG suy luận ngoài thông tin có sẵn
 - KHÔNG thêm thông tin không có trong tài liệu
+- KHÔNG tạo ra câu hỏi gợi ý cho người dùng
 - Nếu không chắc chắn: "Tài liệu không đề cập vấn đề này\""""
         
         # Context-specific modifications
@@ -256,16 +259,24 @@ class PromptService:
         # 1. System rules
         instruction_parts.append(system_prompt)
         
-        # 2. Chat history (if any) - keep it simple
+        # 2. Chat history (if any) - Only take 2 most recent turns (1 user + 1 assistant)
         if chat_history:
-            # Only take recent 2-3 turns to avoid context pollution
+            # Only take the last 2 turns (user + assistant)
             recent_history = chat_history[-2:] if len(chat_history) > 2 else chat_history
-            
+
+            # Build conversation context with both user and assistant messages
+            conversation_parts = []
             for turn in recent_history:
                 role = turn.get("role")
                 content = turn.get("content") 
                 if role == "user" and content:
-                    instruction_parts.append(f"Người dùng hỏi trước: {content}")
+                    conversation_parts.append(f"Người dùng: {content}")
+                elif role == "assistant" and content:
+                    conversation_parts.append(f"Trợ lý: {content}")
+
+            # Add conversation context if any
+            if conversation_parts:
+                instruction_parts.append(f"Ngữ cảnh cuộc trò chuyện trước:\n" + "\n".join(conversation_parts))
         
         # 3. Context from vector DB
         if context.strip():
