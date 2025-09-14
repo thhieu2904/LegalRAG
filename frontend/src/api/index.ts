@@ -13,12 +13,20 @@ export type {
   Question,
 } from "./rag-api";
 
-// OCR Service APIs
-export { ocrAPI_Service } from "./ocr-api";
-export type { CCCDData, OCRResult, OCRHistory } from "./ocr-api";
+// QR Scanner APIs
+export { qrScannerAPI } from "./qr-scanner-api";
+export type { CCCDData, QRScanResult, ScanMode } from "./qr-scanner-api";
+
+// Form APIs
+export { formAPI } from "./form-api";
+export type { FormRenderResult } from "./form-api";
+
+// OCR Service APIs (UNUSED - commented out for future reference)
+// export { ocrAPI_Service } from "./ocr-api";
+// export type { CCCDData, OCRResult, OCRHistory } from "./ocr-api";
 
 // Axios instances (nếu cần sử dụng trực tiếp)
-export { ragAPI, ocrAPI as ocrAxios } from "./axios-config";
+export { ragAPI, identifillAPI, ocrAPI as ocrAxios } from "./axios-config";
 
 // ========================================
 // CÁCH SỬ DỤNG TRONG COMPONENTS:
@@ -26,7 +34,7 @@ export { ragAPI, ocrAPI as ocrAxios } from "./axios-config";
 /*
 
 // ✅ ĐÚNG - Import từ api/index.ts
-import { chatAPI, ocrAPI_Service } from '../api';
+import { chatAPI, qrScannerAPI, formAPI } from '../api';
 
 // Trong component:
 const handleSendMessage = async (message: string) => {
@@ -38,9 +46,9 @@ const handleSendMessage = async (message: string) => {
   }
 };
 
-const handleProcessImage = async (file: File) => {
+const handleScanQR = async (imageData: string) => {
   try {
-    const result = await ocrAPI_Service.processImage(file);
+    const result = await qrScannerAPI.scanQRCode(imageData);
     console.log(result);
   } catch (error) {
     console.error(error);

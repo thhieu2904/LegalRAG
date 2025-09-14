@@ -38,7 +38,7 @@ from app.services.language_model import LLMService
 from app.services.rag_engine import RAGService
 from app.services.clarification import ClarificationService
 from app.api import rag
-from app.api import documents
+# documents và router_crud đã được xóa
 
 # Cấu hình logging
 logging.basicConfig(
@@ -187,15 +187,9 @@ app.add_middleware(
 
 # Include optimized routes
 app.include_router(rag.router)
-app.include_router(documents.router)
+# documents.router đã được xóa
 
-# Include Templates API
-try:
-    from app.api.templates import router as templates_router
-    app.include_router(templates_router)
-    logger.info("✅ Templates API endpoints enabled")
-except ImportError as e:
-    logger.warning(f"⚠️ Templates API not available: {e}")
+
 
 # Include Forms API for IdentiFill service
 try:
@@ -205,13 +199,13 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Forms API not available: {e}")
 
-# Include Router CRUD API (minimal endpoints for clarification)
-try:
-    from app.api.router_crud import router as router_crud_router
-    app.include_router(router_crud_router)
-    logger.info("✅ Router CRUD API endpoints enabled")
-except ImportError as e:
-    logger.warning(f"⚠️ Router CRUD API not available: {e}")
+# Router CRUD API đã được xóa
+# try:
+#     from app.api.router_crud import router as router_crud_router
+#     app.include_router(router_crud_router)
+#     logger.info("✅ Router CRUD API endpoints enabled")
+# except ImportError as e:
+#     logger.warning(f"⚠️ Router CRUD API not available: {e}")
 
 # Root endpoint với thông tin VRAM optimization
 @app.get("/")

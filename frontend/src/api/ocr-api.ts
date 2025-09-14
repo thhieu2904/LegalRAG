@@ -1,11 +1,20 @@
 /**
  * 📷 OCR SERVICE API - TẤT CẢ CALLS ĐẾN OCR SERVICE (PORT 8001)
  * CCCD recognition, image processing
+ *
+ * NOTE: File này hiện tại chưa được sử dụng trong dự án.
+ * Tất cả các chức năng CCCD đang sử dụng QR Scanner API thay vào đó.
+ * File được giữ lại để tham khảo cho tương lai khi cần implement OCR thực tế.
  */
+
+// File này được comment out vì hiện tại không được sử dụng
+// Uncomment khi cần implement OCR service thực tế
+
+/*
 import { ocrAPI } from "./axios-config";
 
 // ========================================
-// OCR API - Cho OCRPage
+// OCR API - Cho OCRPage (UNUSED)
 // ========================================
 export interface CCCDData {
   id: string;
@@ -134,3 +143,4 @@ export const ocrAPI_Service = {
     }
   },
 };
+*/

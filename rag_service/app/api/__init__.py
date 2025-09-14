@@ -1,6 +1,5 @@
 # API module
 
-# Import all routers
+# Import all routers  
 from . import rag
-from . import documents
-from . import router_crud
+# documents và router_crud đã được xóa
