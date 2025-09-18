@@ -1,80 +1,236 @@
-# Copilot Instructions for LegalRAG_OCR
+# LegalRAG Copilot Instructions
 
-## Project Overview
+## 🏗️ System Architecture
 
-**LegalRAG_OCR** is a multi-service system for legal document Q&A, OCR, and Vietnamese CCCD (citizen ID) QR code scanning. The workspace includes:
+**LegalRAG** is a Vietnamese legal document Q&A system with microservices architecture:
 
-- `frontend/`: React + Vite + TypeScript SPA, integrates with backend APIs for RAG, OCR, and QR scanning.
-- `identifill_service/`: FastAPI service for CCCD QR code scanning and card detection (port 8002).
-- `rag_service/`: FastAPI-based RAG (Retrieval-Augmented Generation) backend (port 8000).
+### Services Overview
 
-## Architecture & Data Flow
+- **Frontend** (Port 3000/5173): React/TypeScript SPA with Vite
+- **RAG Service** (Port 8000): Legal document retrieval-augmented generation
+- **Identifill Service** (Port 8002): CCCD QR code scanning and card detection
+- **OCR Service** (Port 8001): Vietnamese text recognition
 
-- **Frontend** communicates with backend services via REST APIs:
-  - `/api` and `/router` → RAG service (port 8000)
-  - `/api/v1/qr/scan`, `/api/v1/card/detect` → Identifill service (port 8002)
-  - `/ocr` endpoints → OCR service (port 8001, not included in this repo)
-- All API endpoints and base URLs are configured in `frontend/src/api/axios-config.ts`.
-- Each backend service is independently deployable and exposes a health check endpoint.
+### Key Architecture Patterns
 
-## Developer Workflows
+#### Multi-Service Communication
 
-### Frontend
+```typescript
+// frontend/src/api/axios-config.ts - Centralized API configuration
+export const ragAPI = axios.create({ baseURL: "http://localhost:8000" });
+export const identifillAPI = axios.create({ baseURL: "http://localhost:8002" });
+export const ocrAPI = axios.create({ baseURL: "http://localhost:8001" });
+```
 
-- Dev: `cd frontend && npm install && npm run dev`
-- Build: `npm run build`
-- Lint: `npm run lint`
-- Uses Vite, TailwindCSS, Radix UI, and Axios.
-- **API integration:** All API calls are wrapped in service modules under `frontend/src/api/` (e.g., `rag-api.ts`, `ocr-api.ts`, `qr-scanner-api.ts`).
-- **Error handling:** Centralized in Axios interceptors (`axios-config.ts`).
-- **Clarification UI:** Ambiguous queries trigger clarification UI (see `MainChatPage.tsx`, `useChat.ts`, and `ClarificationOptions`).
+#### Vietnamese Legal Domain Focus
 
-### Identifill Service
+- CCCD (Vietnamese ID card) processing with QR code parsing
+- Legal document Q&A with context expansion
+- Voice integration for accessibility
+- Form processing for administrative procedures
 
-- Python 3.11, Conda env (`identifill_env`)
-- Start: `conda activate identifill_env && cd identifill_service && uvicorn main:app --reload --host 0.0.0.0 --port 8002`
-- API docs and endpoint details: see `identifill_service/README.md`.
+## 🚀 Critical Developer Workflows
 
-### RAG Service
+### Environment Setup
 
-- Python, FastAPI, VRAM-optimized (see `rag_service/main.py`)
-- Start: `python rag_service/main.py` (ensure dependencies and models are available)
-- conda activate LegalRAG
-- Key features: context expansion, ambiguous query detection, session management, VRAM optimization.
+```bash
+# 1. Frontend (always first)
+cd frontend && npm install
 
-## Project-Specific Conventions
+# 2. Python services require conda environments
+# Identifill Service
+conda env create -f identifill_service/environment.yml
+conda activate identifill_env
+cd identifill_service && pip install -r requirements.txt
 
-- **Action Plan First:** Always start with a todo list/plan before coding (see `.github/instructions/instruction_copilot.instructions.md`).
-- **API Layer:** All API calls must go through service modules in `frontend/src/api/`.
-- **Error Handling:** Use centralized Axios interceptors in `axios-config.ts` for all API error handling and logging.
-- **Clarification Flow:** Ambiguous queries (detected by backend or frontend logic) trigger the clarification UI. See `useChat.ts` for state management and `MainChatPage.tsx` for UI logic. Example: `setCurrentClarification` is used to manage clarification prompts.
-- **Data Structures:** Vietnamese CCCD QR and OCR data types are defined in `frontend/src/api/ocr-api.ts` and `qr-scanner-api.ts`.
-- **CORS:** Each backend service manages its own CORS settings.
+# RAG Service (no conda env file, use pip directly)
+cd rag_service && pip install -r requirements.txt
+```
 
-## Integration & Extension
+### Development Startup Sequence
 
-- **Adding Backend Endpoints:** Update or add the relevant API wrapper in `frontend/src/api/` (e.g., add a new method to `rag-api.ts`), and ensure error handling is covered by interceptors.
-- **Frontend Features:** Follow context-driven state management and modular component structure in `frontend/src/`.
-- **Backend Changes:** Update the corresponding `README.md` for API documentation and usage examples.
+```bash
+# Terminal 1: Frontend (Vite dev server)
+cd frontend && npm run dev
 
-## Examples
+# Terminal 2: RAG Service
+conda activate LegalRAG && cd rag_service && python main.py
 
-- **Adding a new API endpoint:**
+# Terminal 3: Identifill Service
+conda activate identifill_env && cd identifill_service && python main.py
 
-  1. Implement the endpoint in the backend service (see `identifill_service/app/api/v1/` or `rag_service/app/api/`).
-  2. Add a method to the relevant API wrapper in `frontend/src/api/`.
-  3. Use the new method in frontend components/services.
+# Terminal 4: OCR Service (if needed)
+# OCR service startup commands
+```
 
-- **Clarification UI pattern:**
+### Production Deployment
 
-  - When the backend returns an ambiguous query response, `useChat.ts` sets `currentClarification`, which triggers the UI in `MainChatPage.tsx`.
+- Services run independently on different ports
+- CORS configured for localhost origins
+- Token-based authentication via localStorage
+- Health checks available at `/health` endpoints
 
-## References
+## 📋 Project Conventions
 
-- `identifill_service/README.md`: Full API docs and troubleshooting.
-- `.github/instructions/instruction_copilot.instructions.md`: Required agent workflow.
-- `FRONTEND_CLARIFICATION_FIX.md`: Clarification UI/logic patterns.
+### API Response Patterns
 
----
+```typescript
+// Consistent error handling across services
+interface APIResponse<T> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  processing_time?: number;
+  confidence?: number;
+}
+```
 
-**Always follow the action plan/todo-first workflow and reference the API/service wrappers for integration patterns.**
+### CCCD Data Structure
+
+```typescript
+// frontend/src/api/qr-scanner-api.ts
+interface CCCDData {
+  scan_cccd: string;        // 12-digit citizen ID
+  scan_cmnd?: string;       // Old 9-digit ID
+  scan_ho_ten: string;      // Full name
+  scan_ngay_sinh: string;   // DOB (DDMMYYYY)
+  scan_gioi_tinh: string;   // Gender
+  scan_dia_chi: string;     // Address
+  scan_ngay_cap: string;    // Issue date (DDMMYYYY)
+}
+```
+
+### State Management
+
+- React hooks for component-level state (`useChat`, `useVoice`)
+- Context providers for global state (`VoiceContext`)
+- Centralized API calls in dedicated service files
+
+### File Organization
+
+```
+frontend/src/
+├── api/           # Service-specific API calls
+├── components/    # Reusable UI components
+├── pages/         # Route-level components
+├── hooks/         # Custom React hooks
+├── contexts/      # React context providers
+└── types/         # TypeScript type definitions
+```
+
+## 🔧 Development Patterns
+
+### Error Handling
+
+```typescript
+// Centralized error interception in axios-config.ts
+ragAPI.interceptors.response.use(
+  (response) => console.log(`✅ RAG API Success: ${response.status}`),
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+### Logging Conventions
+
+```python
+# Python services use structured logging
+logger.info("🚀 Starting LegalRAG API...")
+logger.error(f"❌ Failed to initialize services: {e}")
+```
+
+### Testing Approach
+
+- Create test scripts in `root/test/` directory
+- Avoid full server startup for unit tests
+- Use script-based testing over server-dependent tests
+- Prefer isolated component testing
+
+## 🎯 Key Integration Points
+
+### Frontend-Backend Communication
+
+- Axios interceptors for request/response logging
+- Centralized error handling and token management
+- CORS configuration for development origins
+- Base64 image data transmission for OCR/CCCD processing
+
+### Service Dependencies
+
+- RAG Service: ChromaDB for vector storage, HuggingFace models
+- Identifill Service: OpenCV for image processing, PyZBar for QR codes
+- OCR Service: Vietnamese OCR models (VietOCR)
+
+### Data Flow Patterns
+
+1. **Chat Flow**: User message → RAG API → Vector search → LLM generation → Response
+2. **CCCD Flow**: Image upload → Identifill API → QR detection → Data parsing → Form population
+3. **Voice Flow**: Speech recognition → Text conversion → Chat processing → TTS response
+
+## ⚡ Performance Considerations
+
+### VRAM Optimization (RAG Service)
+
+- Embedding model runs on CPU to save VRAM
+- LLM and reranker models use GPU for parallel processing
+- Context expansion caching for repeated queries
+- Session management with automatic cleanup
+
+### Image Processing
+
+- Base64 encoding for image transmission
+- Auto-crop functionality for card detection
+- Confidence scoring for OCR results
+- Processing time optimization (< 1 second target)
+
+## 🔍 Debugging Guidelines
+
+### Common Issues
+
+- **Port conflicts**: Check if services are already running
+- **Conda environment**: Always activate correct environment
+- **CORS errors**: Verify frontend origin in service config
+- **Model loading**: Check HF_CACHE_DIR and offline mode settings
+
+### Log Analysis
+
+- Frontend: Browser console for API call logs
+- Backend: Structured logging with emojis for quick identification
+- Performance: Check `processing_time` in API responses
+
+### Testing Strategy
+
+```bash
+# Test individual services without full startup
+# Create isolated test scripts in test/ directory
+# Use mock data for API testing
+# Validate CCCD parsing with known test cases
+```
+
+## 📚 Essential Files to Reference
+
+### Architecture Understanding
+
+- `frontend/src/api/axios-config.ts` - Service communication setup
+- `rag_service/main.py` - Service initialization and lifecycle
+- `identifill_service/main.py` - QR scanning service setup
+- `frontend/src/App.tsx` - Main application routing
+
+### Key Components
+
+- `frontend/src/hooks/useChat.ts` - Chat functionality
+- `frontend/src/api/rag-api.ts` - RAG service integration
+- `frontend/src/api/qr-scanner-api.ts` - CCCD processing
+- `rag_service/app/services/rag_engine.py` - Core RAG logic
+
+### Configuration
+
+- `identifill_service/environment.yml` - Conda environment setup
+- `rag_service/app/core/config.py` - Service configuration
+- `frontend/package.json` - Frontend dependencies and scripts`</content>`
+  `<parameter name="filePath">`d:\Personal\LegalRAG_OCR\.github\copilot-instructions.md

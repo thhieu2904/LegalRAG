@@ -35,13 +35,13 @@ export function ChatHeader() {
               </div>
             </div>
             <div className="chat-header-nav-buttons">
-              <Link
+              {/* <Link
                 to="/forms"
                 className="chat-header-nav-button"
                 title="Biểu mẫu hành chính"
               >
                 📄 Biểu mẫu
-              </Link>
+              </Link> */}
               <Link
                 to="/admin"
                 className="chat-header-settings-button"

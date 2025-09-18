@@ -13,6 +13,7 @@ import uuid
 import os
 import json
 import numpy as np
+from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -447,6 +448,10 @@ class RAGService:
         # Chat sessions management
         self.chat_sessions: Dict[str, OptimizedChatSession] = {}
         
+        # 🔥 NEW: Simple session counter for daily sequence (YYYYMMDD-XXX format)
+        self.daily_counter = 0
+        self.last_date = datetime.now().strftime("%Y%m%d")
+        
         # Performance metrics
         self.metrics = {
             "total_queries": 0,
@@ -685,11 +690,31 @@ class RAGService:
             logger.error(f"❌ Error creating real nucleus chunks: {e}")
             return []
     
+    def _generate_session_id(self) -> str:
+        """
+        Generate session ID with format: YYYYMMDD-XXX (simple counter for small teams)
+        Automatically resets counter when date changes
+        """
+        today = datetime.now().strftime("%Y%m%d")
+        
+        # Reset counter if date changed
+        if today != self.last_date:
+            self.daily_counter = 0
+            self.last_date = today
+            logger.info(f"📅 New day detected: {today}, reset session counter")
+        
+        # Increment counter for today
+        self.daily_counter += 1
+        
+        # Format: YYYYMMDD-XXX (3 digits for <1000 sessions/day)
+        session_id = f"{today}-{self.daily_counter:03d}"
+        
+        return session_id
 
             
     def create_session(self, metadata: Optional[Dict[str, Any]] = None) -> str:
-        """Tạo session chat mới"""
-        session_id = str(uuid.uuid4())
+        """Tạo session chat mới với format ngày + sequence (YYYYMMDD-XXX)"""
+        session_id = self._generate_session_id()
         
         session = OptimizedChatSession(
             session_id=session_id,
@@ -699,7 +724,7 @@ class RAGService:
         )
         
         self.chat_sessions[session_id] = session
-        logger.info(f"Created new chat session: {session_id}")
+        logger.info(f"✅ Created new chat session: {session_id} (sequence: {self.daily_counter})")
         
         return session_id
         
@@ -718,6 +743,27 @@ class RAGService:
         if not session:
             return None
         return session.get_context_summary()
+    
+    def get_session_stats(self) -> Dict[str, Any]:
+        """
+        Lấy thống kê sessions để monitor và quản lý
+        """
+        today = datetime.now().strftime("%Y%m%d")
+        
+        # Tính tuổi oldest session
+        oldest_session_age_hours = 0
+        if self.chat_sessions:
+            oldest_time = min(session.created_at for session in self.chat_sessions.values())
+            oldest_session_age_hours = (time.time() - oldest_time) / 3600
+        
+        return {
+            "today_date": today,
+            "today_session_count": self.daily_counter if today == self.last_date else 0,
+            "total_active_sessions": len(self.chat_sessions),
+            "oldest_session_age_hours": round(oldest_session_age_hours, 2),
+            "session_id_format": f"{today}-XXX",
+            "next_session_id": f"{today}-{self.daily_counter + 1:03d}" if today == self.last_date else f"{today}-001"
+        }
     
     def reset_session_context(self, session_id: str) -> bool:
         """
