@@ -245,31 +245,19 @@ class OptimizedChatSession:
     
     def get_context_summary(self) -> Dict[str, Any]:
         """
-        Tạo context summary để hiển thị trên frontend
+       
+        Backend chỉ trả raw data, frontend tự mapping display names
         """
         context_summary = {
             "session_id": self.session_id,
             "has_active_context": False,
             "current_collection": None,
-            "current_collection_display": None,
             "preserved_document": None,
             "active_filters": {},
             "confidence_level": 0.0,
             "context_age_minutes": 0,
             "query_count": len(self.query_history),
             "last_activity": self.last_accessed
-        }
-        
-        # Collection mappings cho display names
-        collection_display_map = {
-            "luat_doanh_nghiep_2020": "Luật Doanh nghiệp 2020",
-            "luat_dat_dai_2013": "Luật Đất đai 2013", 
-            "luat_lao_dong_2019": "Luật Lao động 2019",
-            "luat_hon_nhan_gia_dinh_2014": "Luật Hôn nhân và Gia đình 2014",
-            "luat_dan_su_2015": "Luật Dân sự 2015",
-            "luat_hinh_su_2015": "Luật Hình sự 2015",
-            "luat_thue_thu_nhap_ca_nhan_2007": "Luật Thuế Thu nhập cá nhân 2007",
-            "luat_bao_hiem_xa_hoi_2014": "Luật Bảo hiểm xã hội 2014"
         }
         
         # Kiểm tra có active context không
@@ -283,10 +271,6 @@ class OptimizedChatSession:
                 context_summary.update({
                     "has_active_context": True,
                     "current_collection": self.last_successful_collection,
-                    "current_collection_display": collection_display_map.get(
-                        self.last_successful_collection, 
-                        self.last_successful_collection
-                    ),
                     "confidence_level": self.last_successful_confidence,
                     "context_age_minutes": context_age_minutes,
                     "active_filters": self.last_successful_filters or {}

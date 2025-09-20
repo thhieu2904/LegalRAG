@@ -187,9 +187,14 @@ app.add_middleware(
 
 # Include optimized routes
 app.include_router(rag.router)
-# documents.router đã được xóa
 
-
+# Include Collections API for frontend mapping
+try:
+    from app.api.collections import router as collections_router
+    app.include_router(collections_router, prefix="/api/v1", tags=["collections"])
+    logger.info("✅ Collections API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Collections API not available: {e}")
 
 # Include Forms API for IdentiFill service
 try:
