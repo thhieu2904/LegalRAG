@@ -11,6 +11,8 @@ export interface Message {
     title: string;
     description: string;
     confidence?: string;
+    confidence_percent?: number; // 🔥 NEW: Support numeric confidence from backend
+    similarity_percent?: number; // 🔥 EXISTING: Support similarity scores
     examples?: string[];
     action: string;
     collection?: string;
@@ -39,6 +41,8 @@ export interface ClarificationResponse {
       title: string;
       description: string;
       confidence?: string;
+      confidence_percent?: number; // 🔥 NEW: Support numeric confidence from backend
+      similarity_percent?: number; // 🔥 EXISTING: Support similarity scores
       examples?: string[];
       action: string;
       collection?: string;
@@ -53,6 +57,8 @@ export interface ClarificationResponse {
         title: string;
         description: string;
         confidence?: string;
+        confidence_percent?: number; // 🔥 NEW: Support numeric confidence from backend
+        similarity_percent?: number; // 🔥 EXISTING: Support similarity scores
         examples?: string[];
         action: string;
         collection?: string;

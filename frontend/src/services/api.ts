@@ -15,11 +15,15 @@ interface ClarificationOption {
   title: string;
   description: string;
   confidence?: string;
+  confidence_percent?: number; // 🔥 NEW: Numeric confidence from backend
+  similarity_percent?: number; // 🔥 EXISTING: Support similarity scores
   examples?: string[];
   action: string;
   collection?: string;
   question_text?: string;
   category?: string;
+  procedure?: string; // 🔥 NEW: Procedure info
+  document?: string; // 🔥 NEW: Document info
 }
 
 export const apiService = {

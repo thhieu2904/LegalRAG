@@ -9,7 +9,6 @@ import type {
   Question,
   Collection,
   Document,
-  QuestionCreate,
 } from "../../../services/questionsService";
 
 interface AddEditQuestionModalProps {
@@ -471,7 +470,7 @@ export const QuestionModals: React.FC<QuestionModalsProps> = ({
         onClose={questionModal.closeModal}
         mode={questionModal.modalState.type?.includes("add") ? "add" : "edit"}
         data={questionModal.modalState.data}
-        onConfirm={async (questionData) => {
+        onConfirm={async () => {
           // Handle save logic here
           questionModal.closeModal();
           onSaved();

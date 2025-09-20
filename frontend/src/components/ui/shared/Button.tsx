@@ -1,6 +1,6 @@
 /* Button Component */
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { cn } from "../../../lib/utils";
+import { cn } from "../utils";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?:

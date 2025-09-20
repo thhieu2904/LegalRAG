@@ -87,14 +87,9 @@ export function ChatInterface({
               {messages.map((message) => (
                 <ChatMessage
                   key={message.id}
-                  message={message.content}
-                  isBot={message.isBot}
-                  timestamp={message.timestamp}
-                  clarification={message.clarification}
-                  processingTime={message.processingTime}
-                  sourceDocuments={message.sourceDocuments}
-                  formAttachments={message.formAttachments}
-                  onClarificationSelect={handleClarificationOption}
+                  message={message}
+                  onClarificationClick={handleClarificationOption}
+                  logoSrc={logoHCC}
                 />
               ))}
 

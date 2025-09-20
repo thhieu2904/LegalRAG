@@ -148,14 +148,22 @@ export function useChat(options: UseChatOptions = {}) {
   }, [updateContextSummary]);
 
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (
+      content: string,
+      forceCollection?: string,
+      forceDocument?: string
+    ) => {
       // Add user message
       addMessage(content, false);
       setIsLoading(true);
       setCurrentClarification(null);
 
       try {
-        const response = await ChatService.sendMessage(content);
+        const response = await ChatService.sendMessage(
+          content,
+          forceCollection,
+          forceDocument
+        );
 
         if (response.apiResponse) {
           const apiResponse = response.apiResponse;
@@ -172,22 +180,45 @@ export function useChat(options: UseChatOptions = {}) {
             );
             setCurrentClarification(null);
           } else if (
-            apiResponse.type === "clarification_needed" &&
-            apiResponse.clarification
+            apiResponse.type === "clarification_needed" ||
+            apiResponse.type === "context_gathering_needed" ||
+            (apiResponse.options && apiResponse.options.length > 0) ||
+            (apiResponse.clarification && apiResponse.clarification.options)
           ) {
+            // UPDATED: Handle both direct and legacy structure
+            let clarificationData: ClarificationData;
+
+            if (apiResponse.options && apiResponse.options.length > 0) {
+              // Direct structure - new format
+              clarificationData = {
+                type: apiResponse.type,
+                confidence_level: apiResponse.confidence_level || "medium",
+                confidence: apiResponse.confidence,
+                message: apiResponse.message || "",
+                options: apiResponse.options,
+                target_collection: apiResponse.target_collection,
+                document: apiResponse.document,
+                procedure: apiResponse.procedure,
+                show_manual_input: apiResponse.show_manual_input,
+                manual_input_placeholder: apiResponse.manual_input_placeholder,
+                style: apiResponse.style,
+              };
+            } else {
+              // Legacy nested structure
+              clarificationData = apiResponse.clarification!;
+            }
+
             setCurrentClarification({
-              clarification: apiResponse.clarification,
-              originalQuery:
-                apiResponse.clarification.original_query || content,
+              clarification: clarificationData,
+              originalQuery: clarificationData.original_query || content,
             });
 
             const clarificationMessage =
-              apiResponse.clarification.message ||
-              "Vui lòng chọn một tùy chọn:";
+              clarificationData.message || "Vui lòng chọn một tùy chọn:";
             addMessage(
               clarificationMessage,
               true,
-              apiResponse.clarification,
+              clarificationData as ClarificationData,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
@@ -271,7 +302,35 @@ export function useChat(options: UseChatOptions = {}) {
         sessionId: ChatService.getSessionId(),
       });
 
-      // Add user selection message
+      // 🔧 SPECIAL CASE: Handle manual input
+      if (option.action === "manual_input" && option.question_text) {
+        console.log(
+          "🔧 Manual input detected, processing as new query:",
+          option.question_text
+        );
+
+        // Add user selection message with their manual input
+        addMessage(`Câu hỏi: ${option.question_text}`, false);
+
+        // Clear current clarification and process as new query
+        setCurrentClarification(null);
+
+        // Process the manual input as a new query with force routing from clarification
+        const forceCollection =
+          option.collection ||
+          currentClarification?.clarification?.target_collection;
+        const forceDocument = option.document;
+
+        console.log("🔒 Manual input with force routing:", {
+          forceCollection,
+          forceDocument,
+        });
+
+        await sendMessage(option.question_text, forceCollection, forceDocument);
+        return;
+      }
+
+      // Add user selection message for normal options
       addMessage(`Đã chọn: ${option.title}`, false);
       setIsLoading(true);
 
@@ -321,8 +380,8 @@ export function useChat(options: UseChatOptions = {}) {
               undefined, // No form attachments for manual input request
               apiResponse
             );
-            // Keep currentClarification for context but allow manual input
-            setCurrentClarification(null);
+            // 🔧 CRITICAL FIX: Keep currentClarification for manual input context
+            // Don't clear currentClarification - user needs it for manual input
           } else if (
             apiResponse.type === "clarification_needed" &&
             apiResponse.clarification
@@ -332,16 +391,39 @@ export function useChat(options: UseChatOptions = {}) {
               "🔄 Setting new currentClarification for next step:",
               apiResponse.clarification
             );
+            // UPDATED: Handle both direct and legacy clarification
+            let clarificationData: ClarificationData;
+
+            if (apiResponse.options && apiResponse.options.length > 0) {
+              // Direct structure
+              clarificationData = {
+                type: apiResponse.type,
+                confidence_level: apiResponse.confidence_level || "medium",
+                confidence: apiResponse.confidence,
+                message: apiResponse.message || "",
+                options: apiResponse.options,
+                target_collection: apiResponse.target_collection,
+                document: apiResponse.document,
+                procedure: apiResponse.procedure,
+                show_manual_input: apiResponse.show_manual_input,
+                manual_input_placeholder: apiResponse.manual_input_placeholder,
+                style: apiResponse.style,
+                original_query: originalQuery,
+              };
+            } else {
+              // Legacy nested structure
+              clarificationData = apiResponse.clarification!;
+            }
+
             setCurrentClarification({
-              clarification: apiResponse.clarification,
-              originalQuery:
-                apiResponse.clarification.original_query || originalQuery,
+              clarification: clarificationData,
+              originalQuery: clarificationData.original_query || originalQuery,
             });
 
             addMessage(
-              apiResponse.clarification.message,
+              clarificationData.message,
               true,
-              apiResponse.clarification,
+              clarificationData,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
@@ -375,7 +457,7 @@ export function useChat(options: UseChatOptions = {}) {
         updateContextSummary();
       }
     },
-    [currentClarification, addMessage, updateContextSummary]
+    [currentClarification, addMessage, updateContextSummary, sendMessage]
   );
 
   const clearMessages = useCallback(() => {
