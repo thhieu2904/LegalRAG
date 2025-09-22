@@ -1,14 +1,20 @@
 """
 Simple Form Detection Service - Đơn giản và hiệu quả
 Chỉ cần check metadata has_form và đường dẫn forms/
+
+Updated for Docker compatibility with PathConfig service
 """
 
+import json
+import logging
+import json
 import logging
 from typing import Dict, List, Optional, Any
 from pathlib import Path
 import os
 
 from ..models.schemas import FormAttachment
+from ..core.path_config import PathConfig
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +29,22 @@ class SimpleFormDetectionService:
     
     def __init__(self, storage_base_path: Optional[str] = None):
         if storage_base_path is None:
-            # Default path
-            self.storage_base_path = Path(__file__).parent.parent.parent / "data" / "storage" / "collections"
+            # Use PathConfig service for Docker compatibility
+            path_config = PathConfig()
+            self.storage_base_path = path_config.collections_dir
+            self.path_config = path_config
+            logger.info(f"Using PathConfig service - Environment: {path_config.environment}")
         else:
             self.storage_base_path = Path(storage_base_path)
+            self.path_config = None
+            logger.info("Using provided storage_base_path")
         
         logger.info(f"SimpleFormDetectionService initialized with storage: {self.storage_base_path}")
+        
+        # Verify path exists
+        if not self.storage_base_path.exists():
+            logger.warning(f"Storage path does not exist: {self.storage_base_path}")
+            logger.info("This may be normal if collections haven't been created yet")
     
     def extract_documents_from_context(self, context_info: Dict[str, Any]) -> List[Dict[str, str]]:
         """

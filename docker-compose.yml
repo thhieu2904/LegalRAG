@@ -1,0 +1,60 @@
+name: legalrag
+services:
+  # Frontend Service
+  frontend:
+    container_name: legalrag-frontend
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - rag-service
+      - identifill-service
+    networks:
+      - legalrag-network
+
+  # RAG Service with GPU
+  rag-service:
+    container_name: legalrag-rag-service
+    build: ./rag_service
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - HF_CACHE_DIR=/app/data/cache
+      - CUDA_VISIBLE_DEVICES=0
+      # Path Configuration for Docker compatibility
+      - ENVIRONMENT=docker
+      - LEGALRAG_BASE_PATH=/app
+      - LEGALRAG_DATA_PATH=/app/data
+    volumes:
+      - ./rag_service/data:/app/data
+    networks:
+      - legalrag-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Identifill Service
+  identifill-service:
+    container_name: legalrag-identifill-service
+    build: ./identifill_service
+    ports:
+      - "8002:8002"
+    environment:
+      - PYTHONPATH=/app
+      - ENVIRONMENT=docker
+      - RAG_SERVICE_URL=http://rag-service:8000
+    volumes:
+      - identifill_models:/app/models
+    networks:
+      - legalrag-network
+
+volumes:
+  identifill_models:
+
+networks:
+  legalrag-network:

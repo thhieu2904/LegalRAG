@@ -1,0 +1,27 @@
+# Add Docker ignore patterns for RAG service
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.gitignore
+README.md
+Dockerfile
+.docker
+.pytest_cache
+.vscode
+.idea
+data/cache/*
+data/models/*
+!data/cache/.gitkeep
+!data/models/.gitkeep
