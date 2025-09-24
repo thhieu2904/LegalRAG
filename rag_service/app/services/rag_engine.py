@@ -152,8 +152,8 @@ class OptimizedChatSession:
         if self.last_successful_timestamp and (time.time() - self.last_successful_timestamp > 600):
             return False
 
-        # Ngưỡng tin cậy "rất cao" mà chúng ta sẽ không can thiệp
-        VERY_HIGH_CONFIDENCE_GATE = 0.82 
+        # Ngưỡng tin cậy "rất cao" mà chúng ta sẽ không can thiệp (raised for follow-ups)
+        VERY_HIGH_CONFIDENCE_GATE = 0.92  # 🔥 RAISED: 0.82 → 0.92 to allow follow-up override
         # Ngưỡng tối thiểu của ngữ cảnh đã lưu để được coi là "tốt"
         MIN_CONTEXT_CONFIDENCE = 0.78
 
@@ -165,13 +165,18 @@ class OptimizedChatSession:
         if query:
             followup_signal = self.is_followup_question(query)
         
-        # Signal 3: Recent context (within 5 minutes for follow-ups)
-        recent_context_signal = self.last_successful_timestamp and (time.time() - self.last_successful_timestamp) < 300
+        # Signal 3: Recent context (within 10 minutes for follow-ups) - extended time
+        recent_context_signal = self.last_successful_timestamp and (time.time() - self.last_successful_timestamp) < 600
         
         # Override if:
         # - Traditional: low confidence + good context
         # - Follow-up: is follow-up + recent context (regardless of confidence)
-        should_override = bool(low_confidence_signal or (followup_signal and recent_context_signal))
+        # - 🔥 ENHANCED: Follow-up + good context (even if high confidence)
+        should_override = bool(
+            low_confidence_signal or 
+            (followup_signal and recent_context_signal) or
+            (followup_signal and self.last_successful_confidence >= MIN_CONTEXT_CONFIDENCE)
+        )
         
         if should_override:
             reason = "low_confidence" if low_confidence_signal else "followup_detection"
@@ -1124,11 +1129,14 @@ class RAGService:
             
             # If we have a preserved document, skip search and go directly to context expansion
             if preserved_document:
+                # ✅ CRITICAL FIX: Initialize nucleus_chunks to prevent UnboundLocalError
+                nucleus_chunks = []
+                
                 # 🚀 FIX: Map document title to correct DOC_XXX folder
                 doc_folder = self._map_document_title_to_doc_folder(preserved_document, best_collections[0])
                 if not doc_folder:
                     logger.error(f"❌ Could not map document title '{preserved_document}' to DOC folder")
-                    # Fallback to normal search
+                    # Fallback to normal search - set preserved_document = None to continue standard flow
                     preserved_document = None
                 else:
                     # 🚀 FIX: Load real document content instead of placeholder
@@ -1141,16 +1149,35 @@ class RAGService:
                     
                     if not nucleus_chunks:
                         logger.error(f"❌ Could not create real nucleus chunks for {preserved_document}")
-                        preserved_document = None
+                        # ✅ CRITICAL FIX: Create fallback nucleus chunks instead of setting None
+                        nucleus_chunks = [{
+                            "content": f"Preserved document: {preserved_document}",
+                            "score": 0.95,
+                            "id": "session_preserved",
+                            "metadata": {"source": preserved_document, "document_title": preserved_document},
+                            "source": {"file_path": preserved_document, "document_title": preserved_document}
+                        }]
+                        logger.warning(f"⚠️ Using fallback nucleus chunks for preserved document")
                     else:
                         logger.info(f"🔧 CREATED REAL NUCLEUS CHUNKS: {len(nucleus_chunks)} chunks with real content")
                 
-                # Skip to context expansion
-                logger.info(f"🔒 SESSION CONTINUITY: Skipping vector search and reranking for preserved document")
-                expanded_context = self.context_expansion_service.expand_context_with_nucleus(
-                    nucleus_chunks=nucleus_chunks,
-                    query=query  # 🎯 Pass query for prioritization
-                )
+                # ✅ ENSURE: nucleus_chunks is always defined at this point
+                if nucleus_chunks:
+                    # Skip to context expansion
+                    logger.info(f"🔒 SESSION CONTINUITY: Skipping vector search and reranking for preserved document")
+                    expanded_context = self.context_expansion_service.expand_context_with_nucleus(
+                        nucleus_chunks=nucleus_chunks,
+                        query=query  # 🎯 Pass query for prioritization
+                    )
+                else:
+                    # ✅ CRITICAL FIX: Fallback expanded_context if nucleus_chunks is empty
+                    expanded_context = {
+                        "expanded_content": [],
+                        "source_documents": [],
+                        "total_length": 0,
+                        "expansion_strategy": "session_fallback"
+                    }
+                    logger.error("❌ No nucleus_chunks available for session override - using fallback")
                 
                 # Skip ahead to context building
                 context_text = self._build_context_from_expanded(expanded_context, nucleus_chunks)
@@ -1595,9 +1622,16 @@ class RAGService:
                         source_docs = expanded_context['source_documents']
                         if source_docs:
                             main_doc = source_docs[0] if isinstance(source_docs, list) else str(source_docs)
-                            # Extract document title from path
+                            # Extract document title from path with path_config normalization
                             if isinstance(main_doc, str) and main_doc:
-                                doc_name = main_doc.split('\\')[-1].replace('.json', '') if '\\' in main_doc else main_doc
+                                # 🔥 PATH NORMALIZATION: Convert to consistent Docker format
+                                if path_config:
+                                    normalized_path = str(path_config.resolve_cross_platform_path(main_doc))
+                                    doc_name = normalized_path.split('/')[-1].replace('.json', '') if '/' in normalized_path else normalized_path
+                                else:
+                                    # Fallback: handle both Windows and Unix paths
+                                    doc_name = main_doc.split('\\')[-1].split('/')[-1].replace('.json', '')
+                                    
                                 enhanced_filters["source_file"] = doc_name
                                 # Also store in session metadata for persistence
                                 session.metadata["current_document"] = doc_name

@@ -43,6 +43,45 @@ class ContextExpander:
         logger.info(f"  Documents dir: {self.documents_dir}")
         logger.info(f"  Base data dir: {self.path_config.base_data_dir}")
 
+    def _normalize_source_file_path(self, source_file: str) -> str:
+        """
+        Normalize source file path to handle Windows/Docker path differences
+        
+        Args:
+            source_file: Raw source file path (may contain Windows drives, backslashes)
+            
+        Returns:
+            Normalized path string compatible with Docker environment
+        """
+        if not source_file:
+            return source_file
+            
+        # Convert to string and normalize
+        path_str = str(source_file).strip()
+        
+        # Replace backslashes with forward slashes
+        path_str = path_str.replace('\\', '/')
+        
+        # Remove Windows drive letters (C:, D:, etc.)
+        import re
+        path_str = re.sub(r'^[A-Za-z]:', '', path_str)
+        
+        # Extract the data/ portion if it exists
+        if '/data/' in path_str:
+            # Find data/ and keep everything from there
+            data_index = path_str.find('/data/')
+            path_str = path_str[data_index + 1:]  # Remove leading slash, keep 'data/...'
+        elif 'data/' in path_str:
+            # Find data/ and keep everything from there  
+            data_index = path_str.find('data/')
+            path_str = path_str[data_index:]
+        
+        # Remove leading slashes and dots
+        path_str = path_str.lstrip('./')
+        
+        logger.debug(f"🔧 Normalized path: {source_file} -> {path_str}")
+        return path_str
+    
     def _resolve_source_file_path(self, source_file: str) -> Path:
         """
         Resolve source file path using PathConfig for cross-platform compatibility
@@ -55,26 +94,36 @@ class ContextExpander:
         """
         logger.info(f"🔍 Resolving source file: {source_file}")
         
-        # Use PathConfig's cross-platform path resolution
+        # Normalize path first to handle Windows/Docker differences
+        normalized_path = self._normalize_source_file_path(source_file)
+        logger.info(f"🔧 Using normalized path: {normalized_path}")
+        
+        # Use PathConfig's cross-platform path resolution with normalized path
         try:
-            resolved_path = self.path_config.resolve_cross_platform_path(source_file)
+            resolved_path = self.path_config.resolve_cross_platform_path(normalized_path)
             logger.info(f"✅ Resolved path: {resolved_path}")
             return resolved_path
         except Exception as e:
-            logger.warning(f"PathConfig resolution failed: {e}")
+            logger.warning(f"PathConfig resolution failed for {normalized_path}: {e}")
             
-        # Fallback: manual resolution
-        if source_file.startswith("../"):
+        # Fallback: manual resolution using normalized path
+        if normalized_path.startswith("../"):
             # Remove "../" and create absolute path from base directory
-            relative_part = source_file.replace("../", "")
+            relative_part = normalized_path.replace("../", "")
             resolved_path = self.path_config.base_data_dir.parent / relative_part
-            logger.info(f"🔧 Fallback relative path: {source_file} -> {resolved_path}")
+            logger.info(f"🔧 Fallback relative path: {normalized_path} -> {resolved_path}")
             return resolved_path
         
-        elif source_file.startswith("data/storage/collections/"):
-            # Direct path from base
-            resolved_path = self.path_config.base_data_dir.parent / source_file
+        elif normalized_path.startswith("data/storage/collections/"):
+            # Direct path from base using normalized path
+            resolved_path = self.path_config.base_data_dir.parent / normalized_path
             logger.info(f"🔧 Fallback storage path: {resolved_path}")
+            return resolved_path
+        
+        elif normalized_path.startswith("data/"):
+            # Path relative to base_data_dir parent
+            resolved_path = self.path_config.base_data_dir.parent / normalized_path
+            logger.info(f"🔧 Fallback data path: {resolved_path}")
             return resolved_path
         
         elif "data/documents/" in source_file:
@@ -98,9 +147,9 @@ class ContextExpander:
                                     logger.info(f"✅ Found equivalent file: {json_file}")
                                     return json_file
         
-        # Final fallback: assume relative to data directory
-        fallback_path = self.path_config.base_data_dir / source_file
-        logger.warning(f"🚨 Using fallback path: {fallback_path}")
+        # Final fallback: assume relative to data directory using normalized path
+        fallback_path = self.path_config.base_data_dir / normalized_path
+        logger.warning(f"🚨 Using fallback path: {fallback_path} (from normalized: {normalized_path})")
         return fallback_path
 
     def expand_context_with_nucleus(
