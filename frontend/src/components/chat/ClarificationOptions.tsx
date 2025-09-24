@@ -126,8 +126,10 @@ export function ClarificationOptions({
         >
           <div className="option-header flex items-start gap-3 mb-2">
             {/* 🔥 ENHANCED: Question number with similarity ranking indicator */}
+            {/* Hide question numbers in Smart Confirmation (style="confirmation") */}
             {option.action === "proceed_with_question" &&
-              option.title !== "Câu hỏi khác..." && (
+              option.title !== "Câu hỏi khác..." &&
+              clarification.style !== "confirmation" && (
                 <div
                   className={`question-number flex-shrink-0 w-7 h-7 text-white text-sm font-bold rounded-full flex items-center justify-center ${
                     hasSimilarityScores && index === 0

@@ -751,7 +751,7 @@ class ClarificationService:
             )
         
         # Option 2: Show all questions in document (fallback option)
-        clarification_options.append(ClarificationOption(
+        show_all_option = ClarificationOption(
             id='show_all',
             title="Không chính xác, cho tôi xem các lựa chọn khác",
             description=f"Hiển thị tất cả câu hỏi về {source_procedure}",
@@ -764,7 +764,11 @@ class ClarificationService:
             source_file=None,
             context_type=None,
             category=None
-        ))
+        )
+        # Add original_query as additional attribute for _handle_show_document_questions
+        if hasattr(show_all_option, '__dict__'):
+            show_all_option.__dict__['original_query'] = original_query
+        clarification_options.append(show_all_option)
         
         # Option 3: Từ chối và chọn thủ tục khác
         clarification_options.append(ClarificationOption(
