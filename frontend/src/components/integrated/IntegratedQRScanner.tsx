@@ -114,22 +114,22 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
       </div>
 
       {/* Method Tabs */}
-      <div className="method-tabs">
-        <button
+      {/* <div className="method-tabs"> */}
+      {/* <button
           onClick={() => setScanMethod("camera")}
           className={`method-tab ${scanMethod === "camera" ? "active" : ""}`}
         >
           <Camera size={18} />
           <span>Camera</span>
-        </button>
-        <button
+        </button> */}
+      {/* <button
           onClick={() => setScanMethod("upload")}
           className={`method-tab ${scanMethod === "upload" ? "active" : ""}`}
         >
           <Upload size={18} />
           <span>Tải ảnh</span>
-        </button>
-      </div>
+        </button> */}
+      {/* </div> */}
 
       {/* Scrollable Content */}
       <div className="scanner-content">
@@ -141,9 +141,7 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
                 onImageCapture={handleCameraCapture}
                 onError={handleCameraError}
                 isCapturing={isScanning}
-                captureButtonText={
-                  isScanning ? "Đang xử lý..." : "Đang quét..."
-                }
+                captureButtonText={isScanning ? "Đang xử lý..." : "Chụp & Quét"}
               />
             </div>
           ) : (
@@ -188,11 +186,6 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
           <div className="info-area">
             <div className="info-header">
               <h3 className="info-title">📋 Thông tin từ CCCD</h3>
-              {onReset && (
-                <button onClick={onReset} className="reset-button">
-                  Quét lại
-                </button>
-              )}
             </div>
             <div className="info-grid">
               <div className="info-item">

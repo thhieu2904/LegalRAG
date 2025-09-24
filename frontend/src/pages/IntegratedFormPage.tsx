@@ -123,10 +123,11 @@ const IntegratedFormPage = () => {
       ...manualData, // Manual data có priority cao hơn (override CCCD nếu có)
     };
 
-    if (!cccdData && Object.keys(manualData).length === 0) {
-      alert("Vui lòng quét CCCD hoặc nhập thông tin thủ công trước khi tải về");
-      return;
-    }
+    // Bỏ check này để cho phép tải biểu mẫu trống
+    // if (!cccdData && Object.keys(manualData).length === 0) {
+    //   alert("Vui lòng quét CCCD hoặc nhập thông tin thủ công trước khi tải về");
+    //   return;
+    // }
 
     setIsDownloading(true);
     try {
@@ -234,12 +235,10 @@ const IntegratedFormPage = () => {
                   {isFormLoaded ? "✅ Form đã tải" : "⏳ Đang tải form..."}
                 </div>
 
-                {/* Action buttons - Updated với manual data logic */}
+                {/* Action buttons - Luôn hiển thị nút tải sau khi form đã load */}
                 <div className="action-buttons">
                   {cccdData && (
-                    <div className="auto-fill-status">
-                      🎯 Auto preview đang hiển thị
-                    </div>
+                    <div className="auto-fill-status">🎯 Đã quét CCCD</div>
                   )}
 
                   {Object.keys(manualData).length > 0 && (
@@ -248,7 +247,8 @@ const IntegratedFormPage = () => {
                     </div>
                   )}
 
-                  {(cccdData || Object.keys(manualData).length > 0) && (
+                  {/* Luôn hiển thị nút tải sau khi form đã load */}
+                  {isFormLoaded && (
                     <button
                       onClick={handleDownloadFilledForm}
                       disabled={isDownloading}
@@ -262,7 +262,9 @@ const IntegratedFormPage = () => {
                       ) : (
                         <>
                           <Download size={16} />
-                          Tải về file Word
+                          {cccdData || Object.keys(manualData).length > 0
+                            ? "Tải về file Word"
+                            : "Tải biểu mẫu trống"}
                         </>
                       )}
                     </button>
