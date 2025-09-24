@@ -29,10 +29,13 @@ export const EditablePlaceholder: React.FC<EditablePlaceholderProps> = ({
   const popoverRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sync input value when prop value changes
+  // 🎯 FIX: Cập nhật inputValue khi value prop thay đổi (từ CCCD scan hoặc manual data)
   useEffect(() => {
+    console.log(
+      `🔄 EditablePlaceholder ${fieldName}: value changed to "${value}"`
+    );
     setInputValue(value);
-  }, [value]);
+  }, [value, fieldName]);
 
   // Auto focus input when popover opens
   useEffect(() => {
@@ -86,6 +89,15 @@ export const EditablePlaceholder: React.FC<EditablePlaceholderProps> = ({
   const displayValue = value || cccdValue || "[Cần điền]";
   const hasValue = Boolean(value);
   const hasCCCDValue = Boolean(cccdValue);
+
+  // 🎯 DEBUG: Log render state
+  console.log(`🔍 EditablePlaceholder ${fieldName} render:`, {
+    value,
+    cccdValue,
+    displayValue,
+    hasValue,
+    hasCCCDValue,
+  });
 
   return (
     <div className="editable-placeholder-container">

@@ -10,6 +10,8 @@ import { ChatHeader } from "../components/chat/ChatHeader";
 import { ChatFooter } from "../components/chat/ChatFooter";
 import { FormRenderer } from "../components/forms/FormRenderer";
 import { IntegratedQRScanner } from "../components/integrated/IntegratedQRScanner";
+import { ConflictDialog } from "../components/forms/ConflictDialog";
+import { useFormDataManager } from "../hooks/useFormDataManager";
 import { Download, Loader, AlertCircle } from "lucide-react";
 import { formAPI } from "../api/form-api";
 import type { CCCDData } from "../api/qr-scanner-api";
@@ -28,12 +30,29 @@ const IntegratedFormPage = () => {
   const [formData, setFormData] = useState<FormRenderResult | null>(null);
   const [formLoading, setFormLoading] = useState<boolean>(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [cccdData, setCccdData] = useState<CCCDData | null>(null);
   const [isFormLoaded, setIsFormLoaded] = useState<boolean>(false);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
-  // 🎯 PHASE 3: State trung tâm cho manual data
-  const [manualData, setManualData] = useState<Record<string, string>>({});
+  // 🎯 PHASE 3: Sử dụng Form Data Manager hook
+  const {
+    cccdData,
+    manualData,
+    userEditedFields,
+    handleManualDataChange,
+    handleQRScanResult: handleQRData,
+    resetQRScan: resetQRData,
+    getFinalData,
+    isFieldEdited,
+    getFieldValue,
+    getFieldSource,
+  } = useFormDataManager();
+
+  // States for conflict dialog
+  const [showConflictDialog, setShowConflictDialog] = useState(false);
+  const [currentConflicts, setCurrentConflicts] = useState<string[]>([]);
+  const [conflictResolver, setConflictResolver] = useState<
+    ((useQRData: boolean) => void) | null
+  >(null);
 
   // Load form khi component mount hoặc tham số thay đổi
   useEffect(() => {
@@ -78,19 +97,20 @@ const IntegratedFormPage = () => {
     }
   };
 
-  // 🎯 PHASE 3: Callback để cập nhật manual data từ EditablePlaceholder
-  const handleManualDataChange = (fieldName: string, value: string) => {
-    setManualData((prev) => ({
-      ...prev,
-      [fieldName]: value,
-    }));
-    console.log(`✏️ Manual data updated: ${fieldName} = "${value}"`);
+  // Conflict resolution handler
+  const handleConflictResolution = async (
+    conflicts: string[]
+  ): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setCurrentConflicts(conflicts);
+      setShowConflictDialog(true);
+      setConflictResolver(() => resolve);
+    });
   };
 
-  // Xử lý kết quả QR scan
-  const handleQRScanResult = (data: CCCDData) => {
-    setCccdData(data);
-    console.log("✅ QR scan thành công:", data);
+  // Xử lý kết quả QR scan với conflict detection
+  const handleQRScanResult = async (data: CCCDData) => {
+    await handleQRData(data, handleConflictResolution);
   };
 
   // Xử lý lỗi QR scan
@@ -100,9 +120,16 @@ const IntegratedFormPage = () => {
 
   // Reset QR scan
   const resetQRScan = () => {
-    setCccdData(null);
-    // 🎯 PHASE 3: Reset manual data khi reset QR scan (optional)
-    // setManualData({}); // Uncomment if you want to clear manual data on QR reset
+    resetQRData();
+  };
+
+  // Handle conflict dialog decisions
+  const handleConflictDecision = (useQRData: boolean) => {
+    setShowConflictDialog(false);
+    if (conflictResolver) {
+      conflictResolver(useQRData);
+      setConflictResolver(null);
+    }
   };
 
   // Xử lý form load complete
@@ -117,17 +144,8 @@ const IntegratedFormPage = () => {
       return;
     }
 
-    // 🎯 PHASE 3: Merge CCCD data với manual data
-    const finalData = {
-      ...cccdData, // CCCD data làm base
-      ...manualData, // Manual data có priority cao hơn (override CCCD nếu có)
-    };
-
-    // Bỏ check này để cho phép tải biểu mẫu trống
-    // if (!cccdData && Object.keys(manualData).length === 0) {
-    //   alert("Vui lòng quét CCCD hoặc nhập thông tin thủ công trước khi tải về");
-    //   return;
-    // }
+    // 🎯 PHASE 3: Sử dụng getFinalData từ hook
+    const finalData = getFinalData();
 
     setIsDownloading(true);
     try {
@@ -247,6 +265,12 @@ const IntegratedFormPage = () => {
                     </div>
                   )}
 
+                  {userEditedFields.size > 0 && (
+                    <div className="edit-status">
+                      📝 Đã chỉnh sửa {userEditedFields.size} trường
+                    </div>
+                  )}
+
                   {/* Luôn hiển thị nút tải sau khi form đã load */}
                   {isFormLoaded && (
                     <button
@@ -293,6 +317,8 @@ const IntegratedFormPage = () => {
                         ? (cccdData as unknown as Record<string, string>)
                         : {}
                     }
+                    getFieldValue={getFieldValue}
+                    getFieldSource={getFieldSource}
                   />
                 )}
               </div>
@@ -303,6 +329,23 @@ const IntegratedFormPage = () => {
 
       {/* FOOTER */}
       <ChatFooter />
+
+      {/* CONFLICT DIALOG */}
+      {showConflictDialog && cccdData && (
+        <ConflictDialog
+          isOpen={showConflictDialog}
+          conflicts={currentConflicts.map((fieldName) => ({
+            fieldName,
+            displayName: fieldName
+              .replace(/^(scan_|form_)/, "")
+              .replace(/_/g, " "),
+            manualValue: manualData[fieldName] || "",
+            cccdValue: cccdData[fieldName as keyof CCCDData] || "",
+          }))}
+          onResolve={(shouldOverride) => handleConflictDecision(shouldOverride)}
+          onClose={() => handleConflictDecision(false)}
+        />
+      )}
     </div>
   );
 };

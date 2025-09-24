@@ -153,6 +153,14 @@
   border-radius: 4px;
 }
 
+.edit-status {
+  font-size: 12px;
+  color: #7c3aed;
+  background: #ede9fe;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
 /* Download button styling */
 .download-button {
   display: flex;
@@ -269,6 +277,14 @@
   border-radius: 3px !important;
   transition: all 0.2s ease;
   color: transparent !important; /* Ẩn {{placeholder_scan_xxx}} text */
+}
+
+/* 🎯 FIX: Đảm bảo React hydrated components luôn hiển thị */
+[class^="placeholder_"].react-hydrated {
+  color: inherit !important; /* Override transparent color */
+  background: transparent !important; /* Let React component handle styling */
+  border: none !important; /* Let React component handle styling */
+  padding: 0 !important; /* Let React component handle styling */
 }
 
 /* Hiển thị text "Cần quét" giống style "Cần điền" nhưng không thay đổi layout */
