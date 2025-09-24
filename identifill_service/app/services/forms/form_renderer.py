@@ -3,12 +3,14 @@ Form Rendering Service - DOCX to HTML Conversion (Giai đoạn 1)
 Đúng theo kế hoạch ban đầu: Mammoth → HTML string → Frontend render
 """
 
-import logging
-import requests
-import mammoth
-from pathlib import Path
-from typing import Dict, List, Optional, Any
+import io
 import json
+import logging
+import aiohttp
+from typing import Dict, Any, Optional, List
+from bs4 import BeautifulSoup
+import re
+import mammoth
 from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)
@@ -19,7 +21,10 @@ class FormRenderingService:
     Theo đúng kế hoạch giai đoạn 1: Mammoth → HTML → dangerouslySetInnerHTML
     """
     
-    def __init__(self, rag_service_url: str = "http://localhost:8000"):
+    def __init__(self, rag_service_url: Optional[str] = None):
+        from app.core.config import settings
+        if rag_service_url is None:
+            rag_service_url = settings.RAG_SERVICE_URL
         self.rag_service_url = rag_service_url
         logger.info(f"FormRenderingService initialized with RAG URL: {rag_service_url}")
     
@@ -37,20 +42,20 @@ class FormRenderingService:
             HTML string để frontend render với dangerouslySetInnerHTML
         """
         try:
-            # Get form file info từ RAG service
-            response = requests.get(
-                f"{self.rag_service_url}/api/forms/file/{collection_id}/{doc_id}/{form_filename}",
-                timeout=30
-            )
-            
-            if response.status_code != 200:
-                raise HTTPException(status_code=response.status_code, detail="Cannot get form file from RAG service")
-            
-            file_info = response.json()
-            if not file_info.get("success"):
-                raise HTTPException(status_code=400, detail="RAG service error")
-            
-            file_path = file_info["data"]["file_path"]
+            # Get form file info từ RAG service (async)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    f"{self.rag_service_url}/api/forms/file/{collection_id}/{doc_id}/{form_filename}",
+                    timeout=aiohttp.ClientTimeout(total=30)
+                ) as response:
+                    if response.status != 200:
+                        raise HTTPException(status_code=response.status, detail="Cannot get form file from RAG service")
+                    
+                    file_info = await response.json()
+                    if not file_info.get("success"):
+                        raise HTTPException(status_code=400, detail="RAG service error")
+                    
+                    file_path = file_info["data"]["file_path"]
             
             # Convert DOCX to HTML using Mammoth với cấu hình tối giản
             # để tránh lỗi alignment và checkbox
@@ -90,7 +95,7 @@ class FormRenderingService:
                 }
             }
             
-        except requests.RequestException as e:
+        except aiohttp.ClientError as e:
             logger.error(f"Network error calling RAG service: {e}")
             raise HTTPException(status_code=503, detail="Cannot connect to RAG service")
         except Exception as e:

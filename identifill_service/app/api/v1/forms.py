@@ -6,14 +6,15 @@ from pydantic import BaseModel
 
 from app.services.forms.form_renderer import FormRenderingService
 from app.services.template_filling_service import TemplateFillingService
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# Initialize services
-form_renderer = FormRenderingService(rag_service_url="http://localhost:8000")
-template_filler = TemplateFillingService(rag_service_url="http://localhost:8000")
+# Initialize services with config-based URL
+form_renderer = FormRenderingService(rag_service_url=settings.RAG_SERVICE_URL)
+template_filler = TemplateFillingService(rag_service_url=settings.RAG_SERVICE_URL)
 
 # Request models
 class CombinedFillRequest(BaseModel):

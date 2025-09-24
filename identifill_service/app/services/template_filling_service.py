@@ -8,6 +8,7 @@ import io
 import logging
 import aiohttp
 import tempfile
+from typing import Optional
 import re
 from pathlib import Path
 from typing import Dict, Any, Optional, List
@@ -17,7 +18,10 @@ from docx import Document
 logger = logging.getLogger(__name__)
 
 class TemplateFillingService:
-    def __init__(self, rag_service_url: str = "http://localhost:8000"):
+    def __init__(self, rag_service_url: Optional[str] = None):
+        from app.core.config import settings
+        if rag_service_url is None:
+            rag_service_url = settings.RAG_SERVICE_URL
         self.rag_service_url = rag_service_url
         self.placeholder_pattern = re.compile(r'\{\{([^}]+)\}\}')
         logger.info("TemplateFillingService initialized with direct mapping logic")
