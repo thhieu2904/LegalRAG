@@ -17,6 +17,15 @@ export type {
 export { cccdScannerAPI } from "./qr-scanner-api";
 export type { CCCDData, CCCDScanResult, ScanMode } from "./qr-scanner-api";
 
+// Collection Mapping APIs
+export {
+  formatCollectionName,
+  formatDocumentName,
+  getAvailableCollections,
+  getCollectionDisplayName,
+  isValidCollection,
+} from "./collection-mapping";
+
 // Form APIs
 export { formAPI } from "./form-api";
 export type { FormRenderResult } from "./form-api";

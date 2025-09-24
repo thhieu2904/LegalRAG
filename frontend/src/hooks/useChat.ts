@@ -16,6 +16,7 @@ interface Message {
   clarification?: ClarificationData;
   processingTime?: number;
   sourceDocuments?: string[];
+  sourceCollections?: string[]; // 🔥 NEW: Source collections for display
   formAttachments?: FormAttachment[]; // 🔥 NEW: Form attachments
   apiResponse?: ApiResponse; // Store full API response for advanced handling
 }
@@ -71,6 +72,7 @@ export function useChat(options: UseChatOptions = {}) {
       clarification?: ClarificationData,
       processingTime?: number,
       sourceDocuments?: string[],
+      sourceCollections?: string[], // 🔥 NEW: Source collections parameter
       formAttachments?: FormAttachment[], // 🔥 NEW: Form attachments parameter
       apiResponse?: ApiResponse
     ) => {
@@ -85,6 +87,7 @@ export function useChat(options: UseChatOptions = {}) {
         clarification,
         processingTime,
         sourceDocuments,
+        sourceCollections, // 🔥 NEW: Include source collections
         formAttachments, // 🔥 NEW: Include form attachments
         apiResponse,
       };
@@ -175,6 +178,7 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
@@ -191,17 +195,14 @@ export function useChat(options: UseChatOptions = {}) {
             if (apiResponse.options && apiResponse.options.length > 0) {
               // Direct structure - new format
               clarificationData = {
-                type: apiResponse.type,
-                confidence_level: apiResponse.confidence_level || "medium",
-                confidence: apiResponse.confidence,
                 message: apiResponse.message || "",
                 options: apiResponse.options,
+                style: apiResponse.style || "default",
                 target_collection: apiResponse.target_collection,
                 document: apiResponse.document,
                 procedure: apiResponse.procedure,
                 show_manual_input: apiResponse.show_manual_input,
                 manual_input_placeholder: apiResponse.manual_input_placeholder,
-                style: apiResponse.style,
               };
             } else {
               // Legacy nested structure
@@ -221,6 +222,7 @@ export function useChat(options: UseChatOptions = {}) {
               clarificationData as ClarificationData,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
@@ -231,6 +233,7 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               undefined, // No form attachments for no_results
               apiResponse
             );
@@ -246,6 +249,7 @@ export function useChat(options: UseChatOptions = {}) {
             undefined,
             response.processing_time,
             response.sources,
+            undefined, // No source collections in fallback
             response.form_attachments // 🔥 NEW: Pass form attachments from fallback
           );
         }
@@ -360,6 +364,7 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
@@ -377,6 +382,7 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               undefined, // No form attachments for manual input request
               apiResponse
             );
@@ -397,17 +403,14 @@ export function useChat(options: UseChatOptions = {}) {
             if (apiResponse.options && apiResponse.options.length > 0) {
               // Direct structure
               clarificationData = {
-                type: apiResponse.type,
-                confidence_level: apiResponse.confidence_level || "medium",
-                confidence: apiResponse.confidence,
                 message: apiResponse.message || "",
                 options: apiResponse.options,
+                style: apiResponse.style || "default",
                 target_collection: apiResponse.target_collection,
                 document: apiResponse.document,
                 procedure: apiResponse.procedure,
                 show_manual_input: apiResponse.show_manual_input,
                 manual_input_placeholder: apiResponse.manual_input_placeholder,
-                style: apiResponse.style,
                 original_query: originalQuery,
               };
             } else {
@@ -426,6 +429,7 @@ export function useChat(options: UseChatOptions = {}) {
               clarificationData,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
@@ -437,6 +441,7 @@ export function useChat(options: UseChatOptions = {}) {
             undefined,
             response.processing_time,
             response.sources,
+            undefined, // No source collections in fallback
             response.form_attachments // 🔥 NEW: Pass form attachments from fallback
           );
           // 🔧 Clear currentClarification for non-API responses

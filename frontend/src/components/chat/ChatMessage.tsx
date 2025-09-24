@@ -5,6 +5,10 @@ import { User, FileText } from "lucide-react";
 import { ClarificationOptions } from "./ClarificationOptions";
 import { Link } from "react-router-dom";
 import type { ClarificationOption } from "../../services/chatService";
+import {
+  formatCollectionName,
+  formatDocumentName,
+} from "../../api/collection-mapping";
 
 // Form attachment interface
 interface FormAttachment {
@@ -15,17 +19,21 @@ interface FormAttachment {
   collection_id: string;
 }
 
+// Import ClarificationData type
+import type { ClarificationData } from "../../services/chatService";
+
 // Use Message from useChat hook since MainChatPage uses useChat
 interface Message {
   id: string;
   content: string;
   isBot: boolean;
   timestamp: string;
-  clarification?: any;
+  clarification?: ClarificationData;
   processingTime?: number;
   sourceDocuments?: string[];
+  sourceCollections?: string[]; // 🔥 NEW: Source collections for display
   formAttachments?: FormAttachment[];
-  apiResponse?: any;
+  apiResponse?: unknown;
 }
 
 interface ChatMessageProps {
@@ -41,11 +49,7 @@ export function ChatMessage({
 }: ChatMessageProps) {
   const isBot = message.isBot;
 
-  const formatFileName = (filePath: string): string => {
-    const fileName =
-      filePath.split("\\").pop()?.replace(".json", "") || filePath;
-    return fileName;
-  };
+  // Using centralized API functions for formatting
 
   return (
     <div className="chat-message-container">
@@ -90,6 +94,8 @@ export function ChatMessage({
               {/* Attachments Section */}
               {((message.sourceDocuments &&
                 message.sourceDocuments.length > 0) ||
+                (message.sourceCollections &&
+                  message.sourceCollections.length > 0) ||
                 (message.formAttachments &&
                   message.formAttachments.length > 0)) && (
                 <div className="attachments-section">
@@ -99,28 +105,50 @@ export function ChatMessage({
                   </div>
 
                   <div className="attachments-rows">
-                    {/* Source Documents Row */}
+                    {/* Collections Row */}
+                    {message.sourceCollections &&
+                      message.sourceCollections.length > 0 && (
+                        <div className="attachments-row collections-row">
+                          <div className="collections-content">
+                            <span className="collections-label">
+                              📚 Bộ thủ tục:{" "}
+                            </span>
+                            <span className="collections-list">
+                              {message.sourceCollections.map(
+                                (collection: string, index: number) => (
+                                  <span key={index} className="collection-item">
+                                    {formatCollectionName(collection)}
+                                    {index <
+                                      message.sourceCollections!.length - 1 &&
+                                      ", "}
+                                  </span>
+                                )
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                    {/* Documents Row */}
                     {message.sourceDocuments &&
                       message.sourceDocuments.length > 0 && (
-                        <div className="attachments-row source-documents-row">
-                          <div className="row-title">
-                            📄 Tài liệu tham khảo (
-                            {message.sourceDocuments.length})
-                          </div>
-                          <div className="attachments-list source-documents-list">
-                            {message.sourceDocuments.map(
-                              (doc: string, index: number) => (
-                                <div
-                                  key={index}
-                                  className="attachment-item source-item"
-                                >
-                                  <FileText className="attachment-icon" />
-                                  <span className="attachment-name">
-                                    {formatFileName(doc)}
+                        <div className="attachments-row documents-row">
+                          <div className="documents-content">
+                            <span className="documents-label">
+                              📄 Tài liệu:{" "}
+                            </span>
+                            <span className="documents-list">
+                              {message.sourceDocuments.map(
+                                (doc: string, index: number) => (
+                                  <span key={index} className="document-item">
+                                    {formatDocumentName(doc, index)}
+                                    {index <
+                                      message.sourceDocuments!.length - 1 &&
+                                      ", "}
                                   </span>
-                                </div>
-                              )
-                            )}
+                                )
+                              )}
+                            </span>
                           </div>
                         </div>
                       )}
