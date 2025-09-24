@@ -86,7 +86,6 @@ export const EditablePlaceholder: React.FC<EditablePlaceholderProps> = ({
   const displayValue = value || cccdValue || "[Cần điền]";
   const hasValue = Boolean(value);
   const hasCCCDValue = Boolean(cccdValue);
-  const showingCCCDData = !value && Boolean(cccdValue); // Hiển thị CCCD data (chưa có manual input)
 
   return (
     <div className="editable-placeholder-container">

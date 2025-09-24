@@ -14,8 +14,9 @@ const COLLECTION_NAME_MAPPING: { [key: string]: string } = {
   quy_trinh_ho_tich_cap_tp: "Hộ tịch cấp thành phố",
   quy_trinh_luat_su: "Luật sư",
   quy_trinh_nuoi_con_nuoi: "Nuôi con nuôi",
-  quy_trinh_pbgdpl_htpldn: "Phòng bảo gồm đặc lợi HTPL DN",
-  quy_trinh_quan_tai_vien: "Quan tài viên",
+  quy_trinh_pbgdpl_htpldn:
+    "Phổ biến, giáo dục pháp luật & Hỗ trợ pháp lý cho doanh nghiệp",
+  quy_trinh_quan_tai_vien: "Quản   tài viên",
   quy_trinh_thua_phat_lai: "Thừa phát lại",
   quy_trinh_trong_tai_thuong_mai: "Trọng tài thương mại",
   quy_trinh_tu_van_phap_luat: "Tư vấn pháp luật",

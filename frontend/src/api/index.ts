@@ -35,7 +35,7 @@ export type { FormRenderResult } from "./form-api";
 // export type { CCCDData, OCRResult, OCRHistory } from "./ocr-api";
 
 // Axios instances (nếu cần sử dụng trực tiếp)
-export { ragAPI, identifillAPI, ocrAPI as ocrAxios } from "./axios-config";
+export { ragAPI, identifillAPI } from "./axios-config";
 
 // ========================================
 // CÁCH SỬ DỤNG TRONG COMPONENTS:
