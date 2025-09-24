@@ -131,6 +131,28 @@ class PathConfig:
         # Normalize separators
         normalized = path_str.replace("\\", "/")
         
+        # 🔧 DOCKER FIX: Handle absolute Windows paths in Docker environment
+        if self.environment == "docker":
+            logger.info(f"🔧 DEBUG: Processing path in Docker: {normalized}")
+            # Check for Windows absolute path patterns: D:\... or D:/...
+            windows_patterns = [
+                "Personal/LegalRAG_OCR/rag_service/data/",
+                "Personal\\LegalRAG_OCR\\rag_service\\data\\",
+            ]
+            
+            for pattern in windows_patterns:
+                if pattern in normalized:
+                    logger.info(f"🔧 DEBUG: Found pattern '{pattern}' in path")
+                    # Extract relative path from Windows absolute path
+                    # D:\Personal\LegalRAG_OCR\rag_service\data\storage\collections\...
+                    # -> /app/data/storage/collections/...
+                    parts = normalized.split(pattern)
+                    if len(parts) > 1:
+                        relative_path = parts[1]
+                        docker_path = Path(f"/app/data/{relative_path}")
+                        logger.info(f"🔧 Converted Windows absolute path to Docker: {path_str} -> {docker_path}")
+                        return docker_path
+        
         # Handle relative paths
         if normalized.startswith("../"):
             # Remove ../ and resolve from base

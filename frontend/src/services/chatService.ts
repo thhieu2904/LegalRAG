@@ -152,7 +152,7 @@ export class ChatService {
           headers: {
             "Content-Type": "application/json",
           },
-          timeout: 60000, // Increase timeout to 60 seconds for complex queries
+          timeout: 60000, // Increase timeout to 600 seconds for complex queries
         }
       );
 

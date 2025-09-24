@@ -20,7 +20,7 @@ services:
       - "8000:8000"
     environment:
       - PYTHONPATH=/app
-      - HF_CACHE_DIR=/app/data/cache
+      - HF_CACHE_DIR=/app/data/models/hf_cache
       - CUDA_VISIBLE_DEVICES=0
       # Path Configuration for Docker compatibility
       - ENVIRONMENT=docker

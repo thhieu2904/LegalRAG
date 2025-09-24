@@ -1,40 +1,43 @@
-# Identifill Service Dockerfile - Fixed OpenCV conflict
+# Identifill Service Dockerfile
 FROM python:3.11-slim
 
-# Set working directory
-WORKDIR /app
-
-# Install system dependencies for OpenCV and QR code processing
+# Install system dependencies for OpenCV and QR scanning
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-dev \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
-    libgomp1 \
-    libgthread-2.0-0 \
     libzbar0 \
     libzbar-dev \
-    gcc \
-    g++ \
-    cmake \
+    libgl1-mesa-dev \
+    libglib2.0-0 \
+    libgthread-2.0-0 \
+    libsm6 \
+    libxext6 \
+    libfontconfig1 \
+    libxrender1 \
+    libice6 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python packages directly
+WORKDIR /app
+
+# Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Copy application code
 COPY . .
 
-# Create necessary directories
-RUN mkdir -p models
+# Create models directory for volume mounting
+RUN mkdir -p /app/models
 
-# Expose port
+# Expose the port
 EXPOSE 8002
 
 # Set environment variables
 ENV PYTHONPATH=/app
+ENV ENVIRONMENT=docker
 
-# Command to run the service
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8002/health || exit 1
+
+# Start the application
 CMD ["python", "main.py"]

@@ -1,0 +1,81 @@
+name: legalrag-dev
+services:
+  # Frontend Service - Development
+  frontend:
+    container_name: legalrag-frontend-dev
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - rag-service
+      - identifill-service
+    volumes:
+      # Mount source code for hot reload
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/tailwind.config.js:/app/tailwind.config.js
+    networks:
+      - legalrag-network
+
+  # RAG Service with GPU - Development
+  rag-service:
+    container_name: legalrag-rag-service-dev
+    build: ./rag_service
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - HF_CACHE_DIR=/app/data/models/hf_cache
+      - CUDA_VISIBLE_DEVICES=0
+      # Path Configuration for Docker compatibility
+      - ENVIRONMENT=docker
+      - LEGALRAG_BASE_PATH=/app
+      - LEGALRAG_DATA_PATH=/app/data
+    volumes:
+      # Data persistence
+      - ./rag_service/data:/app/data
+      # Configuration hot reload
+      - ./rag_service/.env:/app/.env
+      # Source code hot reload
+      - ./rag_service/app:/app/app
+      - ./rag_service/main.py:/app/main.py
+      - ./rag_service/requirements.txt:/app/requirements.txt
+    networks:
+      - legalrag-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Identifill Service - Development
+  identifill-service:
+    container_name: legalrag-identifill-service-dev
+    build: ./identifill_service
+    ports:
+      - "8002:8002"
+    environment:
+      - PYTHONPATH=/app
+      - ENVIRONMENT=docker
+      - RAG_SERVICE_URL=http://rag-service:8000
+    volumes:
+      # Model persistence
+      - identifill_models:/app/models
+      # Source code hot reload
+      - ./identifill_service/app:/app/app
+      - ./identifill_service/main.py:/app/main.py
+      - ./identifill_service/requirements.txt:/app/requirements.txt
+      - ./identifill_service/environment.yml:/app/environment.yml
+    networks:
+      - legalrag-network
+
+volumes:
+  identifill_models:
+
+networks:
+  legalrag-network:

@@ -489,6 +489,71 @@ class RAGService:
             logger.error(f"Error initializing services: {e}")
             raise
     
+    def _normalize_paths_for_docker(self, response: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Normalize Windows paths to Docker paths for form detection compatibility
+        
+        Args:
+            response: RAG response với source_documents có thể chứa Windows paths
+            
+        Returns:
+            Response với normalized Docker paths
+        """
+        normalized_response = response.copy()
+        
+        try:
+            context_info = normalized_response.get("context_info", {})
+            source_documents = context_info.get("source_documents", [])
+            
+            if source_documents:
+                normalized_docs = []
+                for doc_path in source_documents:
+                    if isinstance(doc_path, str):
+                        # 🔧 FIXED PATTERN: Handle actual vector DB paths
+                        # D:\Personal\LegalRAG_OCR\rag_service\data\storage\collections\...
+                        # -> /app/data/storage/collections/...
+                        
+                        if "\\rag_service\\data\\storage\\collections\\" in doc_path:
+                            # Extract everything after "data\storage\collections\"
+                            parts = doc_path.split("\\data\\storage\\collections\\")
+                            if len(parts) > 1:
+                                relative_path = parts[1].replace("\\", "/")
+                                docker_path = f"/app/data/storage/collections/{relative_path}"
+                                normalized_docs.append(docker_path)
+                                logger.info(f"🔧 Path normalized: {doc_path[:60]}... -> {docker_path}")
+                            else:
+                                normalized_docs.append(doc_path)
+                        elif doc_path.startswith("/app/data/"):
+                            # Already Docker path
+                            normalized_docs.append(doc_path)
+                        else:
+                            # Try generic D:\ pattern
+                            if doc_path.startswith("D:\\") and "\\data\\storage\\collections\\" in doc_path:
+                                # Extract from data onwards
+                                idx = doc_path.find("\\data\\storage\\collections\\")
+                                if idx > 0:
+                                    relative_part = doc_path[idx+1:].replace("\\", "/") # Remove leading \
+                                    docker_path = f"/app/{relative_part}"
+                                    normalized_docs.append(docker_path)
+                                    logger.info(f"🔧 Generic path normalized: {docker_path}")
+                                else:
+                                    normalized_docs.append(doc_path)
+                            else:
+                                normalized_docs.append(doc_path)
+                    else:
+                        normalized_docs.append(doc_path)
+                
+                # Update normalized response
+                normalized_response["context_info"]["source_documents"] = normalized_docs
+                logger.info(f"✅ Normalized {len(normalized_docs)} source document paths")
+                
+        except Exception as e:
+            logger.error(f"Error normalizing paths: {e}")
+            # Return original response if normalization fails
+            return response
+            
+        return normalized_response
+    
     # 🚀 HELPER METHODS - INTELLIGENT SYSTEM UTILITIES
     
     def _map_document_title_to_doc_folder(self, document_title: str, collection: str) -> Optional[str]:
@@ -497,9 +562,14 @@ class RAGService:
         """
         try:
             import os
-            # Try to find matching document folder
-            collection_path = f"data/storage/collections/{collection}/documents"
-            if os.path.exists(collection_path):
+            # ✅ FIX: Use PathConfig for proper Docker/local path resolution
+            if not hasattr(self, 'path_config') or self.path_config is None:
+                from ..core.path_config import PathConfig
+                self.path_config = PathConfig()
+            
+            # Use PathConfig instead of hard-coded paths
+            collection_path = self.path_config.collections_dir / collection / "documents"
+            if collection_path.exists():
                 for doc_folder in os.listdir(collection_path):
                     if doc_folder.startswith("DOC_"):
                         doc_path = os.path.join(collection_path, doc_folder)
@@ -602,9 +672,14 @@ class RAGService:
         🎯 PHASE 4: SYNCHRONIZE CONTENT FORMAT với context expansion
         """
         try:
-            # Construct full source path with absolute path
-            base_path = Path(__file__).parent.parent.parent / "data" / "storage" / "collections"
-            full_source_path = base_path / collection / "documents" / doc_folder / f"{preserved_document}.json"
+            # ✅ FIX: Use PathConfig for proper Docker/local path resolution
+            if not hasattr(self, 'path_config') or self.path_config is None:
+                from ..core.path_config import PathConfig
+                self.path_config = PathConfig()
+                logger.info("PathConfig initialized for _create_real_nucleus_chunks")
+            
+            # Use PathConfig instead of hard-coded paths
+            full_source_path = self.path_config.collections_dir / collection / "documents" / doc_folder / f"{preserved_document}.json"
             
             if not full_source_path.exists():
                 logger.error(f"❌ Source file not found: {full_source_path}")
@@ -1221,6 +1296,9 @@ class RAGService:
             # Phase 1: Reranking - Load Reranker, Unload LLM nếu cần
             logger.info("🔄 PHASE 1: Reranking (GPU) - Optimizing VRAM usage...")
             
+            # ✅ CRITICAL FIX: Initialize nucleus_chunks to prevent UnboundLocalError
+            nucleus_chunks = []
+            
             # Temporarily unload LLM để đảm bảo VRAM cho reranker
             if hasattr(self.llm_service, 'unload_model'):
                 self.llm_service.unload_model()
@@ -1294,11 +1372,19 @@ class RAGService:
                 logger.info(f"Selected {len(nucleus_chunks)} nucleus chunk with rerank-based strategy")
             else:
                 nucleus_chunks = broad_search_results[:1]  # Fallback: lấy chunk tốt nhất theo vector similarity
+                logger.info(f"Using fallback nucleus chunks: {len(nucleus_chunks)} chunks")
                 
             # Step 5: INTELLIGENT Context Expansion - Ưu tiên nucleus chunk + context liên quan
             expanded_context = None
             logger.info("🎯 INTELLIGENT CONTEXT EXPANSION - Ưu tiên nucleus chunk từ reranker")
             self.metrics["context_expansions"] += 1
+            
+            # ✅ CRITICAL FIX: Ensure nucleus_chunks is always valid after processing
+            if 'nucleus_chunks' not in locals() or not nucleus_chunks:
+                nucleus_chunks = broad_search_results[:1] if broad_search_results else []
+                logger.warning(f"⚠️ nucleus_chunks fallback: using {len(nucleus_chunks)} chunks from broad search")
+                if not nucleus_chunks:
+                    logger.error("❌ No nucleus_chunks available - this will cause processing to fail")
             
             # 🚀 PHASE 6: COMPLETE CONTENT MATCHING - FINAL FIX
             # Fix nucleus chunks để có content đầy đủ thay vì chỉ 2000 chars
@@ -1339,36 +1425,51 @@ class RAGService:
                     elif source_info.get('file_path'):
                         file_path = source_info.get('file_path')
                         logger.debug(f"🎯 Strategy 4: Found file_path: {file_path}")
-                        # Extract document name from path: .../DOC_001/01. Đăng ký khai sinh.json
+                        # ✅ FIX: Extract document name using PathConfig-compatible approach
                         if 'DOC_' in file_path and '.json' in file_path:
-                            parts = file_path.split('\\')  # Windows path
-                            if len(parts) >= 2:
-                                doc_folder = parts[-2]  # DOC_001
-                                # Try to find the actual document file
-                                doc_dir = f"data/storage/collections/{collection}/documents/{doc_folder}"
-                                if os.path.exists(doc_dir):
-                                    # Look for JSON files in the directory
-                                    for file in os.listdir(doc_dir):
-                                        if file.endswith('.json'):
-                                            document_title = file.replace('.json', '')
-                                            logger.debug(f"🎯 Strategy 4: Found document from path: {document_title}")
-                                            break
+                            # Use PathConfig for proper path resolution
+                            if not hasattr(self, 'path_config') or self.path_config is None:
+                                from ..core.path_config import PathConfig
+                                self.path_config = PathConfig()
+                            
+                            # Parse path in cross-platform way
+                            path_obj = Path(file_path)
+                            if path_obj.parent.name.startswith('DOC_'):
+                                doc_folder = path_obj.parent.name
+                                # Use PathConfig to construct proper path
+                                doc_dir_path = self.path_config.collections_dir / collection / "documents" / doc_folder
+                                if doc_dir_path.exists():
+                                    # Look for JSON files using pathlib
+                                    json_files = list(doc_dir_path.glob('*.json'))
+                                    if json_files:
+                                        document_title = json_files[0].stem
+                                        logger.debug(f"🎯 Strategy 4: Found document from path: {document_title}")
+                                    else:
+                                        logger.warning(f"No JSON files found in {doc_dir_path}")
+                                else:
+                                    logger.warning(f"Document directory not found: {doc_dir_path}")
                     
                     # Strategy 5: Use router collection + first document (fallback)
                     if not document_title and collection:
-                        # Use the first document in collection as fallback
-                        collection_path = f"data/storage/collections/{collection}/documents"
-                        if os.path.exists(collection_path):
-                            doc_folders = [d for d in os.listdir(collection_path) if d.startswith('DOC_')]
+                        # ✅ FIX: Use PathConfig for proper Docker/local path resolution
+                        if not hasattr(self, 'path_config') or self.path_config is None:
+                            from ..core.path_config import PathConfig
+                            self.path_config = PathConfig()
+                        
+                        # Use PathConfig instead of hard-coded paths
+                        collection_path = self.path_config.collections_dir / collection / "documents"
+                        if collection_path.exists():
+                            doc_folders = [d for d in collection_path.iterdir() if d.is_dir() and d.name.startswith('DOC_')]
                             if doc_folders:
-                                doc_folder = doc_folders[0]  # Use first DOC folder
-                                doc_dir = f"{collection_path}/{doc_folder}"
-                                if os.path.exists(doc_dir):
-                                    for file in os.listdir(doc_dir):
-                                        if file.endswith('.json'):
-                                            document_title = file.replace('.json', '')
-                                            logger.info(f"🎯 Strategy 5 (Fallback): Found document from collection: {document_title}")
-                                            break
+                                doc_folder_path = doc_folders[0]  # Use first DOC folder
+                                doc_folder = doc_folder_path.name
+                                if doc_folder_path.is_dir():
+                                    json_files = list(doc_folder_path.glob('*.json'))
+                                    if json_files:
+                                        document_title = json_files[0].stem
+                                        logger.info(f"🎯 Strategy 5 (Fallback): Found document from collection: {document_title}")
+                                    else:
+                                        logger.warning(f"No JSON files found in {doc_folder_path}")
                     
                     # 🚀 PHASE 6: Create enhanced nucleus chunk nếu tìm được document
                     if document_title and collection:
@@ -1411,7 +1512,10 @@ class RAGService:
                 nucleus_chunks = enhanced_nucleus_chunks
                 logger.info(f"🚀 Using enhanced nucleus chunks: {len(nucleus_chunks)} chunks with full content")
             else:
-                logger.warning("⚠️ No enhanced nucleus chunks available, using original")
+                # Ensure nucleus_chunks has valid content for processing
+                if not nucleus_chunks:
+                    nucleus_chunks = broad_search_results[:1] if broad_search_results else []
+                logger.warning(f"⚠️ Using fallback nucleus_chunks: {len(nucleus_chunks)} chunks")
             
             # 🧠 SMART OPTIMIZATION: Ưu tiên nucleus chunk + context liên quan thay vì cắt ngẫu nhiên
             # Logic: Luôn giữ nguyên nucleus chunk + thêm context xung quanh nếu còn chỗ
@@ -1570,10 +1674,18 @@ class RAGService:
                 }
             }
             
-            # � FORM PROCESSING: Use consolidated SimpleFormDetectionService only
+            # 🚀 FORM PROCESSING: Use consolidated SimpleFormDetectionService only
             try:
+                # 🔧 NORMALIZE PATHS: Convert Windows paths to Docker paths for form detection
+                normalized_response = self._normalize_paths_for_docker(response)
+                
                 # Use SimpleFormDetectionService for all form processing
-                response = self.form_detection_service.enhance_rag_response_with_forms(response)
+                enhanced_response = self.form_detection_service.enhance_rag_response_with_forms(normalized_response)
+                
+                # Merge form attachments back to original response
+                response["form_attachments"] = enhanced_response.get("form_attachments", [])
+                if "context_info" in response and "form_count" in enhanced_response.get("context_info", {}):
+                    response["context_info"]["form_count"] = enhanced_response["context_info"]["form_count"]
                 
                 # Update answer with form references if forms found
                 form_attachments = response.get("form_attachments", [])

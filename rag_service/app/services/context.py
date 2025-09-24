@@ -199,6 +199,8 @@ class ContextExpander:
             logger.info(f"Found source file: {source_file}")
             
             # 🔧 Use PathConfig for cross-platform path resolution
+            original_source_file = source_file  # 🔥 KEEP original path for form detection
+            source_file_path = None
             try:
                 source_file_path = self._resolve_source_file_path(source_file)
                 
@@ -208,9 +210,8 @@ class ContextExpander:
                     # Use fallback content instead of failing
                     final_content, structured_metadata = self._generate_fallback_content(str(source_file_path))
                 else:
-                    # Update source_file with resolved path
-                    source_file = str(source_file_path)
-                    final_content, structured_metadata = self._load_full_document_and_metadata(source_file, query)
+                    # Use resolved path for loading but keep original for source_documents
+                    final_content, structured_metadata = self._load_full_document_and_metadata(str(source_file_path), query)
                 
             except Exception as e:
                 logger.error(f"⚠️ Error resolving file path: {e}")
@@ -219,7 +220,11 @@ class ContextExpander:
             
             # TRIẾT LÝ THIẾT KẾ: Load toàn bộ document gốc từ file JSON
             # Không cắt ghép, không smart expansion - chỉ FULL DOCUMENT
-            final_content, structured_metadata = self._load_full_document_and_metadata(source_file, query)
+            if source_file_path and source_file_path.exists():
+                final_content, structured_metadata = self._load_full_document_and_metadata(str(source_file_path), query)
+            else:
+                # Fallback to original path
+                final_content, structured_metadata = self._load_full_document_and_metadata(source_file, query)
             expansion_strategy = "simplified_content_first"
             
             # Truncate CHỈ KHI document quá dài (giữ tối đa thông tin)
@@ -231,11 +236,11 @@ class ContextExpander:
             if final_content:
                 expanded_context["expanded_content"] = [{
                     "text": final_content,
-                    "source": source_file,
+                    "source": original_source_file,  # 🔥 USE original Docker path
                     "document_title": nucleus_chunk.get("source", {}).get("document_title", ""),
                     "type": expansion_strategy
                 }]
-                expanded_context["source_documents"] = [source_file]
+                expanded_context["source_documents"] = [original_source_file]  # 🔥 USE original Docker path
                 expanded_context["total_length"] = len(final_content)
                 expanded_context["expansion_strategy"] = expansion_strategy
                 expanded_context["structured_metadata"] = structured_metadata  # ✅ THÊM: Structured metadata
