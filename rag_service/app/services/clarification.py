@@ -667,58 +667,94 @@ class ClarificationService:
         level_config: ClarificationLevel
     ) -> StandardClarificationResponse:
         """
-        MEDIUM-HIGH CONFIDENCE (0.65-0.79): Xác nhận với câu hỏi gần nhất
+        🔥 SMART CONFIRMATION - MEDIUM-HIGH CONFIDENCE (0.65-0.79): 
+        Find the best question and suggest proceeding directly instead of showing all questions
         """
         # Fix data mapping - sử dụng structure mới từ router
         best_match = routing_result.get('best_match', {})
         source_procedure = best_match.get('question', 'thủ tục này')
         best_question = best_match.get('question', '')
         target_collection = routing_result.get('target_collection')
+        original_query = routing_result.get('query', '')
         
         # 🔧 DEBUG: Log target_collection value
         logger.info(f"🔍 DEBUG _generate_confirmation_clarification:")
         logger.info(f"  - routing_result keys: {list(routing_result.keys())}")
         logger.info(f"  - target_collection: {target_collection}")
         logger.info(f"  - best_match: {best_match}")
+        logger.info(f"  - original_query: {original_query}")
         
         # Nếu không có best_match, thử fallback
         if not source_procedure or source_procedure == 'thủ tục này':
             # 🔧 FIX: Simple fallback without hardcore mapping
             source_procedure = target_collection or 'thủ tục này'
         
-        message = level_config.message_template.format(
-            procedure=source_procedure,
-            confidence=confidence
-        )
-        
-        # MEDIUM-HIGH: Hiển thị câu hỏi trong document để chọn
         # Lấy document từ best_match 
         target_document = best_match.get('document', '')
+        
+        # 🚀 SMART CONFIRMATION: Extract the suggested question from router or try to find one
+        suggested_question = None
+        suggested_question_confidence = confidence
+        
+        # First, try to get the suggested question from routing result (router may have already found it)
+        if best_match and 'question' in best_match:
+            suggested_question = best_match.get('question')
+            logger.info(f"🎯 Using router's suggested question: '{suggested_question}'")
+        
+        # If no router suggestion, try to find the best question ourselves
+        if not suggested_question and target_collection and target_document and original_query:
+            try:
+                best_questions = self._get_questions_for_clarify(
+                    target_collection, 
+                    target_document, 
+                    original_query
+                )[:1]  # Only get the top 1 question
+                if best_questions:
+                    best_question_data = best_questions[0]
+                    suggested_question = best_question_data.get('text', '') if isinstance(best_question_data, dict) else str(best_question_data)
+                    suggested_question_confidence = best_question_data.get('confidence', confidence) if isinstance(best_question_data, dict) else confidence
+                    logger.info(f"✅ Found best question via _get_questions_for_clarify: '{suggested_question}'")
+            except Exception as e:
+                logger.warning(f"⚠️ Error getting best questions: {e}")
         
         # Tạo danh sách options sử dụng schema mới
         clarification_options = []
         
-        # Option 1: Xác nhận lựa chọn
-        clarification_options.append(ClarificationOption(
-            id='yes',
-            title=f"Đúng, tôi muốn hỏi về {source_procedure}",
-            description=f"Hiển thị câu hỏi về {source_procedure}",
-            action='show_document_questions',
-            collection=target_collection,
-            document=target_document,
-            procedure=source_procedure,
-            confidence_percent=round(confidence * 100, 1),
-            question_text=None,
-            source_file=None,
-            context_type=None,
-            category=None
-        ))
+        # 🔥 REVISED LOGIC: If we have ANY suggested question (from router or search), offer to proceed
+        if suggested_question and confidence > 0.65:  # Lower threshold to be more inclusive
+            # Option 1: Proceed directly with the suggested question (SMART OPTION)
+            proceed_option = ClarificationOption(
+                id='proceed_direct',
+                title=f'Đúng, tôi muốn hỏi về: "{suggested_question}"',
+                description=f"Tiếp tục với câu hỏi được đề xuất (độ tin cậy {round(suggested_question_confidence * 100, 1)}%)",
+                action='proceed_with_question',
+                collection=target_collection,
+                document=target_document,
+                procedure=source_procedure,
+                confidence_percent=round(suggested_question_confidence * 100, 1),
+                question_text=suggested_question,
+                source_file=None,
+                context_type=None,
+                category=None
+            )
+            # Add original_query as additional attribute
+            if hasattr(proceed_option, '__dict__'):
+                proceed_option.__dict__['original_query'] = original_query
+            clarification_options.append(proceed_option)
+            
+            message = f"Tôi nghĩ bạn muốn hỏi về '{suggested_question}' (độ tin cậy: {round(confidence * 100, 1)}%). Đúng không?"
+        else:
+            # Fallback to old behavior if no suggested question found
+            message = level_config.message_template.format(
+                procedure=source_procedure,
+                confidence=confidence
+            )
         
-        # Option 2: Tương tự nhưng không chính xác
+        # Option 2: Show all questions in document (fallback option)
         clarification_options.append(ClarificationOption(
-            id='similar',
-            title="Tương tự, nhưng không hoàn toàn chính xác",
-            description=f"Câu hỏi gốc: {best_question[:80]}..." if best_question else "Hãy giúp tôi tìm thủ tục phù hợp hơn",
+            id='show_all',
+            title="Không chính xác, cho tôi xem các lựa chọn khác",
+            description=f"Hiển thị tất cả câu hỏi về {source_procedure}",
             action='show_document_questions',
             collection=target_collection,
             document=target_document,
@@ -1132,15 +1168,22 @@ class ClarificationService:
             return self._generate_error_response(str(e), session_id)
     
     def _handle_proceed_with_question(self, selected_option: Dict[str, Any], session_id: str) -> Dict[str, Any]:
-        """Handle proceed_with_question action - STANDARDIZED RESPONSE"""
+        """Handle proceed_with_question action - STANDARDIZED RESPONSE FOR RAG PIPELINE"""
+        question_text = selected_option.get('question_text', '')
+        original_query = selected_option.get('original_query', '')
+        
+        logger.info(f"🚀 Smart Clarification: Proceeding directly with question: '{question_text[:100]}...'")
+        
         return {
             "type": "proceed_with_question",
-            "final_query": selected_option.get('question_text', ''),
+            "final_query": question_text,
+            "original_query": original_query,  # Keep original query for context
             "collection": selected_option.get('collection'),
             "document": selected_option.get('document'),
             "procedure": selected_option.get('procedure'),
             "session_id": session_id,
-            "message": "Proceeding with selected question for RAG processing"
+            "confidence": selected_option.get('confidence_percent', 0) / 100,
+            "message": f"✅ Smart Clarification: Proceeding with high-confidence question directly to RAG processing"
         }
     
     def _handle_proceed_with_collection(self, selected_option: Dict[str, Any], session_id: str, smart_router = None) -> Dict[str, Any]:
