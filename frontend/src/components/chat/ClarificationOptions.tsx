@@ -2,6 +2,7 @@ import type {
   ClarificationData,
   ClarificationOption,
 } from "../../services/chatService";
+import { formatCollectionName } from "../../api/collection-mapping";
 import "../../styles/components/question-list.css";
 
 interface ClarificationOptionsProps {
@@ -252,9 +253,14 @@ export function ClarificationOptions({
           {/* 🔥 NEW: Enhanced info display for debugging/advanced users */}
           {(option.procedure || option.document) && (
             <div className="enhanced-info text-xs text-gray-500 mt-2 border-t pt-2">
-              {option.procedure && (
+              {/* {option.procedure && (
                 <span className="procedure-info">
                   📋 Thủ tục: {option.procedure}
+                </span>
+              )} */}
+              {option.collection && (
+                <span className="collection-info ml-3">
+                  🏛️ Bộ thủ tục: {formatCollectionName(option.collection)}
                 </span>
               )}
               {option.document && (

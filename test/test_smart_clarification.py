@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-Test Script for Smart Clarification System
+"""Test Script for Smart Clarification System
 ==========================================
 
 This script tests the new Smart Confirmation logic in clarification.py:

@@ -502,6 +502,49 @@ class ClarificationService:
             {"text": "Lệ phí bao nhiêu?", "confidence": 0.6, "source": "fallback", "category": "general"}
         ]
     
+    def _get_document_title(self, collection: str, document_id: str) -> str:
+        """
+        Get document title from collection metadata.json
+        
+        Args:
+            collection: Collection name (e.g., 'quy_trinh_cap_ho_tich_cap_xa')
+            document_id: Document ID (e.g., 'DOC_011')
+            
+        Returns:
+            Document title string or fallback to document_id if not found
+        """
+        try:
+            import os
+            import json
+            
+            # Path to collection metadata
+            metadata_file = f"data/storage/collections/{collection}/metadata.json"
+            
+            if not os.path.exists(metadata_file):
+                logger.warning(f"Metadata file not found: {metadata_file}")
+                return document_id  # Fallback to ID
+            
+            # Read metadata.json
+            with open(metadata_file, 'r', encoding='utf-8') as f:
+                metadata = json.load(f)
+            
+            # Search for document with matching ID
+            documents = metadata.get('documents', [])
+            for doc in documents:
+                if doc.get('id') == document_id:
+                    title = doc.get('title', '')
+                    if title:
+                        logger.debug(f"✅ Found title for {document_id}: '{title}'")
+                        return title
+            
+            # Document ID not found in metadata
+            logger.warning(f"Document ID '{document_id}' not found in {collection} metadata")
+            return document_id  # Fallback to ID
+            
+        except Exception as e:
+            logger.error(f"Error getting document title for {document_id} from {collection}: {e}")
+            return document_id  # Fallback to ID
+    
     def generate_clarification(
         self, 
         confidence: float,
@@ -690,7 +733,10 @@ class ClarificationService:
             source_procedure = target_collection or 'thủ tục này'
         
         # Lấy document từ best_match 
-        target_document = best_match.get('document', '')
+        target_document_id = best_match.get('document', '')
+        
+        # 🔧 FIX: Get actual document title instead of using document ID
+        target_document_title = self._get_document_title(target_collection, target_document_id) if target_collection and target_document_id else target_document_id
         
         # 🚀 SMART CONFIRMATION: Extract the suggested question from router or try to find one
         suggested_question = None
@@ -702,11 +748,11 @@ class ClarificationService:
             logger.info(f"🎯 Using router's suggested question: '{suggested_question}'")
         
         # If no router suggestion, try to find the best question ourselves
-        if not suggested_question and target_collection and target_document and original_query:
+        if not suggested_question and target_collection and target_document_id and original_query:
             try:
                 best_questions = self._get_questions_for_clarify(
                     target_collection, 
-                    target_document, 
+                    target_document_id, 
                     original_query
                 )[:1]  # Only get the top 1 question
                 if best_questions:
@@ -729,8 +775,8 @@ class ClarificationService:
                 description=f"Tiếp tục với câu hỏi được đề xuất (độ tin cậy {round(suggested_question_confidence * 100, 1)}%)",
                 action='proceed_with_question',
                 collection=target_collection,
-                document=target_document,
-                procedure=source_procedure,
+                document=target_document_title,  # 🔧 FIX: Use document title
+                procedure=target_document_title,  # 🔧 FIX: Use document title
                 confidence_percent=round(suggested_question_confidence * 100, 1),
                 question_text=suggested_question,
                 source_file=None,
@@ -757,8 +803,8 @@ class ClarificationService:
             description=f"Hiển thị tất cả câu hỏi về {source_procedure}",
             action='show_document_questions',
             collection=target_collection,
-            document=target_document,
-            procedure=source_procedure,
+            document=target_document_title,  # 🔧 FIX: Use document title
+            procedure=target_document_title,  # 🔧 FIX: Use document title
             confidence_percent=round(confidence * 100, 1),
             question_text=None,
             source_file=None,
@@ -793,8 +839,8 @@ class ClarificationService:
             confidence=float(confidence),
             message=message,
             target_collection=target_collection,
-            document=target_document,
-            procedure=source_procedure,
+            document=target_document_title,  # 🔧 FIX: Use document title
+            procedure=target_document_title,  # 🔧 FIX: Use document title
             options=clarification_options,
             requires_user_input=False,
             show_manual_input=False,
@@ -1105,7 +1151,10 @@ class ClarificationService:
             procedure = selected_option.get('procedure', '')
             original_query = selected_option.get('original_query', '')  # Get from selected_option
             
-            logger.info(f"🎯 ClarificationService: Showing questions for '{procedure}' in document '{document}'")
+            # 🔧 FIX: Get actual document title instead of using document ID
+            document_title = self._get_document_title(collection, document) if collection and document else document
+            
+            logger.info(f"🎯 ClarificationService: Showing questions for '{document_title}' (ID: {document}) in collection '{collection}'")
             
             # Use independent clarify method with original_query for real confidence calculation
             if document:
@@ -1124,11 +1173,11 @@ class ClarificationService:
                 options.append({
                     "id": str(i + 1),
                     "title": question_text,
-                    "description": f"Câu hỏi về {procedure}",
+                    "description": f"Câu hỏi về {document_title}",  # 🔧 FIX: Use document title
                     "action": "proceed_with_question",
                     "collection": collection,
-                    "document": document,
-                    "procedure": procedure,
+                    "document": document_title,  # 🔧 FIX: Use actual title instead of ID
+                    "procedure": document_title,  # 🔧 FIX: Use document title instead of question text
                     "question_text": question_text,
                     "confidence_percent": round(confidence * 100, 1),  # 🔥 ADD CONFIDENCE PERCENT
                     "source_file": q.get('source', '') if isinstance(q, dict) else '',
@@ -1139,26 +1188,26 @@ class ClarificationService:
             options.append({
                 "id": str(len(options) + 1),
                 "title": "Câu hỏi khác...",
-                "description": f"Tôi muốn hỏi về vấn đề khác trong {procedure}",
+                "description": f"Tôi muốn hỏi về vấn đề khác trong {document_title}",  # 🔧 FIX: Use document title
                 "action": "manual_input",
                 "collection": collection,
-                "document": document,
-                "procedure": procedure
+                "document": document_title,  # 🔧 FIX: Use actual title instead of ID
+                "procedure": document_title  # 🔧 FIX: Use document title
             })
             
             # Return standardized DIRECT response
             return {
                 "type": "clarification_needed",
                 "confidence": None,  # No confidence at this stage
-                "message": f"Đây là các câu hỏi về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
-                "answer": f"Đây là các câu hỏi về '{procedure}'. Hãy chọn câu hỏi phù hợp:",
+                "message": f"Đây là các câu hỏi về '{document_title}'. Hãy chọn câu hỏi phù hợp:",  # 🔧 FIX: Use document title
+                "answer": f"Đây là các câu hỏi về '{document_title}'. Hãy chọn câu hỏi phù hợp:",  # 🔧 FIX: Use document title
                 "options": options,  # ← DIRECT ACCESS - No nesting!
                 "show_manual_input": True,
-                "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {procedure}...",
+                "manual_input_placeholder": f"Hoặc nhập câu hỏi cụ thể về {document_title}...",  # 🔧 FIX: Use document title
                 "style": "document_questions",
                 "target_collection": collection,
-                "document": document,
-                "procedure": procedure,
+                "document": document_title,  # 🔧 FIX: Use actual title instead of ID
+                "procedure": document_title,  # 🔧 FIX: Use document title
                 "session_id": session_id,
                 "routing_info": {
                     "context": "document_questions",
