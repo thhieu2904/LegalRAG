@@ -42,39 +42,42 @@ class FormRenderingService:
             HTML string để frontend render với dangerouslySetInnerHTML
         """
         try:
-            # Get form file info từ RAG service (async)
+            # 🚀 HTTP File Streaming - Proper Microservices Pattern
+            # Download file content từ RAG service thay vì direct file access
             async with aiohttp.ClientSession() as session:
                 async with session.get(
-                    f"{self.rag_service_url}/api/forms/file/{collection_id}/{doc_id}/{form_filename}",
+                    f"{self.rag_service_url}/api/forms/file/{collection_id}/{doc_id}/{form_filename}/download",
                     timeout=aiohttp.ClientTimeout(total=30)
                 ) as response:
                     if response.status != 200:
-                        raise HTTPException(status_code=response.status, detail="Cannot get form file from RAG service")
+                        raise HTTPException(
+                            status_code=response.status, 
+                            detail=f"Cannot download form file from RAG service: {response.status}"
+                        )
                     
-                    file_info = await response.json()
-                    if not file_info.get("success"):
-                        raise HTTPException(status_code=400, detail="RAG service error")
-                    
-                    file_path = file_info["data"]["file_path"]
+                    # Stream file content into memory
+                    file_content = await response.read()
+                    logger.info(f"Downloaded file content: {len(file_content)} bytes")
             
-            # Convert DOCX to HTML using Mammoth với cấu hình tối giản
-            # để tránh lỗi alignment và checkbox
-            with open(file_path, "rb") as docx_file:
-                # Chỉ sử dụng default style map và không convert images
-                options = {
-                    "include_default_style_map": True,
-                    "ignore_empty_paragraphs": False,
-                    # KHÔNG set transform_document để tránh lỗi alignment
-                    # KHÔNG set style_map để dùng default
-                    # KHÔNG set convert_image để preserve checkboxes
-                }
-                
-                result = mammoth.convert_to_html(docx_file, **options)
-                html_content = result.value  # Clean HTML
-                conversion_messages = result.messages
-                
-                # Post-process HTML to fix checkboxes and preserve alignment
-                html_content = self._post_process_html(html_content)
+            # Convert DOCX to HTML using Mammoth với in-memory stream
+            # Proper microservices: no direct file system access
+            docx_stream = io.BytesIO(file_content)
+            
+            # Mammoth configuration tối giản để tránh lỗi alignment và checkbox
+            options = {
+                "include_default_style_map": True,
+                "ignore_empty_paragraphs": False,
+                # KHÔNG set transform_document để tránh lỗi alignment
+                # KHÔNG set style_map để dùng default
+                # KHÔNG set convert_image để preserve checkboxes
+            }
+            
+            result = mammoth.convert_to_html(docx_stream, **options)
+            html_content = result.value  # Clean HTML
+            conversion_messages = result.messages
+            
+            # Post-process HTML to fix checkboxes and preserve alignment
+            html_content = self._post_process_html(html_content)
             
             # Apply basic styling wrapper
             styled_html = self._apply_basic_styling(html_content)
