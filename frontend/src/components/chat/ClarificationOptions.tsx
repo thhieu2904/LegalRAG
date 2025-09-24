@@ -155,7 +155,11 @@ export function ClarificationOptions({
                     : ""
                 }`}
               >
-                {option.title}
+                {/* 🔧 FIX: Use formatCollectionName for collection selection */}
+                {option.action === "proceed_with_collection" &&
+                option.collection
+                  ? formatCollectionName(option.collection)
+                  : option.title}
               </h4>
 
               {/* 🔥 ENHANCED: Display multiple confidence/similarity metrics */}
