@@ -7,6 +7,7 @@ Updated for Docker compatibility with PathConfig service
 
 import json
 import logging
+import re
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Set, Tuple
 import os
@@ -355,22 +356,49 @@ class ContextExpander:
             metadata = json_data.get('metadata', {})
             content_chunks = json_data.get('content_chunks', [])
             
-            # 🎯 PHASE 1: CONTENT CHUNKS FIRST (prioritized by query)
+            # 🎯 PHASE 1: NUCLEUS EMPHASIS STRATEGY - Đánh dấu rõ ràng thông tin quan trọng
             content_parts = []
+            seen_content = set()
             
             if content_chunks:
-                # Prioritize chunks based on query
                 prioritized_chunks = self._prioritize_chunks_by_query(content_chunks, query)
                 
-                for chunk in prioritized_chunks:
-                    section_title = chunk.get('section_title', '')
-                    content = chunk.get('content', '')
+                if prioritized_chunks:
+                    # 🎯 NUCLEUS CHUNK - Thông tin chính cần trả lời
+                    nucleus_chunk = prioritized_chunks[0]
+                    nucleus_content = nucleus_chunk.get('content', '')
+                    nucleus_title = nucleus_chunk.get('section_title', '')
                     
-                    if content.strip():
-                        if section_title.strip():
-                            content_parts.append(f"**{section_title}:**")
-                        content_parts.append(content.strip())
-                        content_parts.append("")  # spacing
+                    if nucleus_content.strip():
+                        content_parts.append("📋 THÔNG TIN CHÍNH CẦN TRẢ LỜI:")
+                        if nucleus_title.strip():
+                            content_parts.append(f"**{nucleus_title}:**")
+                        
+                        # Dedupe lines trong nucleus content
+                        clean_nucleus = self._dedupe_lines_in_content(nucleus_content.strip())
+                        content_parts.append(clean_nucleus)
+                        content_parts.append("")
+                        
+                        seen_content.add(hash(nucleus_content.strip()))
+                    
+                    # 🎯 SUPPORTING CHUNKS - Thông tin bổ sung (tối đa 2 chunks)
+                    supporting_chunks = prioritized_chunks[1:3]
+                    if supporting_chunks:
+                        content_parts.append("📚 Thông tin bổ sung tham khảo:")
+                        for chunk in supporting_chunks:
+                            content = chunk.get('content', '')
+                            title = chunk.get('section_title', '')
+                            
+                            if content.strip():
+                                content_hash = hash(content.strip())
+                                if content_hash in seen_content:
+                                    continue
+                                seen_content.add(content_hash)
+                                
+                                if title.strip():
+                                    content_parts.append(f"**{title}:**")
+                                content_parts.append(content.strip())
+                                content_parts.append("")
             
             # 🎯 PHASE 2: MINIMAL METADATA (only essential info at the end)
             if metadata:
@@ -393,6 +421,11 @@ class ContextExpander:
             
             # Build final content
             final_content = "\n".join(content_parts).strip()
+            
+            # 🔧 SIMPLE: Limit context length to prevent overwhelming small LLM
+            if len(final_content) > 3000:  # Keep reasonable limit for small LLM
+                final_content = final_content[:3000] + "\n...(nội dung đã được rút gọn)"
+                logger.info(f"⚠️ Content truncated to 3000 chars to prevent LLM overload")
             
             # Return minimal metadata for other services (fee service, etc.)
             minimal_metadata = {
@@ -470,6 +503,38 @@ class ContextExpander:
             logger.info(f"🎯 Prioritized {len(priority_chunks)} chunks for query: {query[:50]}...")
         
         return prioritized
+    
+    def _dedupe_lines_in_content(self, content: str) -> str:
+        """
+        🔧 Line-level deduplication để loại bỏ các dòng trùng lặp trong content
+        Đặc biệt hữu ích cho danh sách requirements
+        """
+        if not content.strip():
+            return content
+            
+        lines = content.split('\n')
+        seen_normalized = set()
+        clean_lines = []
+        
+        for line in lines:
+            original_line = line.rstrip()  # Giữ nguyên format, chỉ bỏ trailing spaces
+            
+            # Normalize for comparison (bỏ số thứ tự, spaces)
+            normalized = re.sub(r'^\s*\d+[.)]\s*', '', line.strip().lower())
+            normalized = re.sub(r'^\s*[-•*]\s*', '', normalized)
+            normalized = re.sub(r'\s+', ' ', normalized).strip()
+            
+            if normalized and normalized not in seen_normalized and len(normalized) > 5:
+                seen_normalized.add(normalized)
+                clean_lines.append(original_line)
+            elif not normalized.strip():  # Giữ empty lines
+                clean_lines.append(original_line)
+        
+        result = '\n'.join(clean_lines)
+        if len(clean_lines) < len(lines):
+            logger.info(f"🔧 Dedupe: Removed {len(lines) - len(clean_lines)} duplicate lines")
+        
+        return result
     
     def _generate_fallback_content(self, file_path: str) -> Tuple[str, Dict[str, Any]]:
         """

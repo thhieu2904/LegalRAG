@@ -278,9 +278,16 @@ class PromptService:
             if conversation_parts:
                 instruction_parts.append(f"Ngữ cảnh cuộc trò chuyện trước:\n" + "\n".join(conversation_parts))
         
-        # 3. Context from vector DB
+        # 3. Context from vector DB with nucleus emphasis
         if context.strip():
-            instruction_parts.append(f"Thông tin tham khảo:\n{context}")
+            if "📋 THÔNG TIN CHÍNH CẦN TRẢ LỜI:" in context:
+                instruction_parts.append(
+                    "HƯỚNG DẪN TRẢ LỜI:\n"
+                    "- Dựa chủ yếu vào phần '📋 THÔNG TIN CHÍNH CẦN TRẢ LỜI'\n"
+                    "- Phần '📚 Thông tin bổ sung' chỉ tham khảo khi cần thiết\n"
+                    "- Trả lời ngắn gọn, không lặp lại thông tin đã nêu\n"
+                )
+            instruction_parts.append(f"Ngữ cảnh tài liệu:\n{context}")
             
         # 4. Current query
         instruction_parts.append(f"Câu hỏi cần trả lời: {query}")
