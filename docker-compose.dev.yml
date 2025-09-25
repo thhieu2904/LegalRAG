@@ -37,12 +37,9 @@ services:
     volumes:
       # Data persistence
       - ./rag_service/data:/app/data
-      # Configuration hot reload
+      # Configuration hot reload (keep only env for config changes)
       - ./rag_service/.env:/app/.env
-      # Source code hot reload
-      - ./rag_service/app:/app/app
-      - ./rag_service/main.py:/app/main.py
-      - ./rag_service/requirements.txt:/app/requirements.txt
+      # Remove source code mounts to prevent restart during model downloads
     networks:
       - legalrag-network
     deploy:

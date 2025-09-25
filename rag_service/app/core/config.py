@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     n_gpu_layers: int = -1  # From N_GPU_LAYERS in .env (-1 = all on GPU)
     n_batch: int = 512  # From N_BATCH in .env (batch size for processing)
     
+    # VRAM Management Configuration - Added in Phase 2
+    enable_vram_swapping: bool = False  # From ENABLE_VRAM_SWAPPING in .env
+    
     # RAG Configuration - Document processing parameters
     chunk_size: int = 800  # From CHUNK_SIZE in .env
     chunk_overlap: int = 200  # From CHUNK_OVERLAP in .env

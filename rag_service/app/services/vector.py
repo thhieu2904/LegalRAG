@@ -15,10 +15,19 @@ class VectorDBService:
     """Service quản lý ChromaDB và embeddings với hỗ trợ multi-collection"""
     
     def get_optimal_device(self) -> str:
-        """Get optimal device for embedding model - VRAM optimized for Docker"""
-        # VRAM Optimization: Force CPU for embedding model to save VRAM for LLM+Reranker
-        logger.info("💻 Using CPU for embedding (VRAM optimization)")
-        return 'cpu'
+        """Get optimal device for embedding model based on VRAM management mode"""
+        if settings.enable_vram_swapping:
+            # Swapping mode: Force CPU to save VRAM for LLM+Reranker (RTX 3060 6GB laptop)
+            logger.info("💻 Swapping mode: Using CPU for embedding (VRAM optimization)")
+            return 'cpu'
+        else:
+            # Non-swapping mode: Can use GPU for better performance (RTX 3060 12GB server)
+            if torch.cuda.is_available():
+                logger.info("🚀 Non-swapping mode: Using GPU for embedding (high VRAM)")
+                return 'cuda'
+            else:
+                logger.info("💻 CUDA not available - falling back to CPU")
+                return 'cpu'
     
     def __init__(self, persist_directory: Optional[str] = None, embedding_model: Optional[str] = None, default_collection_name: Optional[str] = None):
         self.persist_directory = persist_directory or str(settings.vectordb_path)

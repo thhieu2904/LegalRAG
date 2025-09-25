@@ -18,17 +18,29 @@ class RerankerService:
         self.model = None
         self.model_loaded = False
         
-        # VRAM Optimization: Load model khi cần thiết
+        # VRAM Management: Load based on swapping mode
+        if not settings.enable_vram_swapping:
+            # Non-swapping mode: Load model immediately (RTX 3060 12GB server)
+            logger.info("🚀 Non-swapping mode: Loading Reranker model immediately")
+            self._load_model()
+        else:
+            # Swapping mode: Load on-demand (RTX 3060 6GB laptop)  
+            logger.info("🔄 Swapping mode: Reranker model will load on-demand")
         
     def get_optimal_device(self) -> str:
-        """Get optimal device for reranker"""
-        if torch.cuda.is_available():
-            logger.info("🎮 CUDA available - using GPU for reranker")
-            return 'cuda'
-        else:
+        """Get optimal device for reranker based on VRAM management mode"""
+        if not torch.cuda.is_available():
             logger.info("💻 CUDA not available - falling back to CPU")
             return 'cpu'
-        # self._load_model()  # Comment out để load on-demand
+            
+        if settings.enable_vram_swapping:
+            # Swapping mode: Use GPU but prepare for swapping
+            logger.info("� VRAM Swapping mode: Using GPU (swappable)")
+            return 'cuda'
+        else:
+            # Non-swapping mode: Use GPU permanently
+            logger.info("🚀 Non-swapping mode: Using GPU (permanent)")
+            return 'cuda'
     
     def _load_model(self):
         """Load model từ cache local hoặc download nếu cần - GPU for optimal performance"""
@@ -166,8 +178,14 @@ class RerankerService:
         Returns:
             Danh sách documents đã được sắp xếp lại theo độ liên quan
         """
-        # VRAM Optimization: Ensure model is loaded
-        self.ensure_loaded()
+        # VRAM Management: Ensure model is loaded based on mode
+        if settings.enable_vram_swapping:
+            # Swapping mode: Load on-demand
+            self.ensure_loaded()
+        elif not self.model_loaded:
+            # Non-swapping mode: Should already be loaded, but check
+            logger.warning("Non-swapping mode but reranker not loaded - loading now")
+            self._load_model()
         
         if not self.model:
             logger.warning("Reranker model not loaded, returning original order")
