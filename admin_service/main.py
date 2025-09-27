@@ -21,7 +21,7 @@ import sys
 # Add the current directory to Python path for imports
 sys.path.append(str(Path(__file__).parent))
 
-from app.api import collections, documents, questions
+from app.api import collections, documents, questions, analytics
 from app.core.config import AdminConfig
 
 # Configure logging
@@ -57,6 +57,7 @@ app.add_middleware(
 app.include_router(collections.router, prefix="/api", tags=["collections"])
 app.include_router(documents.router, prefix="/api", tags=["documents"])
 app.include_router(questions.router, prefix="/api", tags=["questions"])
+app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 
 @app.get("/")
 async def root():

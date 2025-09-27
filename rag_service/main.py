@@ -86,6 +86,14 @@ async def lifespan(app: FastAPI):
         # Set global service for routes
         rag.rag_service = rag_service
         
+        # Set sessions API global reference  
+        try:
+            from app.api import sessions
+            sessions.rag_service = rag_service
+            logger.info("✅ Sessions API service reference set")
+        except ImportError as e:
+            logger.warning(f"⚠️ Sessions API service reference failed: {e}")
+        
         # 🎯 NEW: Initialize ClarificationService with embedding model
         logger.info("🔄 Initializing ClarificationService...")
         embedding_model = getattr(rag_service.smart_router, 'embedding_model', None) if hasattr(rag_service, 'smart_router') else None
@@ -187,6 +195,14 @@ app.add_middleware(
 
 # Include optimized routes
 app.include_router(rag.router)
+
+# Include Sessions API for admin dashboard
+try:
+    from app.api import sessions
+    app.include_router(sessions.router, prefix="/api/v1", tags=["sessions"])
+    logger.info("✅ Sessions API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Sessions API not available: {e}")
 
 # Include Collections API for frontend mapping
 try:

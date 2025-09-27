@@ -80,6 +80,31 @@ export interface AdminApiResponse<T> {
   error?: string;
 }
 
+export interface DashboardAnalytics {
+  stats: {
+    active_sessions: number;
+    total_queries_today: number;
+    total_collections: number;
+    total_documents: number;
+    avg_response_time: number;
+  };
+  collections_summary: Array<{
+    name: string;
+    display_name: string;
+    document_count: string | number;
+  }>;
+  system_status: {
+    rag_service: string;
+    admin_service: string;
+    total_collections: number;
+    collections_accessible: boolean;
+    llm_loaded?: boolean;
+    embedding_device?: string;
+    router_ready?: boolean;
+  };
+  timestamp: string;
+}
+
 /**
  * 📁 GET ALL COLLECTIONS
  * Lấy danh sách tất cả collections với thông tin metadata
@@ -299,6 +324,36 @@ export const checkAdminHealth = async (): Promise<AdminHealthStatus> => {
   }
 };
 
+/**
+ * 📊 GET DASHBOARD ANALYTICS
+ * Lấy dữ liệu analytics cho dashboard admin
+ */
+export const fetchDashboardAnalytics =
+  async (): Promise<DashboardAnalytics> => {
+    try {
+      console.log("📊 Fetching dashboard analytics from admin service...");
+
+      const response = await adminAPI.get<AdminApiResponse<DashboardAnalytics>>(
+        "/api/analytics/dashboard"
+      );
+
+      if (!response.data.success) {
+        throw new Error(
+          response.data.message || "Failed to fetch dashboard analytics"
+        );
+      }
+
+      console.log(
+        "✅ Dashboard analytics fetched successfully:",
+        response.data.data.stats
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error("❌ Error fetching dashboard analytics:", error);
+      throw error;
+    }
+  };
+
 export default {
   fetchCollections,
   fetchCollectionDocuments,
@@ -308,4 +363,5 @@ export default {
   fetchCollectionQuestions,
   fetchDocumentQuestions,
   checkAdminHealth,
+  fetchDashboardAnalytics,
 };
