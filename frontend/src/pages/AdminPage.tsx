@@ -5,22 +5,13 @@
  */
 import { useState } from "react";
 import Dashboard from "../components/admin/Dashboard";
-import Voice from "../components/admin/Voice";
-import Vector from "../components/admin/Vector";
+import Voice from "../components/voice/Voice";
 import Database from "../components/admin/Database";
 import QuestionsManager from "../components/admin/questions/QuestionsManager";
-import Models from "../components/admin/Models";
 import System from "../components/admin/System";
 import "./AdminPage.css";
 
-type AdminSection =
-  | "dashboard"
-  | "voice"
-  | "vector"
-  | "database"
-  | "questions"
-  | "models"
-  | "system";
+type AdminSection = "dashboard" | "voice" | "database" | "questions" | "system";
 
 const AdminPage = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>("dashboard");
@@ -28,10 +19,8 @@ const AdminPage = () => {
   const navigationItems = [
     { key: "dashboard" as AdminSection, label: "📊 Dashboard", icon: "📊" },
     { key: "voice" as AdminSection, label: "🎤 Voice", icon: "🎤" },
-    { key: "vector" as AdminSection, label: "🔍 Vector DB", icon: "🔍" },
     { key: "database" as AdminSection, label: "💾 Database", icon: "💾" },
     { key: "questions" as AdminSection, label: "❓ Questions", icon: "❓" },
-    { key: "models" as AdminSection, label: "🤖 Models", icon: "🤖" },
     { key: "system" as AdminSection, label: "⚙️ System", icon: "⚙️" },
   ];
 
@@ -41,14 +30,10 @@ const AdminPage = () => {
         return <Dashboard />;
       case "voice":
         return <Voice />;
-      case "vector":
-        return <Vector />;
       case "database":
         return <Database />;
       case "questions":
         return <QuestionsManager />;
-      case "models":
-        return <Models />;
       case "system":
         return <System />;
       default:
