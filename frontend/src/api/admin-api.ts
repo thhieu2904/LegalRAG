@@ -226,6 +226,66 @@ export const fetchCollectionQuestions = async (
 };
 
 /**
+ * 📋 GET DOCUMENT QUESTIONS
+ * Lấy questions của một document cụ thể trong collection
+ */
+export const fetchDocumentQuestions = async (
+  collectionName: string,
+  docId: string
+): Promise<{
+  collection: string;
+  doc_id: string;
+  document_title: string;
+  questions: Array<{
+    id: string;
+    text: string;
+    type: "main" | "variant";
+    order: number;
+    variant_index?: number;
+  }>;
+  total: number;
+  has_questions: boolean;
+}> => {
+  try {
+    console.log(
+      `❓ Fetching questions for document: ${collectionName}/${docId}`
+    );
+
+    const response = await adminAPI.get<
+      AdminApiResponse<{
+        collection: string;
+        doc_id: string;
+        document_title: string;
+        questions: Array<{
+          id: string;
+          text: string;
+          type: "main" | "variant";
+          order: number;
+          variant_index?: number;
+        }>;
+        total: number;
+        has_questions: boolean;
+      }>
+    >(`/api/questions/collections/${collectionName}/documents/${docId}`);
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to fetch document questions"
+      );
+    }
+
+    console.log(`✅ Loaded questions for document ${docId}`);
+    return response.data.data;
+  } catch (error) {
+    console.error(
+      `❌ Error fetching questions for ${collectionName}/${docId}:`,
+      error
+    );
+    throw error;
+  }
+};
+
+/**
  * 🏥 HEALTH CHECK
  * Kiểm tra trạng thái admin service
  */
@@ -246,5 +306,6 @@ export default {
   fetchQuestions,
   searchQuestions,
   fetchCollectionQuestions,
+  fetchDocumentQuestions,
   checkAdminHealth,
 };

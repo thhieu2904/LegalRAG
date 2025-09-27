@@ -8,7 +8,7 @@ import Dashboard from "../components/admin/Dashboard";
 import Voice from "../components/admin/Voice";
 import Vector from "../components/admin/Vector";
 import Database from "../components/admin/Database";
-import Questions from "../components/admin/Questions";
+import QuestionsManager from "../components/admin/questions/QuestionsManager";
 import Models from "../components/admin/Models";
 import System from "../components/admin/System";
 import "./AdminPage.css";
@@ -46,7 +46,7 @@ const AdminPage = () => {
       case "database":
         return <Database />;
       case "questions":
-        return <Questions />;
+        return <QuestionsManager />;
       case "models":
         return <Models />;
       case "system":
