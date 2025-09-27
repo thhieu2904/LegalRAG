@@ -289,18 +289,15 @@ class PromptService:
                 )
             instruction_parts.append(f"Ngữ cảnh tài liệu:\n{context}")
             
-        # 4. Current query
-        instruction_parts.append(f"Câu hỏi cần trả lời: {query}")
-        
-        # 5. Confidence adjustment
+        # 4. Confidence adjustment (moved before query)
         if confidence_level == 'low':
             instruction_parts.append("Lưu ý: Hãy đặc biệt cẩn trọng về độ chính xác.")
             
-        # Combine all parts
+        # Combine all instruction parts (WITHOUT the actual query)
         full_instruction = "\n\n".join(instruction_parts)
         
-        # Apply official PhoGPT format
-        return f"### Câu hỏi: {full_instruction}\n### Trả lời:"
+        # Apply official PhoGPT format with query SEPARATE from instructions
+        return f"### Câu hỏi: {full_instruction}\n\nCâu hỏi: {query}\n\n### Trả lời:"
     
     def get_fallback_prompt(self) -> str:
         """Convenience method for fallback prompts"""

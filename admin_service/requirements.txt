@@ -1,0 +1,25 @@
+"""
+Admin Service Requirements
+==========================
+
+Dependencies for LegalRAG Admin Service
+"""
+
+# FastAPI and related
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# CORS and middleware
+python-multipart==0.0.6
+
+# File handling
+pathlib2>=2.3.0
+
+# JSON handling (included in Python standard library)
+# logging (included in Python standard library)
+# typing (included in Python standard library)
+
+# Development dependencies (optional)
+pytest>=7.0.0
+httpx>=0.25.0  # For testing FastAPI endpoints

@@ -415,6 +415,37 @@ class LLMService:
         
         return cleaned_text
     
+    def _clean_prompt_leakage(self, text: str) -> str:
+        """
+        Remove prompt leakage artifacts from LLM response
+        """
+        if not text:
+            return text
+            
+        # Remove "Câu hỏi cần trả lời:" and everything after it
+        if "Câu hỏi cần trả lời:" in text:
+            text = text.split("Câu hỏi cần trả lời:")[0].strip()
+            
+        # Remove other common leakage patterns
+        leakage_patterns = [
+            "### Câu hỏi:",
+            "### Trả lời:",
+            "Câu hỏi:",
+            "Hướng dẫn trả lời:",
+            "📋 THÔNG TIN CHÍNH",
+            "📚 Thông tin bổ sung"
+        ]
+        
+        for pattern in leakage_patterns:
+            if pattern in text:
+                # If pattern appears, take everything before it
+                parts = text.split(pattern)
+                if len(parts) > 1:
+                    # Keep the first part (actual response)
+                    text = parts[0].strip()
+        
+        return text.strip()
+    
     def generate_response_direct(
         self,
         complete_prompt: str,
@@ -485,6 +516,8 @@ class LLMService:
                 
                 # Clean and process response
                 cleaned_response = self._clean_repetitive_response(raw_text)
+                # Remove prompt leakage artifacts
+                cleaned_response = self._clean_prompt_leakage(cleaned_response)
                 
                 generation_time = time.time() - start_time
                 

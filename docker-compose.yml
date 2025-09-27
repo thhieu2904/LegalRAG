@@ -1,6 +1,6 @@
 name: legalrag
 services:
-  # Frontend Service
+  # Frontend Service - Production
   frontend:
     container_name: legalrag-frontend
     build: ./frontend
@@ -12,7 +12,7 @@ services:
     networks:
       - legalrag-network
 
-  # RAG Service with GPU
+  # RAG Service with GPU - Production
   rag-service:
     container_name: legalrag-rag-service
     build: ./rag_service
@@ -27,7 +27,10 @@ services:
       - LEGALRAG_BASE_PATH=/app
       - LEGALRAG_DATA_PATH=/app/data
     volumes:
+      # Data persistence - QUAN TRỌNG: giữ lại models và vectordb
       - ./rag_service/data:/app/data
+      # Environment configuration
+      - ./rag_service/.env:/app/.env
     networks:
       - legalrag-network
     deploy:
@@ -38,7 +41,7 @@ services:
               count: 1
               capabilities: [gpu]
 
-  # Identifill Service
+  # Identifill Service - Production
   identifill-service:
     container_name: legalrag-identifill-service
     build: ./identifill_service
@@ -49,6 +52,7 @@ services:
       - ENVIRONMENT=docker
       - RAG_SERVICE_URL=http://rag-service:8000
     volumes:
+      # Model persistence
       - identifill_models:/app/models
     networks:
       - legalrag-network

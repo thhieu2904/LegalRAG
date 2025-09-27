@@ -1,4 +1,4 @@
-# RAG Service with GPU support
+# RAG Service - Development optimized build
 FROM nvidia/cuda:12.1.0-devel-ubuntu22.04
 
 # Set environment variables
@@ -34,6 +34,9 @@ RUN ln -sf /usr/bin/python3.11 /usr/bin/python && \
 
 WORKDIR /app
 
+# ========================================
+# LAYER 1: Heavy dependencies (rarely change)
+# ========================================
 # Copy requirements and install dependencies
 COPY requirements-clean.txt ./requirements.txt
 
@@ -51,13 +54,23 @@ RUN pip install --no-cache-dir llama-cpp-python --force-reinstall --no-cache-dir
 # Install other Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
-COPY . .
+# ========================================
+# LAYER 2: Static data (change occasionally)
+# ========================================
+# Copy cache and storage first (these change less frequently)
+COPY data/cache data/cache/
+COPY data/storage data/storage/
 
-# Ensure directories exist (but don't overwrite existing files)
+# Ensure directories exist
 RUN mkdir -p data/models data/vectordb
 
-# Note: data/cache and data/storage already copied by 'COPY . .' above
+# ========================================
+# LAYER 3: Source code (changes frequently)
+# ========================================
+# Copy source code LAST - this invalidates least layers when changed
+COPY app/ app/
+COPY main.py .
+COPY tools/ tools/
 
 # Expose port
 EXPOSE 8000

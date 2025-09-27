@@ -3,7 +3,7 @@ services:
   # Frontend Service - Production
   frontend:
     container_name: legalrag-frontend
-    image: thhieu/legalrag-frontend:latest
+    image: thhieu/legalrag-frontend:v0.1
     ports:
       - "5173:5173"
     depends_on:
@@ -15,22 +15,22 @@ services:
   # RAG Service with GPU Support - Production
   rag-service:
     container_name: legalrag-rag-service
-    image: thhieu/legalrag-rag-service:latest
+    image: thhieu/legalrag-rag-service:v0.1
     ports:
       - "8000:8000"
     environment:
       - PYTHONPATH=/app
       - HF_CACHE_DIR=/app/data/models/hf_cache
       - CUDA_VISIBLE_DEVICES=0
-      # Path Configuration for Docker compatibility
       - ENVIRONMENT=docker
       - LEGALRAG_BASE_PATH=/app
       - LEGALRAG_DATA_PATH=/app/data
     volumes:
-      # QUAN TRỌNG: Data persistence - models và vectordb sẽ được tạo tự động
-      - rag_data:/app/data
-      # Environment configuration
-      - ./.env:/app/.env
+      # Named volume để lưu models - không mất khi down/up
+      - rag_models:/app/data/models
+    # volumes:
+    # - ../rag_service/data:/app/data  # REMOVED: Use embedded data in image
+    # - ./.env:/app/.env  # REMOVED: Use built-in config
     networks:
       - legalrag-network
     deploy:
@@ -44,21 +44,21 @@ services:
   # Identifill Service (CCCD Scanner) - Production
   identifill-service:
     container_name: legalrag-identifill-service
-    image: thhieu/legalrag-identifill-service:latest
+    image: thhieu/legalrag-identifill-service:v0.1
     ports:
       - "8002:8002"
     environment:
       - PYTHONPATH=/app
       - ENVIRONMENT=docker
       - RAG_SERVICE_URL=http://rag-service:8000
-    volumes:
-      # Model persistence
-      - identifill_models:/app/models
+    # volumes:
+    # - ../identifill_service/models:/app/models  # Use image-embedded models
     networks:
       - legalrag-network
 
 volumes:
-  identifill_models:
+  # Named volume để persistent models - không mất khi down/up
+  rag_models:
 
 networks:
   legalrag-network:

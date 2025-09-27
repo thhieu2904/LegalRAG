@@ -205,7 +205,7 @@ class FormRenderingService:
         
         return html_content
     
-    def extract_text_placeholders(self, html_content: str) -> List[str]:
+    def extract_text_placeholders(self, html_content: str) -> list[str]:
         """
         Extract basic placeholders cho giai đoạn 2 (tương lai)
         Hiện tại chỉ tìm pattern đơn giản
