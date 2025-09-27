@@ -72,9 +72,9 @@ async def root():
 async def health_check():
     """Health check endpoint"""
     try:
-        # Test PathConfig initialization
-        from app.core.path_config_adapter import get_path_config
-        path_config = get_path_config()
+        # Test AdminPathConfig initialization
+        from app.core.admin_path_config import get_admin_path_config
+        path_config = get_admin_path_config()
         
         return {
             "status": "healthy",

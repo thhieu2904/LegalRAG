@@ -12,7 +12,7 @@ import logging
 import json
 from pathlib import Path
 
-from ..core.path_config_adapter import get_path_config
+from ..core.admin_path_config import get_admin_path_config
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -29,7 +29,7 @@ async def list_documents(collection_name: str):
         List of documents with metadata and file information
     """
     try:
-        path_config = get_path_config()
+        path_config = get_admin_path_config()
         
         # Verify collection exists
         available_collections = path_config.list_collections()
@@ -148,7 +148,7 @@ async def get_document_detail(collection_name: str, doc_id: str):
         Detailed document information including content preview
     """
     try:
-        path_config = get_path_config()
+        path_config = get_admin_path_config()
         
         # Verify collection exists
         available_collections = path_config.list_collections()

@@ -41,6 +41,25 @@ services:
               count: 1
               capabilities: [gpu]
 
+  # Admin Service - Production
+  admin-service:
+    container_name: legalrag-admin-service
+    build: ./admin_service
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONPATH=/app
+      - ENVIRONMENT=docker
+      - ADMIN_HOST=0.0.0.0
+      - ADMIN_PORT=8001
+    volumes:
+      # Share data volume with RAG service for PathConfig access
+      - ./rag_service/data:/app/data
+    networks:
+      - legalrag-network
+    depends_on:
+      - rag-service
+
   # Identifill Service - Production
   identifill-service:
     container_name: legalrag-identifill-service

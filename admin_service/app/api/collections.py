@@ -12,7 +12,7 @@ import logging
 import json
 from pathlib import Path
 
-from ..core.path_config_adapter import get_path_config
+from ..core.admin_path_config import get_admin_path_config
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -26,7 +26,7 @@ async def list_collections():
         List of collections with document counts and descriptions
     """
     try:
-        path_config = get_path_config()
+        path_config = get_admin_path_config()
         logger.info(f"🔍 Listing collections from: {path_config.collections_dir}")
         
         # Use PathConfig's list_collections method
@@ -112,7 +112,7 @@ async def get_collection_info(collection_name: str):
         Detailed collection information
     """
     try:
-        path_config = get_path_config()
+        path_config = get_admin_path_config()
         
         # Verify collection exists
         available_collections = path_config.list_collections()
@@ -171,36 +171,14 @@ async def get_collection_info(collection_name: str):
 
 def _format_collection_display_name(collection_name: str) -> str:
     """
-    Format collection name for display
+    Simple fallback formatting for collection name display
+    Frontend should handle proper Vietnamese name mapping using collection-mapping.ts
     
     Args:
         collection_name: Raw collection name (e.g., "quy_trinh_cap_ho_tich_cap_xa")
         
     Returns:
-        Formatted display name (e.g., "Quy Trình Cấp Hộ Tịch Cấp Xã")
+        Basic formatted display name - frontend will override with proper Vietnamese names
     """
-    # Replace underscores with spaces and capitalize each word
-    display_name = collection_name.replace('_', ' ').title()
-    
-    # Handle Vietnamese specific formatting
-    vietnamese_replacements = {
-        'Quy Trinh': 'Quy Trình',
-        'Ho Tich': 'Hộ Tịch', 
-        'Cong Chung': 'Công Chứng',
-        'Chung Thuc': 'Chứng Thực',
-        'Luat Su': 'Luật Sư',
-        'Boi Thuong': 'Bồi Thường',
-        'Dau Gia': 'Đấu Giá',
-        'Tai San': 'Tài Sản',
-        'Con Nuoi': 'Con Nuôi',
-        'Quan Tai': 'Quan Tài',
-        'Trong Tai': 'Trọng Tài',
-        'Thuong Mai': 'Thương Mại',
-        'Tu Van': 'Tư Vấn',
-        'Phap Luat': 'Pháp Luật'
-    }
-    
-    for old, new in vietnamese_replacements.items():
-        display_name = display_name.replace(old, new)
-    
-    return display_name
+    # Simple fallback: replace underscores with spaces and capitalize
+    return collection_name.replace('_', ' ').title()

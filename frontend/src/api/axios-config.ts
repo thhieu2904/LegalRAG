@@ -22,6 +22,15 @@ export const identifillAPI = axios.create({
   },
 });
 
+// Cấu hình cho Admin Service (Port 8001) - Database Management
+export const adminAPI = axios.create({
+  baseURL: "http://localhost:8001",
+  timeout: 30000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 // Request interceptor - Thêm token nếu cần
 ragAPI.interceptors.request.use(
   (config) => {
@@ -58,6 +67,23 @@ identifillAPI.interceptors.request.use(
   }
 );
 
+adminAPI.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    console.log(
+      `🗃️ Admin API Call: ${config.method?.toUpperCase()} ${config.url}`
+    );
+    return config;
+  },
+  (error) => {
+    console.error("❌ Admin API Request Error:", error);
+    return Promise.reject(error);
+  }
+);
+
 // Response interceptor - Xử lý lỗi tập trung
 ragAPI.interceptors.response.use(
   (response) => {
@@ -88,6 +114,25 @@ identifillAPI.interceptors.response.use(
   },
   (error) => {
     console.error("❌ Identifill API Response Error:", error);
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+adminAPI.interceptors.response.use(
+  (response) => {
+    console.log(
+      `✅ Admin API Success: ${response.status} ${response.config.url}`
+    );
+    return response;
+  },
+  (error) => {
+    console.error("❌ Admin API Response Error:", error);
 
     if (error.response?.status === 401) {
       localStorage.removeItem("token");

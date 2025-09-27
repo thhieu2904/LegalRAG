@@ -12,10 +12,124 @@ import logging
 import json
 from pathlib import Path
 
-from ..core.path_config_adapter import get_path_config
+from ..core.admin_path_config import get_admin_path_config
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+@router.get("/questions")
+async def list_all_questions(
+    q: Optional[str] = None,
+    collection: Optional[str] = None, 
+    limit: Optional[int] = None
+):
+    """
+    Get all questions across collections with optional search and filtering
+    
+    Args:
+        q: Search query for questions
+        collection: Filter by collection name
+        limit: Maximum number of results to return
+        
+    Returns:
+        List of questions with metadata
+    """
+    try:
+        path_config = get_admin_path_config()
+        logger.info(f"❓ Listing questions with filters: q='{q}', collection='{collection}', limit={limit}")
+        
+        available_collections = path_config.list_collections()
+        logger.info(f"📁 Available collections: {available_collections}")
+        
+        all_questions = []
+        
+        # Filter collections if specified
+        collections_to_process = [collection] if collection and collection in available_collections else available_collections
+        
+        for collection_name in collections_to_process:
+            try:
+                logger.info(f"📂 Processing collection: {collection_name}")
+                
+                # Get collection directory
+                collection_dir = path_config.get_collection_dir(collection_name)
+                documents_dir = collection_dir / "documents"
+                
+                if not documents_dir.exists():
+                    logger.warning(f"⚠️ Documents directory not found for {collection_name}")
+                    continue
+                
+                # Scan all document directories for questions.json files
+                for doc_dir in documents_dir.iterdir():
+                    if not doc_dir.is_dir():
+                        continue
+                    
+                    doc_id = doc_dir.name
+                    questions_file = doc_dir / "questions.json"
+                    
+                    if not questions_file.exists():
+                        continue
+                    
+                    try:
+                        # Load and normalize questions
+                        with open(questions_file, 'r', encoding='utf-8') as f:
+                            questions_data = json.load(f)
+                        
+                        normalized_questions = _normalize_questions_format(questions_data)
+                        
+                        # Add metadata to each question
+                        for i, question in enumerate(normalized_questions):
+                            question_with_meta = {
+                                "id": f"{collection_name}_{doc_id}_{i}",
+                                "main_question": question.get("main_question", ""),
+                                "variants": question.get("variants", []),
+                                "collection": collection_name,
+                                "doc_id": doc_id,
+                                "category": question.get("category", "general")
+                            }
+                            
+                            # Apply search filter if specified
+                            if q:
+                                search_text = q.lower()
+                                question_text = question_with_meta["main_question"].lower()
+                                variants_text = " ".join(question_with_meta["variants"]).lower()
+                                
+                                if search_text not in question_text and search_text not in variants_text:
+                                    continue
+                            
+                            all_questions.append(question_with_meta)
+                            
+                    except Exception as e:
+                        logger.error(f"❌ Error processing questions for {doc_id}: {e}")
+                        continue
+                        
+            except Exception as e:
+                logger.error(f"❌ Error processing collection {collection_name}: {e}")
+                continue
+        
+        # Apply limit if specified
+        if limit and limit > 0:
+            all_questions = all_questions[:limit]
+        
+        logger.info(f"✅ Found {len(all_questions)} questions total")
+        
+        return {
+            "success": True,
+            "data": all_questions,
+            "total": len(all_questions),
+            "filters": {
+                "search_query": q,
+                "collection_filter": collection,
+                "limit": limit
+            },
+            "message": f"Found {len(all_questions)} questions"
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error listing questions: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to list questions: {str(e)}"
+        )
 
 @router.get("/questions/collections/{collection_name}/documents/{doc_id}")
 async def get_document_questions(collection_name: str, doc_id: str):
@@ -30,7 +144,7 @@ async def get_document_questions(collection_name: str, doc_id: str):
         Questions data with normalized format
     """
     try:
-        path_config = get_path_config()
+        path_config = get_admin_path_config()
         
         # Verify collection exists
         available_collections = path_config.list_collections()
@@ -114,7 +228,7 @@ async def get_collection_questions(collection_name: str, limit: Optional[int] = 
         Aggregated questions from all documents in the collection
     """
     try:
-        path_config = get_path_config()
+        path_config = get_admin_path_config()
         
         # Verify collection exists
         available_collections = path_config.list_collections()
@@ -217,7 +331,7 @@ async def search_questions(
         Matching questions with relevance information
     """
     try:
-        path_config = get_path_config()
+        path_config = get_admin_path_config()
         
         if not q.strip():
             raise HTTPException(
