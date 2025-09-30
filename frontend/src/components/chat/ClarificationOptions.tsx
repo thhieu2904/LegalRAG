@@ -278,13 +278,6 @@ export function ClarificationOptions({
       ))}
 
       {/* 🔥 NEW: Enhanced clarification footer with additional info */}
-      {isEnhancedStyle && (
-        <div className="enhanced-footer text-xs text-gray-500 text-center py-2 border-t">
-          <span className="enhanced-indicator">
-            🚀 Được tối ưu bằng AI với embedding similarity
-          </span>
-        </div>
-      )}
 
       {/* 🔥 NEW: Additional help from backend */}
       {clarification.additional_help && (

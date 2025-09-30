@@ -3,19 +3,20 @@ services:
   # Frontend Service - Production
   frontend:
     container_name: legalrag-frontend
-    image: thhieu/legalrag-frontend:v0.1
+    image: thhieu/legalrag-frontend:v0.1.1
     ports:
       - "5173:5173"
     depends_on:
       - rag-service
       - identifill-service
+      - admin-service
     networks:
       - legalrag-network
 
   # RAG Service with GPU Support - Production
   rag-service:
     container_name: legalrag-rag-service
-    image: thhieu/legalrag-rag-service:v0.1
+    image: thhieu/legalrag-rag-service:v0.1.1
     ports:
       - "8000:8000"
     environment:
@@ -26,8 +27,8 @@ services:
       - LEGALRAG_BASE_PATH=/app
       - LEGALRAG_DATA_PATH=/app/data
     volumes:
-      # Named volume để lưu models - không mất khi down/up
-      - rag_models:/app/data/models
+      # Named volume để lưu toàn bộ data - models, storage, cache
+      - rag_data:/app/data
     # volumes:
     # - ../rag_service/data:/app/data  # REMOVED: Use embedded data in image
     # - ./.env:/app/.env  # REMOVED: Use built-in config
@@ -44,7 +45,7 @@ services:
   # Identifill Service (CCCD Scanner) - Production
   identifill-service:
     container_name: legalrag-identifill-service
-    image: thhieu/legalrag-identifill-service:v0.1
+    image: thhieu/legalrag-identifill-service:v0.1.1
     ports:
       - "8002:8002"
     environment:
@@ -56,9 +57,25 @@ services:
     networks:
       - legalrag-network
 
+  # Admin Service - Production
+  admin-service:
+    container_name: legalrag-admin-service
+    image: thhieu/legalrag-admin-service:v0.1.1
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONPATH=/app
+      - ENVIRONMENT=docker
+      - RAG_SERVICE_URL=http://rag-service:8000
+    volumes:
+      # Shared data volume with RAG service for direct storage access
+      - rag_data:/app/data
+    networks:
+      - legalrag-network
+
 volumes:
-  # Named volume để persistent models - không mất khi down/up
-  rag_models:
+  # Named volume để persistent toàn bộ data - models, storage, cache
+  rag_data:
 
 networks:
   legalrag-network:

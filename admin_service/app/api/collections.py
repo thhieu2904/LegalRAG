@@ -10,6 +10,7 @@ from fastapi import APIRouter, HTTPException
 from typing import List, Dict, Any
 import logging
 import json
+import os
 from pathlib import Path
 
 from ..core.admin_path_config import get_admin_path_config
@@ -29,9 +30,10 @@ async def list_collections():
         path_config = get_admin_path_config()
         logger.info(f"🔍 Listing collections from: {path_config.collections_dir}")
         
-        # Use PathConfig's list_collections method
+        # Direct shared storage access - No API calls needed
+        logger.info("📁 Reading collections directly from shared storage...")
         collection_names = path_config.list_collections()
-        logger.info(f"📁 Found {len(collection_names)} collections: {collection_names}")
+        logger.info(f"📁 Local fallback found {len(collection_names)} collections: {collection_names}")
         
         collections_data = []
         
@@ -89,8 +91,9 @@ async def list_collections():
         return {
             "success": True,
             "data": collections_data,
-            "total": len(collections_data),
-            "message": f"Found {len(collections_data)} collections"
+            "total_count": len(collections_data),
+            "message": f"Found {len(collections_data)} collections from shared storage",
+            "source": "shared_storage"
         }
         
     except Exception as e:
