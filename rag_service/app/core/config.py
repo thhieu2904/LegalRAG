@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"  # Overridden by HOST in .env  
     port: int = 8000  # Overridden by PORT in .env
     
+    # Security Settings
+    internal_api_key: str = "dev-internal-key"  # Overridden by INTERNAL_API_KEY in .env
+    
     # Data Paths - Load from environment
     data_root_dir: str = "data"  # Overridden by DATA_ROOT_DIR in .env
     documents_dir: str = "data/documents"  # Overridden by DOCUMENTS_DIR in .env (OLD STRUCTURE)

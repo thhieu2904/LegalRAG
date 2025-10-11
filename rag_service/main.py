@@ -220,6 +220,22 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Forms API not available: {e}")
 
+# Include Internal File Management API for Admin Service
+try:
+    from app.api.internal_files import router as internal_files_router
+    app.include_router(internal_files_router, prefix="/api", tags=["internal-files"])
+    logger.info("✅ Internal Files API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Internal Files API not available: {e}")
+
+# Include Internal Rebuild API for cache management
+try:
+    from app.api.internal_rebuild import router as internal_rebuild_router
+    app.include_router(internal_rebuild_router, prefix="/api", tags=["internal-rebuild"])
+    logger.info("✅ Internal Rebuild API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Internal Rebuild API not available: {e}")
+
 # Router CRUD API đã được xóa
 # try:
 #     from app.api.router_crud import router as router_crud_router

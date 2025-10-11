@@ -39,7 +39,10 @@ services:
       - ./rag_service/data:/app/data
       # Configuration hot reload (keep only env for config changes)
       - ./rag_service/.env:/app/.env
-      # Remove source code mounts to prevent restart during model downloads
+      # Source code hot reload for development (NEW APIs)
+      - ./rag_service/app:/app/app
+      - ./rag_service/tools:/app/tools
+      - ./rag_service/main.py:/app/main.py
     networks:
       - legalrag-network
     deploy:

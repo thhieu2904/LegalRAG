@@ -32,6 +32,89 @@ def clean_old_cache():
     
     logger.info("✅ Old cache cleaned")
 
+def load_structure_absolute_path():
+    """
+    Load questions from new structure using absolute paths.
+    Created for rebuild_selective.py to work in Docker environment.
+    Original load_new_structure() uses relative paths for backward compatibility.
+    """
+    questions_data = {}
+    
+    # Get absolute path - works in Docker and local
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.dirname(script_dir)  # Parent of tools/ is rag_service/
+    collections_path = os.path.join(base_dir, "data", "storage", "collections")
+    
+    # Construct glob pattern from absolute path
+    pattern = os.path.join(collections_path, "*/documents/*/questions.json")
+    questions_files = glob.glob(pattern)
+    
+    logger.info(f"📁 Found {len(questions_files)} questions.json files from {collections_path}")
+    
+    for questions_file in questions_files:
+        try:
+            # Extract collection and document info from path
+            path_parts = os.path.normpath(questions_file).split(os.sep)
+            
+            # Find collection and document
+            collection_name = None
+            document_name = None
+            
+            collection_idx = path_parts.index('collections') if 'collections' in path_parts else -1
+            if collection_idx != -1 and collection_idx + 1 < len(path_parts):
+                collection_name = path_parts[collection_idx + 1]
+
+            documents_idx = path_parts.index('documents') if 'documents' in path_parts else -1
+            if documents_idx != -1 and documents_idx + 1 < len(path_parts):
+                document_name = path_parts[documents_idx + 1]
+                    
+            if collection_name and document_name:
+                # Load questions
+                with open(questions_file, 'r', encoding='utf-8') as f:
+                    questions = json.load(f)
+                
+                # Load corresponding document content (document.json)
+                doc_dir = os.path.dirname(questions_file)
+                doc_files = [f for f in os.listdir(doc_dir) 
+                           if f.endswith('.json') and f != 'questions.json']
+                
+                metadata = {}
+                content_data = {}
+                if doc_files:
+                    doc_path = os.path.join(doc_dir, doc_files[0])
+                    with open(doc_path, 'r', encoding='utf-8') as f:
+                        doc_data = json.load(f)
+                        metadata = doc_data.get('metadata', {})
+                        content_data = doc_data  # Store full content data
+                
+                # 🚀 PHASE 1: CREATE FUSED TEXT EXACTLY LIKE VECTOR DB
+                fused_text = content_data.get('fused_text', '')
+                
+                # Initialize collection if not exists
+                if collection_name not in questions_data:
+                    questions_data[collection_name] = {
+                        'collection_id': collection_name,
+                        'documents': []
+                    }
+                
+                # Add document
+                questions_data[collection_name]['documents'].append({
+                    'doc_id': document_name,
+                    'metadata': metadata,
+                    'questions': questions,
+                    'fused_text': fused_text  # Add fused_text for embedding
+                })
+                
+        except Exception as e:
+            logger.error(f"❌ Error loading {questions_file}: {e}")
+            continue
+    
+    # Convert to list format
+    result = list(questions_data.values())
+    logger.info(f"✅ Loaded {len(result)} collections")
+    
+    return result
+
 def load_new_structure():
     """Load questions from new structure"""
     questions_data = {}
