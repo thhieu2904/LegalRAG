@@ -354,6 +354,293 @@ export const fetchDashboardAnalytics =
     }
   };
 
+// ========== QUESTIONS CRUD OPERATIONS ==========
+
+/**
+ * ✏️ UPDATE QUESTIONS
+ * Cập nhật questions cho một document
+ */
+export const updateQuestions = async (
+  collectionName: string,
+  docId: string,
+  mainQuestion: string,
+  questionVariants: string[],
+  triggerRebuild: boolean = false
+): Promise<{
+  update_result: {
+    success: boolean;
+    backup_path: string;
+  };
+  rebuild_status?: {
+    triggered: boolean;
+    pid?: number;
+    message?: string;
+  };
+}> => {
+  try {
+    console.log(
+      `✏️ Updating questions for ${collectionName}/${docId} (rebuild=${triggerRebuild})`
+    );
+
+    const response = await adminAPI.put<
+      AdminApiResponse<{
+        update_result: {
+          success: boolean;
+          backup_path: string;
+        };
+        rebuild_status?: {
+          triggered: boolean;
+          pid?: number;
+          message?: string;
+        };
+      }>
+    >(
+      `/api/questions/collections/${collectionName}/documents/${docId}?rebuild=${triggerRebuild}`,
+      {
+        main_question: mainQuestion,
+        question_variants: questionVariants,
+      }
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to update questions");
+    }
+
+    console.log(`✅ Questions updated for ${docId}`);
+    if (response.data.data.rebuild_status?.triggered) {
+      console.log(
+        `🚀 Rebuild triggered: PID ${response.data.data.rebuild_status.pid}`
+      );
+    }
+
+    return response.data.data;
+  } catch (error) {
+    console.error(
+      `❌ Error updating questions for ${collectionName}/${docId}:`,
+      error
+    );
+    throw error;
+  }
+};
+
+/**
+ * 🔄 UPDATE VARIANTS ONLY
+ * Cập nhật chỉ question variants (giữ nguyên main question)
+ */
+export const updateVariants = async (
+  collectionName: string,
+  docId: string,
+  questionVariants: string[],
+  triggerRebuild: boolean = false
+): Promise<{
+  update_result: {
+    success: boolean;
+    backup_path: string;
+  };
+  rebuild_status?: {
+    triggered: boolean;
+    pid?: number;
+  };
+}> => {
+  try {
+    console.log(
+      `🔄 Updating variants for ${collectionName}/${docId} (${questionVariants.length} variants)`
+    );
+
+    const response = await adminAPI.patch<
+      AdminApiResponse<{
+        update_result: {
+          success: boolean;
+          backup_path: string;
+        };
+        rebuild_status?: {
+          triggered: boolean;
+          pid?: number;
+        };
+      }>
+    >(
+      `/api/questions/collections/${collectionName}/documents/${docId}/variants?rebuild=${triggerRebuild}`,
+      {
+        question_variants: questionVariants,
+      }
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to update variants");
+    }
+
+    console.log(`✅ Variants updated for ${docId}`);
+    return response.data.data;
+  } catch (error) {
+    console.error(
+      `❌ Error updating variants for ${collectionName}/${docId}:`,
+      error
+    );
+    throw error;
+  }
+};
+
+/**
+ * 🗑️ DELETE QUESTIONS
+ * Xóa questions file của một document
+ */
+export const deleteQuestions = async (
+  collectionName: string,
+  docId: string,
+  triggerRebuild: boolean = false
+): Promise<{
+  delete_result: {
+    success: boolean;
+    backup_path: string;
+  };
+  rebuild_status?: {
+    triggered: boolean;
+    pid?: number;
+  };
+}> => {
+  try {
+    console.log(
+      `🗑️ Deleting questions for ${collectionName}/${docId} (rebuild=${triggerRebuild})`
+    );
+
+    const response = await adminAPI.delete<
+      AdminApiResponse<{
+        delete_result: {
+          success: boolean;
+          backup_path: string;
+        };
+        rebuild_status?: {
+          triggered: boolean;
+          pid?: number;
+        };
+      }>
+    >(
+      `/api/questions/collections/${collectionName}/documents/${docId}?rebuild=${triggerRebuild}`
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to delete questions");
+    }
+
+    console.log(`✅ Questions deleted for ${docId}`);
+    return response.data.data;
+  } catch (error) {
+    console.error(
+      `❌ Error deleting questions for ${collectionName}/${docId}:`,
+      error
+    );
+    throw error;
+  }
+};
+
+// ========== REBUILD MANAGEMENT ==========
+
+/**
+ * 🚀 TRIGGER REBUILD
+ * Kích hoạt rebuild VectorDB
+ */
+export const triggerRebuild = async (
+  scope: "document" | "collection" | "all",
+  collection?: string,
+  docId?: string
+): Promise<{
+  success: boolean;
+  pid: number;
+  message: string;
+}> => {
+  try {
+    console.log(
+      `🚀 Triggering rebuild: scope=${scope}, collection=${collection}, doc=${docId}`
+    );
+
+    const params = new URLSearchParams();
+    params.append("scope", scope);
+    if (collection) params.append("collection", collection);
+    if (docId) params.append("doc_id", docId);
+
+    const response = await adminAPI.post<
+      AdminApiResponse<{
+        success: boolean;
+        pid: number;
+        message: string;
+      }>
+    >(`/api/questions/rebuild/trigger?${params.toString()}`);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to trigger rebuild");
+    }
+
+    console.log(`✅ Rebuild triggered: PID ${response.data.data.pid}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("❌ Error triggering rebuild:", error);
+    throw error;
+  }
+};
+
+/**
+ * 📊 GET REBUILD STATUS
+ * Lấy trạng thái rebuild hiện tại
+ */
+export const getRebuildStatus = async (): Promise<{
+  status: "idle" | "queued" | "running" | "success" | "failed";
+  progress: number;
+  message?: string;
+  pid?: number;
+  error?: string;
+}> => {
+  try {
+    const response = await adminAPI.get<
+      AdminApiResponse<{
+        status: "idle" | "queued" | "running" | "success" | "failed";
+        progress: number;
+        message?: string;
+        pid?: number;
+        error?: string;
+      }>
+    >("/api/questions/rebuild/status");
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to get rebuild status");
+    }
+
+    return response.data.data;
+  } catch (error) {
+    console.error("❌ Error getting rebuild status:", error);
+    throw error;
+  }
+};
+
+/**
+ * ⛔ CANCEL REBUILD
+ * Hủy quá trình rebuild đang chạy
+ */
+export const cancelRebuild = async (): Promise<{
+  success: boolean;
+  message: string;
+}> => {
+  try {
+    console.log("⛔ Canceling rebuild...");
+
+    const response = await adminAPI.post<
+      AdminApiResponse<{
+        success: boolean;
+        message: string;
+      }>
+    >("/api/questions/rebuild/cancel");
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to cancel rebuild");
+    }
+
+    console.log("✅ Rebuild canceled");
+    return response.data.data;
+  } catch (error) {
+    console.error("❌ Error canceling rebuild:", error);
+    throw error;
+  }
+};
+
 export default {
   fetchCollections,
   fetchCollectionDocuments,
@@ -364,4 +651,12 @@ export default {
   fetchDocumentQuestions,
   checkAdminHealth,
   fetchDashboardAnalytics,
+  // CRUD operations
+  updateQuestions,
+  updateVariants,
+  deleteQuestions,
+  // Rebuild management
+  triggerRebuild,
+  getRebuildStatus,
+  cancelRebuild,
 };

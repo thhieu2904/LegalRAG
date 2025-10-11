@@ -11,28 +11,34 @@
 ## 🎯 Đã Triển Khai
 
 ### 1. **Admin Service → RAG Service HTTP Client**
+
 - File mới: `admin_service/app/services/rag_client.py` (312 dòng)
 - Singleton pattern với retry logic (tenacity)
 - 9 methods cho CRUD + rebuild management
 - Timeout: 30s, Max retries: 3
 
 ### 2. **Admin Service CRUD Endpoints**
+
 File: `admin_service/app/api/questions.py` (+330 dòng)
 
 **4 CRUD Endpoints:**
+
 - ✅ `POST /api/questions/collections/{collection}/documents/{doc_id}` - Create
 - ✅ `PUT /api/questions/collections/{collection}/documents/{doc_id}?rebuild=true` - Update
 - ✅ `DELETE /api/questions/collections/{collection}/documents/{doc_id}?rebuild=true` - Delete
 - ✅ `PATCH /api/questions/collections/{collection}/documents/{doc_id}/variants?rebuild=true` - Update variants only
 
 **4 Rebuild Endpoints:**
+
 - ✅ `POST /api/questions/rebuild/trigger` - Trigger rebuild
 - ✅ `GET /api/questions/rebuild/status` - Check progress
 - ✅ `POST /api/questions/rebuild/cancel` - Cancel rebuild
 - ✅ `DELETE /api/questions/rebuild/status` - Clear status
 
 ### 3. **Docker Configuration**
+
 File: `docker-compose.dev.yml`
+
 ```yaml
 admin-service:
   environment:
@@ -43,7 +49,9 @@ admin-service:
 ```
 
 ### 4. **Dependencies**
+
 File: `admin_service/requirements.txt`
+
 - Added `httpx>=0.25.0` - Async HTTP client
 - Added `tenacity>=8.2.0` - Retry logic
 
@@ -51,20 +59,20 @@ File: `admin_service/requirements.txt`
 
 ## ✅ Test Results (test/test_phase2_complete.py)
 
-| Test | Status | Details |
-|------|--------|---------|
-| Admin Health | ✅ | Port 8001 running |
-| RAG Health | ✅ | Port 8000 running |
-| Read Existing | ✅ | GET endpoint working |
-| Update Questions | ✅ | PUT → backup created |
-| Verify Update | ✅ | Test markers found |
-| Update Variants | ✅ | PATCH working (fixed!) |
-| Verify Variants | ✅ | 4 variants, main unchanged |
-| Update + Rebuild | ✅ | PID 172 spawned |
-| Rebuild Status | ✅ | Progress tracking |
-| List All | ✅ | 5 questions listed |
-| Create | ⚠️ Expected | DOC_TEST_CREATE not exists |
-| Delete | ⚠️ Expected | File not found |
+| Test             | Status      | Details                    |
+| ---------------- | ----------- | -------------------------- |
+| Admin Health     | ✅          | Port 8001 running          |
+| RAG Health       | ✅          | Port 8000 running          |
+| Read Existing    | ✅          | GET endpoint working       |
+| Update Questions | ✅          | PUT → backup created       |
+| Verify Update    | ✅          | Test markers found         |
+| Update Variants  | ✅          | PATCH working (fixed!)     |
+| Verify Variants  | ✅          | 4 variants, main unchanged |
+| Update + Rebuild | ✅          | PID 172 spawned            |
+| Rebuild Status   | ✅          | Progress tracking          |
+| List All         | ✅          | 5 questions listed         |
+| Create           | ⚠️ Expected | DOC_TEST_CREATE not exists |
+| Delete           | ⚠️ Expected | File not found             |
 
 **Tổng:** 10/12 PASSED ✅
 
@@ -73,14 +81,17 @@ File: `admin_service/requirements.txt`
 ## 🔧 Issues Fixed
 
 ### 1. Endpoint Path Mismatch
+
 ❌ Test gọi `/questions/...`  
 ✅ Sửa thành `/api/questions/...`
 
 ### 2. PATCH Variants 422 Error
+
 ❌ Gửi `{"question_variants": [...]}`  
 ✅ Gửi `[...]` trực tiếp (RAG Service expects List[str])
 
 ### 3. Missing Dependencies
+
 ❌ Container thiếu httpx, tenacity  
 ✅ Rebuild container với `--build` flag
 
@@ -107,6 +118,7 @@ Admin Service (8001)
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -129,11 +141,13 @@ Admin Service (8001)
 ## 📁 Files Changed/Created
 
 ### Created:
+
 - ✅ `admin_service/app/services/rag_client.py` - HTTP client (312 lines)
 - ✅ `test/test_phase2_complete.py` - Integration tests (580+ lines)
 - ✅ `docs/PHASE2_COMPLETE.md` - Full documentation
 
 ### Modified:
+
 - ✅ `admin_service/app/core/config.py` - Added RAG config
 - ✅ `admin_service/app/api/questions.py` - Added CRUD endpoints (+330 lines)
 - ✅ `admin_service/requirements.txt` - Added httpx, tenacity
@@ -146,11 +160,13 @@ Admin Service (8001)
 **Estimated Time:** 6-8 hours
 
 ### Components to Create:
+
 1. `QuestionsEditor.tsx` - Main CRUD form
 2. `VariantsList.tsx` - Variants manager
 3. `RebuildProgress.tsx` - Real-time rebuild status
 
 ### Features:
+
 - Add/Edit/Delete questions via UI
 - Variants editor with add/remove buttons
 - Rebuild trigger button with progress bar
@@ -160,6 +176,7 @@ Admin Service (8001)
 ---
 
 ## 🚀 Production Ready
+
 - ✅ All core CRUD operations working
 - ✅ HTTP communication validated in Docker
 - ✅ Automatic backup/restore

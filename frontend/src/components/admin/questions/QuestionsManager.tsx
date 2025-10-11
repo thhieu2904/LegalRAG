@@ -21,6 +21,7 @@ import {
   BookOpen,
   Calendar,
   Building,
+  Edit,
 } from "lucide-react";
 import {
   fetchCollections,
@@ -30,6 +31,7 @@ import {
   type AdminDocument,
 } from "../../../api/admin-api";
 import { formatCollectionName } from "../../../api/collection-mapping";
+import QuestionsEditor from "./QuestionsEditor";
 
 interface DocumentQuestions {
   collection: string;
@@ -38,7 +40,7 @@ interface DocumentQuestions {
   questions: Array<{
     id: string;
     text: string;
-    type: 'main' | 'variant';
+    type: "main" | "variant";
     order: number;
     variant_index?: number;
   }>;
@@ -49,16 +51,22 @@ interface DocumentQuestions {
 export default function QuestionsManager() {
   // State management - exactly like DatabaseManager
   const [collections, setCollections] = useState<AdminCollection[]>([]);
-  const [selectedCollection, setSelectedCollection] = useState<AdminCollection | null>(null);
+  const [selectedCollection, setSelectedCollection] =
+    useState<AdminCollection | null>(null);
   const [documents, setDocuments] = useState<AdminDocument[]>([]);
-  const [selectedDocument, setSelectedDocument] = useState<AdminDocument | null>(null);
-  const [documentQuestions, setDocumentQuestions] = useState<DocumentQuestions | null>(null);
-  
+  const [selectedDocument, setSelectedDocument] =
+    useState<AdminDocument | null>(null);
+  const [documentQuestions, setDocumentQuestions] =
+    useState<DocumentQuestions | null>(null);
+
   const [isLoadingCollections, setIsLoadingCollections] = useState(false);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Editor state
+  const [isEditing, setIsEditing] = useState(false);
 
   // Load collections on mount - exactly like DatabaseManager
   useEffect(() => {
@@ -104,13 +112,16 @@ export default function QuestionsManager() {
 
   const loadQuestions = async (document: AdminDocument) => {
     if (!selectedCollection) return;
-    
+
     try {
       setIsLoadingQuestions(true);
       setError(null);
       console.log(`❓ Loading questions for document: ${document.doc_id}`);
 
-      const data = await fetchDocumentQuestions(selectedCollection.name, document.doc_id);
+      const data = await fetchDocumentQuestions(
+        selectedCollection.name,
+        document.doc_id
+      );
       setDocumentQuestions(data);
       setSelectedDocument(document);
 
@@ -233,7 +244,10 @@ export default function QuestionsManager() {
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <HelpCircle className="w-6 h-6" />
               {selectedDocument ? (
-                <>Questions - {documentQuestions?.document_title || selectedDocument.title}</>
+                <>
+                  Questions -{" "}
+                  {documentQuestions?.document_title || selectedDocument.title}
+                </>
               ) : selectedCollection ? (
                 <>Documents - {formatCollectionName(selectedCollection.name)}</>
               ) : (
@@ -241,24 +255,26 @@ export default function QuestionsManager() {
               )}
             </h1>
             <p className="text-muted-foreground">
-              {selectedDocument && documentQuestions ? (
-                `${documentQuestions.total} questions từ document`
-              ) : selectedCollection ? (
-                `${filteredDocuments.length} documents từ collection`
-              ) : (
-                `${filteredCollections.length} collections có sẵn`
-              )}
+              {selectedDocument && documentQuestions
+                ? `${documentQuestions.total} questions từ document`
+                : selectedCollection
+                ? `${filteredDocuments.length} documents từ collection`
+                : `${filteredCollections.length} collections có sẵn`}
             </p>
           </div>
         </div>
         <Button
           onClick={handleRefresh}
-          disabled={isLoadingCollections || isLoadingDocuments || isLoadingQuestions}
+          disabled={
+            isLoadingCollections || isLoadingDocuments || isLoadingQuestions
+          }
           variant="outline"
         >
           <RefreshCw
             className={`w-4 h-4 mr-2 ${
-              isLoadingCollections || isLoadingDocuments || isLoadingQuestions ? "animate-spin" : ""
+              isLoadingCollections || isLoadingDocuments || isLoadingQuestions
+                ? "animate-spin"
+                : ""
             }`}
           />
           Làm mới
@@ -314,13 +330,14 @@ export default function QuestionsManager() {
                 <div className="text-center py-8">
                   <FolderOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-muted-foreground mb-2">
-                    {searchQuery ? "Không tìm thấy collections" : "Chưa có collections"}
+                    {searchQuery
+                      ? "Không tìm thấy collections"
+                      : "Chưa có collections"}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     {searchQuery
                       ? "Thử thay đổi từ khóa tìm kiếm"
-                      : "Hệ thống chưa có collections nào"
-                    }
+                      : "Hệ thống chưa có collections nào"}
                   </p>
                 </div>
               </CardContent>
@@ -390,13 +407,14 @@ export default function QuestionsManager() {
                 <div className="text-center py-8">
                   <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-muted-foreground mb-2">
-                    {searchQuery ? "Không tìm thấy documents" : "Chưa có documents"}
+                    {searchQuery
+                      ? "Không tìm thấy documents"
+                      : "Chưa có documents"}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     {searchQuery
                       ? "Thử thay đổi từ khóa tìm kiếm"
-                      : "Collection này chưa có documents nào"
-                    }
+                      : "Collection này chưa có documents nào"}
                   </p>
                 </div>
               </CardContent>
@@ -438,7 +456,11 @@ export default function QuestionsManager() {
                         </div>
                         <div className="flex items-center gap-2">
                           {document.applicant_type.map((type, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {type}
                             </Badge>
                           ))}
@@ -469,7 +491,10 @@ export default function QuestionsManager() {
                   <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                   <div className="space-y-2">
                     {Array.from({ length: 5 }).map((_, index) => (
-                      <div key={index} className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div
+                        key={index}
+                        className="h-4 bg-gray-200 rounded w-full"
+                      ></div>
                     ))}
                   </div>
                 </div>
@@ -489,60 +514,103 @@ export default function QuestionsManager() {
                 </div>
               </CardContent>
             </Card>
+          ) : isEditing ? (
+            <QuestionsEditor
+              collection={selectedCollection?.name || ""}
+              docId={selectedDocument?.doc_id || ""}
+              documentTitle={documentQuestions.document_title}
+              currentMainQuestion={
+                documentQuestions.questions.find((q) => q.type === "main")
+                  ?.text || ""
+              }
+              currentVariants={documentQuestions.questions
+                .filter((q) => q.type === "variant")
+                .sort((a, b) => a.order - b.order)
+                .map((q) => q.text)}
+              onSaveSuccess={() => {
+                setIsEditing(false);
+                if (selectedDocument) {
+                  loadQuestions(selectedDocument);
+                }
+              }}
+              onCancel={() => setIsEditing(false)}
+            />
           ) : (
             <>
+              {/* Edit Button */}
+              <div className="flex justify-end mb-4">
+                <Button
+                  onClick={() => setIsEditing(true)}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Chỉnh sửa
+                </Button>
+              </div>
+
               {/* Main Question */}
-              {documentQuestions.questions.filter(q => q.type === 'main').map((mainQ) => (
-                <Card key={mainQ.id} className="border-blue-200 bg-blue-50">
-                  <CardContent className="pt-6">
-                    <div className="flex items-start gap-3">
-                      <MessageSquare className="w-6 h-6 text-blue-600 mt-1" />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="default" className="bg-blue-600">
-                            Câu hỏi chính
-                          </Badge>
+              {documentQuestions.questions
+                .filter((q) => q.type === "main")
+                .map((mainQ) => (
+                  <Card key={mainQ.id} className="border-blue-200 bg-blue-50">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start gap-3">
+                        <MessageSquare className="w-6 h-6 text-blue-600 mt-1" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="default" className="bg-blue-600">
+                              Câu hỏi chính
+                            </Badge>
+                          </div>
+                          <h3 className="text-lg font-medium text-blue-900 mb-2">
+                            {mainQ.text}
+                          </h3>
+                          <p className="text-sm text-blue-700">
+                            Câu hỏi chính của document này
+                          </p>
                         </div>
-                        <h3 className="text-lg font-medium text-blue-900 mb-2">
-                          {mainQ.text}
-                        </h3>
-                        <p className="text-sm text-blue-700">
-                          Câu hỏi chính của document này
-                        </p>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
 
               {/* Question Variants */}
-              {documentQuestions.questions.filter(q => q.type === 'variant').length > 0 && (
+              {documentQuestions.questions.filter((q) => q.type === "variant")
+                .length > 0 && (
                 <Card>
                   <CardContent className="pt-6">
                     <div className="flex items-center gap-2 mb-4">
                       <BookOpen className="w-5 h-5 text-green-600" />
                       <h3 className="text-lg font-medium">
-                        Biến thể câu hỏi ({documentQuestions.questions.filter(q => q.type === 'variant').length})
+                        Biến thể câu hỏi (
+                        {
+                          documentQuestions.questions.filter(
+                            (q) => q.type === "variant"
+                          ).length
+                        }
+                        )
                       </h3>
                     </div>
-                    
+
                     <div className="space-y-3">
                       {documentQuestions.questions
-                        .filter(q => q.type === 'variant')
+                        .filter((q) => q.type === "variant")
                         .sort((a, b) => a.order - b.order)
                         .map((variant, index) => (
-                        <div
-                          key={variant.id}
-                          className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                        >
-                          <Badge variant="outline" className="mt-1">
-                            {index + 1}
-                          </Badge>
-                          <p className="text-sm text-gray-700 flex-1">
-                            {variant.text}
-                          </p>
-                        </div>
-                      ))}
+                          <div
+                            key={variant.id}
+                            className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                          >
+                            <Badge variant="outline" className="mt-1">
+                              {index + 1}
+                            </Badge>
+                            <p className="text-sm text-gray-700 flex-1">
+                              {variant.text}
+                            </p>
+                          </div>
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -561,31 +629,51 @@ export default function QuestionsManager() {
                 {selectedDocument && documentQuestions ? (
                   <>
                     <span>
-                      Document: <strong>{documentQuestions.document_title}</strong>
+                      Document:{" "}
+                      <strong>{documentQuestions.document_title}</strong>
                     </span>
                     <span>
-                      Questions: <strong>{documentQuestions.questions.filter(q => q.type === 'main').length}</strong> main + <strong>{documentQuestions.questions.filter(q => q.type === 'variant').length}</strong> variants
+                      Questions:{" "}
+                      <strong>
+                        {
+                          documentQuestions.questions.filter(
+                            (q) => q.type === "main"
+                          ).length
+                        }
+                      </strong>{" "}
+                      main +{" "}
+                      <strong>
+                        {
+                          documentQuestions.questions.filter(
+                            (q) => q.type === "variant"
+                          ).length
+                        }
+                      </strong>{" "}
+                      variants
                     </span>
                   </>
                 ) : selectedCollection ? (
                   <>
                     <span>
-                      Collection: <strong>{formatCollectionName(selectedCollection.name)}</strong>
+                      Collection:{" "}
+                      <strong>
+                        {formatCollectionName(selectedCollection.name)}
+                      </strong>
                     </span>
                     <span>
-                      <strong>{filteredDocuments.length}</strong> documents hiển thị
+                      <strong>{filteredDocuments.length}</strong> documents hiển
+                      thị
                       {searchQuery && ` (lọc từ ${documents.length})`}
                     </span>
                   </>
                 ) : (
                   <>
                     <span>
-                      <strong>{filteredCollections.length}</strong> collections hiển thị
+                      <strong>{filteredCollections.length}</strong> collections
+                      hiển thị
                       {searchQuery && ` (lọc từ ${collections.length})`}
                     </span>
-                    <span>
-                      Chọn collection để xem documents
-                    </span>
+                    <span>Chọn collection để xem documents</span>
                   </>
                 )}
               </div>
