@@ -1,0 +1,153 @@
+/* 📄 Document Preview Page Styles */
+/* Layout tương tự MainChatPage: ChatHeader + Content (scrollable) + ChatFooter */
+
+/* Main container for document preview */
+.document-preview-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #f8fafc;
+}
+
+/* Document controls bar (breadcrumb, download button) */
+.document-preview-controls {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+/* Scrollable content area */
+.document-preview-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f8fafc;
+}
+
+/* Style for DOCX HTML content */
+.docx-preview-container {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.docx-html-content {
+  padding: 2rem;
+  line-height: 1.8;
+  color: #1f2937;
+}
+
+/* Override LibreOffice inline styles for better readability */
+.docx-html-content p {
+  margin-bottom: 1rem;
+}
+
+.docx-html-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.docx-html-content table td,
+.docx-html-content table th {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+}
+
+.docx-html-content table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+/* Style for JSON content */
+.json-preview-container {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  max-height: calc(100vh - 250px);
+  overflow: auto;
+}
+
+.json-preview-container pre {
+  margin: 0;
+  padding: 1.5rem;
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.json-preview-container code {
+  color: #374151;
+}
+
+/* Conversion warning banner */
+.conversion-warning {
+  background: #fef3c7;
+  border-bottom: 1px solid #fde68a;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.conversion-warning-text {
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+/* Loading state */
+.preview-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error state */
+.preview-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.error-content {
+  text-align: center;
+  max-width: 28rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .docx-html-content {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .json-preview-container {
+    max-height: calc(100vh - 200px);
+  }
+
+  .json-preview-container pre {
+    padding: 1rem;
+    font-size: 0.75rem;
+  }
+}

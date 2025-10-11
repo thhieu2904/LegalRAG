@@ -6,11 +6,11 @@ export function ChatFooter() {
       <div className="chat-footer-content">
         <div className="chat-footer-organization">
           <span className="chat-footer-label">Cơ quan chủ quản:</span> TRUNG TÂM
-          PHỤ VỤ HÀNH CHÍNH CÔNG XÃ LONG PHÚ
+          PHỤC VỤ HÀNH CHÍNH CÔNG XÃ LONG PHÚ
         </div>
         <div className="chat-footer-contact">
-          <span className="chat-footer-label">Địa chỉ:</span> Ấp 4, xã Long Phú
-          - TP Cần Thơ | <span className="chat-footer-label">Điện thoại:</span>{" "}
+          <span className="chat-footer-label">Địa chỉ:</span> Ấp 4, xã Long Phú,
+          TP Cần Thơ | <span className="chat-footer-label">Điện thoại:</span>{" "}
           0907007397
         </div>
         {/* <span className="chat-footer-label"> Fax:</span> 02993.857.430 |

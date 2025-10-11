@@ -64,16 +64,14 @@ services:
       - ENVIRONMENT=docker
       - ADMIN_HOST=0.0.0.0
       - ADMIN_PORT=8001
-      # RAG Service Integration
+      # RAG Service Integration (API Gateway pattern)
       - RAG_SERVICE_URL=http://rag-service:8000
       - INTERNAL_API_KEY=dev-internal-key
       - RAG_REQUEST_TIMEOUT=30
       - RAG_MAX_RETRIES=3
     volumes:
-      # Share data volume with RAG service for PathConfig access
-      - ./rag_service/data:/app/data
-      # Mount RAG service source for PathConfig import
-      - ./rag_service/app:/app/rag_service_app
+      # Shared read-only data access (Admin reads, RAG owns)
+      - ./rag_service/data:/app/data:ro
       # Source code hot reload
       - ./admin_service/app:/app/app
       - ./admin_service/main.py:/app/main.py

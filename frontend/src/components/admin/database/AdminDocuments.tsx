@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -19,7 +20,6 @@ import {
   Search,
   ArrowLeft,
   AlertCircle,
-  CheckCircle,
   HelpCircle,
   FormInput,
   Calendar,
@@ -45,6 +45,8 @@ export default function AdminDocumentsManager({
   collectionName,
   onBack,
 }: AdminDocumentsManagerProps) {
+  const navigate = useNavigate();
+
   // State management
   const [documents, setDocuments] = useState<AdminDocument[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<AdminDocument[]>(
@@ -131,6 +133,13 @@ export default function AdminDocumentsManager({
       return "Miễn phí";
     }
     return "Xem chi tiết";
+  };
+
+  // Handler for viewing document preview
+  const handleViewDocument = (doc: AdminDocument, type: "docx" | "json") => {
+    navigate(
+      `/admin/documents/${selectedCollection}/${doc.doc_id}/preview/${type}`
+    );
   };
 
   if (error) {
@@ -369,16 +378,24 @@ export default function AdminDocumentsManager({
                           </div>
                         )}
                         {document.has_original_doc && (
-                          <div className="flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-700 rounded text-xs">
-                            <CheckCircle className="w-3 h-3" />
-                            Có file gốc
-                          </div>
+                          <button
+                            onClick={() => handleViewDocument(document, "docx")}
+                            className="flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-700 rounded text-xs hover:bg-purple-100 transition-colors cursor-pointer"
+                            title="Click để xem tài liệu Word"
+                          >
+                            <Eye className="w-3 h-3" />
+                            DOC
+                          </button>
                         )}
                         {document.has_processed_json && (
-                          <div className="flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 rounded text-xs">
-                            <CheckCircle className="w-3 h-3" />
-                            Đã xử lý
-                          </div>
+                          <button
+                            onClick={() => handleViewDocument(document, "json")}
+                            className="flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 rounded text-xs hover:bg-orange-100 transition-colors cursor-pointer"
+                            title="Click để xem dữ liệu JSON"
+                          >
+                            <Eye className="w-3 h-3" />
+                            JSON
+                          </button>
                         )}
                       </div>
                     </div>

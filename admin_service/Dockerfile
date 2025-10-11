@@ -5,8 +5,12 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install system dependencies
+# LibreOffice for .doc file conversion (Vietnamese legal documents are typically .doc format)
 RUN apt-get update && apt-get install -y \
     gcc \
+    libreoffice-writer \
+    libreoffice-core \
+    libreoffice-common \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first (for better Docker layer caching)

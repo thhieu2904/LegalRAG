@@ -340,20 +340,40 @@ export default function DatabaseManager() {
                         <div className="flex items-center gap-2 mb-2">
                           <FileText className="w-5 h-5 text-blue-500" />
                           <Badge variant="outline">{doc.code}</Badge>
-                          <Badge
+                          <Button
+                            size="sm"
                             variant={
-                              doc.has_original_doc ? "default" : "secondary"
+                              doc.has_original_doc ? "default" : "outline"
                             }
+                            disabled={!doc.has_original_doc}
+                            onClick={() => {
+                              if (selectedCollection) {
+                                window.open(
+                                  `/admin/documents/${selectedCollection.name}/${doc.doc_id}/preview/docx`,
+                                  "_blank"
+                                );
+                              }
+                            }}
                           >
-                            {doc.has_original_doc ? "✅ DOC" : "❌ NO DOC"}
-                          </Badge>
-                          <Badge
+                            {doc.has_original_doc ? "📄 DOC" : "❌ NO DOC"}
+                          </Button>
+                          <Button
+                            size="sm"
                             variant={
-                              doc.has_processed_json ? "default" : "secondary"
+                              doc.has_processed_json ? "default" : "outline"
                             }
+                            disabled={!doc.has_processed_json}
+                            onClick={() => {
+                              if (selectedCollection) {
+                                window.open(
+                                  `/admin/documents/${selectedCollection.name}/${doc.doc_id}/preview/json`,
+                                  "_blank"
+                                );
+                              }
+                            }}
                           >
-                            {doc.has_processed_json ? "✅ JSON" : "❌ NO JSON"}
-                          </Badge>
+                            {doc.has_processed_json ? "📋 JSON" : "❌ NO JSON"}
+                          </Button>
                         </div>
                         <h3 className="font-semibold text-lg mb-2">
                           {doc.title}

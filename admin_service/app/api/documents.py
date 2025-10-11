@@ -7,12 +7,15 @@ Loads data from metadata.json for performance and consistency.
 """
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from typing import List, Dict, Any, Optional
 import logging
 import json
 from pathlib import Path
 
 from ..core.admin_path_config import get_admin_path_config
+from ..services.rag_client import get_rag_client
+from ..services.document_renderer import get_document_renderer
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -404,3 +407,102 @@ def _extract_filename_from_source(source_path: str) -> str:
         return source_path.split("/")[-1]
     else:
         return source_path
+
+
+# ============================================================================
+# DOCUMENT PREVIEW ENDPOINTS
+# ============================================================================
+
+@router.get("/collections/{collection_name}/documents/{doc_id}/preview/{doc_type}")
+async def preview_document(
+    collection_name: str,
+    doc_id: str,
+    doc_type: str  # "docx" or "json"
+):
+    """
+    Preview document content - renders DOCX to HTML or returns JSON data
+    
+    **ARCHITECTURE (Corrected)**:
+    - RAG Service (Data Layer): Serves raw DOCX/JSON files
+    - Admin Service (Presentation Layer): Renders DOCX → HTML using mammoth locally
+    
+    Args:
+        collection_name: Collection name
+        doc_id: Document ID
+        doc_type: Type of preview ("docx" or "json")
+        
+    Returns:
+        - For DOCX: HTML content rendered locally by Admin Service
+        - For JSON: Parsed JSON data from RAG Service
+        
+    Example URLs:
+        GET /collections/Bo_thu_tuc/documents/123/preview/docx
+        GET /collections/Bo_thu_tuc/documents/123/preview/json
+    """
+    try:
+        # Validate doc_type
+        if doc_type not in ["docx", "json"]:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid doc_type '{doc_type}'. Must be 'docx' or 'json'"
+            )
+        
+        logger.info(f"📄 Preview request: {collection_name}/{doc_id} ({doc_type})")
+        
+        # Get document renderer service
+        renderer = get_document_renderer()
+        
+        try:
+            if doc_type == "docx":
+                # Render DOCX to HTML locally (Admin Service = Presentation Layer)
+                logger.info(f"🎨 Rendering DOCX to HTML in Admin Service (Presentation Layer)")
+                html_content = await renderer.render_docx_to_html(
+                    collection=collection_name,
+                    doc_id=doc_id
+                )
+                
+                result = {
+                    "success": True,
+                    "html": html_content,
+                    "doc_id": doc_id,
+                    "collection": collection_name,
+                    "type": "docx",
+                    "rendered_by": "Admin Service (mammoth local)"
+                }
+                
+                logger.info(f"✅ DOCX preview ready: {doc_id} ({len(html_content)} chars)")
+                return JSONResponse(content=result)
+                
+            elif doc_type == "json":
+                # Get JSON data from RAG Service
+                logger.info(f"📋 Fetching JSON from RAG Service")
+                json_content = await renderer.get_json_content(
+                    collection=collection_name,
+                    doc_id=doc_id
+                )
+                
+                result = {
+                    "success": True,
+                    "data": json_content,
+                    "doc_id": doc_id,
+                    "collection": collection_name,
+                    "type": "json"
+                }
+                
+                logger.info(f"✅ JSON preview ready: {doc_id}")
+                return JSONResponse(content=result)
+                
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"❌ Error rendering document: {e}")
+            raise HTTPException(
+                status_code=503,
+                detail=f"Failed to render document: {str(e)}"
+            )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error in preview endpoint: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

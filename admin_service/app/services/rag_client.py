@@ -290,6 +290,143 @@ class RAGServiceClient:
         """
         endpoint = "/rebuild/status"
         return await self._make_request("DELETE", endpoint)
+    
+    # ========== Document File Operations (NEW - API Gateway Pattern) ==========
+    
+    async def get_document_file(
+        self,
+        collection: str,
+        doc_id: str,
+        file_type: str
+    ) -> bytes:
+        """
+        Get RAW document file bytes from RAG Service
+        
+        Architecture: RAG Service serves raw files, Admin Service renders them
+        
+        Args:
+            collection: Collection name (e.g., 'hop_dong')
+            doc_id: Document ID (e.g., 'DOC_001')
+            file_type: File type - 'docx' or 'json'
+            
+        Returns:
+            Raw file bytes (DOCX file content)
+            
+        Raises:
+            httpx.HTTPError: On HTTP errors
+            ValueError: If file_type is invalid
+        """
+        if file_type not in ["docx", "json"]:
+            raise ValueError(f"Invalid file_type '{file_type}'. Must be 'docx' or 'json'")
+        
+        endpoint = f"/documents/collections/{collection}/documents/{doc_id}/file"
+        params = {"type": file_type}
+        
+        logger.info(f"📥 Requesting raw file from RAG Service: {collection}/{doc_id} (type={file_type})")
+        
+        url = self._get_internal_url(endpoint)
+        
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            try:
+                response = await client.get(
+                    url=url,
+                    params=params,
+                    headers=self.headers
+                )
+                response.raise_for_status()
+                
+                file_bytes = response.content
+                logger.info(f"✅ Received {len(file_bytes)} bytes from RAG Service")
+                
+                return file_bytes
+                
+            except httpx.HTTPStatusError as e:
+                logger.error(f"❌ HTTP Error {e.response.status_code}: {e.response.text}")
+                raise
+            except httpx.TimeoutException:
+                logger.error(f"⏱️ Timeout after {self.timeout}s: {url}")
+                raise
+            except httpx.ConnectError as e:
+                logger.error(f"🔌 Connection failed: {url} - {str(e)}")
+                raise
+            except Exception as e:
+                logger.error(f"❌ Unexpected error: {str(e)}")
+                raise
+    
+    async def get_document_json(
+        self,
+        collection: str,
+        doc_id: str
+    ) -> Dict[str, Any]:
+        """
+        Get JSON document content from RAG Service
+        
+        Args:
+            collection: Collection name (e.g., 'hop_dong')
+            doc_id: Document ID (e.g., 'DOC_001')
+            
+        Returns:
+            JSON response with parsed data
+            
+        Raises:
+            httpx.HTTPError: On HTTP errors
+        """
+        endpoint = f"/documents/collections/{collection}/documents/{doc_id}/file"
+        params = {"type": "json"}
+        
+        logger.info(f"📋 Requesting JSON from RAG Service: {collection}/{doc_id}")
+        
+        try:
+            response = await self._make_request("GET", endpoint, params=params)
+            logger.info(f"✅ JSON content retrieved: {doc_id}")
+            return response
+        except Exception as e:
+            logger.error(f"❌ Failed to get JSON content: {e}")
+            raise
+    
+    # ========== Document Content Operations (DEPRECATED - Use get_document_file instead) ==========
+    
+    async def get_document_content(
+        self,
+        collection: str,
+        doc_id: str,
+        doc_type: str
+    ) -> Dict[str, Any]:
+        """
+        Get document content for preview (DOCX as HTML or JSON data)
+        
+        **DEPRECATED**: This endpoint is deprecated. Use get_document_file() instead.
+        RAG Service no longer renders DOCX to HTML. Use DocumentRenderer in Admin Service.
+        
+        Args:
+            collection: Collection name (e.g., 'hop_dong')
+            doc_id: Document ID (e.g., 'DOC_001')
+            doc_type: Document type - 'docx' or 'json'
+            
+        Returns:
+            Document content response with HTML or JSON data
+            
+        Raises:
+            httpx.HTTPError: On HTTP errors
+            ValueError: If doc_type is invalid
+        """
+        if doc_type not in ["docx", "json"]:
+            raise ValueError(f"Invalid doc_type '{doc_type}'. Must be 'docx' or 'json'")
+        
+        logger.warning(f"⚠️ DEPRECATED: get_document_content() is deprecated. Use get_document_file() instead.")
+        
+        endpoint = f"/documents/collections/{collection}/documents/{doc_id}/content"
+        params = {"type": doc_type}
+        
+        logger.info(f"📄 Requesting document content: {collection}/{doc_id} (type={doc_type})")
+        
+        try:
+            response = await self._make_request("GET", endpoint, params=params)
+            logger.info(f"✅ Document content retrieved: {doc_id}")
+            return response
+        except Exception as e:
+            logger.error(f"❌ Failed to get document content: {e}")
+            raise
 
 
 # Singleton instance

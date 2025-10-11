@@ -17,11 +17,11 @@ const AdminPage = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>("dashboard");
 
   const navigationItems = [
-    { key: "dashboard" as AdminSection, label: "📊 Dashboard", icon: "📊" },
-    { key: "voice" as AdminSection, label: "🎤 Voice", icon: "🎤" },
-    { key: "database" as AdminSection, label: "💾 Database", icon: "💾" },
-    { key: "questions" as AdminSection, label: "❓ Questions", icon: "❓" },
-    { key: "system" as AdminSection, label: "⚙️ System", icon: "⚙️" },
+    { key: "dashboard" as AdminSection, label: "Dashboard", icon: "📊" },
+    { key: "voice" as AdminSection, label: "Voice", icon: "🎤" },
+    { key: "database" as AdminSection, label: "Bộ thủ tục", icon: "💾" },
+    { key: "questions" as AdminSection, label: "Câu hỏi", icon: "❓" },
+    { key: "system" as AdminSection, label: "Hệ thống", icon: "⚙️" },
   ];
 
   const renderActiveComponent = () => {

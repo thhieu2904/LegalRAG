@@ -228,6 +228,14 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Internal Files API not available: {e}")
 
+# Include Internal Documents API for Admin Service (Document Preview)
+try:
+    from app.api.internal_documents import router as internal_documents_router
+    app.include_router(internal_documents_router, prefix="/api", tags=["internal-documents"])
+    logger.info("✅ Internal Documents API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Internal Documents API not available: {e}")
+
 # Include Internal Rebuild API for cache management
 try:
     from app.api.internal_rebuild import router as internal_rebuild_router
