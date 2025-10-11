@@ -9,6 +9,9 @@ pydantic==2.5.0
 # CORS and middleware
 python-multipart==0.0.6
 
+# HTTP client for RAG Service communication
+httpx>=0.25.0
+tenacity>=8.2.0
+
 # Development dependencies (optional)
 pytest>=7.0.0
-httpx>=0.25.0

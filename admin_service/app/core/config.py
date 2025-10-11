@@ -29,6 +29,12 @@ class AdminConfig:
     # Path settings (managed by PathConfig)
     ENVIRONMENT = os.getenv("ENVIRONMENT", "auto")  # auto, docker, local
     
+    # RAG Service Integration
+    RAG_SERVICE_URL = os.getenv("RAG_SERVICE_URL", "http://localhost:8000")
+    INTERNAL_API_KEY = os.getenv("INTERNAL_API_KEY", "dev-internal-key")
+    RAG_REQUEST_TIMEOUT = int(os.getenv("RAG_REQUEST_TIMEOUT", "30"))  # seconds
+    RAG_MAX_RETRIES = int(os.getenv("RAG_MAX_RETRIES", "3"))
+    
     # Logging settings
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
     

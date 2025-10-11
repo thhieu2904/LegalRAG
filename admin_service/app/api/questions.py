@@ -6,16 +6,51 @@ Handles questions management using PathConfig service.
 Loads and processes questions.json files with proper encoding.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from typing import List, Dict, Any, Optional
 import logging
 import json
 from pathlib import Path
+from pydantic import BaseModel
 
 from ..core.admin_path_config import get_admin_path_config
+from ..services.rag_client import get_rag_client
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+# ========== Pydantic Models for Request Validation ==========
+
+class QuestionsCreateRequest(BaseModel):
+    """Request model for creating questions"""
+    main_question: str
+    question_variants: Optional[List[str]] = []
+
+
+class QuestionsUpdateRequest(BaseModel):
+    """Request model for updating questions"""
+    main_question: str
+    question_variants: Optional[List[str]] = []
+
+
+class VariantsUpdateRequest(BaseModel):
+    """Request model for updating only variants"""
+    question_variants: List[str]
+
+
+class RestoreRequest(BaseModel):
+    """Request model for restoring from backup"""
+    backup_filename: str
+
+
+class RebuildRequest(BaseModel):
+    """Request model for triggering rebuild"""
+    trigger_rebuild: bool = False
+    rebuild_scope: str = "document"  # document, collection, all
+
+
+# ========== READ Endpoints (Existing) ==========
 
 @router.get("/questions")
 async def list_all_questions(
@@ -560,3 +595,457 @@ def _calculate_relevance_score(query: str, text: str) -> float:
     
     # Normalize score to 0-1 range
     return min(score, 1.0)
+
+
+# ========== CREATE/UPDATE/DELETE Endpoints (New - HTTP Communication) ==========
+
+@router.post("/questions/collections/{collection_name}/documents/{doc_id}")
+async def create_questions(
+    collection_name: str,
+    doc_id: str,
+    request: QuestionsCreateRequest
+):
+    """
+    Create new questions for a document (via RAG Service HTTP API)
+    
+    Args:
+        collection_name: Name of the collection
+        doc_id: Document ID
+        request: Questions data (main_question, question_variants)
+        
+    Returns:
+        Success response from RAG Service
+    """
+    try:
+        logger.info(f"📝 Creating questions for {collection_name}/{doc_id}")
+        
+        # Call RAG Service Internal API via HTTP
+        rag_client = get_rag_client()
+        result = await rag_client.create_questions(
+            collection=collection_name,
+            doc_id=doc_id,
+            main_question=request.main_question,
+            question_variants=request.question_variants
+        )
+        
+        logger.info(f"✅ Questions created successfully for {doc_id}")
+        
+        return {
+            "success": True,
+            "data": result,
+            "message": f"Questions created for {doc_id}"
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error creating questions for {collection_name}/{doc_id}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to create questions: {str(e)}"
+        )
+
+
+@router.put("/questions/collections/{collection_name}/documents/{doc_id}")
+async def update_questions(
+    collection_name: str,
+    doc_id: str,
+    request: QuestionsUpdateRequest,
+    rebuild: bool = False
+):
+    """
+    Update questions for a document (via RAG Service HTTP API)
+    
+    Args:
+        collection_name: Name of the collection
+        doc_id: Document ID
+        request: Updated questions data
+        rebuild: Whether to trigger VectorDB rebuild after update
+        
+    Returns:
+        Success response with optional rebuild status
+    """
+    try:
+        logger.info(f"✏️ Updating questions for {collection_name}/{doc_id} (rebuild={rebuild})")
+        
+        # Call RAG Service Internal API via HTTP
+        rag_client = get_rag_client()
+        result = await rag_client.update_questions(
+            collection=collection_name,
+            doc_id=doc_id,
+            main_question=request.main_question,
+            question_variants=request.question_variants
+        )
+        
+        logger.info(f"✅ Questions updated successfully for {doc_id}")
+        
+        # Trigger rebuild if requested
+        rebuild_status = None
+        if rebuild:
+            try:
+                logger.info(f"🔄 Triggering rebuild for {collection_name}/{doc_id}")
+                rebuild_result = await rag_client.trigger_rebuild(
+                    scope="document",
+                    collection=collection_name,
+                    doc_id=doc_id
+                )
+                rebuild_status = {
+                    "triggered": True,
+                    "pid": rebuild_result.get("pid"),
+                    "message": rebuild_result.get("message")
+                }
+                logger.info(f"🚀 Rebuild triggered: PID {rebuild_result.get('pid')}")
+            except Exception as e:
+                logger.error(f"⚠️ Rebuild trigger failed: {e}")
+                rebuild_status = {
+                    "triggered": False,
+                    "error": str(e)
+                }
+        
+        return {
+            "success": True,
+            "data": {
+                "update_result": result,
+                "rebuild_status": rebuild_status
+            },
+            "message": f"Questions updated for {doc_id}" + (" and rebuild triggered" if rebuild else "")
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating questions for {collection_name}/{doc_id}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to update questions: {str(e)}"
+        )
+
+
+@router.delete("/questions/collections/{collection_name}/documents/{doc_id}")
+async def delete_questions(
+    collection_name: str,
+    doc_id: str,
+    rebuild: bool = False
+):
+    """
+    Delete questions file for a document (via RAG Service HTTP API)
+    
+    Args:
+        collection_name: Name of the collection
+        doc_id: Document ID
+        rebuild: Whether to trigger VectorDB rebuild after deletion
+        
+    Returns:
+        Success response with backup information
+    """
+    try:
+        logger.info(f"🗑️ Deleting questions for {collection_name}/{doc_id} (rebuild={rebuild})")
+        
+        # Call RAG Service Internal API via HTTP
+        rag_client = get_rag_client()
+        result = await rag_client.delete_questions(
+            collection=collection_name,
+            doc_id=doc_id
+        )
+        
+        logger.info(f"✅ Questions deleted successfully for {doc_id}")
+        
+        # Trigger rebuild if requested
+        rebuild_status = None
+        if rebuild:
+            try:
+                logger.info(f"🔄 Triggering rebuild for {collection_name}/{doc_id}")
+                rebuild_result = await rag_client.trigger_rebuild(
+                    scope="document",
+                    collection=collection_name,
+                    doc_id=doc_id
+                )
+                rebuild_status = {
+                    "triggered": True,
+                    "pid": rebuild_result.get("pid"),
+                    "message": rebuild_result.get("message")
+                }
+                logger.info(f"🚀 Rebuild triggered: PID {rebuild_result.get('pid')}")
+            except Exception as e:
+                logger.error(f"⚠️ Rebuild trigger failed: {e}")
+                rebuild_status = {
+                    "triggered": False,
+                    "error": str(e)
+                }
+        
+        return {
+            "success": True,
+            "data": {
+                "delete_result": result,
+                "rebuild_status": rebuild_status
+            },
+            "message": f"Questions deleted for {doc_id}" + (" and rebuild triggered" if rebuild else "")
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error deleting questions for {collection_name}/{doc_id}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to delete questions: {str(e)}"
+        )
+
+
+@router.patch("/questions/collections/{collection_name}/documents/{doc_id}/variants")
+async def update_variants(
+    collection_name: str,
+    doc_id: str,
+    request: VariantsUpdateRequest,
+    rebuild: bool = False
+):
+    """
+    Update only question variants (keep main_question unchanged)
+    
+    Args:
+        collection_name: Name of the collection
+        doc_id: Document ID
+        request: New variants list
+        rebuild: Whether to trigger VectorDB rebuild after update
+        
+    Returns:
+        Success response with optional rebuild status
+    """
+    try:
+        logger.info(f"🔄 Updating variants for {collection_name}/{doc_id} (rebuild={rebuild})")
+        
+        # Call RAG Service Internal API via HTTP
+        rag_client = get_rag_client()
+        result = await rag_client.update_variants(
+            collection=collection_name,
+            doc_id=doc_id,
+            question_variants=request.question_variants
+        )
+        
+        logger.info(f"✅ Variants updated successfully for {doc_id}")
+        
+        # Trigger rebuild if requested
+        rebuild_status = None
+        if rebuild:
+            try:
+                logger.info(f"🔄 Triggering rebuild for {collection_name}/{doc_id}")
+                rebuild_result = await rag_client.trigger_rebuild(
+                    scope="document",
+                    collection=collection_name,
+                    doc_id=doc_id
+                )
+                rebuild_status = {
+                    "triggered": True,
+                    "pid": rebuild_result.get("pid"),
+                    "message": rebuild_result.get("message")
+                }
+                logger.info(f"🚀 Rebuild triggered: PID {rebuild_result.get('pid')}")
+            except Exception as e:
+                logger.error(f"⚠️ Rebuild trigger failed: {e}")
+                rebuild_status = {
+                    "triggered": False,
+                    "error": str(e)
+                }
+        
+        return {
+            "success": True,
+            "data": {
+                "update_result": result,
+                "rebuild_status": rebuild_status
+            },
+            "message": f"Variants updated for {doc_id}" + (" and rebuild triggered" if rebuild else "")
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating variants for {collection_name}/{doc_id}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to update variants: {str(e)}"
+        )
+
+
+@router.post("/questions/collections/{collection_name}/documents/{doc_id}/restore")
+async def restore_questions(
+    collection_name: str,
+    doc_id: str,
+    request: RestoreRequest
+):
+    """
+    Restore questions from backup file
+    
+    Args:
+        collection_name: Name of the collection
+        doc_id: Document ID
+        request: Backup filename to restore from
+        
+    Returns:
+        Success response
+    """
+    try:
+        logger.info(f"♻️ Restoring questions for {collection_name}/{doc_id} from {request.backup_filename}")
+        
+        # Call RAG Service Internal API via HTTP
+        rag_client = get_rag_client()
+        result = await rag_client.restore_questions(
+            collection=collection_name,
+            doc_id=doc_id,
+            backup_filename=request.backup_filename
+        )
+        
+        logger.info(f"✅ Questions restored successfully for {doc_id}")
+        
+        return {
+            "success": True,
+            "data": result,
+            "message": f"Questions restored from backup for {doc_id}"
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error restoring questions for {collection_name}/{doc_id}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to restore questions: {str(e)}"
+        )
+
+
+# ========== Rebuild Management Endpoints ==========
+
+@router.post("/questions/rebuild/trigger")
+async def trigger_rebuild(
+    scope: str = "all",
+    collection: Optional[str] = None,
+    doc_id: Optional[str] = None
+):
+    """
+    Trigger VectorDB rebuild
+    
+    Args:
+        scope: Rebuild scope (document, collection, all)
+        collection: Collection name (required for document/collection scope)
+        doc_id: Document ID (required for document scope)
+        
+    Returns:
+        Rebuild trigger response with PID
+    """
+    try:
+        logger.info(f"🚀 Triggering rebuild: scope={scope}, collection={collection}, doc_id={doc_id}")
+        
+        # Validate scope-specific requirements
+        if scope == "document" and (not collection or not doc_id):
+            raise HTTPException(
+                status_code=400,
+                detail="collection and doc_id are required for document scope"
+            )
+        
+        if scope == "collection" and not collection:
+            raise HTTPException(
+                status_code=400,
+                detail="collection is required for collection scope"
+            )
+        
+        # Call RAG Service Internal API via HTTP
+        rag_client = get_rag_client()
+        result = await rag_client.trigger_rebuild(
+            scope=scope,
+            collection=collection,
+            doc_id=doc_id
+        )
+        
+        logger.info(f"✅ Rebuild triggered: PID {result.get('pid')}")
+        
+        return {
+            "success": True,
+            "data": result,
+            "message": f"Rebuild triggered with scope '{scope}'"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error triggering rebuild: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to trigger rebuild: {str(e)}"
+        )
+
+
+@router.get("/questions/rebuild/status")
+async def get_rebuild_status():
+    """
+    Get rebuild process status
+    
+    Returns:
+        Current rebuild status with progress
+    """
+    try:
+        # Call RAG Service Internal API via HTTP
+        rag_client = get_rag_client()
+        result = await rag_client.get_rebuild_status()
+        
+        return {
+            "success": True,
+            "data": result
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error getting rebuild status: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get rebuild status: {str(e)}"
+        )
+
+
+@router.post("/questions/rebuild/cancel")
+async def cancel_rebuild():
+    """
+    Cancel running rebuild process
+    
+    Returns:
+        Success response
+    """
+    try:
+        logger.info(f"⛔ Canceling rebuild process")
+        
+        # Call RAG Service Internal API via HTTP
+        rag_client = get_rag_client()
+        result = await rag_client.cancel_rebuild()
+        
+        logger.info(f"✅ Rebuild canceled successfully")
+        
+        return {
+            "success": True,
+            "data": result,
+            "message": "Rebuild process canceled"
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error canceling rebuild: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to cancel rebuild: {str(e)}"
+        )
+
+
+@router.delete("/questions/rebuild/status")
+async def clear_rebuild_status():
+    """
+    Clear rebuild status file
+    
+    Returns:
+        Success response
+    """
+    try:
+        logger.info(f"🗑️ Clearing rebuild status")
+        
+        # Call RAG Service Internal API via HTTP
+        rag_client = get_rag_client()
+        result = await rag_client.clear_rebuild_status()
+        
+        logger.info(f"✅ Rebuild status cleared successfully")
+        
+        return {
+            "success": True,
+            "data": result,
+            "message": "Rebuild status cleared"
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error clearing rebuild status: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to clear rebuild status: {str(e)}"
+        )

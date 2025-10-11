@@ -64,6 +64,11 @@ services:
       - ENVIRONMENT=docker
       - ADMIN_HOST=0.0.0.0
       - ADMIN_PORT=8001
+      # RAG Service Integration
+      - RAG_SERVICE_URL=http://rag-service:8000
+      - INTERNAL_API_KEY=dev-internal-key
+      - RAG_REQUEST_TIMEOUT=30
+      - RAG_MAX_RETRIES=3
     volumes:
       # Share data volume with RAG service for PathConfig access
       - ./rag_service/data:/app/data
