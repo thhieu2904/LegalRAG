@@ -1,6 +1,18 @@
 /* 📄 Document Preview Page Styles */
 /* Layout tương tự MainChatPage: ChatHeader + Content (scrollable) + ChatFooter */
 
+/* Notification Animation */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Main container for document preview */
 .document-preview-main {
   display: flex;

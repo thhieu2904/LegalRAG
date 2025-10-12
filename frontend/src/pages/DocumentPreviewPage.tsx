@@ -9,9 +9,20 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getDocumentPreview } from "../api/document-preview-api";
 import type { DocumentPreviewResponse } from "../api/document-preview-api";
-import { ArrowLeft, FileText, Download, AlertCircle } from "lucide-react";
+import { updateJsonDocument } from "../api/json-documents-api";
+import {
+  ArrowLeft,
+  FileText,
+  Download,
+  AlertCircle,
+  Edit,
+  CheckCircle,
+  X,
+} from "lucide-react";
 import { ChatHeader } from "../components/chat/ChatHeader";
 import { ChatFooter } from "../components/chat/ChatFooter";
+import { JsonEditorModal } from "../components/admin/modals/JsonEditorModal";
+import { JsonRebuildProgressModal } from "../components/admin/modals/JsonRebuildProgressModal";
 import "./ChatPage.css"; // Shared layout styles
 import "./DocumentPreviewPage.css"; // Page-specific styles
 
@@ -27,6 +38,12 @@ const DocumentPreviewPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [previewData, setPreviewData] =
     useState<DocumentPreviewResponse | null>(null);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [showRebuildProgress, setShowRebuildProgress] = useState(false);
+  const [notification, setNotification] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const loadPreview = async () => {
     if (!collection || !docId || !type) {
@@ -64,6 +81,43 @@ const DocumentPreviewPage: React.FC = () => {
 
   const handleBack = () => {
     navigate("/admin");
+  };
+
+  const handleEditJson = () => {
+    setIsEditorOpen(true);
+  };
+
+  const handleSaveJson = async (
+    data: Record<string, unknown>,
+    triggerRebuild: boolean
+  ) => {
+    if (!collection || !docId) return;
+
+    try {
+      await updateJsonDocument(collection, docId, data, triggerRebuild);
+
+      // Show rebuild progress if triggered
+      if (triggerRebuild) {
+        setShowRebuildProgress(true);
+      }
+
+      // Reload preview to show updated content
+      await loadPreview();
+
+      // Show success notification
+      setNotification({
+        type: "success",
+        message: `JSON document saved successfully${
+          triggerRebuild ? " (Rebuild started)" : ""
+        }`,
+      });
+
+      // Auto-hide notification after 5 seconds
+      setTimeout(() => setNotification(null), 5000);
+    } catch (error) {
+      console.error("Failed to save JSON:", error);
+      throw error; // Let modal handle the error display
+    }
   };
 
   const handleDownload = () => {
@@ -179,6 +233,49 @@ const DocumentPreviewPage: React.FC = () => {
       {/* HEADER - Shared component */}
       <ChatHeader />
 
+      {/* Success/Error Notification */}
+      {notification && (
+        <div
+          className="fixed top-4 right-4 z-50 max-w-md animate-in slide-in-from-top-5"
+          style={{
+            animation: "slideInFromTop 0.3s ease-out",
+          }}
+        >
+          <div
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
+              notification.type === "success"
+                ? "bg-green-50 border border-green-200"
+                : "bg-red-50 border border-red-200"
+            }`}
+          >
+            {notification.type === "success" ? (
+              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+            ) : (
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+            )}
+            <p
+              className={`text-sm font-medium ${
+                notification.type === "success"
+                  ? "text-green-800"
+                  : "text-red-800"
+              }`}
+            >
+              {notification.message}
+            </p>
+            <button
+              onClick={() => setNotification(null)}
+              className={`ml-auto flex-shrink-0 ${
+                notification.type === "success"
+                  ? "text-green-600 hover:text-green-800"
+                  : "text-red-600 hover:text-red-800"
+              }`}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* CONTENT - Scrollable document preview */}
       <div className="chat-content-wrapper">
         <div className="document-preview-main">
@@ -219,6 +316,18 @@ const DocumentPreviewPage: React.FC = () => {
                     )}
                   </div>
 
+                  {/* Edit JSON button (only for JSON type) */}
+                  {type === "json" && (
+                    <button
+                      onClick={handleEditJson}
+                      disabled={!previewData}
+                      className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>Chỉnh sửa</span>
+                    </button>
+                  )}
+
                   <button
                     onClick={handleDownload}
                     disabled={!previewData}
@@ -243,6 +352,28 @@ const DocumentPreviewPage: React.FC = () => {
 
       {/* FOOTER - Shared component */}
       <ChatFooter />
+
+      {/* JSON Editor Modal */}
+      {type === "json" && collection && docId && previewData?.data && (
+        <JsonEditorModal
+          isOpen={isEditorOpen}
+          onClose={() => setIsEditorOpen(false)}
+          collection={collection}
+          docId={docId}
+          initialData={previewData.data as Record<string, unknown>}
+          onSave={handleSaveJson}
+        />
+      )}
+
+      {/* Rebuild Progress Modal */}
+      {collection && docId && (
+        <JsonRebuildProgressModal
+          isOpen={showRebuildProgress}
+          onClose={() => setShowRebuildProgress(false)}
+          collection={collection}
+          docId={docId}
+        />
+      )}
     </div>
   );
 };
