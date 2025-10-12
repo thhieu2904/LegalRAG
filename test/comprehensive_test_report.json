@@ -1,9 +1,0 @@
-{
-  "environment": "local",
-  "base_data_dir": "D:\\Personal\\LegalRAG_OCR\\rag_service\\data",
-  "collections_dir": "D:\\Personal\\LegalRAG_OCR\\rag_service\\data\\storage\\collections",
-  "all_paths_exist": true,
-  "warnings_count": 0,
-  "test_status": "PASSED",
-  "docker_ready": true
-}
