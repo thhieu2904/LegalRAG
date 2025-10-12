@@ -3,7 +3,7 @@ services:
   # Frontend Service - Production
   frontend:
     container_name: legalrag-frontend
-    image: thhieu/legalrag-frontend:v0.1.1
+    image: thhieu/legalrag-frontend:v1.0.2
     ports:
       - "5173:5173"
     depends_on:
@@ -16,7 +16,7 @@ services:
   # RAG Service with GPU Support - Production
   rag-service:
     container_name: legalrag-rag-service
-    image: thhieu/legalrag-rag-service:v0.1.1
+    image: thhieu/legalrag-rag-service:v1.0.2
     ports:
       - "8000:8000"
     environment:
@@ -26,6 +26,7 @@ services:
       - ENVIRONMENT=docker
       - LEGALRAG_BASE_PATH=/app
       - LEGALRAG_DATA_PATH=/app/data
+      - CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps
     volumes:
       # Named volume để lưu toàn bộ data - models, storage, cache
       - rag_data:/app/data
@@ -39,13 +40,15 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
+              device_ids: ["0"]
               capabilities: [gpu]
+        limits:
+          memory: 10G
 
   # Identifill Service (CCCD Scanner) - Production
   identifill-service:
     container_name: legalrag-identifill-service
-    image: thhieu/legalrag-identifill-service:v0.1.1
+    image: thhieu/legalrag-identifill-service:v1.0.2
     ports:
       - "8002:8002"
     environment:
@@ -60,7 +63,7 @@ services:
   # Admin Service - Production
   admin-service:
     container_name: legalrag-admin-service
-    image: thhieu/legalrag-admin-service:v0.1.1
+    image: thhieu/legalrag-admin-service:v1.0.2
     ports:
       - "8001:8001"
     environment:

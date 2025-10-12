@@ -1,0 +1,32 @@
+# Voice RAG Service - Vietnamese TTS
+# Simple F5-TTS wrapper for LegalRAG system
+
+# Core packages
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+
+# PyTorch (compatible with F5-TTS)
+torch==2.4.0
+torchaudio==2.4.0
+
+# Audio processing
+soundfile==0.12.1
+librosa==0.10.1
+pydub==0.25.1
+
+# F5-TTS dependencies
+transformers==4.44.0
+cached-path==1.8.0
+omegaconf==2.3.0
+vocos==0.1.0
+matplotlib==3.10.7
+tqdm==4.67.1
+torchdiffeq==0.2.5
+x-transformers==2.8.4
+jieba==0.42.1
+pypinyin==0.55.0
+wandb==0.22.2
+
+# Utils
+pydantic==2.9.0
+numpy==2.2.5
