@@ -28,6 +28,7 @@ from .context import ContextExpander
 from .simple_form_detection import SimpleFormDetectionService
 from .fee_service import FeeService
 from .prompt_service import prompt_service, PromptType
+from .session_manager import SessionPersistenceManager
 from ..core.config import settings
 
 # Import path_config with try/except for graceful fallback
@@ -437,9 +438,15 @@ class RAGService:
         # Chat sessions management
         self.chat_sessions: Dict[str, OptimizedChatSession] = {}
         
-        # 🔥 NEW: Simple session counter for daily sequence (YYYYMMDD-XXX format)
-        self.daily_counter = 0
-        self.last_date = datetime.now().strftime("%Y%m%d")
+        # 🔥 NEW: Session Persistence Manager (JSON-based storage)
+        self.session_persistence = SessionPersistenceManager(
+            storage_path=str(Path("/app/data/sessions"))
+        )
+        
+        # Load counter from persistent storage
+        self.daily_counter = self.session_persistence.daily_counter
+        self.last_date = self.session_persistence.last_date
+        logger.info(f"📊 Loaded persistent counter: {self.daily_counter} for date: {self.last_date}")
         
         # Performance metrics
         self.metrics = {
@@ -756,22 +763,15 @@ class RAGService:
     
     def _generate_session_id(self) -> str:
         """
-        Generate session ID with format: YYYYMMDD-XXX (simple counter for small teams)
-        Automatically resets counter when date changes
+        Generate session ID with format: YYYYMMDD-XXX
+        Uses SessionPersistenceManager for persistent counter across restarts
         """
-        today = datetime.now().strftime("%Y%m%d")
+        # Get next session ID from persistence manager (handles counter increment & save)
+        session_id = self.session_persistence.get_next_session_id()
         
-        # Reset counter if date changed
-        if today != self.last_date:
-            self.daily_counter = 0
-            self.last_date = today
-            logger.info(f"📅 New day detected: {today}, reset session counter")
-        
-        # Increment counter for today
-        self.daily_counter += 1
-        
-        # Format: YYYYMMDD-XXX (3 digits for <1000 sessions/day)
-        session_id = f"{today}-{self.daily_counter:03d}"
+        # Also update in-memory counters for backward compatibility
+        self.daily_counter = self.session_persistence.daily_counter
+        self.last_date = self.session_persistence.last_date
         
         return session_id
 
@@ -788,6 +788,10 @@ class RAGService:
         )
         
         self.chat_sessions[session_id] = session
+        
+        # 🔥 NEW: Persist session data to file
+        self.session_persistence.persist_session(session_id, session)
+        
         logger.info(f"✅ Created new chat session: {session_id} (sequence: {self.daily_counter})")
         
         return session_id
@@ -811,6 +815,7 @@ class RAGService:
     def get_session_stats(self) -> Dict[str, Any]:
         """
         Lấy thống kê sessions để monitor và quản lý
+        Includes persistent storage statistics
         """
         today = datetime.now().strftime("%Y%m%d")
         
@@ -820,13 +825,23 @@ class RAGService:
             oldest_time = min(session.created_at for session in self.chat_sessions.values())
             oldest_session_age_hours = (time.time() - oldest_time) / 3600
         
+        # 🔥 NEW: Get persistence stats
+        persistence_stats = self.session_persistence.get_session_stats()
+        
         return {
             "today_date": today,
             "today_session_count": self.daily_counter if today == self.last_date else 0,
             "total_active_sessions": len(self.chat_sessions),
             "oldest_session_age_hours": round(oldest_session_age_hours, 2),
             "session_id_format": f"{today}-XXX",
-            "next_session_id": f"{today}-{self.daily_counter + 1:03d}" if today == self.last_date else f"{today}-001"
+            "next_session_id": f"{today}-{self.daily_counter + 1:03d}" if today == self.last_date else f"{today}-001",
+            # 💾 Persistence info
+            "persistence": {
+                "enabled": True,
+                "total_persisted_sessions": persistence_stats.get('total_persisted_sessions', 0),
+                "storage_size_mb": persistence_stats.get('storage_size_mb', 0),
+                "storage_path": persistence_stats.get('storage_path', '')
+            }
         }
     
     def reset_session_context(self, session_id: str) -> bool:
@@ -1219,6 +1234,9 @@ class RAGService:
                 if len(session.query_history) > 5:
                     session.query_history = session.query_history[-5:]
                 
+                # 🔥 NEW: Persist session after query to save history
+                self.session_persistence.persist_session(session_id, session)
+                
                 # Update session state for next query
                 session.update_successful_routing(
                     collection=target_collection, 
@@ -1600,6 +1618,9 @@ class RAGService:
             # Keep only last 5 queries in session (giảm từ 10 để tiết kiệm memory)
             if len(session.query_history) > 5:
                 session.query_history = session.query_history[-5:]
+            
+            # 🔥 NEW: Persist session after query to save history
+            self.session_persistence.persist_session(session_id, session)
             
             # 🔥 Update session state for Stateful Router
             # Chỉ update state khi routing thành công với confidence đủ tốt (0.78+)

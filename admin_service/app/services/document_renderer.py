@@ -222,14 +222,15 @@ class DocumentRenderer:
         
         Architecture Flow:
         1. Call RAG Service to get parsed JSON data
-        2. Return JSON data directly
+        2. Extract 'content' field from response wrapper
+        3. Return JSON data directly
         
         Args:
             collection: Collection name (e.g., 'hop_dong')
             doc_id: Document ID (e.g., 'DOC_001')
             
         Returns:
-            Parsed JSON data as dictionary
+            Parsed JSON data as dictionary (the actual document data)
             
         Raises:
             httpx.HTTPError: If RAG Service request fails
@@ -243,10 +244,19 @@ class DocumentRenderer:
                 doc_id=doc_id
             )
             
-            # Extract content from response
-            json_content = json_response.get("content", {})
+            logger.debug(f"📋 RAG Service response structure: {json_response.keys()}")
             
-            logger.info(f"✅ Successfully retrieved JSON content")
+            # Extract content from response wrapper
+            # RAG Service returns: {success, content_type, content: {...actual_data}, doc_id, collection, filename, timestamp}
+            # We only need the 'content' field which contains the actual JSON data
+            if "content" in json_response:
+                json_content = json_response["content"]
+                logger.info(f"✅ Successfully extracted JSON content: {len(json_content)} fields")
+            else:
+                # Fallback: if no 'content' field, return the entire response
+                # This handles different response formats
+                logger.warning(f"⚠️ No 'content' field in response, returning full response")
+                json_content = json_response
             
             return json_content
             

@@ -88,7 +88,8 @@ def load_structure_absolute_path():
                         content_data = doc_data  # Store full content data
                 
                 # 🚀 PHASE 1: CREATE FUSED TEXT EXACTLY LIKE VECTOR DB
-                fused_text = content_data.get('fused_text', '')
+                # Don't read from field (doesn't exist), create it like vectordb.py does
+                fused_text = _create_fused_text_like_vectordb(questions, metadata, content_data)
                 
                 # Initialize collection if not exists
                 if collection_name not in questions_data:

@@ -427,6 +427,98 @@ class RAGServiceClient:
         except Exception as e:
             logger.error(f"❌ Failed to get document content: {e}")
             raise
+    
+    # ========== JSON Document Operations ==========
+    
+    async def get_json_document(
+        self,
+        collection: str,
+        doc_id: str
+    ) -> Dict[str, Any]:
+        """
+        Get processed JSON document content
+        
+        Args:
+            collection: Collection name
+            doc_id: Document ID
+            
+        Returns:
+            JSON document data
+        """
+        endpoint = f"/json/collections/{collection}/documents/{doc_id}"
+        return await self._make_request("GET", endpoint)
+    
+    async def update_json_document(
+        self,
+        collection: str,
+        doc_id: str,
+        data: Dict[str, Any],
+        auto_rebuild: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Update JSON document with optional auto-rebuild
+        
+        Args:
+            collection: Collection name
+            doc_id: Document ID
+            data: Complete JSON document data
+            auto_rebuild: Trigger cache rebuild after update
+            
+        Returns:
+            Update response with backup and rebuild info
+        """
+        endpoint = f"/json/collections/{collection}/documents/{doc_id}"
+        payload = {
+            "data": data,
+            "auto_rebuild": auto_rebuild
+        }
+        return await self._make_request("PUT", endpoint, json=payload)
+    
+    async def list_json_backups(
+        self,
+        collection: str,
+        doc_id: str
+    ) -> List[Dict[str, Any]]:
+        """
+        List JSON backups for document
+        
+        Args:
+            collection: Collection name
+            doc_id: Document ID
+            
+        Returns:
+            List of backup files with metadata
+        """
+        endpoint = f"/json/collections/{collection}/documents/{doc_id}/backups"
+        response = await self._make_request("GET", endpoint)
+        # Internal API returns list directly
+        return response if isinstance(response, list) else []
+    
+    async def restore_json_backup(
+        self,
+        collection: str,
+        doc_id: str,
+        backup_filename: str,
+        auto_rebuild: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Restore JSON from backup
+        
+        Args:
+            collection: Collection name
+            doc_id: Document ID
+            backup_filename: Backup filename to restore
+            auto_rebuild: Trigger cache rebuild after restore
+            
+        Returns:
+            Restore response with rebuild info
+        """
+        endpoint = f"/json/collections/{collection}/documents/{doc_id}/restore"
+        payload = {
+            "backup_filename": backup_filename,
+            "auto_rebuild": auto_rebuild
+        }
+        return await self._make_request("POST", endpoint, json=payload)
 
 
 # Singleton instance

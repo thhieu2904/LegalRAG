@@ -118,8 +118,18 @@ async def lifespan(app: FastAPI):
         logger.info(f"  - Ambiguous Patterns: {health_status.get('ambiguous_patterns', 0)}")
         logger.info(f"  - Context Expansion Cache: {health_status.get('context_expansion', {}).get('total_chunks_cached', 0)} chunks")
         
+        # 🔥 NEW: Session Persistence Status
+        if hasattr(rag_service, 'session_persistence'):
+            persistence_stats = rag_service.session_persistence.get_session_stats()
+            logger.info("💾 Session Persistence Status:")
+            logger.info(f"  - Persisted Sessions: {persistence_stats.get('total_persisted_sessions', 0)}")
+            logger.info(f"  - Storage Size: {persistence_stats.get('storage_size_mb', 0)} MB")
+            logger.info(f"  - Current Counter: {persistence_stats.get('current_counter', 0)} for {persistence_stats.get('current_date', '')}")
+            logger.info(f"  - Storage Path: {persistence_stats.get('storage_path', 'N/A')}")
+        
         logger.info("🎉 LegalRAG API started successfully!")
         logger.info("💡 Architecture: Embedding(CPU) + LLM(GPU) + Reranker(GPU)")
+        logger.info("💾 Features: Session Persistence (JSON-based), Smart Routing, Context Expansion")
         
     except Exception as e:
         logger.error(f"❌ Failed to initialize services: {e}")
@@ -243,6 +253,14 @@ try:
     logger.info("✅ Internal Rebuild API endpoints enabled")
 except ImportError as e:
     logger.warning(f"⚠️ Internal Rebuild API not available: {e}")
+
+# Include Internal JSON Documents API for Admin Service (JSON CRUD)
+try:
+    from app.api.internal_json_documents import router as internal_json_router
+    app.include_router(internal_json_router, prefix="/api", tags=["internal-json"])
+    logger.info("✅ Internal JSON Documents API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Internal JSON Documents API not available: {e}")
 
 # Router CRUD API đã được xóa
 # try:

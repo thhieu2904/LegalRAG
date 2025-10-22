@@ -127,6 +127,7 @@ class Settings(BaseSettings):
         env_file = '.env'
         case_sensitive = False
         protected_namespaces = ('settings_',)
+        extra = 'ignore'  # Ignore unknown fields from .env (multi-service shared config)
 
 # Create global settings instance
 settings = Settings()

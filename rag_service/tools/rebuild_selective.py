@@ -136,16 +136,50 @@ def rebuild_document(collection: str, doc_id: str, status_file: Path):
         build_clarify_cache()
         
         update_status(status_file, {
+            "status": "running",
+            "scope": "document",
+            "collection": collection,
+            "doc_id": doc_id,
+            "progress": 95,
+            "message": "Rebuilding VectorDB for document..."
+        })
+        
+        # Rebuild VectorDB for this specific document
+        print(f"🔄 Rebuilding VectorDB for {collection}/{doc_id}...")
+        
+        import subprocess
+        vectordb_rebuild_result = subprocess.run(
+            [
+                'python',
+                str(Path(__file__).parent / 'rebuild_vectordb_json.py'),
+                '--collection', collection,
+                '--doc-id', doc_id
+            ],
+            capture_output=True,
+            text=True,
+            timeout=60  # 1 minute timeout for single document
+        )
+        
+        if vectordb_rebuild_result.returncode == 0:
+            print(f"✅ VectorDB rebuilt successfully!")
+            rebuild_message = f"Document {doc_id} rebuild completed (Cache + VectorDB)"
+        else:
+            print(f"⚠️ VectorDB rebuild warning:")
+            print(vectordb_rebuild_result.stderr[:500])  # Show first 500 chars
+            rebuild_message = f"Document {doc_id} rebuild completed (Cache only - VectorDB failed)"
+        
+        update_status(status_file, {
             "status": "success",
             "scope": "document",
             "collection": collection,
             "doc_id": doc_id,
             "progress": 100,
-            "message": f"Document {doc_id} rebuild completed",
+            "message": rebuild_message,
             "completed_at": datetime.now().isoformat()
         })
         
         print(f"✅ Document rebuild completed: {collection}/{doc_id}")
+
         
     except Exception as e:
         error_msg = f"Failed to rebuild document: {str(e)}\n{traceback.format_exc()}"

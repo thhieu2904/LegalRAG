@@ -1,9 +1,17 @@
 name: legalrag
+
+# ============================================================================
+# Named Volumes - Persistent data storage on server
+# ============================================================================
+volumes:
+  rag_data: # RAG Service data (collections, models, vectordb)
+  identifill_models: # Identifill models cache
+
 services:
   # Frontend Service - Production
   frontend:
     container_name: legalrag-frontend
-    image: thhieu/legalrag-frontend:v1.0.2
+    image: thhieu/legalrag-frontend:v1.0.3
     ports:
       - "5173:5173"
     depends_on:
@@ -16,23 +24,20 @@ services:
   # RAG Service with GPU Support - Production
   rag-service:
     container_name: legalrag-rag-service
-    image: thhieu/legalrag-rag-service:v1.0.2
+    image: thhieu/legalrag-rag-service:v1.0.3
     ports:
       - "8000:8000"
+    env_file: ./.env
     environment:
       - PYTHONPATH=/app
-      - HF_CACHE_DIR=/app/data/models/hf_cache
       - CUDA_VISIBLE_DEVICES=0
-      - ENVIRONMENT=docker
       - LEGALRAG_BASE_PATH=/app
       - LEGALRAG_DATA_PATH=/app/data
       - CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps
+      - ENVIRONMENT=docker
     volumes:
-      # Named volume để lưu toàn bộ data - models, storage, cache
+      # Use named volume for persistent data (no source code needed)
       - rag_data:/app/data
-    # volumes:
-    # - ../rag_service/data:/app/data  # REMOVED: Use embedded data in image
-    # - ./.env:/app/.env  # REMOVED: Use built-in config
     networks:
       - legalrag-network
     deploy:
@@ -48,37 +53,42 @@ services:
   # Identifill Service (CCCD Scanner) - Production
   identifill-service:
     container_name: legalrag-identifill-service
-    image: thhieu/legalrag-identifill-service:v1.0.2
+    image: thhieu/legalrag-identifill-service:v1.0.3
     ports:
       - "8002:8002"
     environment:
       - PYTHONPATH=/app
       - ENVIRONMENT=docker
       - RAG_SERVICE_URL=http://rag-service:8000
-    # volumes:
-    # - ../identifill_service/models:/app/models  # Use image-embedded models
+    volumes:
+      # Model persistence for Identifill
+      - identifill_models:/app/models
     networks:
       - legalrag-network
 
   # Admin Service - Production
   admin-service:
     container_name: legalrag-admin-service
-    image: thhieu/legalrag-admin-service:v1.0.2
+    image: thhieu/legalrag-admin-service:v1.0.3
     ports:
       - "8001:8001"
+    env_file: ./.env
     environment:
       - PYTHONPATH=/app
       - ENVIRONMENT=docker
+      - ADMIN_HOST=0.0.0.0
+      - ADMIN_PORT=8001
+      # RAG Service Integration
       - RAG_SERVICE_URL=http://rag-service:8000
     volumes:
-      # Shared data volume with RAG service for direct storage access
-      - rag_data:/app/data
+      # Mount ONLY storage directory (collections, documents)
+      # Admin service: Lightweight read-only mode (NO models, NO vectordb)
+      # This is the optimal solution for production
+      - rag_data:/app/data:ro
     networks:
       - legalrag-network
-
-volumes:
-  # Named volume để persistent toàn bộ data - models, storage, cache
-  rag_data:
+    depends_on:
+      - rag-service
 
 networks:
   legalrag-network:
