@@ -65,6 +65,12 @@ export function useChat(options: UseChatOptions = {}) {
   );
   const [isContextLoading, setIsContextLoading] = useState(false);
 
+  // 🔥 NEW: Inactivity modal state (Queue-based use case)
+  const [lastBotMessageTime, setLastBotMessageTime] = useState<number | null>(
+    null
+  );
+  const [showIdleModal, setShowIdleModal] = useState(false);
+
   const addMessage = useCallback(
     (
       content: string,
@@ -93,6 +99,13 @@ export function useChat(options: UseChatOptions = {}) {
       };
 
       setMessages((prev) => [...prev, message]);
+
+      // 🔥 NEW: Track bot message time for inactivity modal (Queue-based use case)
+      if (isBot) {
+        setLastBotMessageTime(Date.now());
+        setShowIdleModal(false); // Reset modal when new message arrives
+      }
+
       return message;
     },
     []
@@ -149,6 +162,28 @@ export function useChat(options: UseChatOptions = {}) {
       updateContextSummary();
     }
   }, [updateContextSummary]);
+
+  // 🔥 NEW: 5-minute inactivity timer for queue-based use case
+  // Triggers modal to ask if user wants to start new conversation
+  useEffect(() => {
+    if (!lastBotMessageTime) return;
+
+    // 🔧 TESTING: 30 seconds instead of 5 minutes for faster testing
+    // Change back to: 5 * 60 * 1000 for production
+    const IDLE_TIMEOUT = 30 * 1000; // 30 seconds for testing
+
+    const timer = setTimeout(() => {
+      setShowIdleModal(true);
+      console.log(
+        "🔔 Inactivity modal triggered after 30 seconds (testing mode)"
+      );
+    }, IDLE_TIMEOUT);
+
+    // Cleanup function - clear timer if component unmounts or lastBotMessageTime changes
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [lastBotMessageTime]);
 
   const sendMessage = useCallback(
     async (
@@ -483,5 +518,8 @@ export function useChat(options: UseChatOptions = {}) {
     isContextLoading,
     resetContext,
     updateContextSummary,
+    // 🔥 NEW: Inactivity modal exports (Queue-based use case)
+    showIdleModal,
+    setShowIdleModal,
   };
 }
