@@ -11,7 +11,7 @@ services:
   # Frontend Service - Production
   frontend:
     container_name: legalrag-frontend
-    image: thhieu/legalrag-frontend:v1.0.3
+    image: thhieu/legalrag-frontend:v1.0.4
     ports:
       - "5173:5173"
     depends_on:
@@ -53,7 +53,7 @@ services:
   # Identifill Service (CCCD Scanner) - Production
   identifill-service:
     container_name: legalrag-identifill-service
-    image: thhieu/legalrag-identifill-service:v1.0.3
+    image: thhieu/legalrag-identifill-service:v1.0.4
     ports:
       - "8002:8002"
     environment:
@@ -69,7 +69,7 @@ services:
   # Admin Service - Production
   admin-service:
     container_name: legalrag-admin-service
-    image: thhieu/legalrag-admin-service:v1.0.3
+    image: thhieu/legalrag-admin-service:v1.0.4
     ports:
       - "8001:8001"
     env_file: ./.env
