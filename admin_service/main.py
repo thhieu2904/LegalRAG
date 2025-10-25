@@ -59,6 +59,7 @@ app.include_router(documents.router, prefix="/api", tags=["documents"])
 app.include_router(questions.router, prefix="/api", tags=["questions"])
 app.include_router(json_documents.router, prefix="/api", tags=["json-documents"])
 app.include_router(analytics.router, prefix="/api", tags=["analytics"])
+app.include_router(storage_management.router, prefix="", tags=["storage"])
 
 @app.get("/")
 async def root():
