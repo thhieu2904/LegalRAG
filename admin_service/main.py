@@ -21,7 +21,7 @@ import sys
 # Add the current directory to Python path for imports
 sys.path.append(str(Path(__file__).parent))
 
-from app.api import collections, documents, questions, analytics, json_documents
+from app.api import collections, documents, questions, analytics, json_documents, storage_management
 from app.core.config import AdminConfig
 
 # Configure logging

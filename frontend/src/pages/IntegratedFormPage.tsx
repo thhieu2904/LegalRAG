@@ -12,6 +12,7 @@ import { FormRenderer } from "../components/forms/FormRenderer";
 import { IntegratedQRScanner } from "../components/integrated/IntegratedQRScanner";
 import { ConflictDialog } from "../components/forms/ConflictDialog";
 import { useFormDataManager } from "../hooks/useFormDataManager";
+import { useFormDownload } from "../hooks/useFormDownload";
 import { Download, Loader, AlertCircle } from "lucide-react";
 import { formAPI } from "../api/form-api";
 import type { CCCDData } from "../api/qr-scanner-api";
@@ -42,10 +43,11 @@ const IntegratedFormPage = () => {
     handleQRScanResult: handleQRData,
     resetQRScan: resetQRData,
     getFinalData,
-    isFieldEdited,
     getFieldValue,
-    getFieldSource,
   } = useFormDataManager();
+
+  // 🎯 PHASE A: Use form download hook for save + download flow
+  const { downloadForm: saveAndDownloadForm } = useFormDownload();
 
   // States for conflict dialog
   const [showConflictDialog, setShowConflictDialog] = useState(false);
@@ -151,6 +153,25 @@ const IntegratedFormPage = () => {
     try {
       console.log("🔄 Bắt đầu tải file Word...");
       console.log("📋 Final data to send:", finalData);
+
+      // ✅ NEW: Check if user has CCCD data
+      if (cccdData?.scan_cccd) {
+        console.log("📥 User has CCCD - using save + download flow");
+
+        await saveAndDownloadForm(
+          `${collectionId}/${docId}/${formFilename}`,
+          cccdData.scan_cccd,
+          cccdData.scan_ho_ten || "Unknown",
+          formFilename.replace(".docx", ""),
+          formFilename
+        );
+
+        console.log("✅ File saved and downloaded");
+        return;
+      }
+
+      // ❌ Fallback: No CCCD, use old flow (download only)
+      console.log("⚠️ No CCCD data - using download-only flow");
 
       // Dùng cùng file cho cả hiển thị và fill/download
       console.log(`📋 Using same file for display and fill: ${formFilename}`);
@@ -318,7 +339,6 @@ const IntegratedFormPage = () => {
                         : {}
                     }
                     getFieldValue={getFieldValue}
-                    getFieldSource={getFieldSource}
                   />
                 )}
               </div>
