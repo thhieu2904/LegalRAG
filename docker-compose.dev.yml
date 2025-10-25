@@ -96,6 +96,8 @@ services:
     volumes:
       # Model persistence
       - identifill_models:/app/models
+      # 💾 Document storage persistence (forms and CCCD data)
+      - ./identifill_service/data:/app/data
       # Source code hot reload
       - ./identifill_service/app:/app/app
       - ./identifill_service/main.py:/app/main.py

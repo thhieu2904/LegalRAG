@@ -6,8 +6,10 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
+import type { AxiosError } from "axios";
 import { formAPI } from "../../api/form-api";
 import { EditablePlaceholder } from "./EditablePlaceholder";
+import { useFormDownload } from "../../hooks/useFormDownload";
 import "./FormRenderer.css";
 
 interface FormRendererProps {
@@ -52,10 +54,18 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
   const [formMetadata, setFormMetadata] = useState<
     FormRenderResult["form_metadata"] | null
   >(null);
+
+  // 🎉 NEW: Download and storage states
+  const { downloadForm, loading: downloadLoading } = useFormDownload();
+  const [notification, setNotification] = useState<{
+    type: "success" | "error" | "info";
+    message: string;
+  } | null>(null);
+
   const reactRootsRef = useRef<Map<HTMLElement, Root>>(new Map());
-  const isHydratedRef = useRef<boolean>(false); // 🎯 Track hydration status
-  const formContentRef = useRef<HTMLDivElement>(null); // 🎯 Ref to form content div
-  const htmlSetRef = useRef<boolean>(false); // 🎯 Track if HTML has been set
+  const isHydratedRef = useRef<boolean>(false);
+  const formContentRef = useRef<HTMLDivElement>(null);
+  const htmlSetRef = useRef<boolean>(false);
 
   // Cleanup React roots khi component unmount
   useEffect(() => {
@@ -304,6 +314,60 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionId, docId, formFilename]); // 🎯 Use direct dependencies to prevent multiple calls
 
+  // Handle download and auto-save
+  const handleDownloadForm = useCallback(async () => {
+    try {
+      setNotification({
+        type: "info",
+        message: "🔄 Đang lưu và tải biểu mẫu...",
+      });
+
+      const formPath = `${collectionId}/${docId}/${formFilename}`;
+      const cccdValue = cccdData.scan_cccd || "";
+      const userName = cccdData.scan_ho_ten || "";
+      const formName = formFilename.replace(".docx", "");
+
+      await downloadForm(formPath, cccdValue, userName, formName, formFilename);
+
+      setNotification({
+        type: "success",
+        message: "✅ Biểu mẫu đã được tải xuống và lưu thành công!",
+      });
+
+      // Clear notification after 3 seconds
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+    } catch (error: unknown) {
+      let errorMsg = "Không thể tải biểu mẫu";
+
+      if (error instanceof Error) {
+        errorMsg = error.message;
+      }
+
+      const axiosError = error as AxiosError<Record<string, unknown>>;
+      if (
+        axiosError?.response?.data &&
+        typeof axiosError.response.data === "object" &&
+        "detail" in axiosError.response.data
+      ) {
+        errorMsg = String(axiosError.response.data.detail);
+      }
+
+      setNotification({
+        type: "error",
+        message: `❌ Lỗi tải: ${errorMsg}`,
+      });
+    }
+  }, [
+    collectionId,
+    docId,
+    formFilename,
+    cccdData.scan_cccd,
+    cccdData.scan_ho_ten,
+    downloadForm,
+  ]);
+
   if (loading) {
     return (
       <div className="form-renderer loading">
@@ -329,13 +393,34 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
 
   return (
     <div className="form-renderer">
-      {/* Form metadata info */}
+      {/* Notification Display */}
+      {notification && (
+        <div
+          className={`form-notification form-notification-${notification.type}`}
+        >
+          <p>{notification.message}</p>
+        </div>
+      )}
+
+      {/* Form metadata info with download button */}
       {formMetadata && (
         <div className="form-header">
-          <h3 className="form-title">📋 {formMetadata.form_filename}</h3>
-          <p className="form-path">
-            {formMetadata.collection_id} / {formMetadata.doc_id}
-          </p>
+          <div className="form-header-left">
+            <h3 className="form-title">📋 {formMetadata.form_filename}</h3>
+            <p className="form-path">
+              {formMetadata.collection_id} / {formMetadata.doc_id}
+            </p>
+          </div>
+          <div className="form-header-actions">
+            <button
+              onClick={handleDownloadForm}
+              disabled={downloadLoading}
+              className="download-button"
+              title="Tải xuống và lưu biểu mẫu"
+            >
+              {downloadLoading ? "⏳ Đang tải..." : "⬇️ Tải xuống"}
+            </button>
+          </div>
         </div>
       )}
 

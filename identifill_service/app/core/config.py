@@ -39,6 +39,11 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE: int = 10485760  # 10MB
     UPLOAD_DIR: str = "/tmp/identifill_uploads"
     MODELS_DIR: str = "/app/models"
+    
+    # 💾 Document Storage Configuration
+    STORAGE_DIR: str = "data"  # Base directory for document storage
+    DATABASE_PATH: str = "data/legalrag.db"  # SQLite database location
+    SCANNED_DOCUMENTS_DIR: str = "data/scanned_documents"  # Directory for stored CCCD scans and forms
 
     class Config:
         env_file = ".env"
@@ -48,6 +53,8 @@ class Settings(BaseSettings):
         logger.info(f"🔧 Identifill Service Configuration:")
         logger.info(f"   - Environment: {self.ENVIRONMENT}")
         logger.info(f"   - RAG Service URL: {self.RAG_SERVICE_URL}")
+        logger.info(f"   - Storage Directory: {self.STORAGE_DIR}")
+        logger.info(f"   - Database Path: {self.DATABASE_PATH}")
         logger.info(f"   - Host: {self.HOST}:{self.PORT}")
         logger.info(f"   - CORS Origins: {len(self.BACKEND_CORS_ORIGINS)} origins")
 
