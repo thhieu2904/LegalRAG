@@ -39,9 +39,9 @@ export const StorageManager: React.FC = () => {
   const [forms, setForms] = useState<adminApi.StoredFormInfo[]>([]);
   const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
-  const [downloading, setDownloading] = useState<number | null>(null);
-  const [deleting, setDeleting] = useState<number | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   // Load stats on mount
   useEffect(() => {
@@ -99,10 +99,10 @@ export const StorageManager: React.FC = () => {
   /**
    * 📥 Handle form download
    */
-  const handleDownload = async (formId: number, filename: string) => {
+  const handleDownload = async (fileId: string, fileName: string) => {
     try {
-      setDownloading(formId);
-      await adminApi.downloadStoredForm(formId, filename);
+      setDownloading(fileId);
+      await adminApi.downloadStoredForm(fileId, fileName);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Download failed";
@@ -116,13 +116,13 @@ export const StorageManager: React.FC = () => {
   /**
    * 🗑️ Handle form delete
    */
-  const handleDelete = async (formId: number) => {
+  const handleDelete = async (fileId: string) => {
     try {
-      setDeleting(formId);
-      await adminApi.deleteStoredForm(formId);
+      setDeleting(fileId);
+      await adminApi.deleteStoredForm(fileId);
 
       // Remove from forms list
-      setForms(forms.filter((f) => f.form_id !== formId));
+      setForms(forms.filter((f) => f.file_id !== fileId));
 
       // Refresh stats
       await loadStats();
@@ -160,8 +160,9 @@ export const StorageManager: React.FC = () => {
 
   const filteredForms = forms.filter(
     (form) =>
-      form.filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      form.scan_ho_ten.toLowerCase().includes(searchTerm.toLowerCase())
+      form.file_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      form.form_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      form.scan_ho_ten?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (!stats && loading) {
@@ -344,10 +345,10 @@ export const StorageManager: React.FC = () => {
                 </thead>
                 <tbody>
                   {filteredForms.map((form) => (
-                    <tr key={form.form_id}>
+                    <tr key={form.file_id}>
                       <td className="filename">
                         <FileText size={16} />
-                        {form.filename}
+                        {form.file_name}
                       </td>
                       <td className="file-size">
                         {(form.file_size / 1024).toFixed(2)} KB
@@ -356,21 +357,23 @@ export const StorageManager: React.FC = () => {
                         {new Date(form.created_at).toLocaleString("vi-VN")}
                       </td>
                       <td className="timestamp">
-                        {new Date(form.updated_at).toLocaleString("vi-VN")}
+                        {form.updated_at
+                          ? new Date(form.updated_at).toLocaleString("vi-VN")
+                          : "-"}
                       </td>
                       <td className="actions">
                         <button
                           className="btn btn-download"
                           onClick={() =>
-                            handleDownload(form.form_id, form.filename)
+                            handleDownload(form.file_id, form.file_name)
                           }
                           disabled={
-                            downloading === form.form_id ||
-                            deleting === form.form_id
+                            downloading === form.file_id ||
+                            deleting === form.file_id
                           }
                           title="Download form"
                         >
-                          {downloading === form.form_id ? (
+                          {downloading === form.file_id ? (
                             <span>⏳</span>
                           ) : (
                             <Download size={16} />
@@ -378,14 +381,14 @@ export const StorageManager: React.FC = () => {
                         </button>
                         <button
                           className="btn btn-delete"
-                          onClick={() => setDeleteConfirm(form.form_id)}
+                          onClick={() => setDeleteConfirm(form.file_id)}
                           disabled={
-                            deleting === form.form_id ||
-                            downloading === form.form_id
+                            deleting === form.file_id ||
+                            downloading === form.file_id
                           }
                           title="Delete form"
                         >
-                          {deleting === form.form_id ? (
+                          {deleting === form.file_id ? (
                             <span>⏳</span>
                           ) : (
                             <Trash2 size={16} />

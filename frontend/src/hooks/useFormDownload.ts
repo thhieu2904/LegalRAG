@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { ragAPI } from "@/api/axios-config";
-import { storageAPI } from "@/api/storage-api";
+import { identifillAPI } from "@/api/axios-config";
 
 interface DownloadResult {
   success: boolean;
@@ -22,52 +21,96 @@ export function useFormDownload() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Download filled form with save to storage
+   *
+   * Flow:
+   * 1. Call identifill /fill-and-download to get FILLED form (not template!)
+   * 2. Save filled form to storage database
+   * 3. Trigger browser download
+   */
   const downloadForm = async (
-    formPath: string,
+    collectionId: string,
+    docId: string,
+    formFilename: string,
+    formData: Record<string, any>,
     cccd: string,
-    userName: string,
-    formName: string,
-    fileName: string
+    userName: string
   ): Promise<DownloadResult> => {
     setLoading(true);
     setError(null);
 
     try {
-      // Step 1: Get form content from RAG service
-      console.log("📥 Step 1: Downloading form from RAG service...");
-      const formResponse = await ragAPI.get(`/forms/file/${formPath}`, {
-        responseType: "blob",
-      });
-      const formContent = formResponse.data;
-      console.log(`✅ Downloaded: ${formContent.size} bytes`);
+      // Step 1: Call identifill /fill-and-download to get FILLED form
+      console.log("📥 Step 1: Calling identifill fill-and-download...");
+      console.log(`   - Collection: ${collectionId}`);
+      console.log(`   - Doc ID: ${docId}`);
+      console.log(`   - Template: ${formFilename}`);
+      console.log(`   - CCCD: ${cccd}`);
 
-      // Step 2: Save to storage API (auto-save)
-      console.log("💾 Step 2: Saving to storage API...");
-      const formData = new FormData();
-      formData.append("form_file", formContent, fileName);
-      formData.append("scan_cccd", cccd);
-      formData.append("scan_ho_ten", userName);
-      formData.append("form_name", formName);
+      const fillResponse = await identifillAPI.post(
+        `/api/v1/forms/fill-and-download/${collectionId}/${docId}`,
+        {
+          ...formData,
+          template_name: formFilename,
+        },
+        {
+          responseType: "blob",
+        }
+      );
 
-      const saveResponse = await storageAPI.post("/save", formData);
-      console.log(`✅ Saved to storage:`, saveResponse.data);
+      const filledBlob = fillResponse.data;
+      console.log(`✅ Got filled form: ${filledBlob.size} bytes`);
+
+      // Step 2: Save filled form to identifill storage
+      console.log("💾 Step 2: Saving filled form to storage...");
+      const formDataObj = new FormData();
+
+      // Generate proper filename
+      const formName = formFilename
+        .replace("_template.docx", "")
+        .replace(".docx", "");
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[-:]/g, "")
+        .split(".")[0]
+        .replace("T", "_");
+      const savedFileName = `${formName}_${timestamp}.docx`;
+
+      formDataObj.append("form_file", filledBlob, savedFileName);
+      formDataObj.append("scan_cccd", cccd);
+      formDataObj.append("scan_ho_ten", userName);
+      formDataObj.append("form_name", formName);
+
+      const saveResponse = await identifillAPI.post(
+        "/api/v1/storage/save",
+        formDataObj,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const saveData = saveResponse.data;
+      console.log(`✅ Saved to storage:`, saveData);
 
       // Step 3: Trigger browser download
       console.log("📥 Step 3: Triggering browser download...");
-      const url = window.URL.createObjectURL(formContent);
+      const url = window.URL.createObjectURL(filledBlob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = fileName;
+      link.download = savedFileName;
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
-      console.log(`✅ Downloaded to browser: ${fileName}`);
+      console.log(`✅ Downloaded to browser: ${savedFileName}`);
 
       return {
         success: true,
-        fileId: saveResponse.data.file_id,
-        fileName: saveResponse.data.file_name,
+        fileId: saveData.file_id || "",
+        fileName: saveData.file_name || savedFileName,
       };
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -77,7 +120,10 @@ export function useFormDownload() {
         axiosErr.message ||
         "Unknown error";
       setError(errorMsg);
-      console.error("❌ Error during download/save:", errorMsg);
+      console.error("❌ Error during download/save:", {
+        detail: errorMsg,
+        fullError: err,
+      });
       throw err;
     } finally {
       setLoading(false);

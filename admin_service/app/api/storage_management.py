@@ -1,8 +1,9 @@
 """
 📦 STORAGE MANAGEMENT API
 Quản lý danh sách các form đã tải xuống (được lưu từ identifill_service)
+Proxy to identifill_service database
 """
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Form, UploadFile, File
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional
@@ -15,19 +16,17 @@ import os
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/storage", tags=["storage"])
 
-# Database configuration
-DB_PATH = "data/legalrag.db"
+# 🔗 Use SAME database as identifill_service (shared location)
+DB_PATH = Path(__file__).parent.parent.parent / "data" / "legalrag.db"
 
 class StoredFormInfo(BaseModel):
     """Thông tin form đã lưu"""
-    form_id: int
+    file_id: str
     scan_cccd: str
-    scan_ho_ten: str
-    filename: str
+    form_name: str
+    file_name: str
     file_size: int
     created_at: str
-    updated_at: str
-    form_path: Optional[str] = None
 
 
 class StorageStats(BaseModel):
@@ -38,7 +37,7 @@ class StorageStats(BaseModel):
     cccd_list: List[dict]
 
 
-@router.get("/list", response_model=List[StoredFormInfo])
+@router.get("/list")
 async def get_all_stored_forms(
     cccd: Optional[str] = Query(None, description="Filter by CCCD (optional)")
 ):
@@ -48,15 +47,14 @@ async def get_all_stored_forms(
     - Nếu không: trả về tất cả
     """
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(str(DB_PATH))
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
         if cccd:
             # Filter by specific CCCD
             cursor.execute("""
-                SELECT form_id, scan_cccd, scan_ho_ten, filename, file_size,
-                       created_at, updated_at
+                SELECT file_id, scan_cccd, form_name, file_name, file_size, created_at
                 FROM stored_forms
                 WHERE scan_cccd = ?
                 ORDER BY created_at DESC
@@ -64,8 +62,7 @@ async def get_all_stored_forms(
         else:
             # Get all forms
             cursor.execute("""
-                SELECT form_id, scan_cccd, scan_ho_ten, filename, file_size,
-                       created_at, updated_at
+                SELECT file_id, scan_cccd, form_name, file_name, file_size, created_at
                 FROM stored_forms
                 ORDER BY created_at DESC
             """)
@@ -74,28 +71,30 @@ async def get_all_stored_forms(
         conn.close()
 
         forms = [
-            StoredFormInfo(
-                form_id=row["form_id"],
-                scan_cccd=row["scan_cccd"],
-                scan_ho_ten=row["scan_ho_ten"],
-                filename=row["filename"],
-                file_size=row["file_size"],
-                created_at=row["created_at"],
-                updated_at=row["updated_at"],
-                form_path=f"data/scanned_documents/{row['scan_cccd']}/forms/{row['filename']}"
-            )
+            {
+                "file_id": row["file_id"],
+                "scan_cccd": row["scan_cccd"],
+                "form_name": row["form_name"],
+                "file_name": row["file_name"],
+                "file_size": row["file_size"],
+                "created_at": row["created_at"]
+            }
             for row in rows
         ]
 
         logger.info(f"✅ Retrieved {len(forms)} stored forms")
-        return forms
+        return {
+            "success": True,
+            "data": forms,
+            "message": f"Retrieved {len(forms)} forms"
+        }
 
     except Exception as e:
         logger.error(f"❌ Error retrieving forms: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/stats", response_model=StorageStats)
+@router.get("/stats")
 async def get_storage_stats():
     """
     📊 Lấy thống kê lưu trữ
@@ -104,7 +103,7 @@ async def get_storage_stats():
     - Tổng dung lượng
     """
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(str(DB_PATH))
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -121,19 +120,20 @@ async def get_storage_stats():
         total_size = cursor.fetchone()["total"] or 0
         total_size_mb = total_size / (1024 * 1024)
 
-        # CCCD list with count
+        # CCCD list with count and user name
         cursor.execute("""
-            SELECT scan_cccd, scan_ho_ten, COUNT(*) as form_count,
-                   SUM(file_size) as total_size
-            FROM stored_forms
-            GROUP BY scan_cccd
+            SELECT f.scan_cccd, u.scan_ho_ten, COUNT(*) as form_count,
+                   SUM(f.file_size) as total_size
+            FROM stored_forms f
+            LEFT JOIN cccd_users u ON f.scan_cccd = u.scan_cccd
+            GROUP BY f.scan_cccd
             ORDER BY form_count DESC
         """)
 
         cccd_list = [
             {
                 "scan_cccd": row["scan_cccd"],
-                "scan_ho_ten": row["scan_ho_ten"],
+                "scan_ho_ten": row["scan_ho_ten"] or "Unknown",
                 "form_count": row["form_count"],
                 "total_size_mb": (row["total_size"] or 0) / (1024 * 1024)
             }
@@ -143,12 +143,16 @@ async def get_storage_stats():
         conn.close()
 
         logger.info(f"✅ Storage stats: {total_forms} forms from {total_users} users")
-        return StorageStats(
-            total_forms=total_forms,
-            total_users=total_users,
-            total_size_mb=total_size_mb,
-            cccd_list=cccd_list
-        )
+        return {
+            "success": True,
+            "data": {
+                "total_forms": total_forms,
+                "total_users": total_users,
+                "total_size_mb": total_size_mb,
+                "cccd_list": cccd_list
+            },
+            "message": f"Retrieved stats for {total_forms} forms from {total_users} users"
+        }
 
     except Exception as e:
         logger.error(f"❌ Error retrieving stats: {e}")
@@ -161,7 +165,7 @@ async def health_check():
     🏥 Health check
     """
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(str(DB_PATH))
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM stored_forms")
         count = cursor.fetchone()[0]
@@ -182,23 +186,23 @@ async def health_check():
         }
 
 
-@router.get("/download/{form_id}")
-async def download_stored_form(form_id: int):
+@router.get("/download/{file_id}")
+async def download_stored_form(file_id: str):
     """
     📥 Tải xuống file form đã lưu
     - Lấy thông tin form từ database
     - Trả về file .docx
     """
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(str(DB_PATH))
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
         cursor.execute("""
-            SELECT form_id, scan_cccd, filename, file_size
+            SELECT file_id, scan_cccd, file_name, file_size
             FROM stored_forms
-            WHERE form_id = ?
-        """, (form_id,))
+            WHERE file_id = ?
+        """, (file_id,))
         
         row = cursor.fetchone()
         conn.close()
@@ -207,16 +211,16 @@ async def download_stored_form(form_id: int):
             raise HTTPException(status_code=404, detail="Form not found")
         
         # Construct file path
-        file_path = Path(f"data/scanned_documents/{row['scan_cccd']}/forms/{row['filename']}")
+        file_path = Path(f"data/scanned_documents/{row['scan_cccd']}/forms/{row['file_name']}")
         
         if not file_path.exists():
             logger.error(f"❌ File not found: {file_path}")
             raise HTTPException(status_code=404, detail="File not found on disk")
         
-        logger.info(f"✅ Downloading form: {row['filename']}")
+        logger.info(f"✅ Downloading form: {row['file_name']}")
         return FileResponse(
             path=file_path,
-            filename=row['filename'],
+            filename=row['file_name'],
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
         
@@ -227,24 +231,24 @@ async def download_stored_form(form_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.delete("/delete/{form_id}")
-async def delete_stored_form(form_id: int):
+@router.delete("/delete/{file_id}")
+async def delete_stored_form(file_id: str):
     """
     🗑️ Xóa form đã lưu
     - Xóa record từ database
     - Xóa file từ disk
     """
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(str(DB_PATH))
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
         # Get form info
         cursor.execute("""
-            SELECT form_id, scan_cccd, filename
+            SELECT file_id, scan_cccd, file_name
             FROM stored_forms
-            WHERE form_id = ?
-        """, (form_id,))
+            WHERE file_id = ?
+        """, (file_id,))
         
         row = cursor.fetchone()
         
@@ -253,22 +257,24 @@ async def delete_stored_form(form_id: int):
             raise HTTPException(status_code=404, detail="Form not found")
         
         # Delete file from disk
-        file_path = Path(f"data/scanned_documents/{row['scan_cccd']}/forms/{row['filename']}")
+        file_path = Path(f"data/scanned_documents/{row['scan_cccd']}/forms/{row['file_name']}")
         if file_path.exists():
             os.remove(file_path)
             logger.info(f"✅ File deleted: {file_path}")
         
         # Delete from database
-        cursor.execute("DELETE FROM stored_forms WHERE form_id = ?", (form_id,))
+        cursor.execute("DELETE FROM stored_forms WHERE file_id = ?", (file_id,))
         conn.commit()
         conn.close()
         
-        logger.info(f"✅ Form deleted: {row['filename']}")
+        logger.info(f"✅ Form deleted: {row['file_name']}")
         return {
-            "status": "success",
-            "message": "Form deleted successfully",
-            "form_id": form_id,
-            "filename": row['filename']
+            "success": True,
+            "data": {
+                "file_id": file_id,
+                "filename": row['file_name']
+            },
+            "message": "Form deleted successfully"
         }
         
     except HTTPException as e:

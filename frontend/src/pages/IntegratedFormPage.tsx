@@ -154,16 +154,22 @@ const IntegratedFormPage = () => {
       console.log("🔄 Bắt đầu tải file Word...");
       console.log("📋 Final data to send:", finalData);
 
-      // ✅ NEW: Check if user has CCCD data
-      if (cccdData?.scan_cccd) {
-        console.log("📥 User has CCCD - using save + download flow");
+      // ✅ NEW: Check if user has CCCD data (from QR scan OR manual input)
+      const hasCCCD = finalData.scan_cccd && finalData.scan_cccd.trim() !== "";
 
+      if (hasCCCD) {
+        console.log("📥 User has CCCD - using save + download flow");
+        console.log("   CCCD:", finalData.scan_cccd);
+        console.log("   Name:", finalData.scan_ho_ten);
+
+        // NEW: Call fill-and-download with form data
         await saveAndDownloadForm(
-          `${collectionId}/${docId}/${formFilename}`,
-          cccdData.scan_cccd,
-          cccdData.scan_ho_ten || "Unknown",
-          formFilename.replace(".docx", ""),
-          formFilename
+          collectionId,
+          docId,
+          formFilename,
+          finalData, // Pass all form data for filling
+          finalData.scan_cccd,
+          finalData.scan_ho_ten || "Unknown"
         );
 
         console.log("✅ File saved and downloaded");

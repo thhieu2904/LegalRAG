@@ -645,13 +645,14 @@ export const cancelRebuild = async (): Promise<{
  * 📦 STORAGE MANAGEMENT TYPES
  */
 export interface StoredFormInfo {
-  form_id: number;
+  file_id: string; // Changed from form_id (number) to file_id (string) to match backend
   scan_cccd: string;
-  scan_ho_ten: string;
-  filename: string;
+  scan_ho_ten?: string; // Optional since backend might not always include
+  form_name: string; // Added - backend returns this
+  file_name: string; // Changed from filename to file_name to match backend
   file_size: number;
   created_at: string;
-  updated_at: string;
+  updated_at?: string; // Optional
   form_path?: string;
 }
 
@@ -751,13 +752,13 @@ export const fetchFormsByCCCD = async (
  * Tải xuống file form đã lưu
  */
 export const downloadStoredForm = async (
-  formId: number,
-  filename: string
+  fileId: string,
+  fileName: string
 ): Promise<void> => {
   try {
-    console.log(`📥 Downloading form: ${filename}`);
+    console.log(`📥 Downloading form: ${fileName}`);
 
-    const response = await adminAPI.get(`/api/v1/storage/download/${formId}`, {
+    const response = await adminAPI.get(`/api/v1/storage/download/${fileId}`, {
       responseType: "blob",
     });
 
@@ -765,13 +766,13 @@ export const downloadStoredForm = async (
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", filename);
+    link.setAttribute("download", fileName);
     document.body.appendChild(link);
     link.click();
     link.parentNode?.removeChild(link);
     window.URL.revokeObjectURL(url);
 
-    console.log(`✅ Form downloaded: ${filename}`);
+    console.log(`✅ Form downloaded: ${fileName}`);
   } catch (error) {
     console.error(`❌ Error downloading form:`, error);
     throw error;
@@ -783,30 +784,30 @@ export const downloadStoredForm = async (
  * Xóa form đã lưu (từ database và disk)
  */
 export const deleteStoredForm = async (
-  formId: number
+  fileId: string
 ): Promise<{
   status: string;
   message: string;
-  form_id: number;
-  filename: string;
+  file_id: string;
+  file_name: string;
 }> => {
   try {
-    console.log(`🗑️ Deleting form: ${formId}`);
+    console.log(`🗑️ Deleting form: ${fileId}`);
 
     const response = await adminAPI.delete<
       AdminApiResponse<{
         status: string;
         message: string;
-        form_id: number;
-        filename: string;
+        file_id: string;
+        file_name: string;
       }>
-    >(`/api/v1/storage/delete/${formId}`);
+    >(`/api/v1/storage/delete/${fileId}`);
 
     if (!response.data.success) {
       throw new Error(response.data.message || "Failed to delete form");
     }
 
-    console.log(`✅ Form deleted: ${response.data.data.filename}`);
+    console.log(`✅ Form deleted: ${response.data.data.file_name}`);
     return response.data.data;
   } catch (error) {
     console.error("❌ Error deleting form:", error);

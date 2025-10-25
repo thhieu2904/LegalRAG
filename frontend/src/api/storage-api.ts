@@ -7,7 +7,7 @@ import axios from "axios";
 
 const STORAGE_BASE_URL =
   import.meta.env.VITE_STORAGE_API_URL ||
-  "http://localhost:8002/api/v1/storage";
+  "http://localhost:8001/api/v1/storage";
 
 export const storageAPI = axios.create({
   baseURL: STORAGE_BASE_URL,
@@ -64,30 +64,26 @@ export async function saveFormToStorage(
 }
 
 /**
- * List all saved forms for a specific CCCD
+ * List all saved forms (from identifill_service data)
  */
-export async function listSavedForms(cccd: string) {
-  return storageAPI.get(`/list/${cccd}`);
+export async function listSavedForms() {
+  return storageAPI.get("/list");
 }
 
 /**
- * Download a previously saved form from storage
+ * Download a previously saved form from storage by file_id
  */
-export async function downloadSavedForm(cccd: string, fileName: string) {
-  return storageAPI.get(`/download/${cccd}/${fileName}`, {
+export async function downloadSavedForm(fileId: string) {
+  return storageAPI.get(`/download/${fileId}`, {
     responseType: "blob",
   });
 }
 
 /**
- * Delete a saved form from storage
+ * Delete a saved form from storage by file_id
  */
-export async function deleteSavedForm(
-  cccd: string,
-  fileId: string,
-  fileName: string
-) {
-  return storageAPI.delete(`/delete/${cccd}/${fileId}/${fileName}`);
+export async function deleteSavedForm(fileId: string) {
+  return storageAPI.delete(`/delete/${fileId}`);
 }
 
 /**

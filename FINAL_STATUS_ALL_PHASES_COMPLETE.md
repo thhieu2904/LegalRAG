@@ -393,6 +393,7 @@ Next: Run verification tests & deploy!
 **Choose one**:
 
 1. **Run Tests** (1.5 hours)
+
    - Verify everything works
    - Test all scenarios
    - Fix any issues

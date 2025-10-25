@@ -70,10 +70,9 @@ services:
       - RAG_REQUEST_TIMEOUT=30
       - RAG_MAX_RETRIES=3
     volumes:
-      # Mount ONLY storage directory (collections, documents)
-      # Admin service principle: Read-only access to collections/documents only
-      # ✅ NO models, NO vectordb, NO cache - Lightweight admin panel
-      - ./rag_service/data/storage:/app/data/storage:ro
+      # 💾 SHARED data directory with write access (needed for database operations!)
+      # IMPORTANT: Must be same as identifill_service to access shared database
+      - ./data:/app/data
       # Source code hot reload
       - ./admin_service/app:/app/app
       - ./admin_service/main.py:/app/main.py
@@ -96,8 +95,9 @@ services:
     volumes:
       # Model persistence
       - identifill_models:/app/models
-      # 💾 Document storage persistence (forms and CCCD data)
-      - ./identifill_service/data:/app/data
+      # 💾 SHARED data directory (SAME as admin-service!)
+      # ✅ Both services access: ./data (shared database location)
+      - ./data:/app/data
       # Source code hot reload
       - ./identifill_service/app:/app/app
       - ./identifill_service/main.py:/app/main.py

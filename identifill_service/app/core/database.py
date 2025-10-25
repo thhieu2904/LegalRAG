@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 class Database:
     """SQLite Database Manager for form storage metadata"""
     
-    DB_PATH = Path("data/legalrag.db")
+    # Use shared database at /app/data/ (volume-mounted to host ./data/)
+    # Path calculation: /app/app/core/database.py -> up 3 levels -> /app/ -> /app/data/legalrag.db
+    DB_PATH = Path(__file__).parent.parent.parent / "data" / "legalrag.db"
     
     def __init__(self):
         """Initialize database and create tables if not exist"""
