@@ -23,6 +23,7 @@ sys.path.append(str(Path(__file__).parent))
 
 from app.api import collections, documents, questions, analytics, json_documents, storage_management
 from app.core.config import AdminConfig
+from app.core.database import init_database, verify_database
 
 # Configure logging
 logging.basicConfig(
@@ -60,6 +61,20 @@ app.include_router(questions.router, prefix="/api", tags=["questions"])
 app.include_router(json_documents.router, prefix="/api", tags=["json-documents"])
 app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 app.include_router(storage_management.router, prefix="", tags=["storage"])
+
+# Initialize database on startup
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database on startup"""
+    logger.info("🚀 Initializing database...")
+    try:
+        init_database()
+        if verify_database():
+            logger.info("✅ Database initialized successfully")
+        else:
+            logger.error("❌ Database verification failed")
+    except Exception as e:
+        logger.error(f"❌ Database initialization failed: {e}")
 
 @app.get("/")
 async def root():
