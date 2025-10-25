@@ -9,9 +9,16 @@ import Voice from "../components/voice/Voice";
 import Database from "../components/admin/Database";
 import QuestionsManager from "../components/admin/questions/QuestionsManager";
 import System from "../components/admin/System";
+import { StorageManager } from "../components/admin/StorageManager";
 import "./AdminPage.css";
 
-type AdminSection = "dashboard" | "voice" | "database" | "questions" | "system";
+type AdminSection =
+  | "dashboard"
+  | "voice"
+  | "database"
+  | "questions"
+  | "system"
+  | "storage";
 
 const AdminPage = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>("dashboard");
@@ -21,6 +28,7 @@ const AdminPage = () => {
     { key: "voice" as AdminSection, label: "Voice", icon: "🎤" },
     { key: "database" as AdminSection, label: "Bộ thủ tục", icon: "💾" },
     { key: "questions" as AdminSection, label: "Câu hỏi", icon: "❓" },
+    { key: "storage" as AdminSection, label: "Quản lý Form", icon: "📦" },
     { key: "system" as AdminSection, label: "Hệ thống", icon: "⚙️" },
   ];
 
@@ -34,6 +42,8 @@ const AdminPage = () => {
         return <Database />;
       case "questions":
         return <QuestionsManager />;
+      case "storage":
+        return <StorageManager />;
       case "system":
         return <System />;
       default:

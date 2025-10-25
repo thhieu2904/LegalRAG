@@ -641,6 +641,179 @@ export const cancelRebuild = async (): Promise<{
   }
 };
 
+/**
+ * 📦 STORAGE MANAGEMENT TYPES
+ */
+export interface StoredFormInfo {
+  form_id: number;
+  scan_cccd: string;
+  scan_ho_ten: string;
+  filename: string;
+  file_size: number;
+  created_at: string;
+  updated_at: string;
+  form_path?: string;
+}
+
+export interface StoredCCCDInfo {
+  scan_cccd: string;
+  scan_ho_ten: string;
+  form_count: number;
+  total_size_mb: number;
+}
+
+export interface StorageStats {
+  total_forms: number;
+  total_users: number;
+  total_size_mb: number;
+  cccd_list: StoredCCCDInfo[];
+}
+
+/**
+ * 📊 GET STORAGE STATISTICS
+ * Lấy thống kê lưu trữ form
+ */
+export const fetchStorageStats = async (): Promise<StorageStats> => {
+  try {
+    console.log("📊 Fetching storage statistics...");
+
+    const response = await adminAPI.get<AdminApiResponse<StorageStats>>(
+      "/api/v1/storage/stats"
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch storage stats");
+    }
+
+    console.log(`✅ Storage stats: ${response.data.data.total_forms} forms`);
+    return response.data.data;
+  } catch (error) {
+    console.error("❌ Error fetching storage stats:", error);
+    throw error;
+  }
+};
+
+/**
+ * 👥 GET ALL STORED USERS
+ * Lấy danh sách tất cả users có form lưu
+ */
+export const fetchAllStoredUsers = async (): Promise<StorageStats> => {
+  try {
+    console.log("👥 Fetching all stored users...");
+
+    const response = await adminAPI.get<AdminApiResponse<StorageStats>>(
+      "/api/v1/storage/list"
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch users");
+    }
+
+    console.log(`✅ Loaded ${response.data.data.cccd_list.length} users`);
+    return response.data.data;
+  } catch (error) {
+    console.error("❌ Error fetching stored users:", error);
+    throw error;
+  }
+};
+
+/**
+ * 📋 GET FORMS BY CCCD
+ * Lấy danh sách form của một user (theo CCCD)
+ */
+export const fetchFormsByCCCD = async (
+  cccd: string
+): Promise<StoredFormInfo[]> => {
+  try {
+    console.log(`📋 Fetching forms for CCCD: ${cccd}`);
+
+    const response = await adminAPI.get<AdminApiResponse<StoredFormInfo[]>>(
+      "/api/v1/storage/list",
+      {
+        params: { cccd },
+      }
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch forms");
+    }
+
+    console.log(`✅ Loaded ${response.data.data.length} forms for ${cccd}`);
+    return response.data.data;
+  } catch (error) {
+    console.error(`❌ Error fetching forms for ${cccd}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * 📥 DOWNLOAD STORED FORM
+ * Tải xuống file form đã lưu
+ */
+export const downloadStoredForm = async (
+  formId: number,
+  filename: string
+): Promise<void> => {
+  try {
+    console.log(`📥 Downloading form: ${filename}`);
+
+    const response = await adminAPI.get(`/api/v1/storage/download/${formId}`, {
+      responseType: "blob",
+    });
+
+    // Tạo link download
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    console.log(`✅ Form downloaded: ${filename}`);
+  } catch (error) {
+    console.error(`❌ Error downloading form:`, error);
+    throw error;
+  }
+};
+
+/**
+ * 🗑️ DELETE STORED FORM
+ * Xóa form đã lưu (từ database và disk)
+ */
+export const deleteStoredForm = async (
+  formId: number
+): Promise<{
+  status: string;
+  message: string;
+  form_id: number;
+  filename: string;
+}> => {
+  try {
+    console.log(`🗑️ Deleting form: ${formId}`);
+
+    const response = await adminAPI.delete<
+      AdminApiResponse<{
+        status: string;
+        message: string;
+        form_id: number;
+        filename: string;
+      }>
+    >(`/api/v1/storage/delete/${formId}`);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to delete form");
+    }
+
+    console.log(`✅ Form deleted: ${response.data.data.filename}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("❌ Error deleting form:", error);
+    throw error;
+  }
+};
+
 export default {
   fetchCollections,
   fetchCollectionDocuments,
@@ -659,4 +832,10 @@ export default {
   triggerRebuild,
   getRebuildStatus,
   cancelRebuild,
+  // Storage management
+  fetchStorageStats,
+  fetchAllStoredUsers,
+  fetchFormsByCCCD,
+  downloadStoredForm,
+  deleteStoredForm,
 };
