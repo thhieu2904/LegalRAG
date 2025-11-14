@@ -4,14 +4,14 @@ name: legalrag
 # Named Volumes - Persistent data storage on server
 # ============================================================================
 volumes:
-  rag_data: # RAG Service data (collections, models, vectordb)
+  rag_data: # RAG Service data (collections, models, vectordb, scanned_documents)
   identifill_models: # Identifill models cache
 
 services:
   # Frontend Service - Production
   frontend:
     container_name: legalrag-frontend
-    image: thhieu/legalrag-frontend:v1.0.4
+    image: thhieu/legalrag-frontend:v1.0.5
     ports:
       - "5173:5173"
     depends_on:
@@ -63,6 +63,8 @@ services:
     volumes:
       # Model persistence for Identifill
       - identifill_models:/app/models
+      # Share rag_data volume to write scanned forms to data/scanned_documents/
+      - rag_data:/app/data
     networks:
       - legalrag-network
 
@@ -81,9 +83,7 @@ services:
       # RAG Service Integration
       - RAG_SERVICE_URL=http://rag-service:8000
     volumes:
-      # Mount ONLY storage directory (collections, documents)
-      # Admin service: Lightweight read-only mode (NO models, NO vectordb)
-      # This is the optimal solution for production
+      # Mount rag_data volume (read-only) to access collections AND scanned forms
       - rag_data:/app/data:ro
     networks:
       - legalrag-network

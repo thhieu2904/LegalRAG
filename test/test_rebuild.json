@@ -1,7 +1,0 @@
-{
-  "data": {
-    "title": "Test Full Rebuild",
-    "test_field": "test_value_123"
-  },
-  "trigger_rebuild": true
-}

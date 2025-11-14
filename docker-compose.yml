@@ -1,0 +1,341 @@
+version: "3.8"
+
+# ============================================
+# LegalRAG - Microservices Architecture
+# ============================================
+# Simple version: Direct port exposure (no Kong Gateway)
+# Each service has its own port for easy development & testing
+#
+# Architecture:
+#   Frontend (3000) → Services (8001-8007)
+#   Services → MinIO (9000) + PostgreSQL (5432)
+#
+# To start: docker compose up --build
+# ============================================
+
+services:
+  # ============= DATA LAYER =============
+
+  # MinIO - S3-compatible Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: legalrag-minio
+    ports:
+      - "9000:9000" # API
+      - "9001:9001" # Console UI
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - legalrag-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # PostgreSQL with pgvector extension
+  postgres-vector:
+    image: pgvector/pgvector:pg16
+    container_name: legalrag-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: legalrag
+      POSTGRES_PASSWORD: legalrag123
+      POSTGRES_DB: legalrag
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema_new.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - legalrag-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U legalrag -d legalrag"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ============= APPLICATION LAYER =============
+
+  # Storage Service - MinIO wrapper for file operations
+  storage-service:
+    build:
+      context: ./storage-service
+      dockerfile: Dockerfile
+    container_name: legalrag-storage
+    ports:
+      - "8001:8001"
+    environment:
+      SERVICE_NAME: storage-service
+      SERVICE_PORT: 8001
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      MINIO_SECURE: "false"
+      MINIO_BUCKET: legal-documents
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - legalrag-network
+    volumes:
+      - ./storage-service:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Vector Service - PostgreSQL pgvector operations
+  vector-service:
+    build:
+      context: ./vector-service
+      dockerfile: Dockerfile
+    container_name: legalrag-vector
+    ports:
+      - "8003:8003"
+    environment:
+      SERVICE_NAME: vector-service
+      SERVICE_PORT: 8003
+      POSTGRES_HOST: postgres-vector
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: legalrag
+      POSTGRES_PASSWORD: legalrag123
+      POSTGRES_DB: legalrag
+    depends_on:
+      postgres-vector:
+        condition: service_healthy
+    networks:
+      - legalrag-network
+    volumes:
+      - ./vector-service:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Embedding Service - Local sentence-transformers model
+  embedding-service:
+    build:
+      context: ./embedding-service
+      dockerfile: Dockerfile
+    container_name: legalrag-embedding
+    ports:
+      - "8004:8004"
+    environment:
+      SERVICE_NAME: embedding-service
+      SERVICE_PORT: 8004
+      MODEL_NAME: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+      MODEL_CACHE_DIR: /app/models
+      DEVICE: cpu # Change to 'cuda' if GPU available
+      BATCH_SIZE: 32
+    networks:
+      - legalrag-network
+    volumes:
+      - ./embedding-service:/app
+      - embedding_models:/app/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+    restart: unless-stopped
+    # Uncomment for GPU support
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # LLM Service - Local Gemma/Llama model
+  llm-service:
+    build:
+      context: ./llm-service
+      dockerfile: Dockerfile
+    container_name: legalrag-llm
+    ports:
+      - "8006:8006"
+    environment:
+      SERVICE_NAME: llm-service
+      SERVICE_PORT: 8006
+      MODEL_NAME: google/gemma-2-9b-it # or meta-llama/Llama-3.1-8B-Instruct
+      MODEL_CACHE_DIR: /app/models
+      DEVICE: cuda # Requires GPU
+      MAX_LENGTH: 2048
+      TEMPERATURE: 0.7
+    networks:
+      - legalrag-network
+    volumes:
+      - ./llm-service:/app
+      - llm_models:/app/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+    restart: unless-stopped
+    # GPU support required for LLM
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Query Service - RAG orchestrator (Q&A)
+  query-service:
+    build:
+      context: ./query-service
+      dockerfile: Dockerfile
+    container_name: legalrag-query
+    ports:
+      - "8005:8005"
+    environment:
+      SERVICE_NAME: query-service
+      SERVICE_PORT: 8005
+      EMBEDDING_SERVICE_URL: http://embedding-service:8004
+      VECTOR_SERVICE_URL: http://vector-service:8003
+      LLM_SERVICE_URL: http://llm-service:8006
+      STORAGE_SERVICE_URL: http://storage-service:8001
+    depends_on:
+      - embedding-service
+      - vector-service
+      - llm-service
+      - storage-service
+    networks:
+      - legalrag-network
+    volumes:
+      - ./query-service:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Admin Service - Document management & ingestion
+  admin-service:
+    build:
+      context: ./admin-service
+      dockerfile: Dockerfile
+    container_name: legalrag-admin
+    ports:
+      - "8007:8007"
+    environment:
+      SERVICE_NAME: admin-service
+      SERVICE_PORT: 8007
+      POSTGRES_HOST: postgres-vector
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: legalrag
+      POSTGRES_PASSWORD: legalrag123
+      POSTGRES_DB: legalrag
+      STORAGE_SERVICE_URL: http://storage-service:8001
+      EMBEDDING_SERVICE_URL: http://embedding-service:8004
+      VECTOR_SERVICE_URL: http://vector-service:8003
+    depends_on:
+      - postgres-vector
+      - storage-service
+      - embedding-service
+      - vector-service
+    networks:
+      - legalrag-network
+    volumes:
+      - ./admin-service:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Identifill Service - CCCD scanning (existing service, no changes)
+  identifill-service:
+    build:
+      context: ./identifill_service
+      dockerfile: Dockerfile
+    container_name: legalrag-identifill
+    ports:
+      - "8002:8002"
+    environment:
+      SERVICE_NAME: identifill-service
+      SERVICE_PORT: 8002
+    networks:
+      - legalrag-network
+    volumes:
+      - ./identifill_service:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Frontend - React application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: legalrag-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # API endpoints for each service
+      VITE_QUERY_SERVICE_URL: http://localhost:8005
+      VITE_ADMIN_SERVICE_URL: http://localhost:8007
+      VITE_IDENTIFILL_SERVICE_URL: http://localhost:8002
+      VITE_STORAGE_SERVICE_URL: http://localhost:8001
+    depends_on:
+      - query-service
+      - admin-service
+      - identifill-service
+    networks:
+      - legalrag-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+volumes:
+  minio_data:
+    driver: local
+  postgres_data:
+    driver: local
+  embedding_models:
+    driver: local
+  llm_models:
+    driver: local
+
+networks:
+  legalrag-network:
+    driver: bridge
+# ============================================
+# PORT MAPPING SUMMARY
+# ============================================
+# Infrastructure:
+#   - MinIO API:       9000
+#   - MinIO Console:   9001
+#   - PostgreSQL:      5432
+#
+# Services:
+#   - Storage:         8001
+#   - Identifill:      8002
+#   - Vector:          8003
+#   - Embedding:       8004
+#   - Query:           8005
+#   - LLM:             8006
+#   - Admin:           8007
+#
+# Frontend:
+#   - React App:       3000
+# ============================================
