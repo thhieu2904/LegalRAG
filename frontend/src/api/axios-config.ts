@@ -22,8 +22,8 @@ export const identifillAPI = axios.create({
   },
 });
 
-// Cấu hình cho OCR Service (Port 8001)
-export const ocrAPI = axios.create({
+// Cấu hình cho Admin Service (Port 8001) - Database Management
+export const adminAPI = axios.create({
   baseURL: "http://localhost:8001",
   timeout: 30000,
   headers: {
@@ -67,19 +67,19 @@ identifillAPI.interceptors.request.use(
   }
 );
 
-ocrAPI.interceptors.request.use(
+adminAPI.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     console.log(
-      `🚀 OCR API Call: ${config.method?.toUpperCase()} ${config.url}`
+      `🗃️ Admin API Call: ${config.method?.toUpperCase()} ${config.url}`
     );
     return config;
   },
   (error) => {
-    console.error("❌ OCR API Request Error:", error);
+    console.error("❌ Admin API Request Error:", error);
     return Promise.reject(error);
   }
 );
@@ -124,15 +124,15 @@ identifillAPI.interceptors.response.use(
   }
 );
 
-ocrAPI.interceptors.response.use(
+adminAPI.interceptors.response.use(
   (response) => {
     console.log(
-      `✅ OCR API Success: ${response.status} ${response.config.url}`
+      `✅ Admin API Success: ${response.status} ${response.config.url}`
     );
     return response;
   },
   (error) => {
-    console.error("❌ OCR API Response Error:", error);
+    console.error("❌ Admin API Response Error:", error);
 
     if (error.response?.status === 401) {
       localStorage.removeItem("token");

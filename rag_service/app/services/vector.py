@@ -5,6 +5,7 @@ from sentence_transformers import SentenceTransformer
 from typing import List, Dict, Any, Optional
 import hashlib
 import json
+import torch
 from ..core.config import settings
 from ..core.path_config import path_config
 
@@ -12,6 +13,21 @@ logger = logging.getLogger(__name__)
 
 class VectorDBService:
     """Service quản lý ChromaDB và embeddings với hỗ trợ multi-collection"""
+    
+    def get_optimal_device(self) -> str:
+        """Get optimal device for embedding model based on VRAM management mode"""
+        if settings.enable_vram_swapping:
+            # Swapping mode: Force CPU to save VRAM for LLM+Reranker (RTX 3060 6GB laptop)
+            logger.info("💻 Swapping mode: Using CPU for embedding (VRAM optimization)")
+            return 'cpu'
+        else:
+            # Non-swapping mode: Can use GPU for better performance (RTX 3060 12GB server)
+            if torch.cuda.is_available():
+                logger.info("🚀 Non-swapping mode: Using GPU for embedding (high VRAM)")
+                return 'cuda'
+            else:
+                logger.info("💻 CUDA not available - falling back to CPU")
+                return 'cpu'
     
     def __init__(self, persist_directory: Optional[str] = None, embedding_model: Optional[str] = None, default_collection_name: Optional[str] = None):
         self.persist_directory = persist_directory or str(settings.vectordb_path)
@@ -45,21 +61,23 @@ class VectorDBService:
         except Exception as e:
             logger.warning(f"Local cache loading failed: {e}")
         
-        # Strategy 2: Force local loading (fallback) - CPU for VRAM optimization
+        # Strategy 2: Force local loading (fallback) - Use optimal device
         try:
             logger.info(f"Loading embedding model with local_files_only: {self.embedding_model_name}")
-            model = SentenceTransformer(self.embedding_model_name, local_files_only=True, device='cpu')
-            logger.info(f"✅ Embedding model loaded successfully with local_files_only on CPU")
+            device = self.get_optimal_device()
+            model = SentenceTransformer(self.embedding_model_name, local_files_only=True, device=device)
+            logger.info(f"✅ Embedding model loaded successfully with local_files_only on {device.upper()}")
             return model
         except Exception as e:
             logger.warning(f"local_files_only loading failed: {e}")
         
-        # Strategy 3: Normal loading (last resort - dev only) - CPU for VRAM optimization
+        # Strategy 3: Normal loading (last resort - dev only) - Use optimal device
         if not settings.hf_hub_offline == "1":
             try:
                 logger.info(f"Loading embedding model normally: {self.embedding_model_name}")
-                model = SentenceTransformer(self.embedding_model_name, device='cpu')
-                logger.info(f"✅ Embedding model loaded successfully with normal loading on CPU")
+                device = self.get_optimal_device()
+                model = SentenceTransformer(self.embedding_model_name, device=device)
+                logger.info(f"✅ Embedding model loaded successfully with normal loading on {device.upper()}")
                 return model
             except Exception as e:
                 logger.warning(f"Normal loading failed: {e}")
@@ -82,10 +100,11 @@ class VectorDBService:
         if not snapshots:
             raise FileNotFoundError(f"No snapshots found in {model_folder}")
         
-        # Load từ snapshot path - FORCE CPU để tiết kiệm VRAM
+        # Load từ snapshot path - Use optimal device
         snapshot_path = str(snapshots[0])  # Lấy snapshot đầu tiên
         logger.info(f"Loading from explicit path: {snapshot_path}")
-        return SentenceTransformer(snapshot_path, device='cpu')
+        device = self.get_optimal_device()
+        return SentenceTransformer(snapshot_path, device=device)
     
     def _get_or_create_collection(self, collection_name: str, metadata: Optional[Dict] = None):
         """Tạo hoặc lấy collection theo tên"""

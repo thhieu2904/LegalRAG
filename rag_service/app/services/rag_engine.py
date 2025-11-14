@@ -28,6 +28,7 @@ from .context import ContextExpander
 from .simple_form_detection import SimpleFormDetectionService
 from .fee_service import FeeService
 from .prompt_service import prompt_service, PromptType
+from .session_manager import SessionPersistenceManager
 from ..core.config import settings
 
 # Import path_config with try/except for graceful fallback
@@ -152,8 +153,8 @@ class OptimizedChatSession:
         if self.last_successful_timestamp and (time.time() - self.last_successful_timestamp > 600):
             return False
 
-        # Ngưỡng tin cậy "rất cao" mà chúng ta sẽ không can thiệp
-        VERY_HIGH_CONFIDENCE_GATE = 0.82 
+        # Ngưỡng tin cậy "rất cao" mà chúng ta sẽ không can thiệp (raised for follow-ups)
+        VERY_HIGH_CONFIDENCE_GATE = 0.92  # 🔥 RAISED: 0.82 → 0.92 to allow follow-up override
         # Ngưỡng tối thiểu của ngữ cảnh đã lưu để được coi là "tốt"
         MIN_CONTEXT_CONFIDENCE = 0.78
 
@@ -165,13 +166,18 @@ class OptimizedChatSession:
         if query:
             followup_signal = self.is_followup_question(query)
         
-        # Signal 3: Recent context (within 5 minutes for follow-ups)
-        recent_context_signal = self.last_successful_timestamp and (time.time() - self.last_successful_timestamp) < 300
+        # Signal 3: Recent context (within 10 minutes for follow-ups) - extended time
+        recent_context_signal = self.last_successful_timestamp and (time.time() - self.last_successful_timestamp) < 600
         
         # Override if:
         # - Traditional: low confidence + good context
         # - Follow-up: is follow-up + recent context (regardless of confidence)
-        should_override = bool(low_confidence_signal or (followup_signal and recent_context_signal))
+        # - 🔥 ENHANCED: Follow-up + good context (even if high confidence)
+        should_override = bool(
+            low_confidence_signal or 
+            (followup_signal and recent_context_signal) or
+            (followup_signal and self.last_successful_confidence >= MIN_CONTEXT_CONFIDENCE)
+        )
         
         if should_override:
             reason = "low_confidence" if low_confidence_signal else "followup_detection"
@@ -432,9 +438,15 @@ class RAGService:
         # Chat sessions management
         self.chat_sessions: Dict[str, OptimizedChatSession] = {}
         
-        # 🔥 NEW: Simple session counter for daily sequence (YYYYMMDD-XXX format)
-        self.daily_counter = 0
-        self.last_date = datetime.now().strftime("%Y%m%d")
+        # 🔥 NEW: Session Persistence Manager (JSON-based storage)
+        self.session_persistence = SessionPersistenceManager(
+            storage_path=str(Path("/app/data/sessions"))
+        )
+        
+        # Load counter from persistent storage
+        self.daily_counter = self.session_persistence.daily_counter
+        self.last_date = self.session_persistence.last_date
+        logger.info(f"📊 Loaded persistent counter: {self.daily_counter} for date: {self.last_date}")
         
         # Performance metrics
         self.metrics = {
@@ -489,6 +501,71 @@ class RAGService:
             logger.error(f"Error initializing services: {e}")
             raise
     
+    def _normalize_paths_for_docker(self, response: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Normalize Windows paths to Docker paths for form detection compatibility
+        
+        Args:
+            response: RAG response với source_documents có thể chứa Windows paths
+            
+        Returns:
+            Response với normalized Docker paths
+        """
+        normalized_response = response.copy()
+        
+        try:
+            context_info = normalized_response.get("context_info", {})
+            source_documents = context_info.get("source_documents", [])
+            
+            if source_documents:
+                normalized_docs = []
+                for doc_path in source_documents:
+                    if isinstance(doc_path, str):
+                        # 🔧 FIXED PATTERN: Handle actual vector DB paths
+                        # D:\Personal\LegalRAG_OCR\rag_service\data\storage\collections\...
+                        # -> /app/data/storage/collections/...
+                        
+                        if "\\rag_service\\data\\storage\\collections\\" in doc_path:
+                            # Extract everything after "data\storage\collections\"
+                            parts = doc_path.split("\\data\\storage\\collections\\")
+                            if len(parts) > 1:
+                                relative_path = parts[1].replace("\\", "/")
+                                docker_path = f"/app/data/storage/collections/{relative_path}"
+                                normalized_docs.append(docker_path)
+                                logger.info(f"🔧 Path normalized: {doc_path[:60]}... -> {docker_path}")
+                            else:
+                                normalized_docs.append(doc_path)
+                        elif doc_path.startswith("/app/data/"):
+                            # Already Docker path
+                            normalized_docs.append(doc_path)
+                        else:
+                            # Try generic D:\ pattern
+                            if doc_path.startswith("D:\\") and "\\data\\storage\\collections\\" in doc_path:
+                                # Extract from data onwards
+                                idx = doc_path.find("\\data\\storage\\collections\\")
+                                if idx > 0:
+                                    relative_part = doc_path[idx+1:].replace("\\", "/") # Remove leading \
+                                    docker_path = f"/app/{relative_part}"
+                                    normalized_docs.append(docker_path)
+                                    logger.info(f"🔧 Generic path normalized: {docker_path}")
+                                else:
+                                    normalized_docs.append(doc_path)
+                            else:
+                                normalized_docs.append(doc_path)
+                    else:
+                        normalized_docs.append(doc_path)
+                
+                # Update normalized response
+                normalized_response["context_info"]["source_documents"] = normalized_docs
+                logger.info(f"✅ Normalized {len(normalized_docs)} source document paths")
+                
+        except Exception as e:
+            logger.error(f"Error normalizing paths: {e}")
+            # Return original response if normalization fails
+            return response
+            
+        return normalized_response
+    
     # 🚀 HELPER METHODS - INTELLIGENT SYSTEM UTILITIES
     
     def _map_document_title_to_doc_folder(self, document_title: str, collection: str) -> Optional[str]:
@@ -497,9 +574,14 @@ class RAGService:
         """
         try:
             import os
-            # Try to find matching document folder
-            collection_path = f"data/storage/collections/{collection}/documents"
-            if os.path.exists(collection_path):
+            # ✅ FIX: Use PathConfig for proper Docker/local path resolution
+            if not hasattr(self, 'path_config') or self.path_config is None:
+                from ..core.path_config import PathConfig
+                self.path_config = PathConfig()
+            
+            # Use PathConfig instead of hard-coded paths
+            collection_path = self.path_config.collections_dir / collection / "documents"
+            if collection_path.exists():
                 for doc_folder in os.listdir(collection_path):
                     if doc_folder.startswith("DOC_"):
                         doc_path = os.path.join(collection_path, doc_folder)
@@ -602,9 +684,14 @@ class RAGService:
         🎯 PHASE 4: SYNCHRONIZE CONTENT FORMAT với context expansion
         """
         try:
-            # Construct full source path with absolute path
-            base_path = Path(__file__).parent.parent.parent / "data" / "storage" / "collections"
-            full_source_path = base_path / collection / "documents" / doc_folder / f"{preserved_document}.json"
+            # ✅ FIX: Use PathConfig for proper Docker/local path resolution
+            if not hasattr(self, 'path_config') or self.path_config is None:
+                from ..core.path_config import PathConfig
+                self.path_config = PathConfig()
+                logger.info("PathConfig initialized for _create_real_nucleus_chunks")
+            
+            # Use PathConfig instead of hard-coded paths
+            full_source_path = self.path_config.collections_dir / collection / "documents" / doc_folder / f"{preserved_document}.json"
             
             if not full_source_path.exists():
                 logger.error(f"❌ Source file not found: {full_source_path}")
@@ -676,22 +763,15 @@ class RAGService:
     
     def _generate_session_id(self) -> str:
         """
-        Generate session ID with format: YYYYMMDD-XXX (simple counter for small teams)
-        Automatically resets counter when date changes
+        Generate session ID with format: YYYYMMDD-XXX
+        Uses SessionPersistenceManager for persistent counter across restarts
         """
-        today = datetime.now().strftime("%Y%m%d")
+        # Get next session ID from persistence manager (handles counter increment & save)
+        session_id = self.session_persistence.get_next_session_id()
         
-        # Reset counter if date changed
-        if today != self.last_date:
-            self.daily_counter = 0
-            self.last_date = today
-            logger.info(f"📅 New day detected: {today}, reset session counter")
-        
-        # Increment counter for today
-        self.daily_counter += 1
-        
-        # Format: YYYYMMDD-XXX (3 digits for <1000 sessions/day)
-        session_id = f"{today}-{self.daily_counter:03d}"
+        # Also update in-memory counters for backward compatibility
+        self.daily_counter = self.session_persistence.daily_counter
+        self.last_date = self.session_persistence.last_date
         
         return session_id
 
@@ -708,6 +788,10 @@ class RAGService:
         )
         
         self.chat_sessions[session_id] = session
+        
+        # 🔥 NEW: Persist session data to file
+        self.session_persistence.persist_session(session_id, session)
+        
         logger.info(f"✅ Created new chat session: {session_id} (sequence: {self.daily_counter})")
         
         return session_id
@@ -731,6 +815,7 @@ class RAGService:
     def get_session_stats(self) -> Dict[str, Any]:
         """
         Lấy thống kê sessions để monitor và quản lý
+        Includes persistent storage statistics
         """
         today = datetime.now().strftime("%Y%m%d")
         
@@ -740,13 +825,23 @@ class RAGService:
             oldest_time = min(session.created_at for session in self.chat_sessions.values())
             oldest_session_age_hours = (time.time() - oldest_time) / 3600
         
+        # 🔥 NEW: Get persistence stats
+        persistence_stats = self.session_persistence.get_session_stats()
+        
         return {
             "today_date": today,
             "today_session_count": self.daily_counter if today == self.last_date else 0,
             "total_active_sessions": len(self.chat_sessions),
             "oldest_session_age_hours": round(oldest_session_age_hours, 2),
             "session_id_format": f"{today}-XXX",
-            "next_session_id": f"{today}-{self.daily_counter + 1:03d}" if today == self.last_date else f"{today}-001"
+            "next_session_id": f"{today}-{self.daily_counter + 1:03d}" if today == self.last_date else f"{today}-001",
+            # 💾 Persistence info
+            "persistence": {
+                "enabled": True,
+                "total_persisted_sessions": persistence_stats.get('total_persisted_sessions', 0),
+                "storage_size_mb": persistence_stats.get('storage_size_mb', 0),
+                "storage_path": persistence_stats.get('storage_path', '')
+            }
         }
     
     def reset_session_context(self, session_id: str) -> bool:
@@ -1049,11 +1144,14 @@ class RAGService:
             
             # If we have a preserved document, skip search and go directly to context expansion
             if preserved_document:
+                # ✅ CRITICAL FIX: Initialize nucleus_chunks to prevent UnboundLocalError
+                nucleus_chunks = []
+                
                 # 🚀 FIX: Map document title to correct DOC_XXX folder
                 doc_folder = self._map_document_title_to_doc_folder(preserved_document, best_collections[0])
                 if not doc_folder:
                     logger.error(f"❌ Could not map document title '{preserved_document}' to DOC folder")
-                    # Fallback to normal search
+                    # Fallback to normal search - set preserved_document = None to continue standard flow
                     preserved_document = None
                 else:
                     # 🚀 FIX: Load real document content instead of placeholder
@@ -1066,16 +1164,35 @@ class RAGService:
                     
                     if not nucleus_chunks:
                         logger.error(f"❌ Could not create real nucleus chunks for {preserved_document}")
-                        preserved_document = None
+                        # ✅ CRITICAL FIX: Create fallback nucleus chunks instead of setting None
+                        nucleus_chunks = [{
+                            "content": f"Preserved document: {preserved_document}",
+                            "score": 0.95,
+                            "id": "session_preserved",
+                            "metadata": {"source": preserved_document, "document_title": preserved_document},
+                            "source": {"file_path": preserved_document, "document_title": preserved_document}
+                        }]
+                        logger.warning(f"⚠️ Using fallback nucleus chunks for preserved document")
                     else:
                         logger.info(f"🔧 CREATED REAL NUCLEUS CHUNKS: {len(nucleus_chunks)} chunks with real content")
                 
-                # Skip to context expansion
-                logger.info(f"🔒 SESSION CONTINUITY: Skipping vector search and reranking for preserved document")
-                expanded_context = self.context_expansion_service.expand_context_with_nucleus(
-                    nucleus_chunks=nucleus_chunks,
-                    query=query  # 🎯 Pass query for prioritization
-                )
+                # ✅ ENSURE: nucleus_chunks is always defined at this point
+                if nucleus_chunks:
+                    # Skip to context expansion
+                    logger.info(f"🔒 SESSION CONTINUITY: Skipping vector search and reranking for preserved document")
+                    expanded_context = self.context_expansion_service.expand_context_with_nucleus(
+                        nucleus_chunks=nucleus_chunks,
+                        query=query  # 🎯 Pass query for prioritization
+                    )
+                else:
+                    # ✅ CRITICAL FIX: Fallback expanded_context if nucleus_chunks is empty
+                    expanded_context = {
+                        "expanded_content": [],
+                        "source_documents": [],
+                        "total_length": 0,
+                        "expansion_strategy": "session_fallback"
+                    }
+                    logger.error("❌ No nucleus_chunks available for session override - using fallback")
                 
                 # Skip ahead to context building
                 context_text = self._build_context_from_expanded(expanded_context, nucleus_chunks)
@@ -1116,6 +1233,9 @@ class RAGService:
                 # Keep only last 5 queries in session
                 if len(session.query_history) > 5:
                     session.query_history = session.query_history[-5:]
+                
+                # 🔥 NEW: Persist session after query to save history
+                self.session_persistence.persist_session(session_id, session)
                 
                 # Update session state for next query
                 session.update_successful_routing(
@@ -1221,6 +1341,9 @@ class RAGService:
             # Phase 1: Reranking - Load Reranker, Unload LLM nếu cần
             logger.info("🔄 PHASE 1: Reranking (GPU) - Optimizing VRAM usage...")
             
+            # ✅ CRITICAL FIX: Initialize nucleus_chunks to prevent UnboundLocalError
+            nucleus_chunks = []
+            
             # Temporarily unload LLM để đảm bảo VRAM cho reranker
             if hasattr(self.llm_service, 'unload_model'):
                 self.llm_service.unload_model()
@@ -1294,11 +1417,19 @@ class RAGService:
                 logger.info(f"Selected {len(nucleus_chunks)} nucleus chunk with rerank-based strategy")
             else:
                 nucleus_chunks = broad_search_results[:1]  # Fallback: lấy chunk tốt nhất theo vector similarity
+                logger.info(f"Using fallback nucleus chunks: {len(nucleus_chunks)} chunks")
                 
             # Step 5: INTELLIGENT Context Expansion - Ưu tiên nucleus chunk + context liên quan
             expanded_context = None
             logger.info("🎯 INTELLIGENT CONTEXT EXPANSION - Ưu tiên nucleus chunk từ reranker")
             self.metrics["context_expansions"] += 1
+            
+            # ✅ CRITICAL FIX: Ensure nucleus_chunks is always valid after processing
+            if 'nucleus_chunks' not in locals() or not nucleus_chunks:
+                nucleus_chunks = broad_search_results[:1] if broad_search_results else []
+                logger.warning(f"⚠️ nucleus_chunks fallback: using {len(nucleus_chunks)} chunks from broad search")
+                if not nucleus_chunks:
+                    logger.error("❌ No nucleus_chunks available - this will cause processing to fail")
             
             # 🚀 PHASE 6: COMPLETE CONTENT MATCHING - FINAL FIX
             # Fix nucleus chunks để có content đầy đủ thay vì chỉ 2000 chars
@@ -1339,36 +1470,51 @@ class RAGService:
                     elif source_info.get('file_path'):
                         file_path = source_info.get('file_path')
                         logger.debug(f"🎯 Strategy 4: Found file_path: {file_path}")
-                        # Extract document name from path: .../DOC_001/01. Đăng ký khai sinh.json
+                        # ✅ FIX: Extract document name using PathConfig-compatible approach
                         if 'DOC_' in file_path and '.json' in file_path:
-                            parts = file_path.split('\\')  # Windows path
-                            if len(parts) >= 2:
-                                doc_folder = parts[-2]  # DOC_001
-                                # Try to find the actual document file
-                                doc_dir = f"data/storage/collections/{collection}/documents/{doc_folder}"
-                                if os.path.exists(doc_dir):
-                                    # Look for JSON files in the directory
-                                    for file in os.listdir(doc_dir):
-                                        if file.endswith('.json'):
-                                            document_title = file.replace('.json', '')
-                                            logger.debug(f"🎯 Strategy 4: Found document from path: {document_title}")
-                                            break
+                            # Use PathConfig for proper path resolution
+                            if not hasattr(self, 'path_config') or self.path_config is None:
+                                from ..core.path_config import PathConfig
+                                self.path_config = PathConfig()
+                            
+                            # Parse path in cross-platform way
+                            path_obj = Path(file_path)
+                            if path_obj.parent.name.startswith('DOC_'):
+                                doc_folder = path_obj.parent.name
+                                # Use PathConfig to construct proper path
+                                doc_dir_path = self.path_config.collections_dir / collection / "documents" / doc_folder
+                                if doc_dir_path.exists():
+                                    # Look for JSON files using pathlib
+                                    json_files = list(doc_dir_path.glob('*.json'))
+                                    if json_files:
+                                        document_title = json_files[0].stem
+                                        logger.debug(f"🎯 Strategy 4: Found document from path: {document_title}")
+                                    else:
+                                        logger.warning(f"No JSON files found in {doc_dir_path}")
+                                else:
+                                    logger.warning(f"Document directory not found: {doc_dir_path}")
                     
                     # Strategy 5: Use router collection + first document (fallback)
                     if not document_title and collection:
-                        # Use the first document in collection as fallback
-                        collection_path = f"data/storage/collections/{collection}/documents"
-                        if os.path.exists(collection_path):
-                            doc_folders = [d for d in os.listdir(collection_path) if d.startswith('DOC_')]
+                        # ✅ FIX: Use PathConfig for proper Docker/local path resolution
+                        if not hasattr(self, 'path_config') or self.path_config is None:
+                            from ..core.path_config import PathConfig
+                            self.path_config = PathConfig()
+                        
+                        # Use PathConfig instead of hard-coded paths
+                        collection_path = self.path_config.collections_dir / collection / "documents"
+                        if collection_path.exists():
+                            doc_folders = [d for d in collection_path.iterdir() if d.is_dir() and d.name.startswith('DOC_')]
                             if doc_folders:
-                                doc_folder = doc_folders[0]  # Use first DOC folder
-                                doc_dir = f"{collection_path}/{doc_folder}"
-                                if os.path.exists(doc_dir):
-                                    for file in os.listdir(doc_dir):
-                                        if file.endswith('.json'):
-                                            document_title = file.replace('.json', '')
-                                            logger.info(f"🎯 Strategy 5 (Fallback): Found document from collection: {document_title}")
-                                            break
+                                doc_folder_path = doc_folders[0]  # Use first DOC folder
+                                doc_folder = doc_folder_path.name
+                                if doc_folder_path.is_dir():
+                                    json_files = list(doc_folder_path.glob('*.json'))
+                                    if json_files:
+                                        document_title = json_files[0].stem
+                                        logger.info(f"🎯 Strategy 5 (Fallback): Found document from collection: {document_title}")
+                                    else:
+                                        logger.warning(f"No JSON files found in {doc_folder_path}")
                     
                     # 🚀 PHASE 6: Create enhanced nucleus chunk nếu tìm được document
                     if document_title and collection:
@@ -1411,7 +1557,10 @@ class RAGService:
                 nucleus_chunks = enhanced_nucleus_chunks
                 logger.info(f"🚀 Using enhanced nucleus chunks: {len(nucleus_chunks)} chunks with full content")
             else:
-                logger.warning("⚠️ No enhanced nucleus chunks available, using original")
+                # Ensure nucleus_chunks has valid content for processing
+                if not nucleus_chunks:
+                    nucleus_chunks = broad_search_results[:1] if broad_search_results else []
+                logger.warning(f"⚠️ Using fallback nucleus_chunks: {len(nucleus_chunks)} chunks")
             
             # 🧠 SMART OPTIMIZATION: Ưu tiên nucleus chunk + context liên quan thay vì cắt ngẫu nhiên
             # Logic: Luôn giữ nguyên nucleus chunk + thêm context xung quanh nếu còn chỗ
@@ -1470,6 +1619,9 @@ class RAGService:
             if len(session.query_history) > 5:
                 session.query_history = session.query_history[-5:]
             
+            # 🔥 NEW: Persist session after query to save history
+            self.session_persistence.persist_session(session_id, session)
+            
             # 🔥 Update session state for Stateful Router
             # Chỉ update state khi routing thành công với confidence đủ tốt (0.78+)
             logger.info(f"🔍 Session update check: routing_result={routing_result is not None}, confidence={routing_result.get('confidence', 0) if routing_result else 'None'}")
@@ -1491,9 +1643,16 @@ class RAGService:
                         source_docs = expanded_context['source_documents']
                         if source_docs:
                             main_doc = source_docs[0] if isinstance(source_docs, list) else str(source_docs)
-                            # Extract document title from path
+                            # Extract document title from path with path_config normalization
                             if isinstance(main_doc, str) and main_doc:
-                                doc_name = main_doc.split('\\')[-1].replace('.json', '') if '\\' in main_doc else main_doc
+                                # 🔥 PATH NORMALIZATION: Convert to consistent Docker format
+                                if path_config:
+                                    normalized_path = str(path_config.resolve_cross_platform_path(main_doc))
+                                    doc_name = normalized_path.split('/')[-1].replace('.json', '') if '/' in normalized_path else normalized_path
+                                else:
+                                    # Fallback: handle both Windows and Unix paths
+                                    doc_name = main_doc.split('\\')[-1].split('/')[-1].replace('.json', '')
+                                    
                                 enhanced_filters["source_file"] = doc_name
                                 # Also store in session metadata for persistence
                                 session.metadata["current_document"] = doc_name
@@ -1570,10 +1729,18 @@ class RAGService:
                 }
             }
             
-            # � FORM PROCESSING: Use consolidated SimpleFormDetectionService only
+            # 🚀 FORM PROCESSING: Use consolidated SimpleFormDetectionService only
             try:
+                # 🔧 NORMALIZE PATHS: Convert Windows paths to Docker paths for form detection
+                normalized_response = self._normalize_paths_for_docker(response)
+                
                 # Use SimpleFormDetectionService for all form processing
-                response = self.form_detection_service.enhance_rag_response_with_forms(response)
+                enhanced_response = self.form_detection_service.enhance_rag_response_with_forms(normalized_response)
+                
+                # Merge form attachments back to original response
+                response["form_attachments"] = enhanced_response.get("form_attachments", [])
+                if "context_info" in response and "form_count" in enhanced_response.get("context_info", {}):
+                    response["context_info"]["form_count"] = enhanced_response["context_info"]["form_count"]
                 
                 # Update answer with form references if forms found
                 form_attachments = response.get("form_attachments", [])

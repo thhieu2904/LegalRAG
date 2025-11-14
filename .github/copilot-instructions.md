@@ -9,7 +9,6 @@
 - **Frontend** (Port 3000/5173): React/TypeScript SPA with Vite
 - **RAG Service** (Port 8000): Legal document retrieval-augmented generation
 - **Identifill Service** (Port 8002): CCCD QR code scanning and card detection
-- **OCR Service** (Port 8001): Vietnamese text recognition
 
 ### Key Architecture Patterns
 
@@ -19,7 +18,7 @@
 // frontend/src/api/axios-config.ts - Centralized API configuration
 export const ragAPI = axios.create({ baseURL: "http://localhost:8000" });
 export const identifillAPI = axios.create({ baseURL: "http://localhost:8002" });
-export const ocrAPI = axios.create({ baseURL: "http://localhost:8001" });
+
 ```
 
 #### Vietnamese Legal Domain Focus
@@ -232,5 +231,5 @@ logger.error(f"❌ Failed to initialize services: {e}")
 
 - `identifill_service/environment.yml` - Conda environment setup
 - `rag_service/app/core/config.py` - Service configuration
-- `frontend/package.json` - Frontend dependencies and scripts`</content>`
+- `frontend/package.json` - Frontend dependencies and scripts `</content>`
   `<parameter name="filePath">`d:\Personal\LegalRAG_OCR\.github\copilot-instructions.md

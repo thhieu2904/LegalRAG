@@ -2,6 +2,7 @@ import type {
   ClarificationData,
   ClarificationOption,
 } from "../../services/chatService";
+import { formatCollectionName } from "../../api/collection-mapping";
 import "../../styles/components/question-list.css";
 
 interface ClarificationOptionsProps {
@@ -126,8 +127,10 @@ export function ClarificationOptions({
         >
           <div className="option-header flex items-start gap-3 mb-2">
             {/* 🔥 ENHANCED: Question number with similarity ranking indicator */}
+            {/* Hide question numbers in Smart Confirmation (style="confirmation") */}
             {option.action === "proceed_with_question" &&
-              option.title !== "Câu hỏi khác..." && (
+              option.title !== "Câu hỏi khác..." &&
+              clarification.style !== "confirmation" && (
                 <div
                   className={`question-number flex-shrink-0 w-7 h-7 text-white text-sm font-bold rounded-full flex items-center justify-center ${
                     hasSimilarityScores && index === 0
@@ -152,7 +155,11 @@ export function ClarificationOptions({
                     : ""
                 }`}
               >
-                {option.title}
+                {/* 🔧 FIX: Use formatCollectionName for collection selection */}
+                {option.action === "proceed_with_collection" &&
+                option.collection
+                  ? formatCollectionName(option.collection)
+                  : option.title}
               </h4>
 
               {/* 🔥 ENHANCED: Display multiple confidence/similarity metrics */}
@@ -250,9 +257,14 @@ export function ClarificationOptions({
           {/* 🔥 NEW: Enhanced info display for debugging/advanced users */}
           {(option.procedure || option.document) && (
             <div className="enhanced-info text-xs text-gray-500 mt-2 border-t pt-2">
-              {option.procedure && (
+              {/* {option.procedure && (
                 <span className="procedure-info">
                   📋 Thủ tục: {option.procedure}
+                </span>
+              )} */}
+              {option.collection && (
+                <span className="collection-info ml-3">
+                  🏛️ Bộ thủ tục: {formatCollectionName(option.collection)}
                 </span>
               )}
               {option.document && (
@@ -266,13 +278,6 @@ export function ClarificationOptions({
       ))}
 
       {/* 🔥 NEW: Enhanced clarification footer with additional info */}
-      {isEnhancedStyle && (
-        <div className="enhanced-footer text-xs text-gray-500 text-center py-2 border-t">
-          <span className="enhanced-indicator">
-            🚀 Được tối ưu bằng AI với embedding similarity
-          </span>
-        </div>
-      )}
 
       {/* 🔥 NEW: Additional help from backend */}
       {clarification.additional_help && (

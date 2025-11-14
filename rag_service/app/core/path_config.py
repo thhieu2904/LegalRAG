@@ -11,6 +11,11 @@ data/storage/collections/{collection}/documents/DOC_XXX/
 ├── original_name.doc           ← Original document
 ├── router_questions.json       ← Router questions
 └── forms/                      ← Forms directory
+
+Docker Compatibility:
+- Auto-detects local vs Docker environment
+- Handles path resolution for both Windows and Linux
+- Supports environment variable overrides
 """
 
 import os
@@ -23,10 +28,15 @@ from ..core.config import settings
 logger = logging.getLogger(__name__)
 
 class PathConfig:
-    """Centralized path configuration for new document structure"""
+    """Centralized path configuration for new document structure with Docker support"""
     
-    def __init__(self, base_data_dir: Optional[str] = None):
-        self.base_data_dir = Path(base_data_dir or settings.data_root_dir)
+    def __init__(self, base_data_dir: Optional[str] = None, force_environment: Optional[str] = None):
+        # Environment detection and base path setup
+        self.environment = self._detect_environment(force_environment)
+        self.base_data_dir = self._configure_base_data_dir(base_data_dir)
+        
+        logger.info(f"PathConfig initialized for {self.environment} environment")
+        logger.info(f"Base data dir: {self.base_data_dir}")
         
         # NEW STRUCTURE PATHS
         self.storage_dir = self.base_data_dir / "storage"
@@ -44,6 +54,124 @@ class PathConfig:
         # CACHE
         self.cache_dir = self.base_data_dir / "cache"
         self.router_cache = self.cache_dir / "router_embeddings.pkl"
+    
+    def _detect_environment(self, force_environment: Optional[str] = None) -> str:
+        """
+        Auto-detect if running in Docker or local environment
+        
+        Returns:
+            'docker' or 'local'
+        """
+        if force_environment:
+            return force_environment
+        
+        # Method 1: Check for PYTHONPATH=/app (set in Docker)
+        if os.getenv("PYTHONPATH") == "/app":
+            return "docker"
+        
+        # Method 2: Check if we're in /app/ directory
+        current_file = Path(__file__).resolve()
+        if str(current_file).startswith("/app/"):
+            return "docker"
+        
+        # Method 3: Check for Docker-specific environment variables
+        if os.getenv("ENVIRONMENT") == "docker":
+            return "docker"
+        
+        # Method 4: Check if settings.data_root_dir is Docker-like
+        if hasattr(settings, 'data_root_dir') and str(settings.data_root_dir).startswith("/app/"):
+            return "docker"
+        
+        # Default: assume local
+        return "local"
+    
+    def _configure_base_data_dir(self, base_data_dir: Optional[str] = None) -> Path:
+        """
+        Configure base data directory based on environment
+        
+        Args:
+            base_data_dir: Override base data directory
+            
+        Returns:
+            Configured Path object
+        """
+        # Priority 1: Explicit parameter
+        if base_data_dir:
+            return Path(base_data_dir)
+        
+        # Priority 2: Environment variable
+        env_data_path = os.getenv("LEGALRAG_DATA_PATH")
+        if env_data_path:
+            return Path(env_data_path)
+        
+        # Priority 3: Environment-specific defaults
+        if self.environment == "docker":
+            # Docker: data is mounted at /app/data
+            return Path("/app/data")
+        else:
+            # Local: use settings or calculate from file location
+            if hasattr(settings, 'data_root_dir') and not settings.data_root_dir.startswith("data"):
+                # If data_root_dir is absolute path, use it
+                return Path(settings.data_root_dir)
+            else:
+                # Calculate from current file: app/core/path_config.py -> rag_service/data
+                base_service_dir = Path(__file__).parent.parent.parent
+                return base_service_dir / "data"
+    
+    def resolve_cross_platform_path(self, path_str: str) -> Path:
+        """
+        Resolve path string to work across Windows/Linux and Docker/local
+        
+        Args:
+            path_str: Path string that may contain platform-specific separators
+            
+        Returns:
+            Resolved Path object
+        """
+        # Normalize separators
+        normalized = path_str.replace("\\", "/")
+        
+        # 🔧 DOCKER FIX: Handle absolute Windows paths in Docker environment
+        if self.environment == "docker":
+            logger.info(f"🔧 DEBUG: Processing path in Docker: {normalized}")
+            # Check for Windows absolute path patterns: D:\... or D:/...
+            windows_patterns = [
+                "Personal/LegalRAG_OCR/rag_service/data/",
+                "Personal\\LegalRAG_OCR\\rag_service\\data\\",
+            ]
+            
+            for pattern in windows_patterns:
+                if pattern in normalized:
+                    logger.info(f"🔧 DEBUG: Found pattern '{pattern}' in path")
+                    # Extract relative path from Windows absolute path
+                    # D:\Personal\LegalRAG_OCR\rag_service\data\storage\collections\...
+                    # -> /app/data/storage/collections/...
+                    parts = normalized.split(pattern)
+                    if len(parts) > 1:
+                        relative_path = parts[1]
+                        docker_path = Path(f"/app/data/{relative_path}")
+                        logger.info(f"🔧 Converted Windows absolute path to Docker: {path_str} -> {docker_path}")
+                        return docker_path
+        
+        # Handle relative paths
+        if normalized.startswith("../"):
+            # Remove ../ and resolve from base
+            relative_part = normalized[3:]
+            if self.environment == "docker":
+                # In Docker, go up from /app/app/services -> /app
+                return Path("/app") / relative_part
+            else:
+                # In local, use parent of rag_service
+                base_parent = Path(__file__).parent.parent.parent.parent
+                return base_parent / relative_part
+        
+        elif normalized.startswith("data/"):
+            # Relative to base data directory
+            return self.base_data_dir.parent / normalized
+        
+        else:
+            # Assume relative to data directory
+            return self.base_data_dir / normalized
     
     def get_collection_dir(self, collection_name: str) -> Path:
         """Get collection directory path"""
@@ -209,6 +337,46 @@ class PathConfig:
             "total_documents": sum(len(self.list_documents(col)) for col in self.list_collections()),
             "registry_files_exist": self.collections_registry.exists() and self.documents_registry.exists()
         }
+
+    def verify_paths(self) -> Dict:
+        """
+        Verify that all configured paths exist and are accessible
+        
+        Returns:
+            Dictionary with verification results
+        """
+        results = {
+            "environment": self.environment,
+            "paths_status": {},
+            "all_paths_exist": True,
+            "warnings": []
+        }
+        
+        paths_to_check = {
+            "base_data_dir": self.base_data_dir,
+            "storage_dir": self.storage_dir,
+            "collections_dir": self.collections_dir,
+            "registry_dir": self.registry_dir,
+            "cache_dir": self.cache_dir
+        }
+        
+        for name, path in paths_to_check.items():
+            exists = path.exists()
+            is_dir = path.is_dir() if exists else False
+            
+            results["paths_status"][name] = {
+                "path": str(path),
+                "exists": exists,
+                "is_directory": is_dir
+            }
+            
+            if not exists:
+                results["all_paths_exist"] = False
+                results["warnings"].append(f"Path does not exist: {path}")
+            elif exists and not is_dir:
+                results["warnings"].append(f"Path is not a directory: {path}")
+        
+        return results
 
 # Global instance
 path_config = PathConfig()

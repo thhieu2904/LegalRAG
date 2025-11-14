@@ -1,7 +1,18 @@
 """
 Enhanced Context Expansion Service
 Sử dụng "Nucleus Chunk" strategy để mở rộng ngữ cảnh hiệu quả
+
+Updated for Docker compatibility with PathConfig service
 """
+
+import json
+import logging
+import re
+from pathlib import Path
+from typing import List, Dict, Any, Optional, Set, Tuple
+import os
+
+from ..core.path_config import PathConfig
 
 import logging
 from pathlib import Path
@@ -13,9 +24,134 @@ logger = logging.getLogger(__name__)
 class ContextExpander:
     """Service mở rộng ngữ cảnh với Nucleus Chunk strategy"""
     
-    def __init__(self, vectordb_service, documents_dir: str):
+    def __init__(self, vectordb_service, documents_dir: str, path_config: Optional[PathConfig] = None):
         self.vectordb_service = vectordb_service
-        self.documents_dir = Path(documents_dir)
+        
+        # Use provided PathConfig or create new one
+        if path_config:
+            self.path_config = path_config
+        else:
+            self.path_config = PathConfig()
+        
+        # Set documents directory (with fallback to parameter)
+        if documents_dir:
+            self.documents_dir = Path(documents_dir)
+        else:
+            self.documents_dir = self.path_config.collections_dir
+        
+        logger.info(f"ContextExpander initialized with:")
+        logger.info(f"  Environment: {self.path_config.environment}")
+        logger.info(f"  Documents dir: {self.documents_dir}")
+        logger.info(f"  Base data dir: {self.path_config.base_data_dir}")
+
+    def _normalize_source_file_path(self, source_file: str) -> str:
+        """
+        Normalize source file path to handle Windows/Docker path differences
+        
+        Args:
+            source_file: Raw source file path (may contain Windows drives, backslashes)
+            
+        Returns:
+            Normalized path string compatible with Docker environment
+        """
+        if not source_file:
+            return source_file
+            
+        # Convert to string and normalize
+        path_str = str(source_file).strip()
+        
+        # Replace backslashes with forward slashes
+        path_str = path_str.replace('\\', '/')
+        
+        # Remove Windows drive letters (C:, D:, etc.)
+        import re
+        path_str = re.sub(r'^[A-Za-z]:', '', path_str)
+        
+        # Extract the data/ portion if it exists
+        if '/data/' in path_str:
+            # Find data/ and keep everything from there
+            data_index = path_str.find('/data/')
+            path_str = path_str[data_index + 1:]  # Remove leading slash, keep 'data/...'
+        elif 'data/' in path_str:
+            # Find data/ and keep everything from there  
+            data_index = path_str.find('data/')
+            path_str = path_str[data_index:]
+        
+        # Remove leading slashes and dots
+        path_str = path_str.lstrip('./')
+        
+        logger.debug(f"🔧 Normalized path: {source_file} -> {path_str}")
+        return path_str
+    
+    def _resolve_source_file_path(self, source_file: str) -> Path:
+        """
+        Resolve source file path using PathConfig for cross-platform compatibility
+        
+        Args:
+            source_file: Source file path from nucleus chunk
+            
+        Returns:
+            Resolved Path object
+        """
+        logger.info(f"🔍 Resolving source file: {source_file}")
+        
+        # Normalize path first to handle Windows/Docker differences
+        normalized_path = self._normalize_source_file_path(source_file)
+        logger.info(f"🔧 Using normalized path: {normalized_path}")
+        
+        # Use PathConfig's cross-platform path resolution with normalized path
+        try:
+            resolved_path = self.path_config.resolve_cross_platform_path(normalized_path)
+            logger.info(f"✅ Resolved path: {resolved_path}")
+            return resolved_path
+        except Exception as e:
+            logger.warning(f"PathConfig resolution failed for {normalized_path}: {e}")
+            
+        # Fallback: manual resolution using normalized path
+        if normalized_path.startswith("../"):
+            # Remove "../" and create absolute path from base directory
+            relative_part = normalized_path.replace("../", "")
+            resolved_path = self.path_config.base_data_dir.parent / relative_part
+            logger.info(f"🔧 Fallback relative path: {normalized_path} -> {resolved_path}")
+            return resolved_path
+        
+        elif normalized_path.startswith("data/storage/collections/"):
+            # Direct path from base using normalized path
+            resolved_path = self.path_config.base_data_dir.parent / normalized_path
+            logger.info(f"🔧 Fallback storage path: {resolved_path}")
+            return resolved_path
+        
+        elif normalized_path.startswith("data/"):
+            # Path relative to base_data_dir parent
+            resolved_path = self.path_config.base_data_dir.parent / normalized_path
+            logger.info(f"🔧 Fallback data path: {resolved_path}")
+            return resolved_path
+        
+        elif "data/documents/" in source_file:
+            # Old format - try to convert to new format
+            logger.warning(f"Old document format detected: {source_file}")
+            # This is complex conversion logic that should be handled differently
+            # For now, try to find equivalent in new structure
+            parts = source_file.replace("data/documents/", "").split("/")
+            if len(parts) >= 2:
+                collection = parts[0]
+                filename = parts[-1].replace(".doc", ".json")
+                
+                # Search in new structure
+                collection_path = self.path_config.collections_dir / collection / "documents"
+                if collection_path.exists():
+                    for doc_dir in collection_path.iterdir():
+                        if doc_dir.is_dir():
+                            json_files = list(doc_dir.glob("*.json"))
+                            for json_file in json_files:
+                                if filename in json_file.name:
+                                    logger.info(f"✅ Found equivalent file: {json_file}")
+                                    return json_file
+        
+        # Final fallback: assume relative to data directory using normalized path
+        fallback_path = self.path_config.base_data_dir / normalized_path
+        logger.warning(f"🚨 Using fallback path: {fallback_path} (from normalized: {normalized_path})")
+        return fallback_path
 
     def expand_context_with_nucleus(
         self,
@@ -112,106 +248,33 @@ class ContextExpander:
                 
             logger.info(f"Found source file: {source_file}")
             
-            # 🔧 FIX PATH: Handle both relative và absolute paths correctly
-            # Fix path to work with the new structure of documents
+            # 🔧 Use PathConfig for cross-platform path resolution
+            original_source_file = source_file  # 🔥 KEEP original path for form detection
+            source_file_path = None
             try:
-                # Normalize path separators
-                source_file = source_file.replace('\\', '/') if '\\' in source_file else source_file
-                
-                # Handle different path formats
-                if source_file.startswith("../"):
-                    # Remove "../" and create absolute path from rag_service directory
-                    relative_part = source_file.replace("../", "")
-                    base_path = Path(__file__).parent.parent.parent  # from app/services -> rag_service
-                    source_file_path = base_path / relative_part
-                    logger.info(f"🔧 Converted relative path: {source_file} -> {source_file_path}")
-                
-                # Handle paths in data/storage/collections format (new correct format)
-                elif source_file.startswith("data/storage/collections/"):
-                    base_path = Path(__file__).parent.parent.parent  # rag_service directory
-                    source_file_path = base_path / source_file
-                    logger.info(f"🔧 Using storage path: {source_file_path}")
-                
-                # Handle paths in data/documents format (old incorrect format)
-                elif "data/documents/" in source_file:
-                    # Parse old path structure
-                    parts = source_file.replace("data/documents/", "").split("/")
-                    if len(parts) >= 2:
-                        collection = parts[0]  # e.g., quy_trinh_cap_ho_tich_cap_xa
-                        filename = parts[-1].replace(".doc", ".json")  # last part is filename
-                        
-                        # Look for the document in the correct structure
-                        base_path = Path(__file__).parent.parent.parent  # rag_service directory
-                        collections_path = base_path / "data" / "storage" / "collections"
-                        
-                        # Check if collection exists
-                        collection_path = collections_path / collection
-                        if collection_path.exists():
-                            # Search for the file by filename in the documents directory
-                            documents_path = collection_path / "documents"
-                            if documents_path.exists():
-                                # First try direct file search
-                                potential_files = list(documents_path.glob(f"**/{filename}"))
-                                
-                                if potential_files:
-                                    source_file_path = potential_files[0]
-                                    logger.info(f"🔧 Found matching file: {source_file_path}")
-                                else:
-                                    # Try searching by DOC folder (slower but more thorough)
-                                    doc_folders = [d for d in documents_path.iterdir() if d.is_dir()]
-                                    for doc_folder in doc_folders:
-                                        potential_file = doc_folder / filename
-                                        if potential_file.exists():
-                                            source_file_path = potential_file
-                                            logger.info(f"🔧 Found in subfolder: {source_file_path}")
-                                            break
-                                    else:
-                                        # No match found
-                                        logger.warning(f"⚠️ Could not find file {filename} in {documents_path}")
-                                        source_file_path = Path(source_file)  # Use original as fallback
-                            else:
-                                logger.warning(f"⚠️ Documents directory not found: {documents_path}")
-                                source_file_path = Path(source_file)  # Use original as fallback
-                        else:
-                            logger.warning(f"⚠️ Collection not found: {collection_path}")
-                            source_file_path = Path(source_file)  # Use original as fallback
-                    else:
-                        logger.warning(f"⚠️ Invalid path structure: {source_file}")
-                        source_file_path = Path(source_file)  # Use original as fallback
-                
-                # Already absolute path
-                elif Path(source_file).is_absolute():
-                    source_file_path = Path(source_file)
-                    logger.info(f"🔧 Using absolute path: {source_file_path}")
-                
-                # Other relative paths
-                else:
-                    base_path = Path(__file__).parent.parent.parent  # rag_service directory
-                    source_file_path = base_path / source_file
-                    logger.info(f"🔧 Converted to absolute path: {source_file_path}")
+                source_file_path = self._resolve_source_file_path(source_file)
                 
                 # Check if file exists
                 if not source_file_path.exists():
                     logger.warning(f"⚠️ File not found after path resolution: {source_file_path}")
-                    
-                    # Try an alternative approach - remove the "../" prefix if it exists in the path
-                    alternative_path = str(source_file_path).replace("D:\\Personal\\LegalRAG_OCR\\rag_service\\..\\", "D:\\Personal\\LegalRAG_OCR\\")
-                    alternative_path_obj = Path(alternative_path)
-                    
-                    if alternative_path_obj.exists():
-                        logger.info(f"✅ Found file with alternative path: {alternative_path_obj}")
-                        source_file_path = alternative_path_obj
-                
-                # Update source_file with resolved path
-                source_file = str(source_file_path)
+                    # Use fallback content instead of failing
+                    final_content, structured_metadata = self._generate_fallback_content(str(source_file_path))
+                else:
+                    # Use resolved path for loading but keep original for source_documents
+                    final_content, structured_metadata = self._load_full_document_and_metadata(str(source_file_path), query)
                 
             except Exception as e:
                 logger.error(f"⚠️ Error resolving file path: {e}")
-                # Keep original path if there's an error
+                # Use fallback content
+                final_content, structured_metadata = self._generate_fallback_content(source_file)
             
             # TRIẾT LÝ THIẾT KẾ: Load toàn bộ document gốc từ file JSON
             # Không cắt ghép, không smart expansion - chỉ FULL DOCUMENT
-            final_content, structured_metadata = self._load_full_document_and_metadata(source_file, query)
+            if source_file_path and source_file_path.exists():
+                final_content, structured_metadata = self._load_full_document_and_metadata(str(source_file_path), query)
+            else:
+                # Fallback to original path
+                final_content, structured_metadata = self._load_full_document_and_metadata(source_file, query)
             expansion_strategy = "simplified_content_first"
             
             # Truncate CHỈ KHI document quá dài (giữ tối đa thông tin)
@@ -223,11 +286,11 @@ class ContextExpander:
             if final_content:
                 expanded_context["expanded_content"] = [{
                     "text": final_content,
-                    "source": source_file,
+                    "source": original_source_file,  # 🔥 USE original Docker path
                     "document_title": nucleus_chunk.get("source", {}).get("document_title", ""),
                     "type": expansion_strategy
                 }]
-                expanded_context["source_documents"] = [source_file]
+                expanded_context["source_documents"] = [original_source_file]  # 🔥 USE original Docker path
                 expanded_context["total_length"] = len(final_content)
                 expanded_context["expansion_strategy"] = expansion_strategy
                 expanded_context["structured_metadata"] = structured_metadata  # ✅ THÊM: Structured metadata
@@ -270,10 +333,9 @@ class ContextExpander:
             if not file_path_obj.exists():
                 logger.warning(f"Source file not found: {file_path}")
                 
-                # Simple fallback search
+                # Simple fallback search using PathConfig
                 filename = file_path_obj.name
-                base_path = Path(__file__).parent.parent.parent
-                collections_path = base_path / "data" / "storage" / "collections"
+                collections_path = self.path_config.collections_dir
                 
                 if collections_path.exists():
                     found_files = list(collections_path.glob(f"**/{filename}"))
@@ -294,22 +356,49 @@ class ContextExpander:
             metadata = json_data.get('metadata', {})
             content_chunks = json_data.get('content_chunks', [])
             
-            # 🎯 PHASE 1: CONTENT CHUNKS FIRST (prioritized by query)
+            # 🎯 PHASE 1: NUCLEUS EMPHASIS STRATEGY - Đánh dấu rõ ràng thông tin quan trọng
             content_parts = []
+            seen_content = set()
             
             if content_chunks:
-                # Prioritize chunks based on query
                 prioritized_chunks = self._prioritize_chunks_by_query(content_chunks, query)
                 
-                for chunk in prioritized_chunks:
-                    section_title = chunk.get('section_title', '')
-                    content = chunk.get('content', '')
+                if prioritized_chunks:
+                    # 🎯 NUCLEUS CHUNK - Thông tin chính cần trả lời
+                    nucleus_chunk = prioritized_chunks[0]
+                    nucleus_content = nucleus_chunk.get('content', '')
+                    nucleus_title = nucleus_chunk.get('section_title', '')
                     
-                    if content.strip():
-                        if section_title.strip():
-                            content_parts.append(f"**{section_title}:**")
-                        content_parts.append(content.strip())
-                        content_parts.append("")  # spacing
+                    if nucleus_content.strip():
+                        content_parts.append("📋 THÔNG TIN CHÍNH CẦN TRẢ LỜI:")
+                        if nucleus_title.strip():
+                            content_parts.append(f"**{nucleus_title}:**")
+                        
+                        # Dedupe lines trong nucleus content
+                        clean_nucleus = self._dedupe_lines_in_content(nucleus_content.strip())
+                        content_parts.append(clean_nucleus)
+                        content_parts.append("")
+                        
+                        seen_content.add(hash(nucleus_content.strip()))
+                    
+                    # 🎯 SUPPORTING CHUNKS - Thông tin bổ sung (tối đa 2 chunks)
+                    supporting_chunks = prioritized_chunks[1:3]
+                    if supporting_chunks:
+                        content_parts.append("📚 Thông tin bổ sung tham khảo:")
+                        for chunk in supporting_chunks:
+                            content = chunk.get('content', '')
+                            title = chunk.get('section_title', '')
+                            
+                            if content.strip():
+                                content_hash = hash(content.strip())
+                                if content_hash in seen_content:
+                                    continue
+                                seen_content.add(content_hash)
+                                
+                                if title.strip():
+                                    content_parts.append(f"**{title}:**")
+                                content_parts.append(content.strip())
+                                content_parts.append("")
             
             # 🎯 PHASE 2: MINIMAL METADATA (only essential info at the end)
             if metadata:
@@ -332,6 +421,11 @@ class ContextExpander:
             
             # Build final content
             final_content = "\n".join(content_parts).strip()
+            
+            # 🔧 SIMPLE: Limit context length to prevent overwhelming small LLM
+            if len(final_content) > 3000:  # Keep reasonable limit for small LLM
+                final_content = final_content[:3000] + "\n...(nội dung đã được rút gọn)"
+                logger.info(f"⚠️ Content truncated to 3000 chars to prevent LLM overload")
             
             # Return minimal metadata for other services (fee service, etc.)
             minimal_metadata = {
@@ -409,6 +503,38 @@ class ContextExpander:
             logger.info(f"🎯 Prioritized {len(priority_chunks)} chunks for query: {query[:50]}...")
         
         return prioritized
+    
+    def _dedupe_lines_in_content(self, content: str) -> str:
+        """
+        🔧 Line-level deduplication để loại bỏ các dòng trùng lặp trong content
+        Đặc biệt hữu ích cho danh sách requirements
+        """
+        if not content.strip():
+            return content
+            
+        lines = content.split('\n')
+        seen_normalized = set()
+        clean_lines = []
+        
+        for line in lines:
+            original_line = line.rstrip()  # Giữ nguyên format, chỉ bỏ trailing spaces
+            
+            # Normalize for comparison (bỏ số thứ tự, spaces)
+            normalized = re.sub(r'^\s*\d+[.)]\s*', '', line.strip().lower())
+            normalized = re.sub(r'^\s*[-•*]\s*', '', normalized)
+            normalized = re.sub(r'\s+', ' ', normalized).strip()
+            
+            if normalized and normalized not in seen_normalized and len(normalized) > 5:
+                seen_normalized.add(normalized)
+                clean_lines.append(original_line)
+            elif not normalized.strip():  # Giữ empty lines
+                clean_lines.append(original_line)
+        
+        result = '\n'.join(clean_lines)
+        if len(clean_lines) < len(lines):
+            logger.info(f"🔧 Dedupe: Removed {len(lines) - len(clean_lines)} duplicate lines")
+        
+        return result
     
     def _generate_fallback_content(self, file_path: str) -> Tuple[str, Dict[str, Any]]:
         """

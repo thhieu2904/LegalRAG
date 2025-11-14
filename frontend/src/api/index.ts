@@ -17,6 +17,15 @@ export type {
 export { cccdScannerAPI } from "./qr-scanner-api";
 export type { CCCDData, CCCDScanResult, ScanMode } from "./qr-scanner-api";
 
+// Collection Mapping APIs
+export {
+  formatCollectionName,
+  formatDocumentName,
+  getAvailableCollections,
+  getCollectionDisplayName,
+  isValidCollection,
+} from "./collection-mapping";
+
 // Form APIs
 export { formAPI } from "./form-api";
 export type { FormRenderResult } from "./form-api";
@@ -26,7 +35,7 @@ export type { FormRenderResult } from "./form-api";
 // export type { CCCDData, OCRResult, OCRHistory } from "./ocr-api";
 
 // Axios instances (nếu cần sử dụng trực tiếp)
-export { ragAPI, identifillAPI, ocrAPI as ocrAxios } from "./axios-config";
+export { ragAPI, identifillAPI } from "./axios-config";
 
 // ========================================
 // CÁCH SỬ DỤNG TRONG COMPONENTS:

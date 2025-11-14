@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"  # Overridden by HOST in .env  
     port: int = 8000  # Overridden by PORT in .env
     
+    # Security Settings
+    internal_api_key: str = "dev-internal-key"  # Overridden by INTERNAL_API_KEY in .env
+    
     # Data Paths - Load from environment
     data_root_dir: str = "data"  # Overridden by DATA_ROOT_DIR in .env
     documents_dir: str = "data/documents"  # Overridden by DOCUMENTS_DIR in .env (OLD STRUCTURE)
@@ -51,6 +54,9 @@ class Settings(BaseSettings):
     n_threads: int = 6  # From N_THREADS in .env (6 P-cores of 12700H)
     n_gpu_layers: int = -1  # From N_GPU_LAYERS in .env (-1 = all on GPU)
     n_batch: int = 512  # From N_BATCH in .env (batch size for processing)
+    
+    # VRAM Management Configuration - Added in Phase 2
+    enable_vram_swapping: bool = False  # From ENABLE_VRAM_SWAPPING in .env
     
     # RAG Configuration - Document processing parameters
     chunk_size: int = 800  # From CHUNK_SIZE in .env
@@ -121,6 +127,7 @@ class Settings(BaseSettings):
         env_file = '.env'
         case_sensitive = False
         protected_namespaces = ('settings_',)
+        extra = 'ignore'  # Ignore unknown fields from .env (multi-service shared config)
 
 # Create global settings instance
 settings = Settings()

@@ -18,6 +18,7 @@ interface FormRendererProps {
   manualData?: Record<string, string>; // Manual input data từ parent
   onManualDataChange?: (fieldName: string, value: string) => void; // Callback cập nhật manual data
   cccdData?: Record<string, string>; // CCCD scan data để reference
+  getFieldValue?: (fieldName: string) => string; // NEW: Function để lấy final value
 }
 
 interface FormRenderResult {
@@ -41,6 +42,7 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
   manualData = {},
   onManualDataChange,
   cccdData = {},
+  getFieldValue,
 }) => {
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,10 +50,11 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
   const [formMetadata, setFormMetadata] = useState<
     FormRenderResult["form_metadata"] | null
   >(null);
+
   const reactRootsRef = useRef<Map<HTMLElement, Root>>(new Map());
-  const isHydratedRef = useRef<boolean>(false); // 🎯 Track hydration status
-  const formContentRef = useRef<HTMLDivElement>(null); // 🎯 Ref to form content div
-  const htmlSetRef = useRef<boolean>(false); // 🎯 Track if HTML has been set
+  const isHydratedRef = useRef<boolean>(false);
+  const formContentRef = useRef<HTMLDivElement>(null);
+  const htmlSetRef = useRef<boolean>(false);
 
   // Cleanup React roots khi component unmount
   useEffect(() => {
@@ -88,25 +91,35 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
       return;
     }
 
-    // 🎯 CHỈ hydrate FORM placeholders (manual input)
-    const formPlaceholderElements = formContainer.querySelectorAll(
-      '[class^="placeholder_form_"]'
+    // 🎯 Hydrate cả FORM và SCAN placeholders (manual input)
+    const allPlaceholderElements = formContainer.querySelectorAll(
+      '[class^="placeholder_form_"], [class^="placeholder_scan_"]'
     );
     console.log(
-      `📍 Found ${formPlaceholderElements.length} FORM placeholders to hydrate`
+      `📍 Found ${allPlaceholderElements.length} placeholders (FORM + SCAN) to hydrate`
     );
 
     let hydratedCount = 0;
-    formPlaceholderElements.forEach((element) => {
+    allPlaceholderElements.forEach((element) => {
       const htmlElement = element as HTMLElement;
 
-      // Extract field name từ class (placeholder_form_xxx → form_xxx)
-      const className = Array.from(htmlElement.classList).find((cls) =>
-        cls.startsWith("placeholder_form_")
+      // Extract field name từ class (hỗ trợ cả placeholder_form_ và placeholder_scan_)
+      const className = Array.from(htmlElement.classList).find(
+        (cls) =>
+          cls.startsWith("placeholder_form_") ||
+          cls.startsWith("placeholder_scan_")
       );
       if (!className) return;
 
-      const fieldName = className.replace("placeholder_form_", "form_"); // Chuẩn hóa field name
+      // Chuẩn hóa field name cho cả form và scan
+      let fieldName: string;
+      if (className.startsWith("placeholder_form_")) {
+        fieldName = className.replace("placeholder_form_", "form_");
+      } else if (className.startsWith("placeholder_scan_")) {
+        fieldName = className.replace("placeholder_scan_", "scan_");
+      } else {
+        return; // Không hỗ trợ format khác
+      }
 
       // Skip nếu đã được hydrate
       if (reactRootsRef.current.has(htmlElement)) {
@@ -125,7 +138,11 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
         root.render(
           <EditablePlaceholder
             fieldName={fieldName}
-            value={manualData[fieldName] || ""}
+            value={
+              getFieldValue
+                ? getFieldValue(fieldName)
+                : manualData[fieldName] || ""
+            }
             cccdValue={cccdData[fieldName]}
             onSave={(field, value) => {
               onManualDataChange?.(field, value);
@@ -148,100 +165,42 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
         `✅ Placeholder hydration completed - ${hydratedCount} elements hydrated`
       );
     }
-  }, [manualData, cccdData, onManualDataChange]);
+  }, [manualData, cccdData, onManualDataChange, getFieldValue]);
 
   // BƯỚC 3: Update React components khi manual data thay đổi (WITHOUT re-hydration)
-  const updatePlaceholderValues = useCallback(() => {
-    if (!formContentRef.current) return;
+  // 🎯 FIX: Re-render React components khi data thay đổi
+  const updateReactComponents = useCallback(() => {
+    if (!isHydratedRef.current) return;
 
-    // BƯỚC 1: Update SCAN placeholders (auto-fill từ CCCD)
-    const scanPlaceholderElements = formContentRef.current.querySelectorAll(
-      '[class^="placeholder_scan_"]:not(.react-hydrated)'
-    );
+    console.log("🔄 Re-rendering React components with new data");
 
-    scanPlaceholderElements.forEach((element) => {
-      const className = Array.from(element.classList).find((cls) =>
-        cls.startsWith("placeholder_scan_")
-      );
-      if (!className) return;
-
-      const fieldName = className.replace("placeholder_scan_", "scan_");
-      const htmlElement = element as HTMLElement;
-
-      // Lấy value từ cccdData (scan data)
-      const value = cccdData[fieldName] || "";
-
-      if (value) {
-        // Auto-fill SCAN data
-        htmlElement.textContent = value;
-        htmlElement.setAttribute("data-filled", "true");
-        htmlElement.setAttribute("data-scanned", "true"); // 🎯 CSS hook for scan styling
-        htmlElement.classList.add("filled");
-        console.log(`✅ Auto-filled SCAN ${fieldName} = "${value}"`);
-      } else {
-        // Reset về placeholder state
-        htmlElement.textContent = `{{${className}}}`;
-        htmlElement.removeAttribute("data-filled");
-        htmlElement.removeAttribute("data-scanned"); // 🎯 Remove CSS hook
-        htmlElement.classList.remove("filled");
-      }
-    });
-
-    // BƯỚC 2: Update FORM placeholders (non-React ones)
-    const formPlaceholderElements = formContentRef.current.querySelectorAll(
-      '[class^="placeholder_form_"]:not(.react-hydrated)'
-    );
-
-    formPlaceholderElements.forEach((element) => {
-      const className = Array.from(element.classList).find((cls) =>
-        cls.startsWith("placeholder_form_")
-      );
-      if (!className) return;
-
-      const fieldName = className.replace("placeholder_form_", "form_");
-      const htmlElement = element as HTMLElement;
-
-      // Lấy value từ manualData (manual input)
-      const value = manualData[fieldName] || "";
-
-      if (value) {
-        // Fill manual data
-        htmlElement.textContent = value;
-        htmlElement.setAttribute("data-filled", "true");
-        htmlElement.classList.add("filled");
-        console.log(`✅ Filled FORM ${fieldName} = "${value}"`);
-      } else {
-        // Reset về placeholder state
-        htmlElement.textContent = `{{${className}}}`;
-        htmlElement.removeAttribute("data-filled");
-        htmlElement.classList.remove("filled");
-      }
-    });
-
-    // BƯỚC 3: Update React components (CHỈ FORM placeholders)
     reactRootsRef.current.forEach((root, element) => {
-      const className = Array.from(element.classList).find((cls) =>
-        cls.startsWith("placeholder_form_")
+      const className = Array.from(element.classList).find(
+        (cls) =>
+          cls.startsWith("placeholder_form_") ||
+          cls.startsWith("placeholder_scan_")
       );
       if (!className) return;
 
-      const fieldName = className.replace("placeholder_form_", "form_");
-      const value = manualData[fieldName] || "";
-
-      // Đánh dấu filled state cho React element (chỉ attributes, KHÔNG textContent)
-      if (value) {
-        element.setAttribute("data-filled", "true");
-        element.classList.add("filled");
+      // Chuẩn hóa field name
+      let fieldName: string;
+      if (className.startsWith("placeholder_form_")) {
+        fieldName = className.replace("placeholder_form_", "form_");
+      } else if (className.startsWith("placeholder_scan_")) {
+        fieldName = className.replace("placeholder_scan_", "scan_");
       } else {
-        element.removeAttribute("data-filled");
-        element.classList.remove("filled");
+        return;
       }
 
-      // Re-render React component với giá trị mới
+      // Re-render với data mới
       root.render(
         <EditablePlaceholder
           fieldName={fieldName}
-          value={manualData[fieldName] || ""}
+          value={
+            getFieldValue
+              ? getFieldValue(fieldName)
+              : manualData[fieldName] || ""
+          }
           cccdValue={cccdData[fieldName]}
           onSave={(field, value) => {
             onManualDataChange?.(field, value);
@@ -249,18 +208,8 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
           placeholder={`Nhập ${fieldName.replace(/_/g, " ")}`}
         />
       );
-
-      console.log(
-        `✅ Updated React component ${fieldName} with CCCD: ${
-          cccdData[fieldName] || "none"
-        }`
-      );
     });
-
-    console.log(
-      "🔄 Updated both HTML content (non-React) and React components separately"
-    );
-  }, [manualData, cccdData, onManualDataChange]); // BƯỚC 3: Set HTML content chỉ 1 lần và hydrate
+  }, [manualData, cccdData, getFieldValue, onManualDataChange]); // BƯỚC 3: Set HTML content chỉ 1 lần và hydrate
   useEffect(() => {
     if (
       htmlContent &&
@@ -282,20 +231,16 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [htmlContent, loading]); // 🎯 Remove hydratePlaceholders dependency to prevent re-runs
 
-  // BƯỚC 4: Update values khi manual data thay đổi (không re-hydrate)
+  // 🎯 FIX: Re-render React components khi data thay đổi
   useEffect(() => {
-    if (
-      isHydratedRef.current &&
-      (Object.keys(manualData).length > 0 || Object.keys(cccdData).length > 0)
-    ) {
-      console.log("🔄 Updating placeholder values (no re-hydration):", {
+    if (isHydratedRef.current) {
+      console.log("🔄 Data changed, re-rendering React components:", {
         manualDataKeys: Object.keys(manualData),
         cccdDataKeys: Object.keys(cccdData),
       });
-      updatePlaceholderValues();
+      updateReactComponents();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [manualData, cccdData]); // 🎯 Remove updatePlaceholderValues dependency
+  }, [manualData, cccdData, updateReactComponents]);
 
   const loadFormHTML = useCallback(async () => {
     console.log(`🔔 loadFormHTML CALLED - Render ID: ${Date.now()}`);
@@ -386,10 +331,12 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
       {/* Form metadata info */}
       {formMetadata && (
         <div className="form-header">
-          <h3 className="form-title">📋 {formMetadata.form_filename}</h3>
-          <p className="form-path">
-            {formMetadata.collection_id} / {formMetadata.doc_id}
-          </p>
+          <div className="form-header-left">
+            <h3 className="form-title">📋 {formMetadata.form_filename}</h3>
+            <p className="form-path">
+              {formMetadata.collection_id} / {formMetadata.doc_id}
+            </p>
+          </div>
         </div>
       )}
 

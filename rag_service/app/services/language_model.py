@@ -48,8 +48,15 @@ class LLMService:
         else:
             logger.info("Model file found, skipping download")
         
-        # VRAM Optimization: Load model khi cần thiết
-        # self._load_model()  # Comment out để load on-demand
+        # VRAM Management: Load based on swapping mode
+        if not settings.enable_vram_swapping:
+            # Non-swapping mode: Load model immediately (RTX 3060 12GB server)
+            logger.info("🚀 Non-swapping mode: Loading LLM model immediately")
+            self._load_model()
+        else:
+            # Swapping mode: Load on-demand (RTX 3060 6GB laptop)  
+            logger.info("🔄 Swapping mode: LLM model will load on-demand")
+            # self._load_model()  # Comment out để load on-demand
     
     def _download_model(self):
         """Tải model từ HuggingFace"""
@@ -205,9 +212,15 @@ class LLMService:
             "Use prompt_service.get_complete_rag_prompt() + generate_response_direct() instead."
         )
         
-        # VRAM Optimization: Ensure model is loaded
-        self.ensure_loaded()
-        
+        # VRAM Management: Ensure model is loaded based on mode
+        if settings.enable_vram_swapping:
+            # Swapping mode: Load on-demand
+            self.ensure_loaded()
+        elif not self.model_loaded:
+            # Non-swapping mode: Should already be loaded, but check
+            logger.warning("Non-swapping mode but model not loaded - loading now")
+            self._load_model()
+            
         if not self.model:
             raise Exception("Model not loaded")
         
@@ -402,6 +415,37 @@ class LLMService:
         
         return cleaned_text
     
+    def _clean_prompt_leakage(self, text: str) -> str:
+        """
+        Remove prompt leakage artifacts from LLM response
+        """
+        if not text:
+            return text
+            
+        # Remove "Câu hỏi cần trả lời:" and everything after it
+        if "Câu hỏi cần trả lời:" in text:
+            text = text.split("Câu hỏi cần trả lời:")[0].strip()
+            
+        # Remove other common leakage patterns
+        leakage_patterns = [
+            "### Câu hỏi:",
+            "### Trả lời:",
+            "Câu hỏi:",
+            "Hướng dẫn trả lời:",
+            "📋 THÔNG TIN CHÍNH",
+            "📚 Thông tin bổ sung"
+        ]
+        
+        for pattern in leakage_patterns:
+            if pattern in text:
+                # If pattern appears, take everything before it
+                parts = text.split(pattern)
+                if len(parts) > 1:
+                    # Keep the first part (actual response)
+                    text = parts[0].strip()
+        
+        return text.strip()
+    
     def generate_response_direct(
         self,
         complete_prompt: str,
@@ -423,9 +467,15 @@ class LLMService:
         Returns:
             Dict with response and metadata
         """
-        # VRAM Optimization: Ensure model is loaded
-        self.ensure_loaded()
-        
+        # VRAM Management: Ensure model is loaded based on mode
+        if settings.enable_vram_swapping:
+            # Swapping mode: Load on-demand
+            self.ensure_loaded()
+        elif not self.model_loaded:
+            # Non-swapping mode: Should already be loaded, but check
+            logger.warning("Non-swapping mode but model not loaded - loading now")
+            self._load_model()
+            
         if not self.model:
             raise Exception("Model not loaded")
         
@@ -466,6 +516,8 @@ class LLMService:
                 
                 # Clean and process response
                 cleaned_response = self._clean_repetitive_response(raw_text)
+                # Remove prompt leakage artifacts
+                cleaned_response = self._clean_prompt_leakage(cleaned_response)
                 
                 generation_time = time.time() - start_time
                 

@@ -5,7 +5,8 @@
  */
 import React, { useState, useCallback } from "react";
 import { CameraComponent } from "../qrscan/CameraComponent";
-import { Camera, Upload, Loader, AlertCircle } from "lucide-react";
+import { QRFileUpload } from "../qrscan/QRFileUpload";
+import { Camera, Upload, AlertCircle } from "lucide-react";
 import { cccdScannerAPI } from "../../api/qr-scanner-api";
 import type { CCCDData } from "../../api/qr-scanner-api";
 import "./IntegratedQRScanner.css";
@@ -23,12 +24,12 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
   cccdData,
   onReset,
 }) => {
-  const [scanMethod, setScanMethod] = useState<"camera" | "upload">("camera");
+  const [scanMethod, setScanMethod] = useState<"camera" | "upload">("upload");
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Xử lý quét từ camera
-  const handleCameraCapture = useCallback(
+  // Xử lý quét từ camera hoặc upload
+  const handleImageProcess = useCallback(
     async (imageData: string) => {
       setIsScanning(true);
       setError(null);
@@ -58,43 +59,6 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
     [onResult, onError]
   );
 
-  // Xử lý upload ảnh
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setIsScanning(true);
-    setError(null);
-
-    try {
-      // Convert file to base64
-      const base64Data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      // Use the QR scanner API service instead of direct fetch
-      const result = await cccdScannerAPI.scanCCCD(base64Data);
-
-      if (result.success && result.data) {
-        onResult?.(result.data);
-      } else {
-        throw new Error(result.message || "CCCD scan failed");
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Lỗi upload";
-      setError(errorMessage);
-      onError?.(errorMessage);
-    } finally {
-      setIsScanning(false);
-    }
-  };
-
   const handleCameraError = useCallback(
     (errorMessage: string) => {
       setError(errorMessage);
@@ -116,18 +80,26 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
       {/* Method Tabs */}
       <div className="method-tabs">
         <button
-          onClick={() => setScanMethod("camera")}
-          className={`method-tab ${scanMethod === "camera" ? "active" : ""}`}
-        >
-          <Camera size={18} />
-          <span>Camera</span>
-        </button>
-        <button
-          onClick={() => setScanMethod("upload")}
+          onClick={() => {
+            setScanMethod("upload");
+            setError(null);
+          }}
           className={`method-tab ${scanMethod === "upload" ? "active" : ""}`}
+          disabled={isScanning}
         >
           <Upload size={18} />
           <span>Tải ảnh</span>
+        </button>
+        <button
+          onClick={() => {
+            setScanMethod("camera");
+            setError(null);
+          }}
+          className={`method-tab ${scanMethod === "camera" ? "active" : ""}`}
+          disabled={isScanning}
+        >
+          <Camera size={18} />
+          <span>Camera</span>
         </button>
       </div>
 
@@ -138,39 +110,18 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
           {scanMethod === "camera" ? (
             <div className="camera-container">
               <CameraComponent
-                onImageCapture={handleCameraCapture}
+                onImageCapture={handleImageProcess}
                 onError={handleCameraError}
                 isCapturing={isScanning}
-                captureButtonText={
-                  isScanning ? "Đang xử lý..." : "Đang quét..."
-                }
+                captureButtonText={isScanning ? "Đang xử lý..." : "Chụp & Quét"}
               />
             </div>
           ) : (
             <div className="upload-container">
-              <div className={`upload-zone ${isScanning ? "processing" : ""}`}>
-                {!isScanning ? (
-                  <>
-                    <div className="upload-icon">📷</div>
-                    <p className="upload-text">Chọn ảnh CCCD để quét</p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="upload-input"
-                      id="upload-input"
-                    />
-                    <label htmlFor="upload-input" className="upload-button">
-                      Chọn ảnh
-                    </label>
-                  </>
-                ) : (
-                  <div className="processing-state">
-                    <Loader className="spinning" />
-                    <p>Đang xử lý...</p>
-                  </div>
-                )}
-              </div>
+              <QRFileUpload
+                onFileSelected={handleImageProcess}
+                disabled={isScanning}
+              />
             </div>
           )}
 
@@ -188,11 +139,6 @@ export const IntegratedQRScanner: React.FC<IntegratedQRScannerProps> = ({
           <div className="info-area">
             <div className="info-header">
               <h3 className="info-title">📋 Thông tin từ CCCD</h3>
-              {onReset && (
-                <button onClick={onReset} className="reset-button">
-                  Quét lại
-                </button>
-              )}
             </div>
             <div className="info-grid">
               <div className="info-item">

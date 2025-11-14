@@ -48,3 +48,44 @@ class CardDetectionResponse(BaseModel):
     cropped_image: Optional[str] = None  # Base64 encoded cropped image
     confidence: Optional[float] = None
     message: Optional[str] = None
+
+
+# ============================================
+# Form Storage API Models
+# ============================================
+
+class FormSaveResponse(BaseModel):
+    """Response model for saving form"""
+    success: bool
+    file_id: Optional[str] = None
+    file_name: Optional[str] = None
+    message: Optional[str] = None
+
+
+class FormRecord(BaseModel):
+    """Model for stored form record"""
+    file_id: str
+    form_name: str
+    file_name: str
+    file_type: str
+    file_size: Optional[int] = None
+    created_at: str
+
+
+class FormListResponse(BaseModel):
+    """Response model for listing forms"""
+    success: bool
+    scan_cccd: Optional[str] = None
+    scan_ho_ten: Optional[str] = None
+    forms: Optional[list[FormRecord]] = None
+    total_forms: Optional[int] = None
+    message: Optional[str] = None
+
+
+class FormStats(BaseModel):
+    """Model for storage statistics"""
+    total_users: int
+    total_forms: int
+    total_storage_bytes: int
+    total_storage_mb: float
+

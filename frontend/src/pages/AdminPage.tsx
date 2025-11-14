@@ -5,34 +5,31 @@
  */
 import { useState } from "react";
 import Dashboard from "../components/admin/Dashboard";
-import Voice from "../components/admin/Voice";
-import Vector from "../components/admin/Vector";
+import Voice from "../components/voice/Voice";
 import Database from "../components/admin/Database";
-import Questions from "../components/admin/Questions";
-import Models from "../components/admin/Models";
+import QuestionsManager from "../components/admin/questions/QuestionsManager";
 import System from "../components/admin/System";
+import { StorageManager } from "../components/admin/StorageManager";
 import "./AdminPage.css";
 
 type AdminSection =
   | "dashboard"
   | "voice"
-  | "vector"
   | "database"
   | "questions"
-  | "models"
-  | "system";
+  | "system"
+  | "storage";
 
 const AdminPage = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>("dashboard");
 
   const navigationItems = [
-    { key: "dashboard" as AdminSection, label: "📊 Dashboard", icon: "📊" },
-    { key: "voice" as AdminSection, label: "🎤 Voice", icon: "🎤" },
-    { key: "vector" as AdminSection, label: "🔍 Vector DB", icon: "🔍" },
-    { key: "database" as AdminSection, label: "💾 Database", icon: "💾" },
-    { key: "questions" as AdminSection, label: "❓ Questions", icon: "❓" },
-    { key: "models" as AdminSection, label: "🤖 Models", icon: "🤖" },
-    { key: "system" as AdminSection, label: "⚙️ System", icon: "⚙️" },
+    { key: "dashboard" as AdminSection, label: "Dashboard", icon: "📊" },
+    { key: "voice" as AdminSection, label: "Voice", icon: "🎤" },
+    { key: "database" as AdminSection, label: "Bộ thủ tục", icon: "💾" },
+    { key: "questions" as AdminSection, label: "Câu hỏi", icon: "❓" },
+    { key: "storage" as AdminSection, label: "Quản lý Form", icon: "📦" },
+    { key: "system" as AdminSection, label: "Hệ thống", icon: "⚙️" },
   ];
 
   const renderActiveComponent = () => {
@@ -41,14 +38,12 @@ const AdminPage = () => {
         return <Dashboard />;
       case "voice":
         return <Voice />;
-      case "vector":
-        return <Vector />;
       case "database":
         return <Database />;
       case "questions":
-        return <Questions />;
-      case "models":
-        return <Models />;
+        return <QuestionsManager />;
+      case "storage":
+        return <StorageManager />;
       case "system":
         return <System />;
       default:

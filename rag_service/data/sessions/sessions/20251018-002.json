@@ -1,0 +1,14 @@
+{
+  "session_id": "20251018-002",
+  "created_at": 1760809420.5025332,
+  "last_accessed": 1760809420.5025332,
+  "query_history": [],
+  "context_cache": {},
+  "metadata": {},
+  "last_successful_collection": null,
+  "last_successful_confidence": 0.0,
+  "last_successful_timestamp": null,
+  "last_successful_filters": null,
+  "cached_rag_content": null,
+  "consecutive_low_confidence_count": 0
+}

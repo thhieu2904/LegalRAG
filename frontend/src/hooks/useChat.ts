@@ -16,6 +16,7 @@ interface Message {
   clarification?: ClarificationData;
   processingTime?: number;
   sourceDocuments?: string[];
+  sourceCollections?: string[]; // 🔥 NEW: Source collections for display
   formAttachments?: FormAttachment[]; // 🔥 NEW: Form attachments
   apiResponse?: ApiResponse; // Store full API response for advanced handling
 }
@@ -64,6 +65,12 @@ export function useChat(options: UseChatOptions = {}) {
   );
   const [isContextLoading, setIsContextLoading] = useState(false);
 
+  // 🔥 NEW: Inactivity modal state (Queue-based use case)
+  const [lastBotMessageTime, setLastBotMessageTime] = useState<number | null>(
+    null
+  );
+  const [showIdleModal, setShowIdleModal] = useState(false);
+
   const addMessage = useCallback(
     (
       content: string,
@@ -71,6 +78,7 @@ export function useChat(options: UseChatOptions = {}) {
       clarification?: ClarificationData,
       processingTime?: number,
       sourceDocuments?: string[],
+      sourceCollections?: string[], // 🔥 NEW: Source collections parameter
       formAttachments?: FormAttachment[], // 🔥 NEW: Form attachments parameter
       apiResponse?: ApiResponse
     ) => {
@@ -85,11 +93,19 @@ export function useChat(options: UseChatOptions = {}) {
         clarification,
         processingTime,
         sourceDocuments,
+        sourceCollections, // 🔥 NEW: Include source collections
         formAttachments, // 🔥 NEW: Include form attachments
         apiResponse,
       };
 
       setMessages((prev) => [...prev, message]);
+
+      // 🔥 NEW: Track bot message time for inactivity modal (Queue-based use case)
+      if (isBot) {
+        setLastBotMessageTime(Date.now());
+        setShowIdleModal(false); // Reset modal when new message arrives
+      }
+
       return message;
     },
     []
@@ -147,6 +163,28 @@ export function useChat(options: UseChatOptions = {}) {
     }
   }, [updateContextSummary]);
 
+  // 🔥 NEW: 5-minute inactivity timer for queue-based use case
+  // Triggers modal to ask if user wants to start new conversation
+  useEffect(() => {
+    if (!lastBotMessageTime) return;
+
+    // 🔧 TESTING: 30 seconds instead of 5 minutes for faster testing
+    // Change back to: 5 * 60 * 1000 for production
+    const IDLE_TIMEOUT = 30 * 1000; // 30 seconds for testing
+
+    const timer = setTimeout(() => {
+      setShowIdleModal(true);
+      console.log(
+        "🔔 Inactivity modal triggered after 30 seconds (testing mode)"
+      );
+    }, IDLE_TIMEOUT);
+
+    // Cleanup function - clear timer if component unmounts or lastBotMessageTime changes
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [lastBotMessageTime]);
+
   const sendMessage = useCallback(
     async (
       content: string,
@@ -175,6 +213,7 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
@@ -191,17 +230,14 @@ export function useChat(options: UseChatOptions = {}) {
             if (apiResponse.options && apiResponse.options.length > 0) {
               // Direct structure - new format
               clarificationData = {
-                type: apiResponse.type,
-                confidence_level: apiResponse.confidence_level || "medium",
-                confidence: apiResponse.confidence,
                 message: apiResponse.message || "",
                 options: apiResponse.options,
+                style: apiResponse.style || "default",
                 target_collection: apiResponse.target_collection,
                 document: apiResponse.document,
                 procedure: apiResponse.procedure,
                 show_manual_input: apiResponse.show_manual_input,
                 manual_input_placeholder: apiResponse.manual_input_placeholder,
-                style: apiResponse.style,
               };
             } else {
               // Legacy nested structure
@@ -221,6 +257,7 @@ export function useChat(options: UseChatOptions = {}) {
               clarificationData as ClarificationData,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
@@ -231,6 +268,7 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               undefined, // No form attachments for no_results
               apiResponse
             );
@@ -246,6 +284,7 @@ export function useChat(options: UseChatOptions = {}) {
             undefined,
             response.processing_time,
             response.sources,
+            undefined, // No source collections in fallback
             response.form_attachments // 🔥 NEW: Pass form attachments from fallback
           );
         }
@@ -360,6 +399,7 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
@@ -377,6 +417,7 @@ export function useChat(options: UseChatOptions = {}) {
               undefined,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               undefined, // No form attachments for manual input request
               apiResponse
             );
@@ -397,17 +438,14 @@ export function useChat(options: UseChatOptions = {}) {
             if (apiResponse.options && apiResponse.options.length > 0) {
               // Direct structure
               clarificationData = {
-                type: apiResponse.type,
-                confidence_level: apiResponse.confidence_level || "medium",
-                confidence: apiResponse.confidence,
                 message: apiResponse.message || "",
                 options: apiResponse.options,
+                style: apiResponse.style || "default",
                 target_collection: apiResponse.target_collection,
                 document: apiResponse.document,
                 procedure: apiResponse.procedure,
                 show_manual_input: apiResponse.show_manual_input,
                 manual_input_placeholder: apiResponse.manual_input_placeholder,
-                style: apiResponse.style,
                 original_query: originalQuery,
               };
             } else {
@@ -426,6 +464,7 @@ export function useChat(options: UseChatOptions = {}) {
               clarificationData,
               apiResponse.processing_time,
               apiResponse.context_info?.source_documents,
+              apiResponse.context_info?.source_collections, // 🔥 NEW: Pass source collections
               apiResponse.form_attachments, // 🔥 NEW: Pass form attachments
               apiResponse
             );
@@ -437,6 +476,7 @@ export function useChat(options: UseChatOptions = {}) {
             undefined,
             response.processing_time,
             response.sources,
+            undefined, // No source collections in fallback
             response.form_attachments // 🔥 NEW: Pass form attachments from fallback
           );
           // 🔧 Clear currentClarification for non-API responses
@@ -478,5 +518,8 @@ export function useChat(options: UseChatOptions = {}) {
     isContextLoading,
     resetContext,
     updateContextSummary,
+    // 🔥 NEW: Inactivity modal exports (Queue-based use case)
+    showIdleModal,
+    setShowIdleModal,
   };
 }

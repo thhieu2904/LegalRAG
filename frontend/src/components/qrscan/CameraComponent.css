@@ -373,23 +373,48 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: #ffffff;
-  border: 2px solid #e5e7eb;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
+  color: white;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
 }
 
 .control-button:hover:not(:disabled) {
-  border-color: #3b82f6;
-  background: #f0f9ff;
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
 }
 
 .control-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+}
+
+/* Reset button styling */
+
+.reset-button {
+  background: #e5e7eb;
+  color: #1e293b;
+  border: none;
+  gap: 4px;
+  width: auto;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.reset-button:hover:not(:disabled) {
+  background: #d1d5db;
+  color: #111827;
+  transform: scale(1.02);
 }
 
 .capture-button {

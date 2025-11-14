@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { CameraComponent } from "./CameraComponent";
+import { QRFileUpload } from "./QRFileUpload";
 import { cccdScannerAPI } from "../../api/qr-scanner-api";
-import { AlertCircle, Loader } from "lucide-react";
+import { AlertCircle, Loader, Camera, Upload } from "lucide-react";
 import type { CCCDData } from "../../api/qr-scanner-api";
 import "./QRScanner.css";
 
@@ -11,11 +12,14 @@ interface QRScannerProps {
   className?: string;
 }
 
+type ScanMode = "camera" | "upload";
+
 export const QRScanner: React.FC<QRScannerProps> = ({
   onResult,
   onError,
   className = "",
 }) => {
+  const [scanMode, setScanMode] = useState<ScanMode>("upload");
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -87,49 +91,76 @@ export const QRScanner: React.FC<QRScannerProps> = ({
 
   return (
     <div className={`qr-scanner ${className}`}>
-      {/* Header */}
-      {/* <div className="qr-scanner-header">
-        <div className="header-content">
-          <div className="title-section">
-            <QrCode className="title-icon" />
-            <h2>QR Code Scanner</h2>
-          </div>
-          <div className="service-status">
-            <ServiceTester />
-          </div>
-        </div>
-      </div> */}
+      {/* Mode Selector Tabs */}
+      <div className="scan-mode-tabs">
+        <button
+          className={`mode-tab ${scanMode === "upload" ? "active" : ""}`}
+          onClick={() => {
+            setScanMode("upload");
+            setError(null);
+          }}
+          disabled={isScanning}
+        >
+          <Upload className="tab-icon" />
+          <span>Tải ảnh lên</span>
+        </button>
+        <button
+          className={`mode-tab ${scanMode === "camera" ? "active" : ""}`}
+          onClick={() => {
+            setScanMode("camera");
+            setError(null);
+          }}
+          disabled={isScanning}
+        >
+          <Camera className="tab-icon" />
+          <span>Quét bằng Camera</span>
+        </button>
+      </div>
 
       {/* Main Content */}
       <div className="qr-scanner-content">
-        {/* Camera Section - Always visible */}
-        <div className="camera-section">
-          <div className="camera-wrapper">
-            <CameraComponent
-              onImageCapture={handleImageCapture}
-              onError={handleError}
-              isCapturing={isScanning}
-              captureButtonText={isScanning ? "Đang xử lý..." : "Đang quét..."}
+        {/* Camera Section - Visible when camera mode */}
+        {scanMode === "camera" && (
+          <div className="camera-section">
+            <div className="camera-wrapper">
+              <CameraComponent
+                onImageCapture={handleImageCapture}
+                onError={handleError}
+                isCapturing={isScanning}
+                captureButtonText={isScanning ? "Đang xử lý..." : "Chụp ảnh"}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Upload Section - Visible when upload mode */}
+        {scanMode === "upload" && (
+          <div className="upload-section">
+            <QRFileUpload
+              onFileSelected={handleImageCapture}
+              disabled={isScanning}
             />
           </div>
+        )}
 
-          {isScanning && (
-            <div className="processing-indicator">
-              <Loader className="spinning" />
-              <span>Đang xử lý QR code...</span>
-            </div>
-          )}
+        {/* Processing Indicator */}
+        {isScanning && (
+          <div className="processing-indicator">
+            <Loader className="spinning" />
+            <span>Đang xử lý QR code...</span>
+          </div>
+        )}
 
-          {error && (
-            <div className="error-message">
-              <AlertCircle className="error-icon" />
-              <div className="error-content">
-                <h4>Quét thất bại</h4>
-                <p>{error}</p>
-              </div>
+        {/* Error Message */}
+        {error && (
+          <div className="error-message">
+            <AlertCircle className="error-icon" />
+            <div className="error-content">
+              <h4>Quét thất bại</h4>
+              <p>{error}</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

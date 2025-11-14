@@ -24,7 +24,6 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
 
   const [isStreaming, setIsStreaming] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cameraStarted, setCameraStarted] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">(
@@ -201,7 +200,8 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
       const imageData = canvas.toDataURL("image/jpeg", 0.9);
       console.log(`📷 Image captured: ${imageData.length} characters`);
 
-      setCapturedImage(imageData);
+      // Không set capturedImage nữa - luôn giữ camera view
+      // setCapturedImage(imageData);
       onImageCapture(imageData);
     } catch (err) {
       const errorMessage =
@@ -215,31 +215,10 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isStreaming, isCapturing, onImageCapture]); // onError intentionally excluded
 
-  // Switch between front and back camera
-  const switchCamera = useCallback(async () => {
-    if (isStartingRef.current) return;
-
-    console.log("🔄 Switching camera...");
-    stopCamera();
-
-    // Wait a bit for camera to stop completely
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
-    setFacingMode((current) => (current === "user" ? "environment" : "user"));
-
-    // Start with new facing mode after state update
-    setTimeout(() => {
-      if (!capturedImage) {
-        startCamera();
-      }
-    }, 100);
-  }, [stopCamera, startCamera, capturedImage]);
-
-  // Reset captured image
+  // Reset - chỉ xóa error và đảm bảo camera hoạt động
   const resetCapture = useCallback(() => {
-    setCapturedImage(null);
     setError(null);
-    // Restart camera when resetting capture
+    // Restart camera nếu chưa streaming
     if (!isStreaming && !isStartingRef.current) {
       startCamera();
     }
@@ -261,116 +240,86 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({
 
   return (
     <div className={`camera-component ${className}`}>
-      {capturedImage ? (
-        /* Preview captured image */
-        <div className="capture-preview">
-          <img src={capturedImage} alt="Captured" className="captured-image" />
-          <div className="preview-overlay">
-            <div className="preview-actions">
-              <button
-                onClick={resetCapture}
-                className="action-button secondary"
-                disabled={isCapturing}
-              >
-                <RotateCcw className="button-icon" />
-                Retake
-              </button>
+      {/* Always show live camera view - không chuyển sang preview mode */}
+      <div className="camera-viewport">
+        {/* Show start camera button if not started */}
+        {!cameraStarted && !error && (
+          <div className="camera-start">
+            <Camera className="start-icon" />
+            <p>Sẵn sàng để quét</p>
+            <button
+              onClick={startCamera}
+              className="start-camera-button"
+              disabled={isStarting}
+            >
+              {isStarting ? "Starting..." : "🎥 Mở Camera"}
+            </button>
+          </div>
+        )}
+
+        {error && (
+          <div className="camera-error">
+            <CameraOff className="error-icon" />
+            <p>{error}</p>
+            <button onClick={startCamera} className="retry-button">
+              Thử lại
+            </button>
+          </div>
+        )}
+
+        {isStarting && (
+          <div className="camera-loading">
+            <Camera className="loading-icon" />
+            <p>Đang khởi động camera...</p>
+          </div>
+        )}
+
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className={`camera-video ${isStreaming ? "active" : "hidden"}`}
+        />
+
+        {/* Modern Camera overlay for CCCD scanning */}
+        {isStreaming && !error && (
+          <div className="camera-overlay">
+            <div className="overlay-frame">
+              <div className="overlay-corners">
+                <div className="corner top-left"></div>
+                <div className="corner top-right"></div>
+                <div className="corner bottom-left"></div>
+                <div className="corner bottom-right"></div>
+              </div>
+              <div className="overlay-text">
+                Đặt CCCD vào khung và đảm bảo QR code rõ nét
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        /* Live camera view */
-        <>
-          <div className="camera-viewport">
-            {/* Show start camera button if not started */}
-            {!cameraStarted && !error && (
-              <div className="camera-start">
-                <Camera className="start-icon" />
-                <p>Sẵn sàng để quét</p>
-                <button
-                  onClick={startCamera}
-                  className="start-camera-button"
-                  disabled={isStarting}
-                >
-                  {isStarting ? "Starting..." : "🎥 Mở Camera"}
-                </button>
-              </div>
-            )}
+        )}
+      </div>
 
-            {error && (
-              <div className="camera-error">
-                <CameraOff className="error-icon" />
-                <p>{error}</p>
-                <button onClick={startCamera} className="retry-button">
-                  Thử lại
-                </button>
-              </div>
-            )}
+      {/* Camera controls - Chỉ 2 nút: Chụp và Reset - LUÔN HIỂN THỊ */}
+      <div className="camera-controls">
+        <button
+          onClick={captureImage}
+          className="capture-button"
+          disabled={!isStreaming || isCapturing || isStarting}
+        >
+          <Camera className="button-icon" />
+          {captureButtonText}
+        </button>
 
-            {isStarting && (
-              <div className="camera-loading">
-                <Camera className="loading-icon" />
-                <p>Đang khởi động camera...</p>
-              </div>
-            )}
-
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className={`camera-video ${isStreaming ? "active" : "hidden"}`}
-            />
-
-            {/* Modern Camera overlay for CCCD scanning */}
-            {isStreaming && !error && (
-              <div className="camera-overlay">
-                <div className="overlay-frame">
-                  <div className="overlay-corners">
-                    <div className="corner top-left"></div>
-                    <div className="corner top-right"></div>
-                    <div className="corner bottom-left"></div>
-                    <div className="corner bottom-right"></div>
-                  </div>
-                  <div className="overlay-text">
-                    Đặt CCCD vào khung và đảm bảo QR code rõ nét
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Camera controls */}
-          <div className="camera-controls">
-            <button
-              onClick={switchCamera}
-              className="control-button"
-              disabled={!isStreaming || isStarting}
-              title="Switch camera"
-            >
-              <RotateCcw className="button-icon" />
-            </button>
-
-            <button
-              onClick={captureImage}
-              className="capture-button"
-              disabled={!isStreaming || isCapturing || isStarting}
-            >
-              <Camera className="button-icon" />
-              {captureButtonText}
-            </button>
-
-            <button
-              onClick={stopCamera}
-              className="control-button"
-              disabled={!isStreaming}
-              title="Stop camera"
-            >
-              <CameraOff className="button-icon" />
-            </button>
-          </div>
-        </>
-      )}
+        <button
+          onClick={resetCapture}
+          className="control-button reset-button"
+          title="Reset"
+        >
+          <RotateCcw className="button-icon" />
+          Reset
+        </button>
+      </div>
 
       {/* Hidden canvas for image capture */}
       <canvas ref={canvasRef} style={{ display: "none" }} />

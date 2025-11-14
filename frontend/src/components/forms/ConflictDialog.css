@@ -1,0 +1,231 @@
+/**
+ * ConflictDialog CSS
+ * Styling cho dialog xử lý conflicts
+ */
+
+.conflict-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.conflict-dialog {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Header */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fef3c7;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.warning-icon {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.dialog-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #374151;
+}
+
+/* Content */
+.dialog-content {
+  padding: 24px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.dialog-description {
+  margin: 0 0 20px 0;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.conflicts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.conflict-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.field-name {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.value-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.value-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.value-item.manual {
+  background: #ecfccb;
+  border: 1px solid #d9f99d;
+}
+
+.value-item.cccd {
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+}
+
+.value-label {
+  font-weight: 500;
+  color: #374151;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.value-text {
+  color: #111827;
+  font-weight: 600;
+}
+
+.dialog-question {
+  text-align: center;
+  color: #374151;
+  font-size: 15px;
+}
+
+/* Actions */
+.dialog-actions {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.action-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-button.keep-manual {
+  background: #10b981;
+  color: white;
+}
+
+.action-button.keep-manual:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.action-button.use-cccd {
+  background: #f59e0b;
+  color: white;
+}
+
+.action-button.use-cccd:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .conflict-dialog {
+    margin: 16px;
+    width: calc(100% - 32px);
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+  }
+
+  .value-comparison {
+    gap: 6px;
+  }
+
+  .value-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .value-label {
+    min-width: auto;
+  }
+}

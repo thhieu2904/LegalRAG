@@ -86,6 +86,14 @@ async def lifespan(app: FastAPI):
         # Set global service for routes
         rag.rag_service = rag_service
         
+        # Set sessions API global reference  
+        try:
+            from app.api import sessions
+            sessions.rag_service = rag_service
+            logger.info("✅ Sessions API service reference set")
+        except ImportError as e:
+            logger.warning(f"⚠️ Sessions API service reference failed: {e}")
+        
         # 🎯 NEW: Initialize ClarificationService with embedding model
         logger.info("🔄 Initializing ClarificationService...")
         embedding_model = getattr(rag_service.smart_router, 'embedding_model', None) if hasattr(rag_service, 'smart_router') else None
@@ -110,8 +118,18 @@ async def lifespan(app: FastAPI):
         logger.info(f"  - Ambiguous Patterns: {health_status.get('ambiguous_patterns', 0)}")
         logger.info(f"  - Context Expansion Cache: {health_status.get('context_expansion', {}).get('total_chunks_cached', 0)} chunks")
         
+        # 🔥 NEW: Session Persistence Status
+        if hasattr(rag_service, 'session_persistence'):
+            persistence_stats = rag_service.session_persistence.get_session_stats()
+            logger.info("💾 Session Persistence Status:")
+            logger.info(f"  - Persisted Sessions: {persistence_stats.get('total_persisted_sessions', 0)}")
+            logger.info(f"  - Storage Size: {persistence_stats.get('storage_size_mb', 0)} MB")
+            logger.info(f"  - Current Counter: {persistence_stats.get('current_counter', 0)} for {persistence_stats.get('current_date', '')}")
+            logger.info(f"  - Storage Path: {persistence_stats.get('storage_path', 'N/A')}")
+        
         logger.info("🎉 LegalRAG API started successfully!")
         logger.info("💡 Architecture: Embedding(CPU) + LLM(GPU) + Reranker(GPU)")
+        logger.info("💾 Features: Session Persistence (JSON-based), Smart Routing, Context Expansion")
         
     except Exception as e:
         logger.error(f"❌ Failed to initialize services: {e}")
@@ -188,6 +206,14 @@ app.add_middleware(
 # Include optimized routes
 app.include_router(rag.router)
 
+# Include Sessions API for admin dashboard
+try:
+    from app.api import sessions
+    app.include_router(sessions.router, prefix="/api/v1", tags=["sessions"])
+    logger.info("✅ Sessions API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Sessions API not available: {e}")
+
 # Include Collections API for frontend mapping
 try:
     from app.api.collections import router as collections_router
@@ -203,6 +229,38 @@ try:
     logger.info("✅ Forms API endpoints enabled")
 except ImportError as e:
     logger.warning(f"⚠️ Forms API not available: {e}")
+
+# Include Internal File Management API for Admin Service
+try:
+    from app.api.internal_files import router as internal_files_router
+    app.include_router(internal_files_router, prefix="/api", tags=["internal-files"])
+    logger.info("✅ Internal Files API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Internal Files API not available: {e}")
+
+# Include Internal Documents API for Admin Service (Document Preview)
+try:
+    from app.api.internal_documents import router as internal_documents_router
+    app.include_router(internal_documents_router, prefix="/api", tags=["internal-documents"])
+    logger.info("✅ Internal Documents API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Internal Documents API not available: {e}")
+
+# Include Internal Rebuild API for cache management
+try:
+    from app.api.internal_rebuild import router as internal_rebuild_router
+    app.include_router(internal_rebuild_router, prefix="/api", tags=["internal-rebuild"])
+    logger.info("✅ Internal Rebuild API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Internal Rebuild API not available: {e}")
+
+# Include Internal JSON Documents API for Admin Service (JSON CRUD)
+try:
+    from app.api.internal_json_documents import router as internal_json_router
+    app.include_router(internal_json_router, prefix="/api", tags=["internal-json"])
+    logger.info("✅ Internal JSON Documents API endpoints enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Internal JSON Documents API not available: {e}")
 
 # Router CRUD API đã được xóa
 # try:
@@ -245,6 +303,6 @@ if __name__ == "__main__":
         "main:app",
         host=settings.host,
         port=settings.port,
-        reload=settings.debug,
+        reload=False,  # Disable reload to prevent restart during model downloads
         log_level="info"
     )

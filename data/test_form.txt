@@ -1,0 +1,9 @@
+Đơn đề nghị cấp CCCD
+{
+  "scan_cccd": "084201000001",
+  "scan_ho_ten": "Nguyễn Văn A",
+  "scan_ngay_sinh": "01011990",
+  "scan_gioi_tinh": "Nam",
+  "scan_dia_chi": "123 Đường ABC, Hà Nội",
+  "scan_ngay_cap": "01012020"
+}

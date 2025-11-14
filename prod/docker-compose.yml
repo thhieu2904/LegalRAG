@@ -1,0 +1,94 @@
+name: legalrag
+
+# ============================================================================
+# Named Volumes - Persistent data storage on server
+# ============================================================================
+volumes:
+  rag_data: # RAG Service data (collections, models, vectordb)
+  identifill_models: # Identifill models cache
+
+services:
+  # Frontend Service - Production
+  frontend:
+    container_name: legalrag-frontend
+    image: thhieu/legalrag-frontend:v1.0.4
+    ports:
+      - "5173:5173"
+    depends_on:
+      - rag-service
+      - identifill-service
+      - admin-service
+    networks:
+      - legalrag-network
+
+  # RAG Service with GPU Support - Production
+  rag-service:
+    container_name: legalrag-rag-service
+    image: thhieu/legalrag-rag-service:v1.0.3
+    ports:
+      - "8000:8000"
+    env_file: ./.env
+    environment:
+      - PYTHONPATH=/app
+      - CUDA_VISIBLE_DEVICES=0
+      - LEGALRAG_BASE_PATH=/app
+      - LEGALRAG_DATA_PATH=/app/data
+      - CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps
+      - ENVIRONMENT=docker
+    volumes:
+      # Use named volume for persistent data (no source code needed)
+      - rag_data:/app/data
+    networks:
+      - legalrag-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+        limits:
+          memory: 10G
+
+  # Identifill Service (CCCD Scanner) - Production
+  identifill-service:
+    container_name: legalrag-identifill-service
+    image: thhieu/legalrag-identifill-service:v1.0.4
+    ports:
+      - "8002:8002"
+    environment:
+      - PYTHONPATH=/app
+      - ENVIRONMENT=docker
+      - RAG_SERVICE_URL=http://rag-service:8000
+    volumes:
+      # Model persistence for Identifill
+      - identifill_models:/app/models
+    networks:
+      - legalrag-network
+
+  # Admin Service - Production
+  admin-service:
+    container_name: legalrag-admin-service
+    image: thhieu/legalrag-admin-service:v1.0.4
+    ports:
+      - "8001:8001"
+    env_file: ./.env
+    environment:
+      - PYTHONPATH=/app
+      - ENVIRONMENT=docker
+      - ADMIN_HOST=0.0.0.0
+      - ADMIN_PORT=8001
+      # RAG Service Integration
+      - RAG_SERVICE_URL=http://rag-service:8000
+    volumes:
+      # Mount ONLY storage directory (collections, documents)
+      # Admin service: Lightweight read-only mode (NO models, NO vectordb)
+      # This is the optimal solution for production
+      - rag_data:/app/data:ro
+    networks:
+      - legalrag-network
+    depends_on:
+      - rag-service
+
+networks:
+  legalrag-network:

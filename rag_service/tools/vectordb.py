@@ -49,7 +49,7 @@ class ModernizedVectorDBBuilder:
     """Vector database builder for new collection-based structure"""
     
     def __init__(self, base_dir: str = ".."):
-        self.base_dir = Path(base_dir)
+        self.base_dir = Path(base_dir).resolve()
         self.data_dir = self.base_dir / "data"
         
         # NEW STRUCTURE
@@ -62,6 +62,49 @@ class ModernizedVectorDBBuilder:
         # OUTPUT
         self.vectordb_dir = self.data_dir / "vectordb"
         
+        # Path conversion setup
+        self.project_root = self.base_dir
+        
+    def convert_to_docker_path(self, path: Path) -> str:
+        """
+        Convert a local absolute path to Docker-compatible path
+        
+        Args:
+            path: Local absolute path (Windows or Linux)
+            
+        Returns:
+            Docker-compatible path as string (/app/data/...)
+        """
+        # Make sure path is absolute
+        abs_path = path.resolve()
+        
+        # Try to make it relative to project root
+        try:
+            rel_path = abs_path.relative_to(self.project_root)
+            # If it's in data directory, return Docker path
+            if str(rel_path).startswith("data"):
+                # Extract the part after 'data/'
+                data_subpath = str(rel_path)[5:]  # Skip 'data/'
+                docker_path = f"/app/data/{data_subpath}".replace("\\", "/")
+                logger.info(f"🔧 Converted to Docker path: {abs_path} -> {docker_path}")
+                return docker_path
+        except ValueError:
+            # Path is not relative to project root
+            pass
+        
+        # Fallback 1: Check if it's a data path directly
+        abs_str = str(abs_path).replace("\\", "/")
+        if "data/storage/collections" in abs_str:
+            parts = abs_str.split("data/storage/collections")
+            if len(parts) > 1:
+                docker_path = f"/app/data/storage/collections{parts[1]}"
+                logger.info(f"🔧 Fallback converted to Docker path: {abs_path} -> {docker_path}")
+                return docker_path
+                
+        # If all else fails, return the original path with warning
+        logger.warning(f"⚠️ Could not convert to Docker path: {abs_path}")
+        return str(abs_path)
+    
     def check_structure(self) -> str:
         """Check which structure is available"""
         new_available = (self.collections_dir.exists() and 
@@ -139,7 +182,7 @@ class ModernizedVectorDBBuilder:
                     documents.append({
                         "collection": collection_name,
                         "doc_id": doc_dir.name,
-                        "file_path": str(content_file),
+                        "file_path": self.convert_to_docker_path(content_file),
                         "file_name": content_file.name,
                         "content": content,
                         "questions": questions_data,  # Add questions for fused indexing
@@ -176,7 +219,7 @@ class ModernizedVectorDBBuilder:
                 documents.append({
                     "collection": collection_name,
                     "doc_id": json_file.stem,
-                    "file_path": str(json_file),
+                    "file_path": self.convert_to_docker_path(json_file),
                     "file_name": json_file.name,
                     "content": content,
                     "structure": "old"

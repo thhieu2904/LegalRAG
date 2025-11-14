@@ -3,12 +3,14 @@ Form Rendering Service - DOCX to HTML Conversion (Giai đoạn 1)
 Đúng theo kế hoạch ban đầu: Mammoth → HTML string → Frontend render
 """
 
-import logging
-import requests
-import mammoth
-from pathlib import Path
-from typing import Dict, List, Optional, Any
+import io
 import json
+import logging
+import aiohttp
+from typing import Dict, Any, Optional, List
+from bs4 import BeautifulSoup
+import re
+import mammoth
 from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)
@@ -19,7 +21,10 @@ class FormRenderingService:
     Theo đúng kế hoạch giai đoạn 1: Mammoth → HTML → dangerouslySetInnerHTML
     """
     
-    def __init__(self, rag_service_url: str = "http://localhost:8000"):
+    def __init__(self, rag_service_url: Optional[str] = None):
+        from app.core.config import settings
+        if rag_service_url is None:
+            rag_service_url = settings.RAG_SERVICE_URL
         self.rag_service_url = rag_service_url
         logger.info(f"FormRenderingService initialized with RAG URL: {rag_service_url}")
     
@@ -37,39 +42,42 @@ class FormRenderingService:
             HTML string để frontend render với dangerouslySetInnerHTML
         """
         try:
-            # Get form file info từ RAG service
-            response = requests.get(
-                f"{self.rag_service_url}/api/forms/file/{collection_id}/{doc_id}/{form_filename}",
-                timeout=30
-            )
+            # 🚀 HTTP File Streaming - Proper Microservices Pattern
+            # Download file content từ RAG service thay vì direct file access
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    f"{self.rag_service_url}/api/forms/file/{collection_id}/{doc_id}/{form_filename}/download",
+                    timeout=aiohttp.ClientTimeout(total=30)
+                ) as response:
+                    if response.status != 200:
+                        raise HTTPException(
+                            status_code=response.status, 
+                            detail=f"Cannot download form file from RAG service: {response.status}"
+                        )
+                    
+                    # Stream file content into memory
+                    file_content = await response.read()
+                    logger.info(f"Downloaded file content: {len(file_content)} bytes")
             
-            if response.status_code != 200:
-                raise HTTPException(status_code=response.status_code, detail="Cannot get form file from RAG service")
+            # Convert DOCX to HTML using Mammoth với in-memory stream
+            # Proper microservices: no direct file system access
+            docx_stream = io.BytesIO(file_content)
             
-            file_info = response.json()
-            if not file_info.get("success"):
-                raise HTTPException(status_code=400, detail="RAG service error")
+            # Mammoth configuration tối giản để tránh lỗi alignment và checkbox
+            options = {
+                "include_default_style_map": True,
+                "ignore_empty_paragraphs": False,
+                # KHÔNG set transform_document để tránh lỗi alignment
+                # KHÔNG set style_map để dùng default
+                # KHÔNG set convert_image để preserve checkboxes
+            }
             
-            file_path = file_info["data"]["file_path"]
+            result = mammoth.convert_to_html(docx_stream, **options)
+            html_content = result.value  # Clean HTML
+            conversion_messages = result.messages
             
-            # Convert DOCX to HTML using Mammoth với cấu hình tối giản
-            # để tránh lỗi alignment và checkbox
-            with open(file_path, "rb") as docx_file:
-                # Chỉ sử dụng default style map và không convert images
-                options = {
-                    "include_default_style_map": True,
-                    "ignore_empty_paragraphs": False,
-                    # KHÔNG set transform_document để tránh lỗi alignment
-                    # KHÔNG set style_map để dùng default
-                    # KHÔNG set convert_image để preserve checkboxes
-                }
-                
-                result = mammoth.convert_to_html(docx_file, **options)
-                html_content = result.value  # Clean HTML
-                conversion_messages = result.messages
-                
-                # Post-process HTML to fix checkboxes and preserve alignment
-                html_content = self._post_process_html(html_content)
+            # Post-process HTML to fix checkboxes and preserve alignment
+            html_content = self._post_process_html(html_content)
             
             # Apply basic styling wrapper
             styled_html = self._apply_basic_styling(html_content)
@@ -90,7 +98,7 @@ class FormRenderingService:
                 }
             }
             
-        except requests.RequestException as e:
+        except aiohttp.ClientError as e:
             logger.error(f"Network error calling RAG service: {e}")
             raise HTTPException(status_code=503, detail="Cannot connect to RAG service")
         except Exception as e:
@@ -197,7 +205,7 @@ class FormRenderingService:
         
         return html_content
     
-    def extract_text_placeholders(self, html_content: str) -> List[str]:
+    def extract_text_placeholders(self, html_content: str) -> list[str]:
         """
         Extract basic placeholders cho giai đoạn 2 (tương lai)
         Hiện tại chỉ tìm pattern đơn giản
