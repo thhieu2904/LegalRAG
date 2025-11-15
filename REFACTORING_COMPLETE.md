@@ -18,12 +18,14 @@ Reduction: 341 lines (57.8% smaller) ✅
 ### 2. **Endpoint Cleanup**
 
 **REMOVED (Heavy responsibility):**
+
 - ❌ `POST /extract-metadata` → Move to Admin-Service
 - ❌ `POST /chunk-document` → Move to Embedding-Service
 - ❌ `POST /process-document` → Move to Admin-Service (orchestration)
 - ❌ `POST /upload-and-process` → Remove (monolithic)
 
 **KEPT (Simple CRUD):**
+
 - ✅ `POST /upload` - Upload file to MinIO
 - ✅ `GET /download` - Download file from MinIO
 - ✅ `GET /list` - List files in bucket
@@ -31,11 +33,13 @@ Reduction: 341 lines (57.8% smaller) ✅
 - ✅ `GET /health` - Health check
 
 **NEW (Low-level extraction):**
+
 - ✅ `POST /extract-text` - Extract raw text from PDF (for Admin-Service)
 
 ### 3. **Model Simplification**
 
 **REMOVED (Extraction/Chunking models):**
+
 - ❌ `ExtractedMetadata` → Move to Admin-Service schemas
 - ❌ `ExtractionResponse` → Move to Admin-Service
 - ❌ `ChunkData` → Move to Embedding-Service schemas
@@ -45,6 +49,7 @@ Reduction: 341 lines (57.8% smaller) ✅
 - ❌ `ErrorResponse` → Not needed
 
 **KEPT (Simple file operations):**
+
 - ✅ `HealthResponse`
 - ✅ `FileMetadata`
 - ✅ `FileUploadResponse` (with UTF-8 support)
@@ -55,6 +60,7 @@ Reduction: 341 lines (57.8% smaller) ✅
 ### 4. **Bug Fixes**
 
 **Vietnamese Filename Encoding:**
+
 - ✅ Fixed: `'latin-1' codec can't encode character '\u1ee7'`
 - Solution: Use RFC 5987 URL encoding in Content-Disposition header
 - Applied `urllib.parse.quote()` for proper UTF-8 filename handling
@@ -62,6 +68,7 @@ Reduction: 341 lines (57.8% smaller) ✅
 ### 5. **Import Cleanup**
 
 **REMOVED unused imports:**
+
 - ❌ `time` - Was used for extraction timing
 - ❌ `uuid` - Was used for document_id generation
 - ❌ `PDFExtractor` - Still needed for /extract-text
@@ -120,6 +127,7 @@ Embedding-Service (future)
 ```
 
 **Separation of Concerns:**
+
 - ✅ Storage = File wrapper (simple)
 - ✅ Admin = Orchestrator + domain logic
 - ✅ Embedding = Chunking expert
@@ -166,6 +174,7 @@ POST /extract-text
 ## 🚀 NEXT STEPS
 
 ### **Phase 2: Admin-Service (In Progress)**
+
 - [ ] Create metadata extraction endpoint
 - [ ] Implement orchestration logic
 - [ ] Call storage-service for file ops
@@ -173,6 +182,7 @@ POST /extract-text
 - [ ] Save to PostgreSQL
 
 ### **Phase 3: Embedding-Service (Future)**
+
 - [ ] Implement chunking endpoint
 - [ ] Model-aware chunk size
 - [ ] Semantic chunking strategy
@@ -182,22 +192,24 @@ POST /extract-text
 
 ## 📦 FILES MODIFIED
 
-| File | Changes | Lines |
-|------|---------|-------|
-| `storage-service/src/main.py` | Remove extraction/chunking endpoints | 590 → 249 |
-| `storage-service/src/models.py` | Remove heavy models | 115 → 52 |
-| `test_storage_refactored.py` | NEW: Comprehensive test suite | - |
+| File                            | Changes                              | Lines     |
+| ------------------------------- | ------------------------------------ | --------- |
+| `storage-service/src/main.py`   | Remove extraction/chunking endpoints | 590 → 249 |
+| `storage-service/src/models.py` | Remove heavy models                  | 115 → 52  |
+| `test_storage_refactored.py`    | NEW: Comprehensive test suite        | -         |
 
 ---
 
 ## 🔐 FIXES APPLIED
 
 ### **Bug #1: Pydantic Validation Error**
+
 - **Issue:** `content_type` field validation failed on None
 - **Fix:** Added default value `"application/pdf"` to model
 - **Status:** ✅ FIXED
 
 ### **Bug #2: Vietnamese Filename Encoding**
+
 - **Issue:** Latin-1 codec error with UTF-8 filenames
 - **Error:** `'latin-1' codec can't encode character '\u1ee7'`
 - **Fix:** Use RFC 5987 URL encoding in Content-Disposition header
@@ -229,7 +241,7 @@ POST /extract-text
 ✅ Vietnamese filenames handled properly  
 ✅ Text extraction functional  
 ✅ Health checks passing  
-✅ Docker services running stably  
+✅ Docker services running stably
 
 **Status: REFACTORING COMPLETE AND TESTED** ✅
 

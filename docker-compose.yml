@@ -231,29 +231,19 @@ services:
       dockerfile: Dockerfile
     container_name: legalrag-admin
     ports:
-      - "8007:8007"
+      - "8002:8002"
     environment:
       SERVICE_NAME: admin-service
-      SERVICE_PORT: 8007
-      POSTGRES_HOST: postgres-vector
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: legalrag
-      POSTGRES_PASSWORD: legalrag123
-      POSTGRES_DB: legalrag
+      SERVICE_PORT: 8002
       STORAGE_SERVICE_URL: http://storage-service:8001
-      EMBEDDING_SERVICE_URL: http://embedding-service:8004
-      VECTOR_SERVICE_URL: http://vector-service:8003
     depends_on:
-      - postgres-vector
       - storage-service
-      - embedding-service
-      - vector-service
     networks:
       - legalrag-network
     volumes:
       - ./admin-service:/app
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8007/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
       interval: 30s
       timeout: 10s
       retries: 3
