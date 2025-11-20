@@ -206,10 +206,10 @@ services:
       MODEL_NAME: ggml-vistral-7B-chat-q4_0.gguf
       MODEL_PATH: /app/models/ggml-vistral-7B-chat-q4_0.gguf
       MODEL_CACHE_DIR: /app/models
-      N_CTX: 8192
+      N_CTX: 4096
       N_GPU_LAYERS: -1
       N_THREADS: 8
-      N_BATCH: 512
+      N_BATCH: 256
       MAX_TOKENS: 2048
       TEMPERATURE: 0.7
       TOP_P: 0.9

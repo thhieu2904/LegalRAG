@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     """Application settings"""
     
     SERVICE_NAME: str = "admin-service"
-    SERVICE_PORT: int = 8007
+    SERVICE_PORT: int = 8001
     
     # Database
     POSTGRES_HOST: str = "postgres-vector"
@@ -18,9 +18,9 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "legalrag"
     
     # Service URLs
-    STORAGE_SERVICE_URL: str = "http://storage-service:8001"
-    EMBEDDING_SERVICE_URL: str = "http://embedding-service:8004"
-    VECTOR_SERVICE_URL: str = "http://vector-service:8003"
+    STORAGE_SERVICE_URL: str = "http://storage-service:8010"
+    EMBEDDING_SERVICE_URL: str = "http://embedding-service:8011"
+    VECTOR_SERVICE_URL: str = "http://vector-service:8012"
     
     # Chunking
     CHUNK_SIZE: int = 500  # characters per chunk

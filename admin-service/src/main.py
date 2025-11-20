@@ -168,7 +168,9 @@ class LegalMetadataExtractor:
             "sections": sections,
             "pages": pages,
             "word_count": len(text.split()),
+            "language": "vi",
             "extraction_confidence": confidence,
+            "extraction_notes": "Auto-extracted using regex patterns"
         }
 
 
@@ -331,17 +333,18 @@ async def process_document(
             cursor.execute("""
                 INSERT INTO documents (
                     id, collection_id, title, filename,
-                    file_path, file_size, status, metadata,
-                    created_at, updated_at
+                    file_path, file_size,
+                    status, metadata, created_at, updated_at
                 ) VALUES (
                     %s, %s, %s, %s,
-                    %s, %s, 'processing', %s::jsonb,
-                    NOW(), NOW()
+                    %s, %s,
+                    'processing', %s::jsonb, NOW(), NOW()
                 )
                 RETURNING id;
             """, (
                 doc_uuid, collection_uuid, title, file.filename,
-                file_path, file_size, json.dumps({})  # Will update metadata later
+                file_path, file_size,
+                json.dumps({})  # Will update metadata later
             ))
             
             conn.commit()
@@ -489,7 +492,9 @@ async def process_document(
                     "sections": metadata.sections,
                     "pages": pages,
                     "word_count": metadata.word_count,
-                    "extraction_confidence": metadata.extraction_confidence
+                    "language": "vi",
+                    "extraction_confidence": metadata.extraction_confidence,
+                    "extraction_notes": "Auto-extracted using regex patterns"
                 }),
                 doc_uuid
             ))
@@ -529,6 +534,877 @@ async def process_document(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============= COLLECTION & DOCUMENT MANAGEMENT ENDPOINTS =============
+
+# ===== COLLECTION CRUD =====
+
+class CreateCollectionRequest(BaseModel):
+    """Request to create a new collection"""
+    name: str  # Slug identifier (unique)
+    display_name: str
+    description: Optional[str] = None
+    icon: Optional[str] = "file-text"
+    color: Optional[str] = "#3b82f6"
+
+
+class UpdateCollectionRequest(BaseModel):
+    """Request to update collection metadata"""
+    display_name: Optional[str] = None
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    color: Optional[str] = None
+
+
+@app.post("/admin/collections")
+async def create_collection(request: CreateCollectionRequest):
+    """
+    Create a new collection
+    
+    Args:
+        name: Slug identifier (unique, lowercase with underscores)
+        display_name: Human-readable name
+        description: Optional description
+        icon: Optional icon name
+        color: Optional hex color
+    
+    Returns:
+        Created collection with UUID
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Insert new collection
+        cursor.execute("""
+            INSERT INTO collections (
+                name, display_name, description, icon, color,
+                document_count, total_chunks, is_active,
+                created_at, updated_at
+            ) VALUES (
+                %s, %s, %s, %s, %s,
+                0, 0, TRUE,
+                NOW(), NOW()
+            )
+            RETURNING id, name, display_name, description, icon, color, created_at;
+        """, (
+            request.name,
+            request.display_name,
+            request.description,
+            request.icon,
+            request.color
+        ))
+        
+        collection = cursor.fetchone()
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        logger.info(f"✅ Created collection: {request.name} (UUID: {collection['id']})")
+        
+        return {
+            "success": True,
+            "collection": {
+                "id": str(collection['id']),
+                "name": collection['name'],
+                "display_name": collection['display_name'],
+                "description": collection['description'],
+                "icon": collection['icon'],
+                "color": collection['color'],
+                "created_at": collection['created_at'].isoformat()
+            }
+        }
+    
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        raise HTTPException(
+            status_code=409,
+            detail=f"Collection with name '{request.name}' already exists"
+        )
+    except Exception as e:
+        logger.error(f"❌ Failed to create collection: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/admin/collections")
+async def list_collections():
+    """
+    List all active collections with statistics
+    Returns collections from collections table (not derived from documents)
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Query collections table directly (AICenter pattern)
+        cursor.execute("""
+            SELECT 
+                id,
+                name,
+                display_name,
+                description,
+                icon,
+                color,
+                document_count,
+                total_chunks,
+                is_active,
+                created_at,
+                updated_at
+            FROM collections
+            ORDER BY updated_at DESC
+        """)
+        
+        collections = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "collections": [
+                {
+                    "id": str(col['id']),
+                    "name": col['name'],
+                    "display_name": col['display_name'],
+                    "description": col['description'],
+                    "icon": col.get('icon', 'file-text'),
+                    "color": col.get('color', '#3b82f6'),
+                    "document_count": col['document_count'],
+                    "total_chunks": col.get('total_chunks', 0),
+                    "is_active": col['is_active'],
+                    "created_at": col['created_at'].isoformat() if col['created_at'] else None,
+                    "updated_at": col['updated_at'].isoformat() if col['updated_at'] else None
+                }
+                for col in collections
+            ]
+        }
+    except Exception as e:
+        logger.error(f"❌ Failed to list collections: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.patch("/admin/collections/{collection_id}")
+async def update_collection(collection_id: str, request: UpdateCollectionRequest):
+    """
+    Update collection metadata (display_name, description, icon, color)
+    NOTE: Cannot change 'name' (slug) to avoid breaking references
+    """
+    try:
+        # Validate UUID
+        try:
+            uuid.UUID(collection_id)
+        except:
+            raise HTTPException(status_code=400, detail="Invalid collection_id UUID")
+        
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Build dynamic UPDATE query
+        updates = []
+        params = []
+        
+        if request.display_name is not None:
+            updates.append("display_name = %s")
+            params.append(request.display_name)
+        
+        if request.description is not None:
+            updates.append("description = %s")
+            params.append(request.description)
+        
+        if request.icon is not None:
+            updates.append("icon = %s")
+            params.append(request.icon)
+        
+        if request.color is not None:
+            updates.append("color = %s")
+            params.append(request.color)
+        
+        if not updates:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        
+        updates.append("updated_at = NOW()")
+        params.append(collection_id)
+        
+        query = f"""
+            UPDATE collections
+            SET {', '.join(updates)}
+            WHERE id = %s AND is_deleted = FALSE
+            RETURNING id, name, display_name, description, icon, color, updated_at;
+        """
+        
+        cursor.execute(query, params)
+        collection = cursor.fetchone()
+        
+        if not collection:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Collection not found")
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        logger.info(f"✅ Updated collection: {collection_id}")
+        
+        return {
+            "success": True,
+            "collection": {
+                "id": str(collection['id']),
+                "name": collection['name'],
+                "display_name": collection['display_name'],
+                "description": collection['description'],
+                "icon": collection['icon'],
+                "color": collection['color'],
+                "updated_at": collection['updated_at'].isoformat()
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to update collection: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/admin/collections/{collection_id}")
+async def delete_collection(collection_id: str):
+    """
+    Hard delete a collection and all associated documents/chunks
+    WARNING: This will permanently delete collection and CASCADE delete all documents/chunks
+    """
+    try:
+        # Validate UUID
+        try:
+            uuid.UUID(collection_id)
+        except:
+            raise HTTPException(status_code=400, detail="Invalid collection_id UUID")
+        
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get collection info and document count
+        cursor.execute("""
+            SELECT 
+                c.name,
+                c.display_name,
+                c.document_count,
+                COUNT(d.id) as actual_documents
+            FROM collections c
+            LEFT JOIN documents d ON c.id = d.collection_id
+            WHERE c.id = %s
+            GROUP BY c.id, c.name, c.display_name, c.document_count
+        """, (collection_id,))
+        
+        collection = cursor.fetchone()
+        
+        if not collection:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Collection not found")
+        
+        # Count chunks that will be deleted (via CASCADE)
+        cursor.execute("""
+            SELECT COUNT(*) as chunk_count
+            FROM chunks ch
+            JOIN documents d ON ch.document_id = d.id
+            WHERE d.collection_id = %s
+        """, (collection_id,))
+        
+        chunk_result = cursor.fetchone()
+        chunk_count = chunk_result['chunk_count'] if chunk_result else 0
+        
+        # Hard delete collection (CASCADE will delete documents → chunks automatically)
+        cursor.execute("""
+            DELETE FROM collections WHERE id = %s
+        """, (collection_id,))
+        
+        deleted_docs = collection['actual_documents']
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        logger.info(f"✅ Permanently deleted collection: {collection['name']} ({deleted_docs} documents, ~{chunk_count} chunks)")
+        
+        return {
+            "success": True,
+            "message": f"Collection '{collection['display_name']}' permanently deleted",
+            "collection_id": collection_id,
+            "deleted_documents": deleted_docs,
+            "deleted_chunks_estimate": chunk_count
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to delete collection: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ===== DOCUMENT CRUD =====
+
+class UpdateDocumentRequest(BaseModel):
+    """Request to update document metadata"""
+    title: Optional[str] = None
+
+
+@app.get("/admin/documents")
+async def list_documents(
+    collection_id: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = 100,
+    offset: int = 0
+):
+    """
+    List documents with optional filtering
+    
+    Args:
+        collection_id: Filter by collection UUID
+        status: Filter by status (processing, completed, failed)
+        limit: Max results to return
+        offset: Pagination offset
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Build query with filters
+        query = "SELECT * FROM documents WHERE 1=1"
+        params = []
+        
+        if collection_id:
+            query += " AND collection_id = %s"
+            params.append(collection_id)
+        
+        if status:
+            query += " AND status = %s"
+            params.append(status)
+        
+        query += " ORDER BY created_at DESC LIMIT %s OFFSET %s"
+        params.extend([limit, offset])
+        
+        cursor.execute(query, params)
+        documents = cursor.fetchall()
+        
+        # Get total count
+        count_query = "SELECT COUNT(*) FROM documents WHERE 1=1"
+        count_params = []
+        if collection_id:
+            count_query += " AND collection_id = %s"
+            count_params.append(collection_id)
+        if status:
+            count_query += " AND status = %s"
+            count_params.append(status)
+        
+        cursor.execute(count_query, count_params)
+        total_count = cursor.fetchone()['count']
+        
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "total": total_count,
+            "limit": limit,
+            "offset": offset,
+            "documents": [
+                {
+                    "id": str(doc['id']),
+                    "collection_id": str(doc['collection_id']),
+                    "title": doc['title'],
+                    "filename": doc['filename'],
+                    "file_size": doc['file_size'],
+                    "status": doc['status'],
+                    "chunk_count": doc.get('chunk_count', 0),
+                    "metadata": doc.get('metadata', {}),
+                    "created_at": doc['created_at'].isoformat() if doc['created_at'] else None,
+                    "processed_at": doc['processed_at'].isoformat() if doc.get('processed_at') else None
+                }
+                for doc in documents
+            ]
+        }
+    except Exception as e:
+        logger.error(f"❌ Failed to list documents: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/admin/documents/{document_id}")
+async def get_document_detail(document_id: str):
+    """
+    Get detailed information about a specific document
+    Includes metadata and chunk statistics
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get document info
+        cursor.execute("""
+            SELECT * FROM documents WHERE id = %s
+        """, (document_id,))
+        
+        document = cursor.fetchone()
+        
+        if not document:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Get chunk statistics (optional, if you want chunk details)
+        cursor.execute("""
+            SELECT COUNT(*) as chunk_count
+            FROM chunks
+            WHERE document_id = %s
+        """, (document_id,))
+        
+        chunk_stats = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "document": {
+                "id": str(document['id']),
+                "collection_id": str(document['collection_id']),
+                "title": document['title'],
+                "filename": document['filename'],
+                "file_path": document.get('file_path'),
+                "file_size": document['file_size'],
+                "status": document['status'],
+                "chunk_count": document.get('chunk_count', 0),
+                "actual_chunks": chunk_stats['chunk_count'] if chunk_stats else 0,
+                "metadata": document.get('metadata', {}),
+                "created_at": document['created_at'].isoformat() if document['created_at'] else None,
+                "processed_at": document['processed_at'].isoformat() if document.get('processed_at') else None,
+                "updated_at": document['updated_at'].isoformat() if document['updated_at'] else None
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to get document detail: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.patch("/admin/documents/{document_id}")
+async def update_document(document_id: str, request: UpdateDocumentRequest):
+    """
+    Update document metadata (title only, does NOT touch chunks)
+    
+    Args:
+        document_id: UUID of document
+        title: New document title
+    
+    Returns:
+        Updated document info
+    """
+    try:
+        # Validate UUID
+        try:
+            uuid.UUID(document_id)
+        except:
+            raise HTTPException(status_code=400, detail="Invalid document_id UUID")
+        
+        if not request.title:
+            raise HTTPException(status_code=400, detail="Title is required")
+        
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Update only title, NOT chunks
+        cursor.execute("""
+            UPDATE documents
+            SET title = %s, updated_at = NOW()
+            WHERE id = %s
+            RETURNING id, title, updated_at;
+        """, (request.title, document_id))
+        
+        document = cursor.fetchone()
+        
+        if not document:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        logger.info(f"✅ Updated document title: {document_id}")
+        
+        return {
+            "success": True,
+            "document": {
+                "id": str(document['id']),
+                "title": document['title'],
+                "updated_at": document['updated_at'].isoformat()
+            }
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to update document: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/admin/documents/{document_id}")
+async def delete_document(document_id: str):
+    """
+    Hard delete a document and all associated chunks
+    - Permanently delete document from database
+    - CASCADE delete all chunks
+    - Delete file from MinIO storage
+    
+    Args:
+        document_id: UUID of document to delete
+    
+    Returns:
+        Deletion confirmation with stats
+    """
+    try:
+        # Validate UUID
+        try:
+            uuid.UUID(document_id)
+        except:
+            raise HTTPException(status_code=400, detail="Invalid document_id UUID")
+        
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get document info before deletion
+        cursor.execute("""
+            SELECT 
+                id,
+                collection_id,
+                title,
+                filename,
+                file_path,
+                chunk_count
+            FROM documents
+            WHERE id = %s
+        """, (document_id,))
+        
+        document = cursor.fetchone()
+        
+        if not document:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Count actual chunks
+        cursor.execute("""
+            SELECT COUNT(*) as chunk_count
+            FROM chunks
+            WHERE document_id = %s
+        """, (document_id,))
+        
+        chunk_result = cursor.fetchone()
+        actual_chunks = chunk_result['chunk_count'] if chunk_result else 0
+        
+        # Hard delete document (CASCADE will delete chunks automatically)
+        cursor.execute("""
+            DELETE FROM documents WHERE id = %s
+        """, (document_id,))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        # Delete file from MinIO (Storage-Service)
+        file_deleted = False
+        if document['file_path']:
+            try:
+                async with httpx.AsyncClient() as client:
+                    # NOTE: Storage-Service needs to implement DELETE endpoint
+                    resp = await client.delete(
+                        f"{STORAGE_SERVICE_URL}/files",
+                        params={"file_path": document['file_path']},
+                        timeout=10.0
+                    )
+                    
+                    if resp.status_code == 200:
+                        file_deleted = True
+                        logger.info(f"✅ Deleted file from MinIO: {document['file_path']}")
+                    else:
+                        logger.warning(f"⚠️  Failed to delete file from MinIO: {resp.text}")
+            except Exception as e:
+                logger.warning(f"⚠️  Could not delete file from MinIO: {e}")
+        
+        logger.info(f"✅ Deleted document: {document['title']} ({actual_chunks} chunks)")
+        
+        return {
+            "success": True,
+            "message": f"Document '{document['title']}' deleted",
+            "document_id": document_id,
+            "deleted_chunks": actual_chunks,
+            "file_deleted": file_deleted,
+            "file_path": document['file_path']
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to delete document: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/admin/documents/{document_id}/replace")
+async def replace_document(
+    document_id: str,
+    file: UploadFile = File(...),
+    keep_title: bool = Form(True)
+):
+    """
+    Replace an existing document with a new PDF file
+    - Keeps same document_id and collection_id
+    - Optionally keeps same title
+    - Deletes old chunks and file
+    - Uploads new file and creates new chunks
+    
+    Args:
+        document_id: UUID of document to replace
+        file: New PDF file
+        keep_title: Keep existing title (default: True)
+    
+    Returns:
+        Updated document info with new chunk statistics
+    """
+    try:
+        # Validate UUID
+        try:
+            uuid.UUID(document_id)
+        except:
+            raise HTTPException(status_code=400, detail="Invalid document_id UUID")
+        
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="Filename required")
+        
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get existing document info
+        cursor.execute("""
+            SELECT 
+                id,
+                collection_id,
+                title,
+                file_path,
+                chunk_count
+            FROM documents
+            WHERE id = %s
+        """, (document_id,))
+        
+        old_document = cursor.fetchone()
+        
+        if not old_document:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        collection_id = str(old_document['collection_id'])
+        old_title = old_document['title']
+        old_file_path = old_document['file_path']
+        old_chunks = old_document['chunk_count']
+        
+        # Count actual old chunks
+        cursor.execute("""
+            SELECT COUNT(*) as chunk_count FROM chunks WHERE document_id = %s
+        """, (document_id,))
+        old_chunk_count = cursor.fetchone()['chunk_count']
+        
+        logger.info(f"🔄 Replacing document: {document_id} ({old_chunk_count} old chunks)")
+        
+        # STEP 1: Delete old chunks (explicit, before file operations)
+        cursor.execute("""
+            DELETE FROM chunks WHERE document_id = %s
+        """, (document_id,))
+        deleted_chunks = cursor.rowcount
+        conn.commit()
+        
+        logger.info(f"✅ Deleted {deleted_chunks} old chunks")
+        
+        # STEP 2: Update document status to processing
+        cursor.execute("""
+            UPDATE documents
+            SET status = 'processing', chunk_count = 0, updated_at = NOW()
+            WHERE id = %s
+        """, (document_id,))
+        conn.commit()
+        
+        cursor.close()
+        conn.close()
+        
+        # STEP 3: Delete old file from MinIO
+        if old_file_path:
+            try:
+                async with httpx.AsyncClient() as client:
+                    await client.delete(
+                        f"{STORAGE_SERVICE_URL}/files",
+                        params={"file_path": old_file_path},
+                        timeout=10.0
+                    )
+                logger.info(f"✅ Deleted old file from MinIO")
+            except Exception as e:
+                logger.warning(f"⚠️  Could not delete old file: {e}")
+        
+        # STEP 4: Upload new file (same workflow as process_document)
+        file_content = await file.read()
+        file_size = len(file_content)
+        
+        logger.info(f"📤 Uploading new file to Storage-Service...")
+        async with httpx.AsyncClient() as client:
+            files = {'file': (file.filename, file_content, 'application/pdf')}
+            params = {'document_id': document_id}
+            
+            resp = await client.post(
+                f"{STORAGE_SERVICE_URL}/upload",
+                files=files,
+                params=params,
+                timeout=30.0
+            )
+            
+            if resp.status_code != 201:
+                raise HTTPException(status_code=500, detail=f"Upload failed: {resp.text}")
+            
+            upload_result = resp.json()
+            new_file_path = upload_result['file_path']
+            logger.info(f"✅ Uploaded: {new_file_path}")
+        
+        # STEP 5: Extract text
+        logger.info(f"📝 Extracting text...")
+        async with httpx.AsyncClient() as client:
+            files = {'file': (file.filename, file_content, 'application/pdf')}
+            
+            resp = await client.post(
+                f"{STORAGE_SERVICE_URL}/extract-text",
+                files=files,
+                timeout=30.0
+            )
+            
+            if resp.status_code != 200:
+                raise HTTPException(status_code=500, detail=f"Extraction failed: {resp.text}")
+            
+            extraction_result = resp.json()
+            text = extraction_result['text']
+            pages = extraction_result['pages']
+            logger.info(f"✅ Extracted: {pages} pages")
+        
+        # STEP 6: Extract metadata
+        logger.info(f"🔍 Extracting metadata...")
+        metadata_dict = LegalMetadataExtractor.extract_all(text, pages=pages)
+        
+        # STEP 7: Chunk and embed
+        logger.info(f"🧠 Creating chunks and embeddings...")
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{EMBEDDING_SERVICE_URL}/chunk-and-embed",
+                headers={"X-API-Key": os.getenv("ADMIN_API_KEY", "admin-secret-key-change-in-production")},
+                json={
+                    "text": text,
+                    "document_id": document_id,
+                    "metadata": {
+                        "filename": file.filename,
+                        "document_code": metadata_dict.get('document_code'),
+                        "pages": pages
+                    },
+                    "add_overlap": True
+                },
+                timeout=60.0
+            )
+            
+            if resp.status_code != 200:
+                raise HTTPException(status_code=500, detail=f"Embedding failed: {resp.text}")
+            
+            embedding_result = resp.json()
+            chunks = embedding_result['chunks']
+            logger.info(f"✅ Created {len(chunks)} chunks")
+        
+        # STEP 8: Insert new chunks
+        logger.info(f"💾 Inserting chunks to database...")
+        vectors = []
+        for chunk in chunks:
+            chunk_info = chunk.get("chunk_info", {})
+            vectors.append({
+                "document_id": document_id,
+                "chunk_index": chunk_info.get("chunk_index", 0),
+                "content": chunk_info.get("text", ""),
+                "embedding": chunk.get("embedding", []),
+                "metadata": {}
+            })
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{VECTOR_SERVICE_URL}/insert-batch",
+                json={"vectors": vectors},
+                timeout=60.0
+            )
+            
+            if resp.status_code != 200:
+                raise HTTPException(status_code=500, detail=f"Vector insertion failed: {resp.text}")
+            
+            vector_result = resp.json()
+            new_chunk_count = vector_result.get('inserted', 0)
+            logger.info(f"✅ Inserted {new_chunk_count} chunks")
+        
+        # STEP 9: Update document with new info
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        new_title = old_title if keep_title else file.filename
+        
+        cursor.execute("""
+            UPDATE documents
+            SET 
+                title = %s,
+                filename = %s,
+                file_path = %s,
+                file_size = %s,
+                status = 'completed',
+                chunk_count = %s,
+                metadata = %s::jsonb,
+                processed_at = NOW(),
+                updated_at = NOW()
+            WHERE id = %s
+            RETURNING id, title, chunk_count, updated_at;
+        """, (
+            new_title,
+            file.filename,
+            new_file_path,
+            file_size,
+            new_chunk_count,
+            json.dumps(metadata_dict),
+            document_id
+        ))
+        
+        updated_doc = cursor.fetchone()
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        logger.info(f"✅ Document replaced successfully: {old_chunks} → {new_chunk_count} chunks")
+        
+        return {
+            "success": True,
+            "message": f"Document replaced successfully",
+            "document_id": document_id,
+            "old_chunks_deleted": old_chunk_count,
+            "new_chunks_created": new_chunk_count,
+            "document": {
+                "id": str(updated_doc['id']),
+                "title": updated_doc['title'],
+                "chunk_count": updated_doc['chunk_count'],
+                "updated_at": updated_doc['updated_at'].isoformat()
+            }
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to replace document: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============= ROOT ENDPOINT =============
 
 @app.get("/")
@@ -536,12 +1412,21 @@ async def root():
     """Service info"""
     return {
         "service": "admin-service",
-        "version": "2.0.0",
+        "version": "3.0.0",
         "status": "running",
-        "description": "Simple synchronous document processing orchestrator",
+        "description": "Complete document and collection management with CRUD operations",
         "endpoints": {
             "health": "GET /health",
-            "process_document": "POST /admin/process-document",
+            "collections_list": "GET /admin/collections",
+            "collections_create": "POST /admin/collections",
+            "collections_update": "PATCH /admin/collections/{id}",
+            "collections_delete": "DELETE /admin/collections/{id}",
+            "documents_list": "GET /admin/documents",
+            "documents_detail": "GET /admin/documents/{id}",
+            "documents_create": "POST /admin/process-document",
+            "documents_update": "PATCH /admin/documents/{id}",
+            "documents_delete": "DELETE /admin/documents/{id}",
+            "documents_replace": "POST /admin/documents/{id}/replace",
             "docs": "GET /docs"
         }
     }

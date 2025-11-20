@@ -126,6 +126,45 @@ async def search_vectors(embedding: List[float]) -> List[dict]:
         return []
 
 
+async def rerank_documents(query: str, documents: List[dict], top_k: int = 5) -> List[dict]:
+    """Rerank documents using rerank service"""
+    try:
+        # Prepare documents for reranking
+        doc_texts = [doc.get('content', '') for doc in documents]
+        
+        response = await http_client.post(
+            f"{settings.RERANK_SERVICE_URL}/rerank",
+            json={
+                "query": query,
+                "documents": doc_texts,
+                "top_k": top_k
+            },
+            timeout=10.0
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            reranked = data.get("results", [])
+            
+            # Map reranked results back to original documents with scores
+            reranked_docs = []
+            for item in reranked:
+                idx = item.get('index', 0)
+                if idx < len(documents):
+                    doc = documents[idx].copy()
+                    doc['rerank_score'] = item.get('score', 0.0)
+                    reranked_docs.append(doc)
+            
+            logger.info(f"✅ Reranked {len(reranked_docs)} documents")
+            return reranked_docs
+        else:
+            logger.warning(f"⚠️ Rerank failed: {response.text}, using original order")
+            return documents[:top_k]
+    except Exception as e:
+        logger.warning(f"⚠️ Rerank error: {e}, using original order")
+        return documents[:top_k]
+
+
 async def generate_answer(prompt: str) -> Optional[str]:
     """Generate answer using LLM"""
     try:
@@ -135,16 +174,17 @@ async def generate_answer(prompt: str) -> Optional[str]:
                 "prompt": prompt,
                 "max_length": 1024,
                 "temperature": 0.7
-            }
+            },
+            timeout=120.0  # Tăng timeout lên 2 phút cho LLM generation
         )
         if response.status_code == 200:
             data = response.json()
             return data.get("text", "")
         else:
-            logger.error(f"❌ LLM generation failed: {response.text}")
+            logger.error(f"❌ LLM generation failed: {response.status_code} - {response.text}")
             return None
     except Exception as e:
-        logger.error(f"❌ LLM generation error: {e}")
+        logger.error(f"❌ LLM generation error: {type(e).__name__}: {str(e)}")
         return None
 
 
@@ -193,23 +233,58 @@ async def query(request: QueryRequest):
                 tokens_used=0
             )
         
-        # Step 3: Build context from search results
-        context = "\n".join([
-            f"- {result['content']}"
-            for result in search_results[:request.top_k]
-        ])
+        # Step 3: Rerank documents for better relevance
+        logger.info("Step 3: Reranking documents...")
+        reranked_results = await rerank_documents(request.question, search_results, top_k=5)
         
-        # Step 4: Generate answer using LLM
-        logger.info("Step 3: Generating answer...")
-        prompt = f"""Based on the following legal documents, answer the question:
+        # Step 4: Build context from reranked results
+        context_parts = []
+        for idx, result in enumerate(reranked_results, 1):
+            content = result['content']
+            doc_title = result.get('document_title', 'Văn bản')
+            metadata = result.get('metadata', {})
+            doc_code = metadata.get('document_code', '') if metadata else ''
+            
+            # Format với trích dẫn
+            if doc_code:
+                citation = f"[{doc_title} - {doc_code}]"
+            else:
+                citation = f"[{doc_title}]"
+            
+            context_parts.append(f"{citation}\n{content}")
+        
+        context = "\n\n---\n\n".join(context_parts)
+        
+        # Step 5: Build prompt theo Legal RAG pattern
+        logger.info("Step 5: Building prompt...")
+        prompt = f"""Bạn là trợ lý AI pháp luật chuyên nghiệp. Trả lời câu hỏi dựa trên văn bản pháp luật được cung cấp. Luôn trích dẫn nguồn rõ ràng.
 
-Documents:
+## NGUYÊN TẮC TRẢ LỜI
+
+1. Trả lời bằng tiếng Việt rõ ràng, dễ hiểu
+2. Trích dẫn chính xác văn bản pháp luật (tên, số, ngày)
+3. Cấu trúc câu trả lời có đầu mục, gạch đầu dòng
+4. Nêu rõ thời gian, lệ phí nếu có
+5. KHÔNG bịa thông tin không có trong văn bản
+
+## VĂN BẢN PHÁP LUẬT THAM KHẢO
+
 {context}
 
-Question: {request.question}
+---
 
-Answer:"""
+## CÂU HỎI
+
+{request.question}
+
+---
+
+## CÂU TRẢ LỜI
+
+"""
         
+        # Step 6: Generate answer using LLM
+        logger.info("Step 6: Generating answer...")
         answer = await generate_answer(prompt)
         if answer is None:
             raise HTTPException(status_code=503, detail="LLM service unavailable")
@@ -221,9 +296,9 @@ Answer:"""
             sources=[
                 SearchResult(
                     content=result['content'],
-                    similarity=result['similarity']
+                    similarity=result.get('rerank_score', result.get('similarity', 0.0))
                 )
-                for result in search_results
+                for result in reranked_results
             ],
             tokens_used=len(prompt.split()) + len(answer.split())
         )

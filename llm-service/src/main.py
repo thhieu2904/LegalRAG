@@ -17,6 +17,7 @@ from .models import (
     HealthResponse,
     ErrorResponse
 )
+from .services.prompt_builder import prompt_builder
 
 # ============================================
 # Logging Setup
@@ -210,10 +211,12 @@ async def generate_text(
         top_k = request.top_k or settings.top_k
         repeat_penalty = request.repeat_penalty or settings.repeat_penalty
         
-        # Format prompt for PhoGPT (instruction format)
-        formatted_prompt = f"### Instruction:\n{request.prompt}\n\n### Response:\n"
+        # Format prompt cho Vistral (Vietnamese instruction format)
+        # Vistral-7B-Chat được train với format đơn giản: prompt trực tiếp
+        # KHÔNG cần wrap như PhoGPT vì đã có system instructions trong prompt
+        formatted_prompt = request.prompt
         
-        # Generate with llama-cpp-python
+        # Generate với llama-cpp-python
         output = llm_model(
             formatted_prompt,
             max_tokens=max_tokens,
@@ -221,7 +224,7 @@ async def generate_text(
             top_p=top_p,
             top_k=top_k,
             repeat_penalty=repeat_penalty,
-            stop=request.stop or ["###", "Instruction:"],
+            stop=request.stop or ["---", "## ", "Người dùng:", "CÂU HỎI"],
             echo=False  # Don't include prompt in output
         )
         

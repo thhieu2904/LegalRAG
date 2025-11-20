@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     # Service URLs (updated port architecture)
     EMBEDDING_SERVICE_URL: str = "http://embedding-service:8011"
     VECTOR_SERVICE_URL: str = "http://vector-service:8012"
+    RERANK_SERVICE_URL: str = "http://rerank-service:8013"
     LLM_SERVICE_URL: str = "http://llm-service:8006"
     STORAGE_SERVICE_URL: str = "http://storage-service:8010"
     

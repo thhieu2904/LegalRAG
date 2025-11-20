@@ -32,6 +32,10 @@ CREATE TABLE IF NOT EXISTS collections (
     display_name VARCHAR(500) NOT NULL,  -- Display: "Quy trình cấp hộ tịch"
     description TEXT,
     
+    -- UI styling (optional)
+    icon VARCHAR(100) DEFAULT 'file-text',  -- Icon name (e.g., 'file-text', 'shield-check')
+    color VARCHAR(20) DEFAULT '#3b82f6',   -- Hex color code for UI
+    
     -- Statistics (cached for performance)
     document_count INTEGER DEFAULT 0,
     total_chunks INTEGER DEFAULT 0,
@@ -63,8 +67,7 @@ CREATE INDEX IF NOT EXISTS idx_collections_active ON collections(is_active) WHER
 -- GIẢI THÍCH CÁC FIELD:
 -- - id, collection_id: Quan hệ UUID (Collections → Documents)
 -- - title, filename: Xác định tài liệu
--- - file_path, file_size, file_hash: Metadata lưu trữ trong MinIO
--- - mime_type: Luôn là "application/pdf" (chỉ chấp nhận PDF)
+-- - file_path, file_size: Metadata lưu trữ trong MinIO
 -- - status: Trạng thái xử lý (pending → processing → completed hoặc failed)
 -- - chunk_count: Số chunks được tạo (auto-update bằng trigger)
 -- - error_message: Nếu status = failed, chứa chi tiết lỗi để debug
@@ -94,8 +97,6 @@ CREATE TABLE IF NOT EXISTS documents (
     filename VARCHAR(500) NOT NULL,  -- Tên file gốc (vd: "Thủ tục xác định cơ quan.pdf")
     file_path VARCHAR(1000),  -- Đường dẫn MinIO: "collections/{collection_slug}/{uuid}_{filename}"
     file_size BIGINT,  -- Kích thước (bytes, dùng cho monitoring, UI)
-    file_hash VARCHAR(64),  -- SHA256 (detect trùng lặp, kiểm tra toàn vẹn)
-    mime_type VARCHAR(100),  -- Luôn là "application/pdf" (chỉ chấp nhận PDF)
     
     -- TRẠNG THÁI XỬ LÝ (bắt buộc cho pipeline)
     status VARCHAR(50) DEFAULT 'pending',  -- Enum: pending, processing, completed, failed

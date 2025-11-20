@@ -1,0 +1,218 @@
+QUY TẮC TRÍCH DẪN VĂN BẢN PHÁP LUẬT
+=====================================
+
+## TẠI SAO PHẢI TRÍCH DẪN?
+
+1. Đảm bảo tính minh bạch (transparency)
+2. Giúp công dân kiểm chứng thông tin
+3. Tăng độ tin cậy của câu trả lời
+4. Tuân thủ chuẩn pháp lý
+
+---
+
+## CÁC DẠNG TRÍCH DẪN
+
+### 1. TRÍCH DẪN THEO VĂN BẢN PHÁP LUẬT (Ưu tiên cao nhất)
+
+**Format chuẩn:**
+- "Theo Nghị định số [số]/[năm]/NĐ-CP ngày [ngày/tháng/năm], [nội dung]..."
+- "Thông tư số [số]/[năm]/TT-[Bộ] quy định rằng [nội dung]..."
+- "Luật [Tên luật] năm [năm] nêu rõ [nội dung]..."
+
+**Ví dụ thực tế:**
+✅ "Theo Nghị định số 123/2015/NĐ-CP ngày 15/11/2015, thủ tục đăng ký hộ tịch được quy định chi tiết..."
+✅ "Thông tư số 04/2020/TT-BTP quy định rằng hồ sơ khai sinh phải có Giấy chứng sinh..."
+✅ "Luật Hộ tịch năm 2014 nêu rõ quyền của công dân trong việc đăng ký hộ tịch..."
+
+**Khi nào dùng:**
+- Khi văn bản có số hiệu rõ ràng
+- Trả lời về quy định, điều khoản cụ thể
+- Người dùng cần độ tin cậy cao
+
+---
+
+### 2. TRÍCH DẪN THEO QUY TRÌNH/THỦ TỤC (Thường dùng)
+
+**Format chuẩn:**
+- "Theo quy trình '[Tên quy trình]' (Mã hiệu: [Mã]), [nội dung]..."
+- "Quy trình '[Tên]' quy định rằng [nội dung]..."
+- "Thủ tục '[Tên thủ tục]' yêu cầu [nội dung]..."
+
+**Ví dụ thực tế:**
+✅ "Theo quy trình 'Đăng ký khai sinh' (Mã hiệu: QT 01/CX-HCTP), hồ sơ cần có..."
+✅ "Quy trình 'Cấp giấy phép kinh doanh' quy định thời gian giải quyết là 3 ngày làm việc..."
+✅ "Thủ tục 'Đăng ký kết hôn' yêu cầu hai bên phải có mặt tại UBND..."
+
+**Khi nào dùng:**
+- Khi người dùng hỏi về thủ tục cụ thể
+- Văn bản có tên quy trình rõ ràng
+- Nội dung liên quan đến quy trình hành chính
+
+---
+
+### 3. TRÍCH DẪN THEO MỤC/PHẦN (Khi cần chi tiết)
+
+**Format chuẩn:**
+- "Theo Mục [số] của [văn bản/quy trình], [nội dung]..."
+- "Phần '[Tên phần]' mô tả rằng [nội dung]..."
+- "Điều [số] quy định [nội dung]..."
+
+**Ví dụ thực tế:**
+✅ "Theo Mục 5.a của quy trình, thành phần hồ sơ gồm: Giấy chứng sinh, Tờ khai..."
+✅ "Phần 'Thời gian giải quyết' nêu rõ: Ngay trong ngày tiếp nhận yêu cầu..."
+✅ "Điều 12 quy định về thẩm quyền giải quyết của UBND cấp xã..."
+
+**Khi nào dùng:**
+- Cần trích dẫn chi tiết cụ thể
+- Văn bản có cấu trúc mục/điều rõ ràng
+- Người dùng hỏi về một khía cạnh cụ thể
+
+---
+
+### 4. TRÍCH DẪN THEO TÊN FILE (Khi không có thông tin khác)
+
+**Format chuẩn:**
+- "Theo tài liệu [tên file.pdf], [nội dung]..."
+- "Văn bản [tên file] cho biết [nội dung]..."
+
+**Ví dụ thực tế:**
+✅ "Theo tài liệu '01. Đăng ký khai sinh.pdf', hồ sơ cần có..."
+✅ "Văn bản 'Quy trình cấp giấy phép.pdf' cho biết thời gian xử lý là 5 ngày..."
+
+**Khi nào dùng:**
+- Khi KHÔNG có số văn bản, tên quy trình
+- File PDF được upload trực tiếp
+- Chỉ dùng khi không có cách khác tốt hơn
+
+---
+
+## NGUYÊN TẮC KẾT HỢP TRÍCH DẪN
+
+### Nguyên tắc 1: Từ chung đến cụ thể
+```
+"Theo Luật Hộ tịch năm 2014 và Nghị định số 123/2015/NĐ-CP, 
+quy trình đăng ký khai sinh được thực hiện tại UBND cấp xã. 
+Cụ thể, theo Mục 5.a của quy trình, hồ sơ cần có: ..."
+```
+
+### Nguyên tắc 2: Trích dẫn liên tiếp
+```
+"Nghị định số 123/2015/NĐ-CP quy định về thủ tục hộ tịch. 
+Thông tư số 04/2020/TT-BTP hướng dẫn chi tiết việc thực hiện, 
+trong đó Mục 5 nêu rõ thành phần hồ sơ..."
+```
+
+### Nguyên tắc 3: Trích dẫn có so sánh
+```
+"Nghị định số 123/2015/NĐ-CP ban hành năm 2015 quy định lệ phí là 10.000 đồng. 
+Tuy nhiên, Nghị quyết số 10/2022/NQ-HĐND đã sửa đổi mức lệ phí xuống còn 8.000 đồng."
+```
+
+---
+
+## LỖI THƯỜNG GẶP VÀ CÁCH TRÁNH
+
+### ❌ LỖI 1: Trích dẫn không rõ nguồn
+**Sai:** "Theo quy định, hồ sơ cần có Giấy chứng sinh..."
+**Đúng:** "Theo Nghị định số 123/2015/NĐ-CP, hồ sơ cần có Giấy chứng sinh..."
+
+### ❌ LỖI 2: Trích dẫn sai format
+**Sai:** "Nghị định 123/2015 quy định..."
+**Đúng:** "Nghị định số 123/2015/NĐ-CP quy định..."
+
+### ❌ LỖI 3: Trích dẫn không đầy đủ
+**Sai:** "Luật Hộ tịch quy định..."
+**Đúng:** "Luật Hộ tịch năm 2014 quy định..."
+
+### ❌ LỖI 4: Trích dẫn văn bản không tồn tại
+**Sai:** Bịa ra "Nghị định số 999/2025/NĐ-CP..."
+**Đúng:** Chỉ trích dẫn văn bản CÓ TRONG dữ liệu
+
+### ❌ LỖI 5: Trích dẫn quá dài
+**Sai:** "Theo Nghị định số 123/2015/NĐ-CP ngày 15 tháng 11 năm 2015 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Hộ tịch..."
+**Đúng:** "Theo Nghị định số 123/2015/NĐ-CP, thủ tục hộ tịch..."
+
+---
+
+## MẪU CÂU TRẢ LỜI CHUẨN VỚI TRÍCH DẪN
+
+### Mẫu 1: Trả lời về thủ tục
+```
+Thủ tục đăng ký khai sinh được quy định như sau:
+
+Theo Nghị định số 123/2015/NĐ-CP và Thông tư số 04/2020/TT-BTP, 
+hồ sơ đăng ký khai sinh gồm:
+
+1. **Giấy chứng sinh** (Mục 5.a quy định)
+   - Nếu không có: văn bản xác nhận của người làm chứng
+   
+2. **Tờ khai đăng ký** theo mẫu (theo hướng dẫn tại Phụ lục 1)
+
+3. **Giấy tờ tùy thân** của người yêu cầu
+
+**Thời gian:** Ngay trong ngày (theo Mục 6.b)
+**Lệ phí:** 
+- Đăng ký đúng hạn: MIỄN PHÍ (Nghị quyết số 10/2022/NQ-HĐND)
+- Đăng ký quá hạn: 5.000 - 8.000 đồng
+```
+
+### Mẫu 2: Trả lời về điều kiện
+```
+Điều kiện để đăng ký khai sinh:
+
+Theo Luật Hộ tịch năm 2014, bất kỳ công dân nào cũng có quyền 
+đăng ký khai sinh cho con của mình. Cụ thể:
+
+- **Người có quyền đăng ký:** Cha, mẹ, ông, bà, người thân thích khác 
+  (Điều 15 Luật Hộ tịch 2014)
+  
+- **Thời hạn đăng ký:** Trong vòng 60 ngày kể từ ngày sinh 
+  (Theo Mục 3 của quy trình)
+  
+- **Nơi đăng ký:** UBND cấp xã nơi cư trú của cha hoặc mẹ 
+  (Điều 16 Nghị định 123/2015/NĐ-CP)
+```
+
+### Mẫu 3: Trả lời có so sánh
+```
+Lệ phí đăng ký khai sinh:
+
+**Quy định chung** (Nghị định 123/2015/NĐ-CP):
+- Đăng ký đúng hạn: 8.000 đồng
+- Đăng ký quá hạn: 10.000 đồng
+
+**Tuy nhiên**, theo Nghị quyết số 10/2022/NQ-HĐND của HĐND thành phố:
+- Đăng ký đúng hạn: **MIỄN PHÍ**
+- Đăng ký quá hạn: 5.000 đồng (giảm 50%)
+
+**Áp dụng:** Từ ngày 09/12/2022
+```
+
+---
+
+## CHECKLIST TRÍCH DẪN
+
+Trước khi trả lời, kiểm tra:
+
+- [ ] Đã xác định được văn bản pháp luật (số, năm)?
+- [ ] Văn bản có trong dữ liệu (KHÔNG bịa)?
+- [ ] Format trích dẫn đúng chuẩn?
+- [ ] Trích dẫn đủ chi tiết (mục, điều nếu cần)?
+- [ ] Không trích dẫn quá dài gây rối?
+- [ ] Kết hợp nhiều nguồn (nếu cần)?
+
+---
+
+## THỨ TỰ ƯU TIÊN TRÍCH DẪN
+
+1. **Văn bản pháp luật có số hiệu** (Luật, Nghị định, Thông tư) → Độ tin cậy cao nhất
+2. **Quy trình/Thủ tục có tên và mã** → Dễ tra cứu
+3. **Mục/Điều cụ thể** → Chi tiết, chính xác
+4. **Tên file PDF** → Chỉ dùng khi không có thông tin khác
+
+---
+
+**LƯU Ý QUAN TRỌNG:**
+- Chỉ trích dẫn những gì CÓ TRONG văn bản
+- KHÔNG bịa đặt số văn bản, ngày tháng
+- Nếu không chắc chắn → Nói "Theo như tài liệu đề cập..." thay vì khẳng định
