@@ -8,16 +8,24 @@ class Settings(BaseSettings):
     """Application settings"""
     
     SERVICE_NAME: str = "embedding-service"
-    SERVICE_PORT: int = 8004
+    SERVICE_PORT: int = 8011  # 801X series: Internal microservices
     
-    # Model configuration
-    MODEL_NAME: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    # Model configuration - Vietnamese Document Embedding
+    MODEL_NAME: str = "dangvantuan/vietnamese-document-embedding"
     MODEL_CACHE_DIR: str = "/app/models"
     DEVICE: str = "cpu"  # cpu or cuda
+    MAX_SEQ_LENGTH: int = 8192  # Model supports up to 8192 tokens
     
     # Embedding configuration
     BATCH_SIZE: int = 32
-    EMBEDDING_DIMENSION: int = 384
+    EMBEDDING_DIMENSION: int = 768  # Updated for Vietnamese model
+    
+    # Chunking configuration (for legal documents)
+    CHUNK_SIZE: int = 600  # tokens per chunk (well below 8192 limit)
+    CHUNK_OVERLAP: int = 100  # token overlap between chunks
+    
+    # Authentication
+    ADMIN_API_KEY: str = "admin-secret-key-change-in-production"
     
     class Config:
         env_file = ".env"

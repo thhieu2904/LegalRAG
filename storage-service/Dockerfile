@@ -27,7 +27,7 @@ USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-    CMD python -c "import httpx; httpx.get('http://localhost:8001/health')" || exit 1
+    CMD python -c "import httpx; import os; httpx.get(f'http://localhost:{os.getenv(\"SERVICE_PORT\", 8010)}/health')" || exit 1
 
 # Run application
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port ${SERVICE_PORT:-8010}"]

@@ -69,10 +69,10 @@ services:
       dockerfile: Dockerfile
     container_name: legalrag-storage
     ports:
-      - "8001:8001"
+      - "8010:8010"
     environment:
       SERVICE_NAME: storage-service
-      SERVICE_PORT: 8001
+      SERVICE_PORT: 8010
       MINIO_ENDPOINT: minio:9000
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin123
@@ -86,7 +86,7 @@ services:
     volumes:
       - ./storage-service:/app
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -99,10 +99,10 @@ services:
       dockerfile: Dockerfile
     container_name: legalrag-vector
     ports:
-      - "8003:8003"
+      - "8012:8012"
     environment:
       SERVICE_NAME: vector-service
-      SERVICE_PORT: 8003
+      SERVICE_PORT: 8012
       POSTGRES_HOST: postgres-vector
       POSTGRES_PORT: 5432
       POSTGRES_USER: legalrag
@@ -116,7 +116,7 @@ services:
     volumes:
       - ./vector-service:/app
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8012/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -129,21 +129,26 @@ services:
       dockerfile: Dockerfile
     container_name: legalrag-embedding
     ports:
-      - "8004:8004"
+      - "8011:8011"
     environment:
       SERVICE_NAME: embedding-service
-      SERVICE_PORT: 8004
-      MODEL_NAME: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+      SERVICE_PORT: 8011
+      MODEL_NAME: dangvantuan/vietnamese-document-embedding
       MODEL_CACHE_DIR: /app/models
       DEVICE: cpu # Change to 'cuda' if GPU available
+      MAX_SEQ_LENGTH: 8192
       BATCH_SIZE: 32
+      EMBEDDING_DIMENSION: 768
+      CHUNK_SIZE: 600
+      CHUNK_OVERLAP: 100
+      ADMIN_API_KEY: admin-secret-key-change-in-production
     networks:
       - legalrag-network
     volumes:
       - ./embedding-service:/app
       - embedding_models:/app/models
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8011/health"]
       interval: 60s
       timeout: 30s
       retries: 3
@@ -157,34 +162,75 @@ services:
     #           count: 1
     #           capabilities: [gpu]
 
-  # LLM Service - Local Gemma/Llama model
-  llm-service:
+  # Rerank Service - BGE Reranker v2-m3 for relevance scoring
+  rerank-service:
     build:
-      context: ./llm-service
+      context: ./rerank-service
       dockerfile: Dockerfile
+    container_name: legalrag-rerank
+    ports:
+      - "8013:8013"
+    environment:
+      SERVICE_NAME: rerank-service
+      SERVICE_PORT: 8013
+      MODEL_NAME: BAAI/bge-reranker-v2-m3
+      MODEL_CACHE_DIR: /app/models
+      MODEL_MAX_LENGTH: 1024
+      DEVICE: cpu
+      BATCH_SIZE: 32
+      TOP_K: 5
+      API_KEY_ENABLED: "false"
+      LOG_LEVEL: INFO
+    networks:
+      - legalrag-network
+    volumes:
+      - ./rerank-service:/app
+      - rerank_models:/app/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8013/health"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+      start_period: 90s
+    restart: unless-stopped
+
+  # LLM Service - Vistral-7B-Chat Q4 with GPU acceleration
+  llm-service:
+    image: llm-service:vistral-gpu
     container_name: legalrag-llm
     ports:
       - "8006:8006"
     environment:
       SERVICE_NAME: llm-service
       SERVICE_PORT: 8006
-      MODEL_NAME: google/gemma-2-9b-it # or meta-llama/Llama-3.1-8B-Instruct
+      MODEL_NAME: ggml-vistral-7B-chat-q4_0.gguf
+      MODEL_PATH: /app/models/ggml-vistral-7B-chat-q4_0.gguf
       MODEL_CACHE_DIR: /app/models
-      DEVICE: cuda # Requires GPU
-      MAX_LENGTH: 2048
+      N_CTX: 8192
+      N_GPU_LAYERS: -1
+      N_THREADS: 8
+      N_BATCH: 512
+      MAX_TOKENS: 2048
       TEMPERATURE: 0.7
+      TOP_P: 0.9
+      TOP_K: 40
+      REPEAT_PENALTY: 1.1
+      DEVICE: cuda
+      USE_MMAP: "true"
+      USE_MLOCK: "false"
+      VERBOSE: "false"
+      LOG_LEVEL: INFO
+    volumes:
+      - ./llm-service/models:/app/models
     networks:
       - legalrag-network
-    volumes:
-      - ./llm-service:/app
-      - llm_models:/app/models
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
       interval: 60s
       timeout: 30s
       retries: 3
+      start_period: 60s
     restart: unless-stopped
-    # GPU support required for LLM
     deploy:
       resources:
         reservations:
@@ -193,32 +239,34 @@ services:
               count: 1
               capabilities: [gpu]
 
-  # Query Service - RAG orchestrator (Q&A)
+  # Query Service - RAG orchestrator (Q&A, USER-facing)
   query-service:
     build:
       context: ./query-service
       dockerfile: Dockerfile
     container_name: legalrag-query
     ports:
-      - "8005:8005"
+      - "8002:8002"
     environment:
       SERVICE_NAME: query-service
-      SERVICE_PORT: 8005
-      EMBEDDING_SERVICE_URL: http://embedding-service:8004
-      VECTOR_SERVICE_URL: http://vector-service:8003
+      SERVICE_PORT: 8002
+      EMBEDDING_SERVICE_URL: http://embedding-service:8011
+      VECTOR_SERVICE_URL: http://vector-service:8012
+      STORAGE_SERVICE_URL: http://storage-service:8010
       LLM_SERVICE_URL: http://llm-service:8006
-      STORAGE_SERVICE_URL: http://storage-service:8001
+      RERANK_SERVICE_URL: http://rerank-service:8013
     depends_on:
       - embedding-service
       - vector-service
-      - llm-service
       - storage-service
+      - llm-service
+      - rerank-service
     networks:
       - legalrag-network
     volumes:
       - ./query-service:/app
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -231,19 +279,29 @@ services:
       dockerfile: Dockerfile
     container_name: legalrag-admin
     ports:
-      - "8002:8002"
+      - "8001:8001"
     environment:
       SERVICE_NAME: admin-service
-      SERVICE_PORT: 8002
-      STORAGE_SERVICE_URL: http://storage-service:8001
+      SERVICE_PORT: 8001
+      STORAGE_SERVICE_URL: http://storage-service:8010
+      EMBEDDING_SERVICE_URL: http://embedding-service:8011
+      VECTOR_SERVICE_URL: http://vector-service:8012
+      POSTGRES_HOST: postgres-vector
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: legalrag
+      POSTGRES_PASSWORD: legalrag123
+      POSTGRES_DB: legalrag
     depends_on:
       - storage-service
+      - embedding-service
+      - vector-service
+      - postgres-vector
     networks:
       - legalrag-network
     volumes:
       - ./admin-service:/app
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -256,16 +314,16 @@ services:
       dockerfile: Dockerfile
     container_name: legalrag-identifill
     ports:
-      - "8002:8002"
+      - "8005:8005"
     environment:
       SERVICE_NAME: identifill-service
-      SERVICE_PORT: 8002
+      SERVICE_PORT: 8005
     networks:
       - legalrag-network
     volumes:
       - ./identifill_service:/app
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -281,10 +339,10 @@ services:
       - "3000:3000"
     environment:
       # API endpoints for each service
-      VITE_QUERY_SERVICE_URL: http://localhost:8005
-      VITE_ADMIN_SERVICE_URL: http://localhost:8007
-      VITE_IDENTIFILL_SERVICE_URL: http://localhost:8002
-      VITE_STORAGE_SERVICE_URL: http://localhost:8001
+      VITE_QUERY_SERVICE_URL: http://localhost:8002
+      VITE_ADMIN_SERVICE_URL: http://localhost:8001
+      VITE_IDENTIFILL_SERVICE_URL: http://localhost:8005
+      VITE_STORAGE_SERVICE_URL: http://localhost:8010
     depends_on:
       - query-service
       - admin-service
@@ -305,6 +363,8 @@ volumes:
     driver: local
   llm_models:
     driver: local
+  rerank_models:
+    driver: local
 
 networks:
   legalrag-network:
@@ -318,13 +378,14 @@ networks:
 #   - PostgreSQL:      5432
 #
 # Services:
-#   - Storage:         8001
-#   - Identifill:      8002
-#   - Vector:          8003
-#   - Embedding:       8004
-#   - Query:           8005
+#   - Admin:           8001
+#   - Query:           8002
 #   - LLM:             8006
-#   - Admin:           8007
+#   - Identifill:      8005
+#   - Storage:         8010
+#   - Embedding:       8011
+#   - Vector:          8012
+#   - Rerank:          8013
 #
 # Frontend:
 #   - React App:       3000

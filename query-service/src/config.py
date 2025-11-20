@@ -8,12 +8,13 @@ class Settings(BaseSettings):
     """Application settings"""
     
     SERVICE_NAME: str = "query-service"
-    SERVICE_PORT: int = 8005
+    SERVICE_PORT: int = 8002  # Public User-facing RAG API
     
-    # Service URLs
-    EMBEDDING_SERVICE_URL: str = "http://embedding-service:8004"
-    VECTOR_SERVICE_URL: str = "http://vector-service:8003"
+    # Service URLs (updated port architecture)
+    EMBEDDING_SERVICE_URL: str = "http://embedding-service:8011"
+    VECTOR_SERVICE_URL: str = "http://vector-service:8012"
     LLM_SERVICE_URL: str = "http://llm-service:8006"
+    STORAGE_SERVICE_URL: str = "http://storage-service:8010"
     
     # Search parameters
     TOP_K: int = 10

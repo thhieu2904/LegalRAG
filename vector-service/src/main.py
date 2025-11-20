@@ -106,6 +106,9 @@ async def insert_vector(request: VectorInsertRequest):
             chunk_index=request.chunk_index,
             content=request.content,
             embedding=request.embedding,
+            section_title=request.section_title,
+            source_reference=request.source_reference,
+            token_count=request.token_count,
             metadata=request.metadata
         )
         
@@ -120,9 +123,20 @@ async def insert_vector(request: VectorInsertRequest):
 
 @app.post("/insert-batch", response_model=VectorBatchInsertResponse)
 async def insert_batch(request: VectorBatchInsertRequest):
-    """Insert multiple vectors"""
+    """
+    Insert multiple vector chunks (AICenter Pattern)
+    
+    IMPORTANT: Document must already exist in documents table.
+    Admin Service creates document BEFORE calling this endpoint.
+    This endpoint ONLY inserts chunks.
+    """
     try:
-        result = db.insert_batch_chunks([v.dict() for v in request.vectors])
+        logger.info(f"📥 /insert-batch: {len(request.vectors)} chunks for doc {request.vectors[0].document_id if request.vectors else 'unknown'}")
+        
+        # AICenter Pattern: Only insert chunks, document already exists
+        result = db.insert_batch_chunks_only(
+            chunks=[v.dict() for v in request.vectors]
+        )
         
         return VectorBatchInsertResponse(
             success=result["inserted"] > 0,
@@ -131,6 +145,7 @@ async def insert_batch(request: VectorBatchInsertRequest):
             total=result["total"]
         )
     except Exception as e:
+        logger.error(f"❌ Batch insert failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

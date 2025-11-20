@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     
     # ============= SERVICE INFO =============
     SERVICE_NAME: str = "storage-service"
-    SERVICE_PORT: int = 8001
+    SERVICE_PORT: int = 8010  # 801X series: Internal microservices
     
     # ============= MINIO CONFIGURATION =============
     MINIO_ENDPOINT: str = "minio:9000"
@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     MINIO_BUCKET: str = "legal-documents"
     
     # ============= SERVICE URLS (for inter-service communication) =============
-    VECTOR_SERVICE_URL: str = "http://vector-service:8003"
-    EMBEDDING_SERVICE_URL: str = "http://embedding-service:8004"
+    VECTOR_SERVICE_URL: str = "http://vector-service:8012"
+    EMBEDDING_SERVICE_URL: str = "http://embedding-service:8011"
     
     # ============= FILE UPLOAD LIMITS =============
     MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100MB for legal documents

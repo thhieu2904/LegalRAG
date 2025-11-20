@@ -6,6 +6,7 @@ from psycopg2.extras import RealDictCursor, execute_values
 from typing import List, Dict, Any, Optional
 import logging
 import uuid
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -57,19 +58,23 @@ class VectorDatabase:
             raise
     
     def insert_chunk(self, document_id: str, chunk_index: int, content: str, 
-                    embedding: List[float], metadata: Optional[dict] = None) -> str:
-        """Insert single chunk with embedding"""
+                    embedding: List[float], section_title: Optional[str] = None,
+                    source_reference: Optional[str] = None, token_count: Optional[int] = None,
+                    metadata: Optional[dict] = None) -> str:
+        """Insert single chunk with embedding (LegalRAG schema)"""
         try:
             vector_id = str(uuid.uuid4())
             
             query = """
-            INSERT INTO chunks (id, document_id, chunk_index, content, embedding, chunk_metadata)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO chunks (id, document_id, chunk_index, content, section_title,
+                              source_reference, embedding, metadata)
+            VALUES (%s, %s, %s, %s, %s, %s, %s::vector, %s::jsonb)
             """
             
             cursor = self.execute_query(
                 query,
-                (vector_id, document_id, chunk_index, content, embedding, metadata or {})
+                (vector_id, document_id, chunk_index, content, section_title,
+                 source_reference, embedding, json.dumps(metadata) if metadata else '{}')
             )
             
             logger.info(f"✅ Inserted chunk: {vector_id}")
@@ -79,9 +84,61 @@ class VectorDatabase:
             logger.error(f"❌ Insert failed: {e}")
             raise
     
-    def insert_batch_chunks(self, chunks: List[Dict[str, Any]]) -> Dict[str, int]:
-        """Insert multiple chunks"""
+    def insert_or_update_document(self, document_id: str, collection_id: str, 
+                                  title: str, filename: str,
+                                  file_path: Optional[str] = None,
+                                  file_size: Optional[int] = None,
+                                  metadata: Optional[dict] = None) -> bool:
+        """Insert or update document record with full information"""
         try:
+            query = """
+            INSERT INTO documents (id, collection_id, title, filename, file_path, file_size, metadata)
+            VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb)
+            ON CONFLICT (id) DO UPDATE SET
+                updated_at = CURRENT_TIMESTAMP
+            """
+            
+            cursor = self.connection.cursor()
+            cursor.execute(query, (
+                document_id, 
+                collection_id, 
+                title, 
+                filename, 
+                file_path, 
+                file_size,
+                json.dumps(metadata) if metadata else '{}'
+            ))
+            self.connection.commit()
+            cursor.close()
+            logger.info(f"✅ Document record created: {document_id} in collection {collection_id}")
+            return True
+        except Exception as e:
+            logger.error(f"❌ Failed to create document: {e}")
+            self.connection.rollback()
+            return False
+
+    def insert_batch_chunks(self, document_info: dict, chunks: List[Dict[str, Any]]) -> Dict[str, int]:
+        """Insert document + multiple chunks"""
+        try:
+            logger.info(f"📥 Received document + {len(chunks) if chunks else 0} chunks to insert")
+            
+            # STEP 1: Create document record FIRST (for FK constraint)
+            if document_info:
+                logger.info(f"📌 Creating document: {document_info.get('id')}")
+                success = self.insert_or_update_document(
+                    document_id=document_info.get('id'),
+                    collection_id=document_info.get('collection_id'),
+                    title=document_info.get('title'),
+                    filename=document_info.get('filename'),
+                    file_path=document_info.get('file_path'),
+                    file_size=document_info.get('file_size'),
+                    metadata=document_info.get('metadata')
+                )
+                
+                if not success:
+                    raise Exception("Failed to create document record")
+            
+            # STEP 2: Insert chunks
             inserted = 0
             failed = 0
             
@@ -92,6 +149,48 @@ class VectorDatabase:
                         chunk_index=chunk["chunk_index"],
                         content=chunk["content"],
                         embedding=chunk["embedding"],
+                        section_title=chunk.get("section_title"),
+                        source_reference=chunk.get("source_reference"),
+                        token_count=chunk.get("token_count"),
+                        metadata=chunk.get("metadata")
+                    )
+                    inserted += 1
+                except Exception as e:
+                    logger.warning(f"⚠️  Failed to insert chunk: {e}")
+                    failed += 1
+            
+            logger.info(f"✅ Batch insert: {inserted} succeeded, {failed} failed")
+            return {
+                "inserted": inserted,
+                "failed": failed,
+                "total": len(chunks)
+            }
+        
+        except Exception as e:
+            logger.error(f"❌ Batch insert failed: {e}")
+            raise
+    
+    def insert_batch_chunks_only(self, chunks: List[Dict[str, Any]]) -> Dict[str, int]:
+        """
+        Insert only chunks (AICenter Pattern)
+        Document MUST already exist in documents table
+        """
+        try:
+            logger.info(f"📥 Inserting {len(chunks)} chunks (document already exists)")
+            
+            inserted = 0
+            failed = 0
+            
+            for chunk in chunks:
+                try:
+                    self.insert_chunk(
+                        document_id=chunk["document_id"],
+                        chunk_index=chunk["chunk_index"],
+                        content=chunk["content"],
+                        embedding=chunk["embedding"],
+                        section_title=chunk.get("section_title"),
+                        source_reference=chunk.get("source_reference"),
+                        token_count=chunk.get("token_count"),
                         metadata=chunk.get("metadata")
                     )
                     inserted += 1
@@ -124,9 +223,12 @@ class VectorDatabase:
                 document_id,
                 chunk_index,
                 content,
+                section_title,
+                source_reference,
+                metadata,
                 1 - (embedding <=> %s::vector) as similarity
             FROM chunks
-            WHERE is_deleted = false
+            WHERE 1=1
             """
             
             params = [embedding_str]
@@ -157,20 +259,18 @@ class VectorDatabase:
     
     def delete_vectors(self, vector_ids: Optional[List[str]] = None, 
                       document_id: Optional[str] = None) -> int:
-        """Soft delete vectors"""
+        """Delete vectors (CASCADE delete when document deleted)"""
         try:
             if vector_ids:
                 placeholders = ','.join(['%s'] * len(vector_ids))
                 query = f"""
-                UPDATE chunks 
-                SET is_deleted = true 
+                DELETE FROM chunks 
                 WHERE id IN ({placeholders})
                 """
                 cursor = self.execute_query(query, tuple(vector_ids))
             elif document_id:
                 query = """
-                UPDATE chunks 
-                SET is_deleted = true 
+                DELETE FROM chunks 
                 WHERE document_id = %s
                 """
                 cursor = self.execute_query(query, (document_id,))
@@ -189,12 +289,12 @@ class VectorDatabase:
         """Get vector count"""
         try:
             # Total vectors
-            query1 = "SELECT COUNT(*) as count FROM chunks WHERE is_deleted = false"
+            query1 = "SELECT COUNT(*) as count FROM chunks"
             cursor = self.execute_query(query1)
             total_vectors = cursor.fetchone()["count"]
             
             # Total documents
-            query2 = "SELECT COUNT(DISTINCT document_id) as count FROM chunks WHERE is_deleted = false"
+            query2 = "SELECT COUNT(DISTINCT document_id) as count FROM chunks"
             cursor = self.execute_query(query2)
             total_documents = cursor.fetchone()["count"]
             

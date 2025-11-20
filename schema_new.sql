@@ -187,10 +187,10 @@ CREATE TABLE IF NOT EXISTS chunks (
                                     -- NULL nếu không thể extract rõ ràng
     
     -- VECTOR EMBEDDING (bắt buộc để search)
-    -- Vector 384 chiều từ Vietnamese embedding model
+    -- Vector 768 chiều từ Vietnamese embedding model (dangvantuan/vietnamese-document-embedding)
     -- Dùng cho semantic similarity search (cosine distance)
     -- Được tạo bởi embedding-service (riêng biệt từ pipeline này)
-    embedding vector(384),
+    embedding vector(768),  -- UPDATED: 768-D for Vietnamese model
     
     -- METADATA CHUNK (tùy chọn, auto-extract)
     -- Ví dụ: {"page_number": 5, "confidence": 0.95, "language": "vi"}
@@ -530,7 +530,7 @@ FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Function: Vector similarity search with metadata
 CREATE OR REPLACE FUNCTION search_similar_chunks(
-    query_embedding vector(384),
+    query_embedding vector(768),  -- UPDATED: 768-D for Vietnamese model
     match_threshold float DEFAULT 0.7,
     match_count int DEFAULT 10,
     filter_collection_id uuid DEFAULT NULL

@@ -14,12 +14,15 @@ class HealthResponse(BaseModel):
 
 
 class VectorInsertRequest(BaseModel):
-    """Insert single vector"""
+    """Insert single vector chunk for LegalRAG"""
     document_id: str
     chunk_index: int
     content: str
-    embedding: List[float]
-    metadata: Optional[dict] = None
+    section_title: Optional[str] = None  # Legal section: "Điều 1", "Mục 2.3"
+    source_reference: Optional[str] = None  # Legal reference: "Điều 1, khoản 1"
+    embedding: List[float]  # 768-D Vietnamese model
+    token_count: Optional[int] = None
+    metadata: Optional[dict] = None  # Full metadata from admin-service
 
 
 class VectorInsertResponse(BaseModel):
@@ -29,8 +32,22 @@ class VectorInsertResponse(BaseModel):
     message: str
 
 
+class DocumentInfo(BaseModel):
+    """Document information for creating document record"""
+    id: str  # UUID
+    collection_id: str  # UUID
+    title: str
+    filename: str
+    file_path: Optional[str] = None
+    file_size: Optional[int] = None
+    metadata: Optional[dict] = None
+
+
 class VectorBatchInsertRequest(BaseModel):
-    """Insert multiple vectors"""
+    """
+    Insert multiple vectors (AICenter Pattern)
+    Document must already exist - Admin Service creates it first
+    """
     vectors: List[VectorInsertRequest]
 
 
@@ -51,12 +68,15 @@ class SearchRequest(BaseModel):
 
 
 class SearchResult(BaseModel):
-    """Single search result"""
+    """Single search result for LegalRAG"""
     vector_id: str
     document_id: str
     chunk_index: int
     content: str
+    section_title: Optional[str] = None
+    source_reference: Optional[str] = None
     similarity: float
+    metadata: Optional[dict] = None
 
 
 class SearchResponse(BaseModel):

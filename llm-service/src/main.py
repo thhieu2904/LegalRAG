@@ -1,54 +1,111 @@
 """
-LLM Service - Local Gemma/Llama model
+LLM Service - PhoGPT with llama-cpp-python
 """
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+import os
 import logging
+from contextlib import asynccontextmanager
+from typing import Optional
+
+from fastapi import FastAPI, HTTPException, status, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from .config import settings
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
-# Global model and tokenizer
-model = None
-tokenizer = None
-
-
-# ============= MODELS =============
-
-class GenerateRequest(BaseModel):
-    """Generation request"""
-    prompt: str
-    max_length: int = settings.MAX_LENGTH
-    temperature: float = settings.TEMPERATURE
-    top_p: float = settings.TOP_P
-
-
-class GenerateResponse(BaseModel):
-    """Generation response"""
-    success: bool
-    text: str
-    prompt_tokens: int
-    completion_tokens: int
-
-
-class HealthResponse(BaseModel):
-    """Health check response"""
-    status: str
-    model_loaded: bool
-    device: str
-
-
-# ============= APP =============
-
-app = FastAPI(
-    title="LLM Service",
-    description="Text generation using local Gemma/Llama models",
-    version="1.0.0"
+from .models import (
+    GenerateRequest,
+    GenerateResponse,
+    HealthResponse,
+    ErrorResponse
 )
 
+# ============================================
+# Logging Setup
+# ============================================
+
+logging.basicConfig(
+    level=getattr(logging, settings.log_level.upper()),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# ============================================
+# Global State
+# ============================================
+
+llm: Optional[any] = None  # Llama model instance
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage application lifecycle - load model on startup."""
+    global llm
+    
+    logger.info("=" * 60)
+    logger.info(f"Starting {settings.service_name}")
+    logger.info("=" * 60)
+    logger.info(f"Model: {settings.model_name}")
+    logger.info(f"Model Path: {settings.model_path}")
+    logger.info(f"Device: {settings.device}")
+    logger.info(f"Context Window: {settings.n_ctx}")
+    logger.info(f"GPU Layers: {settings.n_gpu_layers}")
+    logger.info("=" * 60)
+    
+    try:
+        from llama_cpp import Llama
+        
+        # Check if model file exists
+        if not os.path.exists(settings.model_path):
+            logger.warning(f"Model file not found: {settings.model_path}")
+            logger.info("Run download_model.py to download PhoGPT model")
+            raise FileNotFoundError(f"Model file not found: {settings.model_path}")
+        
+        # Load PhoGPT model with llama-cpp-python
+        logger.info("Loading PhoGPT model (this may take a minute)...")
+        llm = Llama(
+            model_path=settings.model_path,
+            n_ctx=settings.n_ctx,
+            n_gpu_layers=settings.n_gpu_layers if settings.device == "cuda" else 0,
+            n_threads=settings.n_threads,
+            n_batch=settings.n_batch,
+            use_mmap=settings.use_mmap,
+            use_mlock=settings.use_mlock,
+            verbose=settings.verbose
+        )
+        
+        logger.info("✓ PhoGPT model loaded successfully")
+        logger.info(f"✓ Using device: {settings.device}")
+        if settings.device == "cuda" and settings.n_gpu_layers == -1:
+            logger.info("✓ All layers loaded on GPU")
+        elif settings.device == "cuda":
+            logger.info(f"✓ {settings.n_gpu_layers} layers on GPU")
+        
+    except ImportError as e:
+        logger.error(f"✗ llama-cpp-python not installed: {e}")
+        logger.error("Install with: pip install llama-cpp-python")
+        raise
+    except Exception as e:
+        logger.error(f"✗ Failed to load model: {e}")
+        raise
+    
+    yield
+    
+    logger.info(f"Shutting down {settings.service_name}")
+    if llm:
+        del llm
+
+
+# ============================================
+# FastAPI Application
+# ============================================
+
+app = FastAPI(
+    title=settings.service_name,
+    description="Vietnamese Legal LLM using PhoGPT-4B with llama-cpp",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -58,123 +115,161 @@ app.add_middleware(
 )
 
 
-@app.on_event("startup")
-async def startup():
-    """Load model on startup"""
-    global model, tokenizer
-    
-    logger.info(f"🚀 Loading LLM model: {settings.MODEL_NAME}")
-    logger.warning("⏳ This may take a few minutes (downloading model)...")
-    
-    try:
-        from transformers import AutoModelForCausalLM, AutoTokenizer
-        import torch
-        
-        # Load tokenizer
-        tokenizer = AutoTokenizer.from_pretrained(
-            settings.MODEL_NAME,
-            cache_dir=settings.MODEL_CACHE_DIR
+# ============================================
+# Dependencies
+# ============================================
+
+def get_llm():
+    """Dependency to get LLM instance."""
+    if llm is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="LLM model not loaded. Please ensure model file exists."
         )
-        
-        # Load model
-        model = AutoModelForCausalLM.from_pretrained(
-            settings.MODEL_NAME,
-            cache_dir=settings.MODEL_CACHE_DIR,
-            device_map="auto",
-            torch_dtype=torch.float16 if settings.DEVICE == "cuda" else torch.float32
-        )
-        
-        logger.info(f"✅ Model loaded: {settings.MODEL_NAME}")
-        logger.info(f"✅ LLM Service started on {settings.DEVICE}")
-    
-    except Exception as e:
-        logger.error(f"❌ Failed to load model: {e}")
-        raise
+    return llm
 
 
-@app.on_event("shutdown")
-async def shutdown():
-    """Cleanup on shutdown"""
-    global model, tokenizer
-    if model:
-        del model
-    if tokenizer:
-        del tokenizer
-    logger.info("✅ LLM Service stopped")
+# ============================================
+# API Endpoints
+# ============================================
 
-
-# ============= ENDPOINTS =============
-
-@app.get("/health", response_model=HealthResponse)
-async def health_check():
-    """Health check"""
-    return HealthResponse(
-        status="healthy" if model and tokenizer else "unhealthy",
-        model_loaded=model is not None and tokenizer is not None,
-        device=settings.DEVICE
-    )
-
-
-@app.post("/generate", response_model=GenerateResponse)
-async def generate(request: GenerateRequest):
-    """Generate text using LLM"""
-    try:
-        if model is None or tokenizer is None:
-            raise HTTPException(status_code=503, detail="Model not loaded")
-        
-        # Tokenize
-        inputs = tokenizer(request.prompt, return_tensors="pt").to(settings.DEVICE)
-        input_length = inputs["input_ids"].shape[1]
-        
-        # Generate
-        outputs = model.generate(
-            **inputs,
-            max_length=request.max_length,
-            temperature=request.temperature,
-            top_p=request.top_p,
-            do_sample=True,
-            pad_token_id=tokenizer.eos_token_id
-        )
-        
-        # Decode
-        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        
-        # Extract only the generated part
-        generated_only = generated_text[len(request.prompt):]
-        
-        return GenerateResponse(
-            success=True,
-            text=generated_only,
-            prompt_tokens=input_length,
-            completion_tokens=outputs[0].shape[0] - input_length
-        )
-    
-    except Exception as e:
-        logger.error(f"❌ Generation failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/")
+@app.get("/", include_in_schema=False)
 async def root():
-    """Service info"""
+    """Root endpoint."""
     return {
-        "service": "llm-service",
-        "model": settings.MODEL_NAME,
-        "device": settings.DEVICE,
-        "max_length": settings.MAX_LENGTH,
+        "service": settings.service_name,
+        "model": settings.model_name,
+        "device": settings.device,
+        "status": "running",
+        "version": "1.0.0",
         "endpoints": {
-            "health": "/health",
+            "health": "GET /health",
             "generate": "POST /generate",
-            "docs": "/docs"
+            "docs": "GET /docs"
         }
     }
 
 
+@app.get("/health", response_model=HealthResponse)
+async def health_check():
+    """
+    Health check endpoint.
+    
+    Returns service status and model information.
+    """
+    return HealthResponse(
+        status="healthy" if llm is not None else "unhealthy",
+        service=settings.service_name,
+        model_loaded=llm is not None,
+        model_name=settings.model_name,
+        device=settings.device,
+        n_ctx=settings.n_ctx
+    )
+
+
+@app.post("/generate", response_model=GenerateResponse)
+async def generate_text(
+    request: GenerateRequest,
+    llm_model = Depends(get_llm)
+):
+    """
+    Generate text using PhoGPT-4B.
+    
+    **Input:**
+    - prompt: Vietnamese text prompt
+    - max_tokens: Maximum tokens to generate (optional)
+    - temperature: Sampling temperature 0-2 (optional)
+    - top_p: Nucleus sampling threshold (optional)
+    - top_k: Top-K sampling (optional)
+    - repeat_penalty: Penalty for repetition (optional)
+    - stop: Stop sequences (optional)
+    
+    **Output:**
+    - success: Whether generation succeeded
+    - text: Generated text
+    - prompt_tokens: Input token count
+    - completion_tokens: Generated token count
+    - total_tokens: Total token count
+    - model: Model name
+    
+    **Example:**
+    ```
+    POST /generate
+    {
+      "prompt": "Điều kiện thành lập công ty TNHH là gì?",
+      "max_tokens": 512,
+      "temperature": 0.7
+    }
+    ```
+    """
+    try:
+        # Use defaults from settings if not provided
+        max_tokens = request.max_tokens or settings.max_tokens
+        temperature = request.temperature or settings.temperature
+        top_p = request.top_p or settings.top_p
+        top_k = request.top_k or settings.top_k
+        repeat_penalty = request.repeat_penalty or settings.repeat_penalty
+        
+        # Format prompt for PhoGPT (instruction format)
+        formatted_prompt = f"### Instruction:\n{request.prompt}\n\n### Response:\n"
+        
+        # Generate with llama-cpp-python
+        output = llm_model(
+            formatted_prompt,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            repeat_penalty=repeat_penalty,
+            stop=request.stop or ["###", "Instruction:"],
+            echo=False  # Don't include prompt in output
+        )
+        
+        # Extract generated text
+        generated_text = output["choices"][0]["text"].strip()
+        
+        # Token counts
+        prompt_tokens = output["usage"]["prompt_tokens"]
+        completion_tokens = output["usage"]["completion_tokens"]
+        
+        return GenerateResponse(
+            success=True,
+            text=generated_text,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            total_tokens=prompt_tokens + completion_tokens,
+            model=settings.model_name
+        )
+        
+    except Exception as e:
+        logger.error(f"Generation failed: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Generation failed: {str(e)}"
+        )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    """Global exception handler."""
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"error": "Internal server error", "detail": str(exc)}
+    )
+
+
+# ============================================
+# Main Entry Point
+# ============================================
+
 if __name__ == "__main__":
     import uvicorn
+    
     uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=settings.SERVICE_PORT,
-        reload=False
+        "main:app",
+        host=settings.service_host,
+        port=settings.service_port,
+        reload=False,
+        log_level=settings.log_level.lower()
     )

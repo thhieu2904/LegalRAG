@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     """Application settings"""
     
     SERVICE_NAME: str = "vector-service"
-    SERVICE_PORT: int = 8003
+    SERVICE_PORT: int = 8012  # 801X series: Internal microservices
     
     # PostgreSQL with pgvector
     POSTGRES_HOST: str = "postgres-vector"
@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     DB_POOL_SIZE: int = 5
     DB_POOL_MAX_OVERFLOW: int = 10
     
-    # Vector search
-    EMBEDDING_DIMENSION: int = 384  # sentence-transformers default
+    # Vector search (Vietnamese embedding model: dangvantuan/vietnamese-document-embedding)
+    EMBEDDING_DIMENSION: int = 768  # Vietnamese model: 768-D
     VECTOR_SIMILARITY_THRESHOLD: float = 0.7
     TOP_K_RESULTS: int = 10
     

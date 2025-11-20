@@ -28,16 +28,17 @@ COPY . .
 # Create models directory for volume mounting
 RUN mkdir -p /app/models
 
-# Expose the port
-EXPOSE 8002
+# Expose default port (can be overridden with PORT env var)
+EXPOSE 8005
 
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV ENVIRONMENT=docker
+ENV SERVICE_PORT=8005
 
-# Health check
+# Health check (uses env variable)
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8002/health || exit 1
+    CMD python -c "import httpx; import os; httpx.get(f'http://localhost:{os.getenv(\"SERVICE_PORT\", 8005)}/health')" || exit 1
 
 # Start the application
 CMD ["python", "main.py"]

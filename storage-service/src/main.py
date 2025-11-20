@@ -205,12 +205,22 @@ async def delete_file(
 @app.post("/extract-text", response_model=TextExtractionResponse)
 async def extract_text(
     file: UploadFile = File(...),
+    clean: bool = Query(True, description="Apply intelligent cleaning to remove noise"),
 ):
     """
     Extract text from PDF file (LOW-LEVEL)
     
-    ⚠️ ADMIN-SERVICE will handle metadata extraction + chunking
-    Storage only extracts raw text.
+    Process:
+      1. Extract raw text from PDF
+      2. Clean text using intelligent heuristics (if clean=True)
+      3. Return cleaned plaintext
+    
+    ⚠️ ADMIN-SERVICE will handle metadata extraction
+    ⚠️ EMBEDDING-SERVICE will handle chunking + vector creation
+    
+    Args:
+        file: PDF file to extract text from
+        clean: Apply intelligent cleaning (default: True)
     
     Returns: {success, text, pages, character_count, word_count}
     """
@@ -220,14 +230,23 @@ async def extract_text(
         
         content = await file.read()
         
+        # Step 1: Extract raw text
         from .extractors.pdf_extractor import PDFExtractor
-        text = PDFExtractor.extract_text(content)
+        raw_text = PDFExtractor.extract_text(content)
         metadata = PDFExtractor.extract_metadata(content)
+        
+        # Step 2: Clean text (if requested)
+        if clean:
+            from .extractors.document_cleaner import LegalDocumentCleaner
+            cleaner = LegalDocumentCleaner()
+            text = cleaner.clean_text(raw_text, score_threshold=-0.2)
+        else:
+            text = raw_text
         
         word_count = len(text.split())
         char_count = len(text)
         
-        logger.info(f"✅ Text extracted: {char_count} chars, {word_count} words")
+        logger.info(f"✅ Text extracted: {char_count} chars, {word_count} words (cleaned={clean})")
         
         return TextExtractionResponse(
             success=True,

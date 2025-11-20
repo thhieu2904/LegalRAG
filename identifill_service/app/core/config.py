@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     
     # 🔧 Server Configuration
     HOST: str = "0.0.0.0"
-    PORT: int = 8002
+    PORT: int = int(os.getenv("SERVICE_PORT", "8005"))  # Utility service port
     
     # 🔧 Timeout Configuration
     RAG_SERVICE_TIMEOUT: int = 30
