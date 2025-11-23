@@ -19,7 +19,17 @@ class Settings(BaseSettings):
     
     # Search parameters
     TOP_K: int = 10
-    SIMILARITY_THRESHOLD: float = 0.3  # Lower threshold for Vietnamese semantic search
+    
+    # Confidence thresholds
+    SIMILARITY_THRESHOLD: float = 0.5  # Minimum similarity to return results
+    LOW_CONFIDENCE_THRESHOLD: float = 0.5  # Below this: show document grouping
+    MEDIUM_CONFIDENCE_THRESHOLD: float = 0.65  # Below this: may need clarification
+    HIGH_CONFIDENCE_THRESHOLD: float = 0.8  # Above this: auto-route
+    
+    # Reranking parameters
+    RERANK_TOP_K: int = 5  # Number of chunks to rerank
+    RERANK_THRESHOLD: float = 0.6  # Minimum rerank score
+    RERANK_SAME_DOCUMENT_ONLY: bool = True  # Only return chunks from same document
     
     class Config:
         env_file = ".env"
