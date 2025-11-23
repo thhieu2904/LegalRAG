@@ -1,9 +1,9 @@
 /**
- * DashboardPage Styles
+ * DashboardPage Styles - 2x2 Grid Layout
  */
 
 .dashboard {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -14,37 +14,63 @@
   margin-bottom: var(--spacing-xl);
 }
 
-/* Stats Grid */
-.statsGrid {
+/* 2x2 Cards Grid */
+.cardsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
 }
 
-.statCard {
+/* Individual Card */
+.card {
   background: white;
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xl);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
 }
 
-.statCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: var(--spacing-lg);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Card 1: System Stats */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-lg);
+  flex: 1;
+}
+
+.statItem {
+  text-align: center;
+  transition: opacity 0.2s;
+}
+
+.statItem:hover {
+  opacity: 0.8;
 }
 
 .statIcon {
-  font-size: 3rem;
-  margin-bottom: var(--spacing-md);
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-sm);
 }
 
 .statValue {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #dc2626;
   margin-bottom: var(--spacing-xs);
@@ -56,45 +82,349 @@
   font-weight: 500;
 }
 
-/* Placeholder */
-.placeholder {
+/* Card 2: Usage Analytics */
+.periodSelect {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius-md);
+  font-size: 0.875rem;
+  color: #475569;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.periodSelect:hover {
+  border-color: #cbd5e1;
+}
+
+.periodSelect:focus {
+  outline: none;
+  border-color: #dc2626;
+}
+
+.analyticsContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.mainMetric {
+  text-align: center;
+  padding: var(--spacing-lg) 0;
+}
+
+.metricValue {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin-bottom: var(--spacing-xs);
+}
+
+.metricLabel {
+  font-size: 1rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.changeIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-size: 0.875rem;
+}
+
+.positive {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.negative {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.changeLabel {
+  color: #64748b;
+}
+
+.topCollections {
+  margin-top: var(--spacing-md);
+}
+
+.subTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: var(--spacing-sm);
+}
+
+.collectionRow {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-xs) 0;
+  font-size: 0.875rem;
+}
+
+.collectionName {
+  color: #475569;
+}
+
+.collectionCount {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.avgConfidence {
+  padding: var(--spacing-sm) 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.avgConfidence strong {
+  color: #dc2626;
+  font-size: 1rem;
+}
+
+/* Card 3: Recent Queries */
+.queriesList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.queryItem {
+  padding: var(--spacing-md);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius-md);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.queryItem:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.queryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.queryText {
+  flex: 1;
+  font-size: 0.875rem;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+.queryTime {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.queryMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 2px 8px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.confidence {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.processingTime {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* Card 4: Services Health */
+.servicesList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.serviceItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius-md);
+  transition: border-color 0.2s;
+}
+
+.serviceItem:hover {
+  border-color: #cbd5e1;
+}
+
+.serviceInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.serviceName {
+  font-size: 0.9375rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.servicePort {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.serviceStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: var(--border-radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusBadge.healthy {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.statusBadge.unhealthy {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.statusBadge.down {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.responseTime {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-family: monospace;
+}
+
+/* Empty State */
+.noData {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: #94a3b8;
+}
+
+.noData p {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: var(--spacing-xs);
+}
+
+.noData small {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+/* Loading & Error States */
+.loading,
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
   background: white;
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-2xl);
-  text-align: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-height: 400px;
 }
 
-.placeholderIcon {
-  font-size: 4rem;
-  margin-bottom: var(--spacing-lg);
-}
-
-.placeholder h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1e293b;
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f3f4f6;
+  border-top-color: #dc2626;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
   margin-bottom: var(--spacing-md);
 }
 
-.placeholder p {
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading p {
   color: #64748b;
   font-size: 1rem;
 }
 
+.error p {
+  color: #dc2626;
+  font-size: 1rem;
+}
+
 /* Responsive */
+@media (max-width: 1024px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .title {
     font-size: 1.5rem;
   }
 
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
+  .card {
+    padding: var(--spacing-lg);
+    min-height: auto;
   }
 
-  .statCard {
-    padding: var(--spacing-md);
+  .cardTitle {
+    font-size: 1.125rem;
+  }
+
+  .statsGrid {
+    gap: var(--spacing-md);
   }
 
   .statIcon {
@@ -102,6 +432,14 @@
   }
 
   .statValue {
+    font-size: 1.5rem;
+  }
+
+  .metricValue {
     font-size: 2rem;
+  }
+
+  .queriesList {
+    max-height: 300px;
   }
 }

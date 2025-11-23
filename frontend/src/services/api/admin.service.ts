@@ -20,6 +20,16 @@ import type {
 } from '@/types/admin.types';
 
 // ============================================
+// ADMIN API INSTANCE (for direct axios usage)
+// ============================================
+
+/**
+ * Admin API instance for direct HTTP calls
+ * Usage: adminApi.get('/endpoint'), adminApi.post('/endpoint', data)
+ */
+export const adminApi = apiClient;
+
+// ============================================
 // COLLECTIONS API
 // ============================================
 

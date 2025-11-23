@@ -19,6 +19,7 @@ import re
 import os
 import uuid
 import json
+import time
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
@@ -27,9 +28,10 @@ logging.basicConfig(level=logging.INFO)
 
 # ============= CONFIG =============
 
+ADMIN_SERVICE_URL = os.getenv("ADMIN_SERVICE_URL", "http://localhost:8001")
 STORAGE_SERVICE_URL = os.getenv("STORAGE_SERVICE_URL", "http://localhost:8010")
-EMBEDDING_SERVICE_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://localhost:8011")
-VECTOR_SERVICE_URL = os.getenv("VECTOR_SERVICE_URL", "http://localhost:8012")
+EMBEDDING_SERVICE_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://localhost:8002")
+VECTOR_SERVICE_URL = os.getenv("VECTOR_SERVICE_URL", "http://localhost:8004")
 SERVICE_PORT = int(os.getenv("SERVICE_PORT", 8001))
 
 # PostgreSQL config (AICenter pattern: Admin has direct DB access)
@@ -39,6 +41,7 @@ POSTGRES_DB = os.getenv("POSTGRES_DB", "legalrag")
 POSTGRES_USER = os.getenv("POSTGRES_USER", "legalrag")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "legalrag_password")
 
+logger.info(f"📡 Admin Service URL: {ADMIN_SERVICE_URL}")
 logger.info(f"📡 Storage Service URL: {STORAGE_SERVICE_URL}")
 logger.info(f"📡 Embedding Service URL: {EMBEDDING_SERVICE_URL}")
 logger.info(f"📡 Vector Service URL: {VECTOR_SERVICE_URL}")
@@ -250,6 +253,253 @@ async def health_check():
         service="admin-service",
         storage_service="unreachable"
     )
+
+
+@app.get("/admin/system-stats")
+async def get_system_stats():
+    """Get system statistics for dashboard"""
+    try:
+        # Use synchronous psycopg2 connection
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        try:
+            # Get collections count
+            cursor.execute("SELECT COUNT(*) as count FROM collections WHERE is_active = true")
+            collections_count = cursor.fetchone()[0]
+            
+            # Get documents count
+            cursor.execute("SELECT COUNT(*) as count FROM documents")
+            documents_count = cursor.fetchone()[0]
+            
+            # Get forms count
+            cursor.execute("SELECT COUNT(*) as count FROM forms")
+            forms_count = cursor.fetchone()[0]
+            
+            # Get total chunks count (sum from all documents)
+            cursor.execute("SELECT COALESCE(SUM(chunk_count), 0) as total_chunks FROM documents")
+            chunks_count = cursor.fetchone()[0]
+            
+        finally:
+            cursor.close()
+            conn.close()
+        
+        # Check storage service health
+        storage_status = "unknown"
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(f"{STORAGE_SERVICE_URL}/health", timeout=3.0)
+                if resp.status_code == 200 and resp.json().get("storage_connected"):
+                    storage_status = "healthy"
+                else:
+                    storage_status = "unhealthy"
+        except Exception:
+            storage_status = "unreachable"
+        
+        return {
+            "collections_count": collections_count,
+            "documents_count": documents_count,
+            "forms_count": forms_count,
+            "chunks_count": chunks_count,
+            "storage_status": storage_status
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching system stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/admin/usage-analytics")
+async def get_usage_analytics(period: str = "7days"):
+    """
+    Get usage analytics for different time periods
+    Supported periods: today, 7days, 30days, 3months
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Determine date range based on period
+        if period == "today":
+            date_filter = "created_at >= CURRENT_DATE"
+            interval = "1 day"
+        elif period == "7days":
+            date_filter = "created_at >= CURRENT_DATE - INTERVAL '7 days'"
+            interval = "7 days"
+        elif period == "30days":
+            date_filter = "created_at >= CURRENT_DATE - INTERVAL '30 days'"
+            interval = "30 days"
+        elif period == "3months":
+            date_filter = "created_at >= CURRENT_DATE - INTERVAL '3 months'"
+            interval = "3 months"
+        else:
+            date_filter = "created_at >= CURRENT_DATE - INTERVAL '7 days'"
+            interval = "7 days"
+        
+        try:
+            # Total queries in period
+            cursor.execute(f"""
+                SELECT COUNT(*) as total_queries
+                FROM query_logs
+                WHERE {date_filter}
+            """)
+            total_queries = cursor.fetchone()[0] or 0
+            
+            # Previous period comparison
+            cursor.execute(f"""
+                SELECT COUNT(*) as prev_queries
+                FROM query_logs
+                WHERE created_at >= CURRENT_DATE - INTERVAL '{interval}' * 2
+                AND created_at < CURRENT_DATE - INTERVAL '{interval}'
+            """)
+            prev_queries = cursor.fetchone()[0] or 0
+            
+            # Calculate percentage change
+            if prev_queries > 0:
+                change_percent = ((total_queries - prev_queries) / prev_queries) * 100
+            else:
+                change_percent = 100.0 if total_queries > 0 else 0.0
+            
+            # Daily breakdown for chart
+            cursor.execute(f"""
+                SELECT 
+                    DATE(created_at) as date,
+                    COUNT(*) as count
+                FROM query_logs
+                WHERE {date_filter}
+                GROUP BY DATE(created_at)
+                ORDER BY date ASC
+            """)
+            daily_data = [{"date": str(row[0]), "count": row[1]} for row in cursor.fetchall()]
+            
+            # Top collections
+            cursor.execute(f"""
+                SELECT 
+                    collection_routed,
+                    COUNT(*) as count
+                FROM query_logs
+                WHERE {date_filter} AND collection_routed IS NOT NULL
+                GROUP BY collection_routed
+                ORDER BY count DESC
+                LIMIT 5
+            """)
+            top_collections = [{"collection": row[0], "count": row[1]} for row in cursor.fetchall()]
+            
+            # Average confidence
+            cursor.execute(f"""
+                SELECT AVG(confidence_score) as avg_confidence
+                FROM query_logs
+                WHERE {date_filter} AND confidence_score IS NOT NULL
+            """)
+            avg_confidence = cursor.fetchone()[0] or 0.0
+            
+        finally:
+            cursor.close()
+            conn.close()
+        
+        return {
+            "period": period,
+            "total_queries": total_queries,
+            "prev_period_queries": prev_queries,
+            "change_percent": round(change_percent, 1),
+            "daily_data": daily_data,
+            "top_collections": top_collections,
+            "avg_confidence": round(avg_confidence, 2) if avg_confidence else 0.0
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching usage analytics: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/admin/recent-queries")
+async def get_recent_queries(limit: int = 10):
+    """Get recent queries with session info"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute("""
+                SELECT 
+                    ql.id,
+                    ql.query_text,
+                    ql.collection_routed,
+                    ql.confidence_score,
+                    ql.processing_time_ms,
+                    ql.created_at,
+                    ql.session_id,
+                    qs.conversation_turns
+                FROM query_logs ql
+                LEFT JOIN query_sessions qs ON ql.session_id = qs.session_id
+                ORDER BY ql.created_at DESC
+                LIMIT %s
+            """, (limit,))
+            
+            results = cursor.fetchall()
+            queries = []
+            for row in results:
+                queries.append({
+                    "id": str(row[0]),
+                    "query_text": row[1],
+                    "collection": row[2],
+                    "confidence": round(row[3], 2) if row[3] else 0.0,
+                    "processing_time": row[4],
+                    "created_at": row[5].isoformat() if row[5] else None,
+                    "session_id": row[6],
+                    "conversation_turns": row[7] or 0
+                })
+            
+        finally:
+            cursor.close()
+            conn.close()
+        
+        return {"queries": queries}
+        
+    except Exception as e:
+        logger.error(f"Error fetching recent queries: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/admin/services-health")
+async def get_services_health():
+    """Check health of all microservices"""
+    services = [
+        {"name": "Admin Service", "url": f"{ADMIN_SERVICE_URL}/health", "port": 8001},
+        {"name": "Storage Service", "url": f"{STORAGE_SERVICE_URL}/health", "port": 8010},
+        {"name": "Embedding Service", "url": f"{EMBEDDING_SERVICE_URL}/health", "port": 8002},
+        {"name": "Vector Service", "url": f"{VECTOR_SERVICE_URL}/health", "port": 8004},
+    ]
+    
+    results = []
+    async with httpx.AsyncClient() as client:
+        for service in services:
+            try:
+                start = time.time()
+                resp = await client.get(service["url"], timeout=3.0)
+                response_time = int((time.time() - start) * 1000)
+                
+                if resp.status_code == 200:
+                    status = "healthy"
+                    details = resp.json() if resp.text else {}
+                else:
+                    status = "unhealthy"
+                    details = {"error": f"HTTP {resp.status_code}"}
+                    
+            except Exception as e:
+                status = "down"
+                response_time = 0
+                details = {"error": str(e)}
+            
+            results.append({
+                "name": service["name"],
+                "status": status,
+                "response_time": response_time,
+                "port": service["port"],
+                "details": details
+            })
+    
+    return {"services": results}
 
 
 # ============= MAIN ORCHESTRATION ENDPOINT =============
