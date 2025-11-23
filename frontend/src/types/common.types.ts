@@ -40,7 +40,15 @@ export interface ChunkInfo {
 }
 
 /**
- * Document Source (grouped chunks)
+ * Source (matching Query Service API response)
+ */
+export interface Source {
+  content: string;
+  similarity: number;
+}
+
+/**
+ * Document Source (grouped chunks) - for future use
  */
 export interface DocumentSource {
   document_id: string;
@@ -53,11 +61,6 @@ export interface DocumentSource {
   max_similarity: number;
   chunks: ChunkInfo[];
 }
-
-/**
- * Source - Alias for DocumentSource (backward compatibility)
- */
-export type Source = DocumentSource;
 
 /**
  * Metadata

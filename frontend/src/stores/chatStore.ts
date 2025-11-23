@@ -101,7 +101,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   // Send message (call API and update state)
   sendMessage: async (question: string, filters: FilterOptions) => {
-    const { addMessage, setLoading, setError, conversationHistory } = get();
+    const { addMessage, setLoading, setError } = get();
 
     // Create and add user message
     const userMessage: ChatMessage = {
@@ -119,8 +119,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
     try {
       const response = await sendChatMessage({
         question,
-        history: conversationHistory,
-        filters,
         top_k: 5,
         threshold: 0.7,
       });
@@ -133,14 +131,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
         sources: response.sources,
         timestamp: new Date(),
         tokens: response.tokens_used,
-        took_ms: response.took_ms,
-        query: question, // Store original query for keyword highlighting
       };
       addMessage(aiMessage);
-
-      // Add to conversation history for context
-      get().addToHistory({ role: 'user', content: question });
-      get().addToHistory({ role: 'assistant', content: response.answer });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Có lỗi xảy ra khi gửi tin nhắn';

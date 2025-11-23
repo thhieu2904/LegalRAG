@@ -7,12 +7,28 @@ import { API_BASE_URL, API_TIMEOUT, API_HEADERS } from '@/constants';
 import { getAuthToken } from '@/stores/authStore';
 
 /**
- * Create Axios instance
+ * Query Service Base URL (separate from admin service)
+ */
+const QUERY_SERVICE_URL = import.meta.env.VITE_QUERY_SERVICE_URL || 'http://localhost:8002';
+
+/**
+ * Create Axios instance for Admin Service
  */
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: API_TIMEOUT,
   headers: API_HEADERS,
+});
+
+/**
+ * Create Axios instance for Query Service (no auth needed for public queries)
+ */
+export const queryClient: AxiosInstance = axios.create({
+  baseURL: QUERY_SERVICE_URL,
+  timeout: 60000, // Longer timeout for LLM responses
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 /**

@@ -30,7 +30,13 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
   return (
     <div className={cn(styles.chatMessage, isUser && styles.userMessage, isAI && styles.aiMessage)}>
       {/* Avatar */}
-      <div className={styles.avatar}>{isUser ? <User size={20} /> : <Bot size={20} />}</div>
+      <div className={styles.avatar}>
+        {isUser ? (
+          <User size={20} />
+        ) : (
+          <img src="/LOGO_HCC.jpg" alt="AI Assistant" className={styles.botAvatar} />
+        )}
+      </div>
 
       {/* Content */}
       <div className={styles.content}>

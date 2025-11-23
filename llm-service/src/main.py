@@ -1,14 +1,14 @@
-"""
-LLM Service - PhoGPT with llama-cpp-python
+"""LLM Service - Vistral 7B with llama-cpp-python
 """
 import os
 import logging
 from contextlib import asynccontextmanager
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 from .config import settings
 from .models import (
@@ -56,12 +56,12 @@ async def lifespan(app: FastAPI):
         
         # Check if model file exists
         if not os.path.exists(settings.model_path):
-            logger.warning(f"Model file not found: {settings.model_path}")
-            logger.info("Run download_model.py to download PhoGPT model")
-            raise FileNotFoundError(f"Model file not found: {settings.model_path}")
+            logger.error(f"Model file not found: {settings.model_path}")
+            logger.info("Run download_model.py to download Vistral 7B model")
+            raise FileNotFoundError(f"Model not found: {settings.model_path}")
         
-        # Load PhoGPT model with llama-cpp-python
-        logger.info("Loading PhoGPT model (this may take a minute)...")
+        # Load Vistral 7B model with llama-cpp-python
+        logger.info("Loading Vistral 7B model (this may take a minute)...")
         llm = Llama(
             model_path=settings.model_path,
             n_ctx=settings.n_ctx,
@@ -73,7 +73,7 @@ async def lifespan(app: FastAPI):
             verbose=settings.verbose
         )
         
-        logger.info("✓ PhoGPT model loaded successfully")
+        logger.info("✓ Vistral 7B model loaded successfully")
         logger.info(f"✓ Using device: {settings.device}")
         if settings.device == "cuda" and settings.n_gpu_layers == -1:
             logger.info("✓ All layers loaded on GPU")
@@ -101,7 +101,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.service_name,
-    description="Vietnamese Legal LLM using PhoGPT-4B with llama-cpp",
+    description="Vietnamese Legal LLM using Vistral 7B with llama-cpp",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -173,11 +173,12 @@ async def generate_text(
     request: GenerateRequest,
     llm_model = Depends(get_llm)
 ):
-    """
-    Generate text using PhoGPT-4B.
+    """Generate text using Vistral 7B (raw prompt, no system wrapping).
+    
+    For RAG queries with automatic system prompt wrapping, use /generate-rag instead.
     
     **Input:**
-    - prompt: Vietnamese text prompt
+    - prompt: Vietnamese text prompt (already formatted)
     - max_tokens: Maximum tokens to generate (optional)
     - temperature: Sampling temperature 0-2 (optional)
     - top_p: Nucleus sampling threshold (optional)
@@ -192,16 +193,6 @@ async def generate_text(
     - completion_tokens: Generated token count
     - total_tokens: Total token count
     - model: Model name
-    
-    **Example:**
-    ```
-    POST /generate
-    {
-      "prompt": "Điều kiện thành lập công ty TNHH là gì?",
-      "max_tokens": 512,
-      "temperature": 0.7
-    }
-    ```
     """
     try:
         # Use defaults from settings if not provided
@@ -211,9 +202,7 @@ async def generate_text(
         top_k = request.top_k or settings.top_k
         repeat_penalty = request.repeat_penalty or settings.repeat_penalty
         
-        # Format prompt cho Vistral (Vietnamese instruction format)
-        # Vistral-7B-Chat được train với format đơn giản: prompt trực tiếp
-        # KHÔNG cần wrap như PhoGPT vì đã có system instructions trong prompt
+        # Use prompt as-is (caller is responsible for formatting)
         formatted_prompt = request.prompt
         
         # Generate với llama-cpp-python
@@ -249,6 +238,104 @@ async def generate_text(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Generation failed: {str(e)}"
+        )
+
+
+# ============================================
+# RAG-Optimized Generation Endpoint
+# ============================================
+
+class RAGGenerateRequest(BaseModel):
+    """Request for RAG generation with automatic system prompt wrapping."""
+    question: str  # User's original question
+    context: str  # Retrieved context from vector search
+    history: Optional[List[dict]] = None  # Chat history (optional)
+    max_tokens: Optional[int] = None
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    top_k: Optional[int] = None
+    repeat_penalty: Optional[float] = None
+    stop: Optional[list[str]] = None
+
+
+@app.post("/generate-rag", response_model=GenerateResponse)
+async def generate_rag(
+    request: RAGGenerateRequest,
+    llm_model = Depends(get_llm)
+):
+    """
+    Generate RAG response with automatic system prompt wrapping.
+    
+    This endpoint:
+    1. Takes question + context from query service
+    2. Automatically wraps with system_prompt.txt + citation_rules.txt
+    3. Generates response with proper guardrails against hallucination
+    
+    **Input:**
+    - question: User's original question
+    - context: Retrieved documents/chunks from vector search
+    - history: Chat history (optional)
+    - max_tokens, temperature, etc.: Generation parameters
+    
+    **Output:**
+    - success: Whether generation succeeded
+    - text: Generated text with citations
+    - prompt_tokens, completion_tokens, total_tokens: Token counts
+    - model: Model name
+    """
+    try:
+        # Use defaults from settings if not provided
+        max_tokens = request.max_tokens or settings.max_tokens
+        temperature = request.temperature or settings.temperature
+        top_p = request.top_p or settings.top_p
+        top_k = request.top_k or settings.top_k
+        repeat_penalty = request.repeat_penalty or settings.repeat_penalty
+        
+        # Build prompt using prompt_builder (includes system_prompt.txt + citation_rules.txt)
+        formatted_prompt = prompt_builder.build_prompt(
+            question=request.question,
+            context=request.context,
+            history=request.history
+        )
+        
+        logger.info(f"RAG Generation - Question: {request.question[:100]}...")
+        logger.debug(f"Full Prompt:\n{formatted_prompt[:500]}...")
+        
+        # Generate với llama-cpp-python
+        output = llm_model(
+            formatted_prompt,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            repeat_penalty=repeat_penalty,
+            stop=request.stop or ["---", "## ", "Người dùng:", "CÂU HỎI"],
+            echo=False
+        )
+        
+        # Extract generated text
+        generated_text = output["choices"][0]["text"].strip()
+        
+        # Token counts
+        prompt_tokens = output["usage"]["prompt_tokens"]
+        completion_tokens = output["usage"]["completion_tokens"]
+        
+        logger.info(f"Generated {completion_tokens} tokens")
+        
+        return GenerateResponse(
+            success=True,
+            text=generated_text,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            total_tokens=prompt_tokens + completion_tokens,
+            model=settings.model_name
+        )
+        
+    except Exception as e:
+        logger.error(f"RAG Generation failed: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"RAG Generation failed: {str(e)}"
         )
 
 

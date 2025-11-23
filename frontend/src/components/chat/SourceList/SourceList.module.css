@@ -31,6 +31,47 @@
   gap: var(--spacing-sm);
 }
 
+.sourceCard {
+  background: white;
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  transition: border-color 0.2s;
+}
+
+.sourceCard:hover {
+  border-color: var(--primary-color);
+}
+
+.sourceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.sourceNumber {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+}
+
+.similarity {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.sourceContent {
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .toggleButton {
   display: flex;
   align-items: center;

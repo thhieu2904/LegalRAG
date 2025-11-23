@@ -1,5 +1,4 @@
-"""
-LLM Service Configuration - PhoGPT with llama-cpp-python
+"""LLM Service Configuration - Vistral 7B with llama-cpp-python
 """
 from pydantic_settings import BaseSettings
 from typing import Optional

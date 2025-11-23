@@ -28,41 +28,23 @@ export interface ChatMessage {
 }
 
 /**
- * Chat Request
+ * Chat Request (matching Query Service API)
  */
 export interface ChatRequest {
   question: string;
-  history?: Message[];
   top_k?: number;
-  filters?: {
-    ma_khoa?: string;
-    ma_mon_hoc?: string;
-    nam_hoc_cap_do?: number;
-    hoc_ky?: number;
-    loai_noi_dung?: string;
-    so_chuong?: number;
-  };
   threshold?: number;
 }
 
 /**
- * Chat Response
+ * Chat Response (matching Query Service API)
  */
 export interface ChatResponse {
+  success: boolean;
   question: string;
   answer: string;
   sources: Source[];
-  confidence: number;
   tokens_used: number;
-  prompt_tokens: number;
-  completion_tokens: number;
-  finish_reason: string;
-  citations: string[];
-  validation_score: number;
-  citation_coverage: number;
-  citation_confidence: number;
-  safety_ratings: Record<string, unknown>;
-  took_ms: number;
 }
 
 /**

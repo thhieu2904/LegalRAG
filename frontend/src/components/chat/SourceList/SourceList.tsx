@@ -1,14 +1,13 @@
 /**
- * SourceList Component
+ * SourceList Component - Display sources from Query Service
  */
 
 import { useState } from 'react';
 import { FileText, ChevronDown, ChevronUp } from 'lucide-react';
-import { DocumentCard } from '../DocumentCard';
 import styles from './SourceList.module.css';
 import type { SourceListProps } from './SourceList.types';
 
-export const SourceList = ({ sources, query }: SourceListProps) => {
+export const SourceList = ({ sources }: SourceListProps) => {
   const [expanded, setExpanded] = useState(false);
   const displaySources = expanded ? sources : sources.slice(0, 3);
   const hasMore = sources.length > 3;
@@ -25,13 +24,16 @@ export const SourceList = ({ sources, query }: SourceListProps) => {
 
       {/* Sources */}
       <div className={styles.sources}>
-        {displaySources.map((document, idx) => (
-          <DocumentCard
-            key={document.document_id}
-            document={document}
-            index={idx + 1}
-            query={query}
-          />
+        {displaySources.map((source, idx) => (
+          <div key={idx} className={styles.sourceCard}>
+            <div className={styles.sourceHeader}>
+              <span className={styles.sourceNumber}>#{idx + 1}</span>
+              <span className={styles.similarity}>
+                Độ tương đồng: {(source.similarity * 100).toFixed(1)}%
+              </span>
+            </div>
+            <div className={styles.sourceContent}>{source.content}</div>
+          </div>
         ))}
       </div>
 

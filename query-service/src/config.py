@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     
     # Search parameters
     TOP_K: int = 10
-    SIMILARITY_THRESHOLD: float = 0.7
+    SIMILARITY_THRESHOLD: float = 0.3  # Lower threshold for Vietnamese semantic search
     
     class Config:
         env_file = ".env"

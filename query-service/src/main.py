@@ -165,20 +165,28 @@ async def rerank_documents(query: str, documents: List[dict], top_k: int = 5) ->
         return documents[:top_k]
 
 
-async def generate_answer(prompt: str) -> Optional[str]:
-    """Generate answer using LLM"""
+async def generate_answer(question: str, context: str) -> Optional[str]:
+    """
+    Generate answer using LLM Service's /generate-rag endpoint.
+    
+    This function sends question + context to LLM service,
+    which automatically wraps with system_prompt.txt + citation_rules.txt.
+    """
     try:
         response = await http_client.post(
-            f"{settings.LLM_SERVICE_URL}/generate",
+            f"{settings.LLM_SERVICE_URL}/generate-rag",
             json={
-                "prompt": prompt,
-                "max_length": 1024,
-                "temperature": 0.7
+                "question": question,
+                "context": context,
+                "max_tokens": 1024,
+                "temperature": 0.3,  # Low temperature for factual legal answers
+                "top_p": 0.85
             },
-            timeout=120.0  # Tăng timeout lên 2 phút cho LLM generation
+            timeout=120.0  # LLM can be slow
         )
         if response.status_code == 200:
             data = response.json()
+            logger.info(f"✅ LLM generated {data.get('completion_tokens', 0)} tokens")
             return data.get("text", "")
         else:
             logger.error(f"❌ LLM generation failed: {response.status_code} - {response.text}")
@@ -215,6 +223,35 @@ async def query(request: QueryRequest):
     try:
         logger.info(f"🔍 Query: {request.question}")
         
+        # Detect small talk / greetings
+        question_lower = request.question.lower().strip()
+        small_talk_patterns = [
+            "xin chào", "chào bạn", "chào anh", "chào chị",
+            "hello", "hi ", "hey ",
+            "bạn là ai", "bạn tên gì", "ai tạo ra bạn",
+            "cảm ơn", "thank", "bye", "tạm biệt"
+        ]
+        
+        # Only match if pattern is at start/end or standalone
+        is_small_talk = False
+        for pattern in small_talk_patterns:
+            if question_lower == pattern or \
+               question_lower.startswith(pattern + " ") or \
+               question_lower.endswith(" " + pattern) or \
+               question_lower.startswith(pattern + "!") or \
+               question_lower.endswith("!" + pattern):
+                is_small_talk = True
+                break
+        
+        if is_small_talk:
+            return QueryResponse(
+                success=True,
+                question=request.question,
+                answer="Xin chào! Tôi là trợ lý AI tra cứu văn bản pháp luật của Trung tâm. Tôi có thể giúp bạn tìm hiểu về các thủ tục hành chính như đăng ký khai sinh, kết hôn, cấp CCCD và các vấn đề pháp lý khác. Bạn có thể hỏi tôi bất kỳ câu hỏi nào về thủ tục hành chính nhé!",
+                sources=[],
+                tokens_used=0
+            )
+        
         # Step 1: Embed question
         logger.info("Step 1: Embedding question...")
         embedding = await embed_text(request.question)
@@ -228,7 +265,7 @@ async def query(request: QueryRequest):
             return QueryResponse(
                 success=True,
                 question=request.question,
-                answer="No relevant documents found.",
+                answer="Xin lỗi, tôi không tìm thấy thông tin liên quan trong cơ sở dữ liệu văn bản pháp luật. Vui lòng thử lại với câu hỏi khác hoặc liên hệ bộ phận hỗ trợ để được tư vấn chi tiết.",
                 sources=[],
                 tokens_used=0
             )
@@ -255,37 +292,10 @@ async def query(request: QueryRequest):
         
         context = "\n\n---\n\n".join(context_parts)
         
-        # Step 5: Build prompt theo Legal RAG pattern
-        logger.info("Step 5: Building prompt...")
-        prompt = f"""Bạn là trợ lý AI pháp luật chuyên nghiệp. Trả lời câu hỏi dựa trên văn bản pháp luật được cung cấp. Luôn trích dẫn nguồn rõ ràng.
-
-## NGUYÊN TẮC TRẢ LỜI
-
-1. Trả lời bằng tiếng Việt rõ ràng, dễ hiểu
-2. Trích dẫn chính xác văn bản pháp luật (tên, số, ngày)
-3. Cấu trúc câu trả lời có đầu mục, gạch đầu dòng
-4. Nêu rõ thời gian, lệ phí nếu có
-5. KHÔNG bịa thông tin không có trong văn bản
-
-## VĂN BẢN PHÁP LUẬT THAM KHẢO
-
-{context}
-
----
-
-## CÂU HỎI
-
-{request.question}
-
----
-
-## CÂU TRẢ LỜI
-
-"""
-        
-        # Step 6: Generate answer using LLM
-        logger.info("Step 6: Generating answer...")
-        answer = await generate_answer(prompt)
+        # Step 5: Generate answer using LLM with RAG endpoint
+        # (LLM service will automatically wrap with system_prompt.txt + citation_rules.txt)
+        logger.info("Step 5: Generating answer with RAG prompt...")
+        answer = await generate_answer(request.question, context)
         if answer is None:
             raise HTTPException(status_code=503, detail="LLM service unavailable")
         
@@ -300,7 +310,7 @@ async def query(request: QueryRequest):
                 )
                 for result in reranked_results
             ],
-            tokens_used=len(prompt.split()) + len(answer.split())
+            tokens_used=0  # LLM service will track tokens
         )
     
     except HTTPException:
