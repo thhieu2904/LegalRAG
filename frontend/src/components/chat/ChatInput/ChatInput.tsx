@@ -5,6 +5,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { KeyboardEvent } from 'react';
 import { Send, Loader2 } from 'lucide-react';
+import { VoiceInput } from '../VoiceInput';
 // import { Filter } from 'lucide-react'; // TODO: Re-enable when filters fixed
 // import { Select } from '@/components/common'; // TODO: Re-enable when filters fixed
 // import { MA_KHOA_OPTIONS, MON_HOC_OPTIONS, HOC_KY_OPTIONS } from '@/constants/app.constants'; // TODO: Replace with new schema
@@ -48,6 +49,25 @@ export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
   const maxLength = 1000;
   const charCount = input.length;
   const isNearLimit = charCount > maxLength * 0.8;
+
+  // Voice input handlers
+  const handleTranscriptChange = (transcript: string) => {
+    // Show interim transcript (optional - can be used for live preview)
+    console.log('Interim:', transcript);
+  };
+
+  const handleFinalTranscript = (transcript: string) => {
+    // Append final transcript to input
+    setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+  };
+
+  const handleAutoSend = async (transcript: string) => {
+    // Auto-send when recording stops (if enabled in settings)
+    if (!disabled) {
+      await onSend(transcript.trim(), filters);
+      setInput('');
+    }
+  };
 
   return (
     <div className={styles.chatInput}>
@@ -121,14 +141,23 @@ export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
               disabled={disabled}
             />
 
-            <button
-              type="submit"
-              disabled={!input.trim() || disabled}
-              className={styles.sendButton}
-              title="Gửi tin nhắn (Enter)"
-            >
-              {disabled ? <Loader2 size={20} className={styles.spinner} /> : <Send size={20} />}
-            </button>
+            <div className={styles.buttonGroup}>
+              <VoiceInput
+                onTranscriptChange={handleTranscriptChange}
+                onFinalTranscript={handleFinalTranscript}
+                onAutoSend={handleAutoSend}
+                disabled={disabled}
+              />
+
+              <button
+                type="submit"
+                disabled={!input.trim() || disabled}
+                className={styles.sendButton}
+                title="Gửi tin nhắn (Enter)"
+              >
+                {disabled ? <Loader2 size={20} className={styles.spinner} /> : <Send size={20} />}
+              </button>
+            </div>
           </div>
           <div className={styles.footer}>
             <span className={styles.hint}>Enter để gửi • Shift+Enter để xuống dòng</span>

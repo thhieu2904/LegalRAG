@@ -3,22 +3,24 @@
  * Navigation menu for Admin Dashboard
  */
 
-import { LayoutDashboard, FolderOpen, FileText, BarChart3, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, BarChart3, Settings, LogOut, Mic2 } from 'lucide-react';
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { cn } from '@/utils/helpers/className';
+import { VoiceSettings } from '@/components/admin/VoiceSettings';
 import styles from './Sidebar.module.css';
 import type { SidebarProps, MenuItem } from './Sidebar.types';
 
 const menuItems: MenuItem[] = [
   { path: '/admin', icon: LayoutDashboard, label: 'Tổng quan', exact: true },
   { path: '/admin/collections', icon: FolderOpen, label: 'Bộ sưu tập' },
-  { path: '/admin/documents', icon: FileText, label: 'Tài liệu' },
   { path: '/admin/stats', icon: BarChart3, label: 'Thống kê' },
   { path: '/admin/settings', icon: Settings, label: 'Cài đặt' },
 ];
 
 export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const navigate = useNavigate();
+  const [isVoiceSettingsOpen, setIsVoiceSettingsOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('isAdminLoggedIn');
@@ -55,6 +57,18 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
               <span>{item.label}</span>
             </NavLink>
           ))}
+
+          {/* Voice Settings Menu Item */}
+          <button
+            className={styles.navItem}
+            onClick={() => {
+              setIsVoiceSettingsOpen(true);
+              onClose(); // Close sidebar on mobile
+            }}
+          >
+            <Mic2 size={20} />
+            <span>Cài đặt giọng nói</span>
+          </button>
         </nav>
 
         {/* Logout Button */}
@@ -65,6 +79,9 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           </button>
         </div>
       </aside>
+
+      {/* Voice Settings Sidebar */}
+      <VoiceSettings isOpen={isVoiceSettingsOpen} onClose={() => setIsVoiceSettingsOpen(false)} />
     </>
   );
 };

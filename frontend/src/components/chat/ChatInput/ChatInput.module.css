@@ -115,6 +115,12 @@
   gap: var(--spacing-sm);
 }
 
+.buttonGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
 .textarea {
   width: 100%;
   min-height: 24px;

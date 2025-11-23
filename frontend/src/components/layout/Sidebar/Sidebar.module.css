@@ -94,10 +94,35 @@
   transform: translateX(0);
 }
 
-/* Footer Section (Logout) */
+/* Footer Section */
 .footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
   padding: var(--spacing-lg) var(--spacing-md);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.voiceSettingsBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: #a5b4fc; /* Light indigo */
+  background: none;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-duration) var(--transition-timing);
+}
+
+.voiceSettingsBtn:hover {
+  background-color: rgba(99, 102, 241, 0.2);
+  color: #c7d2fe;
+  transform: translateX(4px);
 }
 
 .logoutBtn {
