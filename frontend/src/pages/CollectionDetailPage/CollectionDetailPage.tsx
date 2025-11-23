@@ -41,6 +41,11 @@ export const CollectionDetailPage = () => {
     navigate(`/admin/collections/${collectionId}/upload`);
   };
 
+  const handleClickDocument = (id: string) => {
+    // Navigate to document detail page
+    navigate(`/admin/documents/${id}`);
+  };
+
   const handleEditDocument = (id: string) => {
     // Edit = Delete + Re-upload
     navigate(`/admin/collections/${collectionId}/upload?replace=${id}`);
@@ -48,6 +53,24 @@ export const CollectionDetailPage = () => {
 
   const handleDeleteDocument = (id: string) => {
     setDeletingDocumentId(id);
+  };
+
+  const handleDownloadDocument = async (filePath: string, filename: string) => {
+    try {
+      const STORAGE_SERVICE_URL = 'http://localhost:8010';
+      const url = `${STORAGE_SERVICE_URL}/download?file_path=${encodeURIComponent(filePath)}`;
+
+      // Create a temporary link and click it
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Không thể tải xuống file. Vui lòng thử lại.');
+    }
   };
 
   const handleDeleteConfirm = async () => {
@@ -93,9 +116,11 @@ export const CollectionDetailPage = () => {
       <DocumentsGrid
         documents={documents}
         loading={loading}
+        onClick={handleClickDocument}
         onEdit={handleEditDocument}
         onDelete={handleDeleteDocument}
         onCreate={handleAddDocument}
+        onDownload={handleDownloadDocument}
       />
 
       {/* Delete Document Dialog */}

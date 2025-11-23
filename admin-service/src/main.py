@@ -347,7 +347,7 @@ async def process_document(
             file_path = upload_result['file_path']
             logger.info(f"✅ STEP 1 OK: {file_path}")
         
-        # ===== STEP 2: INSERT documents table (AICenter Pattern - Admin does this) =====
+        # ===== STEP 2: INSERT documents table (SIMPLIFIED - no status/metadata) =====
         logger.info(f"💾 STEP 2: Inserting document metadata to PostgreSQL...")
         try:
             conn = get_db_connection()
@@ -357,17 +357,16 @@ async def process_document(
                 INSERT INTO documents (
                     id, collection_id, title, filename,
                     file_path, file_size,
-                    status, metadata, created_at, updated_at
+                    created_at, updated_at
                 ) VALUES (
                     %s, %s, %s, %s,
                     %s, %s,
-                    'processing', %s::jsonb, NOW(), NOW()
+                    NOW(), NOW()
                 )
                 RETURNING id;
             """, (
                 doc_uuid, collection_uuid, title, file.filename,
-                file_path, file_size,
-                json.dumps({})  # Will update metadata later
+                file_path, file_size
             ))
             
             conn.commit()
@@ -916,6 +915,21 @@ async def list_documents(
         cursor.execute(query, params)
         documents = cursor.fetchall()
         
+        # Get forms count for each document
+        document_ids = [doc['id'] for doc in documents]  # Keep as UUID, not string
+        forms_counts = {}
+        
+        if document_ids:
+            cursor.execute("""
+                SELECT document_id, COUNT(*) as forms_count
+                FROM forms
+                WHERE document_id = ANY(%s::uuid[])
+                GROUP BY document_id
+            """, (document_ids,))
+            
+            for row in cursor.fetchall():
+                forms_counts[str(row['document_id'])] = row['forms_count']
+        
         # Get total count
         count_query = "SELECT COUNT(*) FROM documents WHERE 1=1"
         count_params = []
@@ -943,6 +957,7 @@ async def list_documents(
                     "file_path": doc['file_path'],
                     "file_size": doc['file_size'],
                     "chunk_count": doc.get('chunk_count', 0),
+                    "forms_count": forms_counts.get(str(doc['id']), 0),
                     "created_at": doc['created_at'].isoformat() if doc['created_at'] else None,
                     "updated_at": doc['updated_at'].isoformat() if doc.get('updated_at') else None
                 }
@@ -989,12 +1004,12 @@ async def get_document_detail(document_id: str):
         
         chunks = cursor.fetchall()
         
-        # Get forms
+        # Get forms (simplified - only 5 fields)
         cursor.execute("""
-            SELECT id, form_name, form_type, form_code, template_path
+            SELECT id, form_name, description, template_path, created_at
             FROM forms
             WHERE document_id = %s
-            ORDER BY created_at
+            ORDER BY created_at DESC
         """, (document_id,))
         
         forms = cursor.fetchall()
@@ -1028,9 +1043,9 @@ async def get_document_detail(document_id: str):
                 {
                     "id": str(form['id']),
                     "form_name": form['form_name'],
-                    "form_type": form.get('form_type'),
-                    "form_code": form.get('form_code'),
-                    "template_path": form.get('template_path')
+                    "description": form.get('description'),
+                    "template_path": form.get('template_path'),
+                    "created_at": form['created_at'].isoformat() if form.get('created_at') else None
                 }
                 for form in forms
             ]
@@ -1473,6 +1488,316 @@ async def replace_document(
         raise
     except Exception as e:
         logger.error(f"❌ Failed to replace document: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============= FORMS API =============
+
+@app.get("/admin/documents/{document_id}/forms")
+async def list_document_forms(document_id: str):
+    """
+    List all forms for a specific document
+    
+    Args:
+        document_id: UUID of document
+    
+    Returns:
+        List of forms with details
+    """
+    try:
+        uuid.UUID(document_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid document_id UUID")
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Check if document exists
+        cursor.execute("SELECT id FROM documents WHERE id = %s", (document_id,))
+        if not cursor.fetchone():
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Get forms (simplified - only 5 fields)
+        cursor.execute("""
+            SELECT 
+                id,
+                form_name,
+                description,
+                template_path,
+                created_at,
+                updated_at
+            FROM forms
+            WHERE document_id = %s
+            ORDER BY created_at DESC
+        """, (document_id,))
+        
+        forms = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "total": len(forms),
+            "forms": [
+                {
+                    "id": str(form['id']),
+                    "form_name": form['form_name'],
+                    "description": form.get('description'),
+                    "template_path": form.get('template_path'),
+                    "created_at": form['created_at'].isoformat() if form.get('created_at') else None,
+                    "updated_at": form['updated_at'].isoformat() if form.get('updated_at') else None
+                }
+                for form in forms
+            ]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to list forms: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/admin/forms")
+async def upload_form(
+    document_id: str = Form(...),
+    form_name: str = Form(...),
+    description: Optional[str] = Form(None),
+    file: UploadFile = File(...)
+):
+    """
+    Upload a form template file (PDF, DOCX, etc.)
+    
+    Args:
+        document_id: UUID of parent document
+        form_name: Display name
+        description: Form description (optional)
+        file: Template file (PDF, DOC, DOCX only)
+    
+    Returns:
+        Created form info
+    
+    Path structure in MinIO:
+        forms/{document_id}/{form_id}_{filename}
+    """
+    # Helper function: Sanitize filename
+    def sanitize_filename(filename: str) -> str:
+        """Remove special characters and limit length"""
+        import re
+        import os
+        
+        # Split name and extension
+        name, ext = os.path.splitext(filename)
+        
+        # Remove special chars, keep alphanumeric and hyphens
+        # Support Vietnamese characters (keep unicode letters)
+        name = re.sub(r'[^\w\s-]', '', name, flags=re.UNICODE)
+        
+        # Replace spaces with underscores
+        name = re.sub(r'\s+', '_', name)
+        
+        # Remove leading/trailing underscores
+        name = name.strip('_')
+        
+        # Limit length (keep first 150 chars)
+        name = name[:150] if len(name) > 150 else name
+        
+        # Fallback if name is empty
+        if not name:
+            name = "form"
+        
+        return f"{name}{ext.lower()}"
+    
+    # Validate UUID
+    try:
+        uuid.UUID(document_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid document_id UUID")
+    
+    # Validate file extension (PDF, DOC, DOCX only)
+    allowed_extensions = {'.pdf', '.doc', '.docx'}
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    
+    if file_ext not in allowed_extensions:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid file type. Only PDF, DOC, DOCX allowed. Got: {file_ext}"
+        )
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Check if document exists and get collection info
+        cursor.execute("""
+            SELECT d.id, d.title, c.name as collection_name
+            FROM documents d
+            JOIN collections c ON d.collection_id = c.id
+            WHERE d.id = %s
+        """, (document_id,))
+        document = cursor.fetchone()
+        
+        if not document:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Upload file to storage-service
+        # Path structure: forms/{document_id}/{form_id}_{sanitized_filename}
+        form_id = str(uuid.uuid4())
+        safe_filename = sanitize_filename(file.filename)
+        storage_filename = f"{form_id}_{safe_filename}"
+        storage_folder = f"forms/{document_id}"
+        
+        logger.info(f"📤 Uploading form: {file.filename} → {storage_filename}")
+        
+        file_content = await file.read()
+        
+        async with httpx.AsyncClient() as client:
+            files_data = {"file": (storage_filename, file_content, file.content_type)}
+            
+            # Send folder as query param (storage-service expects it)
+            resp = await client.post(
+                f"{STORAGE_SERVICE_URL}/upload",
+                params={"folder": storage_folder},  # Query param
+                files=files_data,
+                timeout=30.0
+            )
+            
+            if resp.status_code not in [200, 201]:
+                error_detail = resp.text
+                logger.error(f"❌ Storage service error (status {resp.status_code}): {error_detail}")
+                raise HTTPException(
+                    status_code=500, 
+                    detail=f"Failed to upload form file to storage: {error_detail}"
+                )
+            
+            storage_result = resp.json()
+            file_path = storage_result.get('file_path')
+            
+            if not file_path:
+                raise HTTPException(status_code=500, detail="Storage service did not return file path")
+        
+        # Insert form record (only 6 fields now)
+        cursor.execute("""
+            INSERT INTO forms (
+                id, document_id, form_name, description, template_path
+            )
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id, form_name, template_path, created_at
+        """, (
+            form_id, document_id, form_name, description, file_path
+        ))
+        
+        form = cursor.fetchone()
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        logger.info(f"✅ Form uploaded: {form_name} for document {document_id}")
+        
+        return {
+            "success": True,
+            "message": "Form uploaded successfully",
+            "form": {
+                "id": str(form['id']),
+                "form_name": form['form_name'],
+                "template_path": file_path,
+                "created_at": form['created_at'].isoformat() if form.get('created_at') else None
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to upload form: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/admin/forms/{form_id}")
+async def delete_form(form_id: str):
+    """
+    Delete a form and its template file
+    
+    Args:
+        form_id: UUID of form to delete
+    
+    Returns:
+        Deletion confirmation
+    """
+    try:
+        uuid.UUID(form_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid form_id UUID")
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get form info before deletion
+        cursor.execute("""
+            SELECT id, form_name, template_path, document_id
+            FROM forms
+            WHERE id = %s
+        """, (form_id,))
+        
+        form = cursor.fetchone()
+        
+        if not form:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Form not found")
+        
+        # Delete from database
+        cursor.execute("DELETE FROM forms WHERE id = %s", (form_id,))
+        
+        # Log audit
+        log_admin_action(
+            cursor,
+            action="delete",
+            resource_type="form",
+            resource_id=form_id,
+            details={
+                "form_name": form['form_name'],
+                "document_id": str(form['document_id']),
+                "template_path": form.get('template_path')
+            }
+        )
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        # Delete file from storage
+        file_deleted = False
+        if form.get('template_path'):
+            try:
+                async with httpx.AsyncClient() as client:
+                    resp = await client.delete(
+                        f"{STORAGE_SERVICE_URL}/files",
+                        params={"file_path": form['template_path']},
+                        timeout=10.0
+                    )
+                    
+                    if resp.status_code == 200:
+                        file_deleted = True
+                        logger.info(f"✅ Deleted form file: {form['template_path']}")
+            except Exception as e:
+                logger.warning(f"⚠️  Could not delete form file: {e}")
+        
+        logger.info(f"✅ Deleted form: {form['form_name']}")
+        
+        return {
+            "success": True,
+            "message": f"Form '{form['form_name']}' deleted",
+            "form_id": form_id,
+            "file_deleted": file_deleted
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to delete form: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -4,14 +4,16 @@
 
 import { apiClient } from '../api/client';
 import { ENDPOINTS } from '../api/endpoints';
-import type { UploadRequest, ProcessDocumentResponse, HealthResponse } from '@/types';
+import type { HealthResponse } from '@/types';
 
-/**
- * Process and upload document with progress tracking
+/*
+ * Process and upload document with progress tracking - DEPRECATED
+ * Use storage-service upload endpoints instead
  *
  * @param request - Upload request with file and metadata
  * @param onProgress - Optional callback for upload progress (0-100)
  */
+/*
 export const processDocument = async (
   request: UploadRequest,
   onProgress?: (percentage: number) => void
@@ -61,6 +63,7 @@ export const processDocument = async (
 
   return response.data;
 };
+*/
 
 /**
  * Check admin service health

@@ -6,6 +6,7 @@ export interface Document {
   file_path: string | null;
   file_size: number | null;
   chunk_count: number;
+  forms_count: number;
   created_at: string;
   updated_at: string;
 }

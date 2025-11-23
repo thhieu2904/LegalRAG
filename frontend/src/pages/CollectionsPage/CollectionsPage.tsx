@@ -16,7 +16,7 @@ import styles from './CollectionsPage.module.css';
 
 export const CollectionsPage = () => {
   const navigate = useNavigate();
-  const { collections, loading, fetchCollections, removeCollection } = useAdminStore();
+  const { collections, fetchCollections, removeCollection } = useAdminStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [deletingCollection, setDeletingCollection] = useState<Collection | null>(null);
@@ -76,7 +76,7 @@ export const CollectionsPage = () => {
 
       <CollectionsGrid
         collections={collections}
-        loading={loading}
+        loading={false}
         onCollectionClick={handleCollectionClick}
         onEdit={handleEdit}
         onDelete={handleDelete}

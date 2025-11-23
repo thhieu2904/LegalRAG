@@ -24,7 +24,7 @@ export const sendChatMessage = async (request: ChatRequest): Promise<ChatRespons
  * Search without LLM
  */
 export const searchDocuments = async (request: SearchRequest): Promise<SearchResponse> => {
-  const response = await apiClient.post<SearchResponse>(ENDPOINTS.QUERY.SEARCH, request);
+  const response = await apiClient.post<SearchResponse>(ENDPOINTS.QUERY.CHAT, request);
   return response.data;
 };
 

@@ -8,6 +8,7 @@ Separation of Concerns:
   - Embedding: Chunking strategy
 """
 from fastapi import FastAPI, File, UploadFile, HTTPException, Query
+from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import logging
@@ -80,12 +81,17 @@ async def health_check():
 @app.post("/upload", response_model=FileUploadResponse, status_code=201)
 async def upload_file(
     file: UploadFile = File(...),
-    document_id: str = Query(..., description="Document ID from admin-service"),
+    document_id: Optional[str] = Query(None, description="Document ID (for backward compatibility)"),
+    folder: Optional[str] = Query(None, description="Custom folder path (e.g., 'forms/doc-id')"),
 ):
     """
     Upload file to MinIO storage
     
-    Path: documents/{document_id}/{filename}
+    Path options:
+    - Legacy: documents/{document_id}/{filename} (if document_id provided)
+    - Flexible: {folder}/{filename} (if folder provided)
+    
+    Priority: folder > document_id
     """
     try:
         if not file.filename:
@@ -98,7 +104,19 @@ async def upload_file(
                 detail=f"File too large (max {settings.MAX_FILE_SIZE / 1024 / 1024}MB)"
             )
         
-        file_path = f"documents/{document_id}/{file.filename}"
+        # Determine file path
+        if folder:
+            # Use custom folder (e.g., "forms/abc-123")
+            file_path = f"{folder}/{file.filename}"
+        elif document_id:
+            # Backward compatibility
+            file_path = f"documents/{document_id}/{file.filename}"
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail="Either 'folder' or 'document_id' must be provided"
+            )
+        
         minio = get_minio_client()
         minio.upload_file(
             bucket=settings.MINIO_BUCKET,

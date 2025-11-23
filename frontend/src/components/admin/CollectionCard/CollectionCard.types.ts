@@ -2,8 +2,6 @@
  * CollectionCard Component Types
  */
 
-import type { LucideIcon } from 'lucide-react';
-
 export interface CollectionCardProps {
   id: string;
   name: string;

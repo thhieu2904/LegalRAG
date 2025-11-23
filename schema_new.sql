@@ -174,42 +174,27 @@ CREATE INDEX IF NOT EXISTS idx_chunks_document ON chunks(document_id);
 
 -- Forms: Biểu mẫu (legal forms) associated with documents
 -- Each form belongs to exactly one document (optional relationship)
+-- SIMPLIFIED: Removed over-engineered fields (fields JSONB, validation_rules, preview_path, metadata)
 CREATE TABLE IF NOT EXISTS forms (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
     
     -- Form identification
-    form_code VARCHAR(200),  -- e.g., "MẪU 01-HS", "Phụ lục II"
     form_name VARCHAR(500) NOT NULL,  -- Display name
-    form_type VARCHAR(100),  -- Type: "application", "certificate", "report", etc.
     
     -- Form content
-    template_path VARCHAR(1000),  -- Path to form template file (PDF, DOCX, etc.)
-    preview_path VARCHAR(1000),  -- Path to preview image/PDF
+    template_path VARCHAR(1000),  -- Path to form template file (PDF, DOC, DOCX only)
     
-    -- Form field definitions (JSON structure for dynamic form generation)
-    fields JSONB DEFAULT '[]',  -- Array of field definitions
-    -- Example: [{"name": "ho_ten", "type": "text", "label": "Họ và tên", "required": true}, ...]
-    
-    -- Validation rules
-    validation_rules JSONB DEFAULT '{}',
-    
-    -- Form metadata
-    description TEXT,
-    instructions TEXT,  -- Instructions for filling out form
-    metadata JSONB DEFAULT '{}',
+    -- Form metadata (optional)
+    description TEXT,  -- Short description
     
     -- Timestamps
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    -- Constraints
-    UNIQUE(document_id, form_code)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Indexes for forms
 CREATE INDEX IF NOT EXISTS idx_forms_document ON forms(document_id);
-CREATE INDEX IF NOT EXISTS idx_forms_type ON forms(form_type);
 
 -- ============================================
 -- USER & SESSION MANAGEMENT

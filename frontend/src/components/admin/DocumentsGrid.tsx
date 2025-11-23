@@ -5,17 +5,21 @@ import type { Document } from '../../types/document.types';
 interface DocumentsGridProps {
   documents: Document[];
   loading: boolean;
+  onClick?: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onCreate: () => void;
+  onDownload?: (filePath: string, filename: string) => void;
 }
 
 export const DocumentsGrid = ({
   documents,
   loading,
+  onClick,
   onEdit,
   onDelete,
   onCreate,
+  onDownload,
 }: DocumentsGridProps) => {
   // Loading State
   if (loading) {
@@ -50,7 +54,14 @@ export const DocumentsGrid = ({
       {/* Documents Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {documents.map((doc) => (
-          <DocumentCard key={doc.id} document={doc} onEdit={onEdit} onDelete={onDelete} />
+          <DocumentCard
+            key={doc.id}
+            document={doc}
+            onClick={onClick}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onDownload={onDownload}
+          />
         ))}
       </div>
 

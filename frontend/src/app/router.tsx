@@ -38,6 +38,9 @@ const UploadDocumentPage = lazy(() =>
 const DocumentsPage = lazy(() =>
   import('@/pages/DocumentsPage').then((m) => ({ default: m.DocumentsPage }))
 );
+const DocumentDetailPage = lazy(() =>
+  import('@/pages/DocumentDetailPage').then((m) => ({ default: m.DocumentDetailPage }))
+);
 const AdminPage = lazy(() => import('@/pages/AdminPage').then((m) => ({ default: m.AdminPage })));
 
 export const router = createBrowserRouter([
@@ -90,6 +93,10 @@ export const router = createBrowserRouter([
       {
         path: 'documents',
         element: <DocumentsPage />,
+      },
+      {
+        path: 'documents/:id',
+        element: <DocumentDetailPage />,
       },
       // TODO: Add more admin routes
       // { path: 'stats', element: <StatsPage /> },
