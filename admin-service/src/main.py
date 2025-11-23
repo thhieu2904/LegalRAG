@@ -204,6 +204,29 @@ app.add_middleware(
 )
 
 
+# ============= AUDIT LOG HELPER =============
+
+def log_admin_action(cursor, action: str, resource_type: str, resource_id: str, details: dict):
+    """
+    Simple audit log for admin actions
+    Logs: action, resource, timestamp, basic details
+    """
+    try:
+        cursor.execute("""
+            INSERT INTO admin_logs (
+                action, 
+                resource_type, 
+                resource_id, 
+                old_values,
+                created_at
+            ) VALUES (%s, %s, %s, %s, NOW())
+        """, (action, resource_type, resource_id, json.dumps(details)))
+        logger.info(f"📝 Audit log: {action} {resource_type} {resource_id}")
+    except Exception as e:
+        # Don't fail the operation if audit log fails
+        logger.warning(f"⚠️  Failed to write audit log: {e}")
+
+
 # ============= HEALTH CHECK =============
 
 @app.get("/health", response_model=HealthResponse)
@@ -728,7 +751,7 @@ async def update_collection(collection_id: str, request: UpdateCollectionRequest
         query = f"""
             UPDATE collections
             SET {', '.join(updates)}
-            WHERE id = %s AND is_deleted = FALSE
+            WHERE id = %s
             RETURNING id, name, display_name, description, icon, color, updated_at;
         """
         
@@ -812,6 +835,20 @@ async def delete_collection(collection_id: str):
         chunk_result = cursor.fetchone()
         chunk_count = chunk_result['chunk_count'] if chunk_result else 0
         
+        # Log audit before deletion
+        log_admin_action(
+            cursor, 
+            action="delete",
+            resource_type="collection",
+            resource_id=collection_id,
+            details={
+                "name": collection['name'],
+                "display_name": collection['display_name'],
+                "document_count": collection['actual_documents'],
+                "chunk_count": chunk_count
+            }
+        )
+        
         # Hard delete collection (CASCADE will delete documents → chunks automatically)
         cursor.execute("""
             DELETE FROM collections WHERE id = %s
@@ -850,7 +887,6 @@ class UpdateDocumentRequest(BaseModel):
 @app.get("/admin/documents")
 async def list_documents(
     collection_id: Optional[str] = None,
-    status: Optional[str] = None,
     limit: int = 100,
     offset: int = 0
 ):
@@ -859,7 +895,6 @@ async def list_documents(
     
     Args:
         collection_id: Filter by collection UUID
-        status: Filter by status (processing, completed, failed)
         limit: Max results to return
         offset: Pagination offset
     """
@@ -875,10 +910,6 @@ async def list_documents(
             query += " AND collection_id = %s"
             params.append(collection_id)
         
-        if status:
-            query += " AND status = %s"
-            params.append(status)
-        
         query += " ORDER BY created_at DESC LIMIT %s OFFSET %s"
         params.extend([limit, offset])
         
@@ -891,9 +922,6 @@ async def list_documents(
         if collection_id:
             count_query += " AND collection_id = %s"
             count_params.append(collection_id)
-        if status:
-            count_query += " AND status = %s"
-            count_params.append(status)
         
         cursor.execute(count_query, count_params)
         total_count = cursor.fetchone()['count']
@@ -912,12 +940,11 @@ async def list_documents(
                     "collection_id": str(doc['collection_id']),
                     "title": doc['title'],
                     "filename": doc['filename'],
+                    "file_path": doc['file_path'],
                     "file_size": doc['file_size'],
-                    "status": doc['status'],
                     "chunk_count": doc.get('chunk_count', 0),
-                    "metadata": doc.get('metadata', {}),
                     "created_at": doc['created_at'].isoformat() if doc['created_at'] else None,
-                    "processed_at": doc['processed_at'].isoformat() if doc.get('processed_at') else None
+                    "updated_at": doc['updated_at'].isoformat() if doc.get('updated_at') else None
                 }
                 for doc in documents
             ]
@@ -931,7 +958,7 @@ async def list_documents(
 async def get_document_detail(document_id: str):
     """
     Get detailed information about a specific document
-    Includes metadata and chunk statistics
+    Includes chunks and forms
     """
     try:
         conn = get_db_connection()
@@ -939,7 +966,10 @@ async def get_document_detail(document_id: str):
         
         # Get document info
         cursor.execute("""
-            SELECT * FROM documents WHERE id = %s
+            SELECT d.*, c.display_name as collection_name
+            FROM documents d
+            JOIN collections c ON d.collection_id = c.id
+            WHERE d.id = %s
         """, (document_id,))
         
         document = cursor.fetchone()
@@ -949,20 +979,30 @@ async def get_document_detail(document_id: str):
             conn.close()
             raise HTTPException(status_code=404, detail="Document not found")
         
-        # Get chunk statistics (optional, if you want chunk details)
+        # Get chunks
         cursor.execute("""
-            SELECT COUNT(*) as chunk_count
+            SELECT id, chunk_index, content, section_title
             FROM chunks
             WHERE document_id = %s
+            ORDER BY chunk_index
         """, (document_id,))
         
-        chunk_stats = cursor.fetchone()
+        chunks = cursor.fetchall()
+        
+        # Get forms
+        cursor.execute("""
+            SELECT id, form_name, form_type, form_code, template_path
+            FROM forms
+            WHERE document_id = %s
+            ORDER BY created_at
+        """, (document_id,))
+        
+        forms = cursor.fetchall()
         
         cursor.close()
         conn.close()
         
         return {
-            "success": True,
             "document": {
                 "id": str(document['id']),
                 "collection_id": str(document['collection_id']),
@@ -970,14 +1010,30 @@ async def get_document_detail(document_id: str):
                 "filename": document['filename'],
                 "file_path": document.get('file_path'),
                 "file_size": document['file_size'],
-                "status": document['status'],
                 "chunk_count": document.get('chunk_count', 0),
-                "actual_chunks": chunk_stats['chunk_count'] if chunk_stats else 0,
-                "metadata": document.get('metadata', {}),
                 "created_at": document['created_at'].isoformat() if document['created_at'] else None,
-                "processed_at": document['processed_at'].isoformat() if document.get('processed_at') else None,
                 "updated_at": document['updated_at'].isoformat() if document['updated_at'] else None
-            }
+            },
+            "collection_name": document['collection_name'],
+            "chunks": [
+                {
+                    "id": str(chunk['id']),
+                    "chunk_index": chunk['chunk_index'],
+                    "content": chunk['content'],
+                    "section_title": chunk.get('section_title')
+                }
+                for chunk in chunks
+            ],
+            "forms": [
+                {
+                    "id": str(form['id']),
+                    "form_name": form['form_name'],
+                    "form_type": form.get('form_type'),
+                    "form_code": form.get('form_code'),
+                    "template_path": form.get('template_path')
+                }
+                for form in forms
+            ]
         }
     except HTTPException:
         raise
@@ -1101,6 +1157,21 @@ async def delete_document(document_id: str):
         
         chunk_result = cursor.fetchone()
         actual_chunks = chunk_result['chunk_count'] if chunk_result else 0
+        
+        # Log audit before deletion
+        log_admin_action(
+            cursor,
+            action="delete",
+            resource_type="document",
+            resource_id=document_id,
+            details={
+                "title": document['title'],
+                "filename": document['filename'],
+                "collection_id": str(document['collection_id']),
+                "chunk_count": actual_chunks,
+                "file_path": document['file_path']
+            }
+        )
         
         # Hard delete document (CASCADE will delete chunks automatically)
         cursor.execute("""

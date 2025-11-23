@@ -1,0 +1,16 @@
+/**
+ * MainLayout Styles
+ */
+
+.mainLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1; /* Take remaining space between header and footer */
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+}

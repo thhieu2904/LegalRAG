@@ -5,6 +5,7 @@
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
+    "types": ["vite/client"],
     "skipLibCheck": true,
 
     /* Bundler mode */
@@ -15,19 +16,34 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Path alias */
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "noUncheckedIndexedAccess": true,
+
+    /* Path Aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/app/*": ["src/app/*"],
+      "@/components/*": ["src/components/*"],
+      "@/pages/*": ["src/pages/*"],
+      "@/services/*": ["src/services/*"],
+      "@/stores/*": ["src/stores/*"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/types/*": ["src/types/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/constants/*": ["src/constants/*"],
+      "@/config/*": ["src/config/*"],
+      "@/layouts/*": ["src/layouts/*"],
+      "@/styles/*": ["src/styles/*"],
+      "@/assets/*": ["src/assets/*"],
+      "@/lib/*": ["src/lib/*"]
+    }
   },
   "include": ["src"]
 }

@@ -1,0 +1,361 @@
+/**
+ * Header Styles - LegalRAG System
+ * Consistent styling for both Chat and Admin
+ */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background-color: white;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  gap: 1rem;
+  position: relative;
+}
+
+/* Mobile Menu Button (Admin only, hidden on desktop) */
+.mobileMenuButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  color: #6b7280;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: absolute;
+  left: 1rem;
+  z-index: 10;
+}
+
+.mobileMenuButton:hover {
+  color: #2563eb;
+  background: #eff6ff;
+  border-color: #2563eb;
+}
+
+/* Logo Section (Left - 25%) */
+.logoSection {
+  width: 25%;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+/* Title Section (Center - 50%) */
+.titleSection {
+  width: 50%;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.organizationName {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #dc2626; /* Red color for government organization */
+  line-height: 1.3;
+}
+
+/* Assistant Section (Right - 25%) */
+.assistantSection {
+  width: 25%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.assistantInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.assistantText {
+  text-align: right;
+}
+
+.assistantName {
+  font-weight: 600;
+  color: #2563eb;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+}
+
+.assistantDescription {
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  margin-top: 0.25rem;
+}
+
+/* ============================================
+   BUTTON STYLES
+   ============================================ */
+.settingsButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  color: #6b7280;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.settingsButton:hover {
+  color: #2563eb;
+  background: #eff6ff;
+  border-color: #2563eb;
+}
+
+.backButton {
+  padding: 0.5rem 0.75rem;
+  color: #6b7280;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.backButton:hover {
+  color: #2563eb;
+  background: #eff6ff;
+  border-color: #2563eb;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Mobile: Show menu button for admin */
+@media (max-width: 1023px) {
+  .mobileMenuButton {
+    display: flex;
+  }
+
+  .container {
+    padding-left: 4rem; /* Make space for menu button */
+  }
+
+  width: 20%;
+
+  .titleSection {
+    width: 55%;
+  }
+
+  .assistantSection {
+    width: 25%;
+  }
+
+  .organizationName {
+    font-size: 1rem;
+  }
+
+  .assistantName {
+    font-size: 0.875rem;
+  }
+
+  .assistantDescription {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0.75rem 1rem;
+  }
+
+  .logoSection {
+    width: 15%;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .titleSection {
+    width: 60%;
+  }
+
+  .organizationName {
+    font-size: 0.875rem;
+  }
+
+  .assistantSection {
+    width: 25%;
+  }
+
+  .assistantText {
+    display: none; /* Hide text on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .titleSection {
+    width: 50%;
+  }
+
+  .assistantSection {
+    width: 35%;
+  }
+
+  .organizationName {
+    font-size: 0.8125rem;
+    line-height: 1.2;
+  }
+  background-color: var(--border-color);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius-md);
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--error-color);
+  background-color: transparent;
+  border: 1px solid var(--error-color);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-duration) var(--transition-timing);
+}
+
+.logoutButton:hover {
+  background-color: var(--error-bg);
+  color: var(--error-color);
+}
+
+.logoutButton:active {
+  transform: scale(0.98);
+}
+
+/* Tablet responsive */
+@media (max-width: 1024px) {
+  .container {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .logoImage {
+    height: 40px;
+  }
+
+  .universityName {
+    font-size: var(--font-size-md);
+  }
+
+  .systemInfo {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .container {
+    gap: var(--spacing-sm);
+  }
+
+  .brand {
+    gap: var(--spacing-sm);
+  }
+
+  .logoImage {
+    height: 36px;
+  }
+
+  .universityName {
+    font-size: var(--font-size-sm);
+  }
+
+  .systemInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .subtitle {
+    font-size: var(--font-size-xs);
+  }
+
+  .actions {
+    gap: var(--spacing-sm);
+  }
+
+  .userInfo span,
+  .logoutButton span {
+    display: none; /* Hide text on mobile, show only icons */
+  }
+
+  .logoutButton {
+    padding: var(--spacing-sm);
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+  }
+}
+
+/* Extra small mobile */
+@media (max-width: 480px) {
+  .container {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .logoImage {
+    height: 32px;
+  }
+
+  .universityName {
+    font-size: var(--font-size-xs);
+  }
+
+  .systemName {
+    font-size: var(--font-size-xs);
+  }
+
+  .iconButton,
+  .logoutButton {
+    width: 36px;
+    height: 36px;
+  }
+}

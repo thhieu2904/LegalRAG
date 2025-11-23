@@ -1,0 +1,134 @@
+/**
+ * IconPicker Styles
+ */
+
+.iconPicker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Search Box */
+.searchBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--spacing-sm);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius-md);
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.searchInput::placeholder {
+  color: #94a3b8;
+}
+
+/* Icon Grid */
+.iconGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: var(--spacing-sm);
+  max-height: 300px;
+  overflow-y: auto;
+  padding: var(--spacing-xs);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius-md);
+  background: #f8fafc;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-md);
+  background: white;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.iconButton:hover {
+  border-color: #cbd5e1;
+  color: #1e293b;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.iconButton.selected {
+  border-color: #dc2626;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.05);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.iconButton.selected:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+}
+
+/* No Results */
+.noResults {
+  grid-column: 1 / -1;
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: #94a3b8;
+}
+
+.noResults p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Scrollbar Styling */
+.iconGrid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.iconGrid::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.iconGrid::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.iconGrid::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .iconGrid {
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    gap: var(--spacing-xs);
+    max-height: 250px;
+  }
+
+  .iconButton {
+    width: 44px;
+    height: 44px;
+  }
+}

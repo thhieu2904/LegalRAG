@@ -45,45 +45,32 @@ CREATE TABLE IF NOT EXISTS collections (
     
     -- Timestamps
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    -- Soft delete
-    is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create index on collection name for fast lookups
-CREATE INDEX IF NOT EXISTS idx_collections_name ON collections(name) WHERE is_deleted = FALSE;
-CREATE INDEX IF NOT EXISTS idx_collections_active ON collections(is_active) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_collections_name ON collections(name);
+CREATE INDEX IF NOT EXISTS idx_collections_active ON collections(is_active);
 
 -- Documents: Văn bản pháp luật (tài liệu pháp lý)
 -- Mỗi tài liệu thuộc đúng 1 collection (bộ thủ tục)
 -- 
--- NGUYÊN TẮC THIẾT KẾ:
--- - Chỉ lưu các field có thể auto-extract từ PDF (KHÔNG yêu cầu nhập thủ công)
--- - Dùng metadata JSONB để lưu dữ liệu được extract (linh hoạt, không cần migrate schema)
--- - Chỉ support PDF (cơ quan gửi PDF, không .doc hay .docx)
+-- NGUYÊN TẮC THIẾT KẾ (SIMPLIFIED):
+-- - Upload PDF → Lưu file → Extract chunks → Done
+-- - Không có async pipeline (local system, xử lý đồng bộ)
+-- - Quan hệ với forms: 1 document có thể có nhiều forms (biểu mẫu)
 --
 -- GIẢI THÍCH CÁC FIELD:
 -- - id, collection_id: Quan hệ UUID (Collections → Documents)
 -- - title, filename: Xác định tài liệu
 -- - file_path, file_size: Metadata lưu trữ trong MinIO
--- - status: Trạng thái xử lý (pending → processing → completed hoặc failed)
 -- - chunk_count: Số chunks được tạo (auto-update bằng trigger)
--- - error_message: Nếu status = failed, chứa chi tiết lỗi để debug
--- - metadata JSONB: Dữ liệu được extract tự động (TÙY CHỌN, linh hoạt, không lock schema)
---   * KHÔNG bắt buộc (nullable by design)
---   * KHÔNG nhập thủ công (tools extract hoặc để trống)
---   * Chứa dữ liệu extracted:
---     - document_code: "68/2018/NĐ-CP" (extract bằng regex)
---     - dates: ["15/5/2018"] (regex, tất cả các ngày tìm được)
---     - organizations: ["Bộ Tư pháp"] (pattern matching)
---     - sections: ["MỤC ĐÍCH", "PHẠM VI"] (regex extract)
---     - pages: 7 (metadata PDF)
---     - language: "vi" (language detection)
---     - extraction_confidence: 0.85 (điểm chất lượng, rất quan trọng!)
---     - extraction_notes: "..." (ghi chú những gì tool không extract được)
--- - Timestamps: created_at (lúc upload), updated_at (mỗi lần thay đổi), processed_at (lúc xong extract)
+-- - created_at, updated_at: Timestamps cho audit trail
+--
+-- REMOVED (over-engineered):
+-- - status, error_message: Không cần pipeline tracking cho local system
+-- - metadata JSONB: Không extract document_code, dates, organizations (không dùng)
+-- - processed_at: Không có async processing
 -- - is_deleted, deleted_at: Soft delete (giữ dữ liệu, không xóa vật lý)
 
 CREATE TABLE IF NOT EXISTS documents (
@@ -98,44 +85,16 @@ CREATE TABLE IF NOT EXISTS documents (
     file_path VARCHAR(1000),  -- Đường dẫn MinIO: "collections/{collection_slug}/{uuid}_{filename}"
     file_size BIGINT,  -- Kích thước (bytes, dùng cho monitoring, UI)
     
-    -- TRẠNG THÁI XỬ LÝ (bắt buộc cho pipeline)
-    status VARCHAR(50) DEFAULT 'pending',  -- Enum: pending, processing, completed, failed
+    -- STATISTICS (tự động cập nhật bằng trigger)
     chunk_count INTEGER DEFAULT 0,  -- Số chunks được tạo (auto-update bằng trigger)
-    error_message TEXT,  -- Nếu status = failed, chi tiết lỗi để admin debug
-    
-    -- METADATA ĐƯỢC EXTRACT TỰ ĐỘNG (tùy chọn, bổ sung, KHÔNG nhập thủ công)
-    -- QUAN TRỌNG: NULLABLE by design. Không phải tất cả tài liệu đều có tất cả field.
-    -- Tools populate nếu extract được, để trống nếu không thể extract.
-    -- Ví dụ khi extract hoàn toàn:
-    -- {
-    --   "document_code": "68/2018/NĐ-CP",           ← regex extract từ text
-    --   "dates": ["15/5/2018", "12/6/2025"],        ← tất cả ngày tìm được bằng regex
-    --   "organizations": ["Bộ Tư pháp", "UBND"],    ← pattern matching
-    --   "sections": ["MỤC ĐÍCH", "PHẠM VI"],        ← cấu trúc tài liệu
-    --   "pages": 7,                                  ← từ metadata PDF
-    --   "language": "vi",                            ← language detection
-    --   "word_count": 2500,                          ← độ dài text
-    --   "has_tables": true,                          ← pattern detection
-    --   "has_signatures": true,                      ← pattern detection
-    --   "extraction_confidence": 0.85,               ← điểm 0-1 (QUAN TRỌNG cho chất lượng)
-    --   "extraction_notes": "Thiếu ngày hiệu lực"   ← ghi chú những gì tool không extract
-    -- }
-    metadata JSONB DEFAULT '{}',
     
     -- TIMESTAMPS (bắt buộc cho audit trail)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Lúc upload tài liệu
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Lúc bất kỳ field nào thay đổi
-    processed_at TIMESTAMP,  -- Lúc extraction xong (null cho tới khi xong)
-    
-    -- SOFT DELETE (bắt buộc để bảo tồn dữ liệu)
-    is_deleted BOOLEAN DEFAULT FALSE,  -- Đánh dấu xóa mà không xóa vật lý
-    deleted_at TIMESTAMP  -- Lúc bị xóa
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Lúc bất kỳ field nào thay đổi
 );
 
 -- Indexes for documents
-CREATE INDEX IF NOT EXISTS idx_documents_collection ON documents(collection_id) WHERE is_deleted = FALSE;
-CREATE INDEX IF NOT EXISTS idx_documents_status ON documents(status);
-CREATE INDEX IF NOT EXISTS idx_documents_file_hash ON documents(file_hash);
+CREATE INDEX IF NOT EXISTS idx_documents_collection ON documents(collection_id);
 
 -- Chunks: Text chunks với vector embeddings để tìm kiếm semantics
 -- Mỗi chunk thuộc đúng 1 tài liệu (document)
@@ -244,52 +203,20 @@ CREATE TABLE IF NOT EXISTS forms (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    -- Soft delete
-    is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMP,
-    
     -- Constraints
     UNIQUE(document_id, form_code)
 );
 
 -- Indexes for forms
-CREATE INDEX IF NOT EXISTS idx_forms_document ON forms(document_id) WHERE is_deleted = FALSE;
-CREATE INDEX IF NOT EXISTS idx_forms_type ON forms(form_type) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_forms_document ON forms(document_id);
+CREATE INDEX IF NOT EXISTS idx_forms_type ON forms(form_type);
 
 -- ============================================
 -- USER & SESSION MANAGEMENT
 -- ============================================
-
--- Users: User information (primarily from CCCD scanning)
-CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    
-    -- CCCD (Vietnamese ID card) information
-    cccd_number VARCHAR(20) UNIQUE NOT NULL,
-    full_name VARCHAR(200) NOT NULL,
-    date_of_birth DATE,
-    gender VARCHAR(10),  -- 'Nam', 'Nữ'
-    address TEXT,
-    
-    -- Contact information (optional)
-    phone VARCHAR(20),
-    email VARCHAR(200),
-    
-    -- CCCD scan data
-    cccd_front_image VARCHAR(1000),  -- Path to front image
-    cccd_back_image VARCHAR(1000),  -- Path to back image
-    qr_code_data TEXT,  -- Decoded QR code data
-    
-    -- Timestamps
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    -- Soft delete
-    is_deleted BOOLEAN DEFAULT FALSE
-);
-
--- Index for user lookups
-CREATE INDEX IF NOT EXISTS idx_users_cccd ON users(cccd_number) WHERE is_deleted = FALSE;
+-- NOTE: End users (công dân) are not authenticated.
+--       They query via query-service with read-only access.
+--       Only admin_users have authentication and write access.
 
 -- Admin Users: Admin accounts for system management
 CREATE TABLE IF NOT EXISTS admin_users (
@@ -504,6 +431,41 @@ AFTER INSERT OR DELETE ON chunks
 FOR EACH ROW
 EXECUTE FUNCTION update_document_chunk_count();
 
+-- Function: Update collection total_chunks when chunks change
+CREATE OR REPLACE FUNCTION update_collection_total_chunks()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        -- When new chunk is inserted, increment total_chunks in collection
+        UPDATE collections 
+        SET total_chunks = total_chunks + 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = (
+            SELECT collection_id 
+            FROM documents 
+            WHERE id = NEW.document_id
+        );
+    ELSIF TG_OP = 'DELETE' THEN
+        -- When chunk is deleted, decrement total_chunks in collection
+        UPDATE collections 
+        SET total_chunks = total_chunks - 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = (
+            SELECT collection_id 
+            FROM documents 
+            WHERE id = OLD.document_id
+        );
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger: Automatically update collection total_chunks
+CREATE TRIGGER trigger_update_collection_total_chunks
+AFTER INSERT OR DELETE ON chunks
+FOR EACH ROW
+EXECUTE FUNCTION update_collection_total_chunks();
+
 -- Function: Auto-update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -521,9 +483,6 @@ CREATE TRIGGER trigger_documents_updated_at BEFORE UPDATE ON documents
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER trigger_forms_updated_at BEFORE UPDATE ON forms
-FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER trigger_users_updated_at BEFORE UPDATE ON users
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER trigger_admin_users_updated_at BEFORE UPDATE ON admin_users
@@ -566,7 +525,6 @@ BEGIN
     JOIN collections col ON d.collection_id = col.id
     WHERE 
         (filter_collection_id IS NULL OR d.collection_id = filter_collection_id)
-        AND d.is_deleted = FALSE
         AND d.status = 'completed'
         AND (1 - (c.embedding <=> query_embedding)) > match_threshold
     ORDER BY c.embedding <=> query_embedding
@@ -600,7 +558,7 @@ BEGIN
             ELSE 0
         END AS avg_chunks_per_document
     FROM collections col
-    LEFT JOIN documents d ON col.id = d.collection_id AND d.is_deleted = FALSE
+    LEFT JOIN documents d ON col.id = d.collection_id
     LEFT JOIN chunks c ON d.id = c.document_id
     WHERE col.id = target_collection_id
     GROUP BY col.id, col.name;
@@ -625,7 +583,6 @@ COMMENT ON TABLE collections IS 'Bộ thủ tục (procedure sets) - top-level g
 COMMENT ON TABLE documents IS 'Văn bản pháp luật - legal documents belonging to collections';
 COMMENT ON TABLE chunks IS 'Text chunks with vector embeddings for semantic search';
 COMMENT ON TABLE forms IS 'Biểu mẫu (forms) associated with documents';
-COMMENT ON TABLE users IS 'User information from CCCD scanning';
 COMMENT ON TABLE admin_users IS 'Admin accounts for system management';
 COMMENT ON TABLE query_sessions IS 'Session tracking for conversational queries';
 COMMENT ON TABLE query_logs IS 'Log of all user queries for analytics';

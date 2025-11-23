@@ -1,0 +1,118 @@
+/**
+ * ColorPicker Styles
+ */
+
+.colorPicker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Preview */
+.preview {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: #f8fafc;
+  border-radius: var(--border-radius-md);
+  border: 1px solid #e2e8f0;
+}
+
+.previewIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--border-radius-md);
+  transition: all 0.3s;
+}
+
+.previewInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.previewLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.previewHex {
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  color: #1e293b;
+  background: white;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid #e2e8f0;
+}
+
+/* Color Grid */
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.colorButton {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border: 3px solid transparent;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.colorButton:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.colorButton.selected {
+  border-color: #1e293b;
+  box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+}
+
+.colorButton.selected:hover {
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    0 0 0 3px rgba(30, 41, 59, 0.1);
+}
+
+.checkIcon {
+  color: white;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .colorGrid {
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    gap: var(--spacing-xs);
+  }
+
+  .colorButton {
+    width: 48px;
+    height: 48px;
+  }
+
+  .previewIcon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .preview {
+    padding: var(--spacing-sm);
+  }
+}
