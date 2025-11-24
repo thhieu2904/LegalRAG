@@ -127,17 +127,30 @@ async def search_vectors(embedding: List[float]) -> List[dict]:
 
 
 async def rerank_documents(query: str, documents: List[dict], top_k: int = 5) -> List[dict]:
-    """Rerank documents using rerank service"""
+    """
+    Rerank documents using rerank service with document filtering.
+    
+    When same_document_only=True:
+    - Rerank service identifies best document
+    - Returns ALL chunks from that document (preserves full legal context)
+    - top_k parameter is ignored by rerank service
+    """
     try:
         # Prepare documents for reranking
         doc_texts = [doc.get('content', '') for doc in documents]
+        doc_ids = [doc.get('document_id', 'unknown') for doc in documents]
+        
+        logger.info(f"Sending {len(documents)} chunks from {len(set(doc_ids))} unique documents to rerank")
         
         response = await http_client.post(
             f"{settings.RERANK_SERVICE_URL}/rerank",
             json={
                 "query": query,
                 "documents": doc_texts,
-                "top_k": top_k
+                "document_ids": doc_ids,
+                # Note: top_k ignored when same_document_only=True (rerank returns all chunks from best doc)
+                "top_k": top_k,
+                "same_document_only": settings.RERANK_SAME_DOCUMENT_ONLY
             },
             timeout=10.0
         )

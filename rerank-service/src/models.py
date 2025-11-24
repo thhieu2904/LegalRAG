@@ -28,12 +28,24 @@ class RerankRequest(BaseModel):
         ]
     )
     
+    document_ids: Optional[List[str]] = Field(
+        default=None,
+        description="List of document IDs corresponding to each document (for same-document filtering)",
+        example=["doc_123", "doc_123", "doc_456"]
+    )
+    
     top_k: Optional[int] = Field(
         default=None,
-        description="Number of top results to return (default: from env TOP_K)",
+        description="Number of top results to return. IGNORED when same_document_only=True (returns all chunks from best doc)",
         ge=1,
         le=100,
         example=5
+    )
+    
+    same_document_only: Optional[bool] = Field(
+        default=True,
+        description="If True, identify best document and return ALL its chunks (preserves full legal context)",
+        example=True
     )
 
 

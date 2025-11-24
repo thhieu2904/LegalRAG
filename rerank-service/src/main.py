@@ -201,24 +201,27 @@ async def rerank_documents(
     **Input:**
     - query: Vietnamese search query
     - documents: List of candidate documents (max 100)
-    - top_k: Number of top results to return (optional)
+    - document_ids: List of document IDs for same-document filtering
+    - top_k: Number of results (IGNORED if same_document_only=True)
+    - same_document_only: If True, returns ALL chunks from best document
     
     **Output:**
     - results: Reranked documents with scores
     - processing_time: Time taken in seconds
     - model_name: Model used for reranking
     
+    **Behavior:**
+    - When same_document_only=True: Identifies best document, returns ALL its chunks (preserves legal context)
+    - When same_document_only=False: Returns top_k chunks regardless of document
+    
     **Example:**
     ```
     POST /rerank
     {
       "query": "điều kiện thành lập công ty",
-      "documents": [
-        "Văn bản về điều kiện thành lập doanh nghiệp...",
-        "Hướng dẫn đăng ký kinh doanh...",
-        "Quy định về vốn điều lệ..."
-      ],
-      "top_k": 5
+      "documents": [...],
+      "document_ids": ["doc_123", "doc_123", "doc_456", ...],
+      "same_document_only": true
     }
     ```
     """
@@ -242,12 +245,17 @@ async def rerank_documents(
         top_k = request.top_k if request.top_k is not None else settings.top_k
         top_k = min(top_k, len(request.documents))
         
-        # Perform reranking
-        reranked = reranker.rerank(
+        # Determine same_document_only setting
+        same_document_only = request.same_document_only if request.same_document_only is not None else True
+        
+        # Perform reranking with document filtering
+        reranked = reranker.rerank_with_document_filter(
             query=request.query,
             documents=request.documents,
+            document_ids=request.document_ids,
             top_k=top_k,
-            batch_size=settings.batch_size
+            batch_size=settings.batch_size,
+            same_document_only=same_document_only
         )
         
         # Build response

@@ -167,6 +167,7 @@ services:
     build:
       context: ./rerank-service
       dockerfile: Dockerfile
+      target: runtime  # Explicitly use CPU-only runtime stage
     container_name: legalrag-rerank
     ports:
       - "8013:8013"
@@ -184,7 +185,8 @@ services:
     networks:
       - legalrag-network
     volumes:
-      - ./rerank-service:/app
+      # Removed code mount - use image code instead
+      # - ./rerank-service:/app
       - rerank_models:/app/models
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8013/health"]

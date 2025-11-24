@@ -4,7 +4,8 @@ Vietnamese Reranker wrapper using sentence-transformers CrossEncoder.
 import os
 import time
 import logging
-from typing import List, Tuple
+from typing import List, Tuple, Optional
+from collections import defaultdict
 from sentence_transformers import CrossEncoder
 import torch
 
@@ -131,6 +132,110 @@ class VietnameseReranker:
         )
         
         return top_results
+    
+    def rerank_with_document_filter(
+        self,
+        query: str,
+        documents: List[str],
+        document_ids: Optional[List[str]] = None,
+        top_k: int = 5,
+        batch_size: int = 16,
+        same_document_only: bool = True
+    ) -> List[Tuple[int, str, float]]:
+        """
+        Rerank documents and identify best document to preserve full context.
+        
+        When same_document_only=True:
+        1. Rerank ALL chunks (no filtering at this stage)
+        2. Group chunks by document_id
+        3. Calculate aggregate score for each document
+        4. Pick document with majority of high-scoring chunks
+        5. Return ALL chunks from that document (preserves full legal context)
+        
+        This prevents hallucination from mixed contexts while preserving
+        complete legal document context.
+        
+        Args:
+            query: Search query
+            documents: List of candidate documents
+            document_ids: List of document IDs (same length as documents)
+            top_k: IGNORED - returns all chunks from best document
+            batch_size: Batch size for inference
+            same_document_only: If True, filter to single best document
+        
+        Returns:
+            List of tuples (original_index, text, score) sorted by score descending
+            Contains ALL chunks from the selected document
+        """
+        if not documents:
+            return []
+        
+        # First, rerank all chunks
+        all_results = self.rerank(
+            query=query,
+            documents=documents,
+            top_k=len(documents),  # Get all scores first
+            batch_size=batch_size
+        )
+        
+        # If same_document_only is False OR no document_ids provided, return normal top_k
+        if not same_document_only or not document_ids:
+            return all_results[:top_k]
+        
+        # Validate document_ids length
+        if len(document_ids) != len(documents):
+            logger.warning(
+                f"document_ids length ({len(document_ids)}) != documents length ({len(documents)}). "
+                f"Falling back to normal reranking."
+            )
+            return all_results[:top_k]
+        
+        start_time = time.time()
+        
+        # Group chunks by document_id
+        doc_groups = defaultdict(list)
+        for idx, text, score in all_results:
+            doc_id = document_ids[idx]
+            doc_groups[doc_id].append((idx, text, score))
+        
+        logger.info(f"Grouped {len(documents)} chunks into {len(doc_groups)} documents")
+        
+        # Calculate aggregate score for each document
+        # Strategy: Average of top-3 chunks per document
+        doc_scores = {}
+        for doc_id, chunks in doc_groups.items():
+            # Sort chunks by score descending
+            sorted_chunks = sorted(chunks, key=lambda x: x[2], reverse=True)
+            # Take top-3 (or all if less than 3)
+            top_3 = sorted_chunks[:3]
+            # Calculate average score
+            avg_score = sum(c[2] for c in top_3) / len(top_3)
+            doc_scores[doc_id] = avg_score
+            logger.debug(f"Document {doc_id}: {len(chunks)} chunks, avg_top3_score={avg_score:.4f}")
+        
+        # Pick best document (document with highest aggregate score)
+        best_doc_id = max(doc_scores.items(), key=lambda x: x[1])[0]
+        best_doc_score = doc_scores[best_doc_id]
+        best_chunks = doc_groups[best_doc_id]
+        
+        logger.info(
+            f"Selected document {best_doc_id} (score={best_doc_score:.4f}) "
+            f"with {len(best_chunks)} chunks from {len(doc_groups)} candidates"
+        )
+        
+        # Sort chunks from best document by score and return ALL of them
+        # (No top_k filtering - preserve full legal context)
+        best_chunks_sorted = sorted(best_chunks, key=lambda x: x[2], reverse=True)
+        final_results = best_chunks_sorted  # Return ALL chunks
+        
+        elapsed = time.time() - start_time
+        logger.info(
+            f"Document-first reranking completed in {elapsed:.3f}s: "
+            f"{len(documents)} input chunks → {len(doc_groups)} documents → "
+            f"Selected 1 document → Returning ALL {len(final_results)} chunks (full context preserved)"
+        )
+        
+        return final_results
     
     def get_info(self) -> dict:
         """Get information about the loaded model."""
