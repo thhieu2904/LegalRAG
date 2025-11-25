@@ -5,17 +5,20 @@ Coordinates embedding, vector search, and LLM to answer questions
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
 import logging
 import httpx
+from collections import defaultdict
 
 from .config import settings
+from .database import DatabaseClient
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# Global HTTP client
+# Global clients
 http_client = None
+db_client = None
 
 
 # ============= MODELS =============
@@ -33,11 +36,33 @@ class SearchResult(BaseModel):
     similarity: float
 
 
+class DocumentOption(BaseModel):
+    """Document option for clarification"""
+    document_id: str
+    title: str
+    chunk_count: int
+    confidence: float
+    preview: str
+
+
+class ConfirmRequest(BaseModel):
+    """User confirms document selection"""
+    question: str
+    document_id: str
+    history: Optional[List[dict]] = None
+
+
 class QueryResponse(BaseModel):
-    """Query response"""
+    """Query response with optional clarification"""
     success: bool
     question: str
-    answer: str
+    answer: Optional[str] = None
+    
+    # Clarification fields
+    needs_clarification: bool = False
+    clarification_message: Optional[str] = None
+    document_options: Optional[List[DocumentOption]] = None
+    
     sources: List[SearchResult]
     tokens_used: int
 
@@ -70,9 +95,19 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     """Initialize on startup"""
-    global http_client
+    global http_client, db_client
     http_client = httpx.AsyncClient(timeout=30.0)
-    logger.info("✅ Query Service started")
+    
+    # Initialize PostgreSQL client
+    db_client = DatabaseClient(
+        host=settings.POSTGRES_HOST,
+        port=settings.POSTGRES_PORT,
+        user=settings.POSTGRES_USER,
+        password=settings.POSTGRES_PASSWORD,
+        dbname=settings.POSTGRES_DB
+    )
+    
+    logger.info("✅ Query Service started (with DB client)")
 
 
 @app.on_event("shutdown")
@@ -209,6 +244,25 @@ async def generate_answer(question: str, context: str) -> Optional[str]:
         return None
 
 
+def group_chunks_by_document(chunks: List[dict]) -> Dict[str, List[dict]]:
+    """
+    Group chunks by document_id
+    
+    Args:
+        chunks: List of chunks with document_id field
+        
+    Returns:
+        Dict mapping document_id → list of chunks
+    """
+    groups = defaultdict(list)
+    for chunk in chunks:
+        doc_id = chunk.get('document_id')
+        if doc_id:
+            groups[doc_id].append(chunk)
+    
+    return dict(groups)
+
+
 # ============= ENDPOINTS =============
 
 @app.get("/health", response_model=HealthResponse)
@@ -287,6 +341,51 @@ async def query(request: QueryRequest):
         logger.info("Step 3: Reranking documents...")
         reranked_results = await rerank_documents(request.question, search_results, top_k=5)
         
+        # Step 3.5: Check confidence
+        max_score = max(r.get('rerank_score', 0) for r in reranked_results)
+        logger.info(f"📊 Max confidence: {max_score:.3f}")
+        
+        if max_score < settings.CLARIFICATION_THRESHOLD:
+            # LOW CONFIDENCE → CLARIFICATION
+            logger.info("❓ Low confidence → Showing document options")
+            
+            # Group by document
+            doc_groups = group_chunks_by_document(reranked_results)
+            
+            # Fetch titles
+            doc_ids = list(doc_groups.keys())
+            titles = db_client.fetch_document_titles(doc_ids)
+            
+            # Create options
+            options = []
+            for doc_id, chunks in doc_groups.items():
+                max_chunk_score = max(c.get('rerank_score', 0) for c in chunks)
+                
+                options.append(DocumentOption(
+                    document_id=doc_id,
+                    title=titles.get(doc_id, "Văn bản"),
+                    chunk_count=len(chunks),
+                    confidence=max_chunk_score,
+                    preview=chunks[0].get('content', '')[:150] + "..."
+                ))
+            
+            # Sort by confidence
+            options.sort(key=lambda x: x.confidence, reverse=True)
+            
+            return QueryResponse(
+                success=True,
+                question=request.question,
+                answer=None,
+                needs_clarification=True,
+                clarification_message="Tôi tìm thấy các văn bản có thể liên quan. Bạn muốn xem văn bản nào?",
+                document_options=options[:3],
+                sources=[],
+                tokens_used=0
+            )
+        
+        # HIGH CONFIDENCE → Continue with answer
+        logger.info("✅ High confidence → Answering directly")
+        
         # Step 4: Build context from reranked results
         context_parts = []
         for idx, result in enumerate(reranked_results, 1):
@@ -333,6 +432,100 @@ async def query(request: QueryRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/query/confirm", response_model=QueryResponse)
+async def query_confirm(request: ConfirmRequest):
+    """
+    Handle user's document selection
+    
+    Flow:
+    1. Embed original question
+    2. Search with document_id filter
+    3. Rerank filtered results
+    4. Generate answer
+    """
+    try:
+        logger.info(f"✅ User confirmed document: {request.document_id}")
+        
+        # Step 1: Embed
+        embedding = await embed_text(request.question)
+        if not embedding:
+            raise HTTPException(503, "Embedding service unavailable")
+        
+        # Step 2: Search with document filter
+        response = await http_client.post(
+            f"{settings.VECTOR_SERVICE_URL}/search",
+            json={
+                "embedding": embedding,
+                "top_k": 20,
+                "threshold": 0.3,
+                "document_ids": [request.document_id]
+            }
+        )
+        
+        if response.status_code != 200:
+            logger.error(f"Vector search failed: {response.text}")
+            raise HTTPException(503, "Vector search failed")
+        
+        search_results = response.json().get("results", [])
+        
+        if not search_results:
+            return QueryResponse(
+                success=True,
+                question=request.question,
+                answer="Xin lỗi, không tìm thấy thông tin trong văn bản đã chọn.",
+                needs_clarification=False,
+                sources=[],
+                tokens_used=0
+            )
+        
+        # Step 3: Rerank
+        reranked_results = await rerank_documents(
+            request.question, 
+            search_results, 
+            top_k=5
+        )
+        
+        # Step 4: Build context
+        context_parts = []
+        for result in reranked_results:
+            content = result['content']
+            section = result.get('section_title', '')
+            
+            if section:
+                context_parts.append(f"[{section}]\n{content}")
+            else:
+                context_parts.append(content)
+        
+        context = "\n\n---\n\n".join(context_parts)
+        
+        # Step 5: Generate answer
+        answer = await generate_answer(request.question, context)
+        
+        if not answer:
+            raise HTTPException(503, "LLM service unavailable")
+        
+        return QueryResponse(
+            success=True,
+            question=request.question,
+            answer=answer,
+            needs_clarification=False,
+            sources=[
+                SearchResult(
+                    content=r['content'],
+                    similarity=r.get('rerank_score', 0)
+                )
+                for r in reranked_results
+            ],
+            tokens_used=0
+        )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Query confirm failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/")
 async def root():
     """Service info"""
@@ -342,6 +535,7 @@ async def root():
         "endpoints": {
             "health": "/health",
             "query": "POST /query",
+            "query_confirm": "POST /query/confirm",
             "docs": "/docs"
         }
     }

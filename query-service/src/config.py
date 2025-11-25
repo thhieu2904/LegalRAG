@@ -31,6 +31,16 @@ class Settings(BaseSettings):
     RERANK_THRESHOLD: float = 0.6  # Minimum rerank score
     RERANK_SAME_DOCUMENT_ONLY: bool = True  # Only return chunks from same document
     
+    # PostgreSQL for document metadata
+    POSTGRES_HOST: str = "postgres"
+    POSTGRES_PORT: int = 5432
+    POSTGRES_USER: str = "legalrag"
+    POSTGRES_PASSWORD: str = "legalrag"
+    POSTGRES_DB: str = "legalrag"
+    
+    # Clarification threshold
+    CLARIFICATION_THRESHOLD: float = 0.7  # Below this: show document options
+    
     class Config:
         env_file = ".env"
         case_sensitive = True
