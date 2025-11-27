@@ -25,6 +25,7 @@ export const ENDPOINTS = {
   // Query Service (direct: localhost:8002)
   QUERY: {
     CHAT: '/query', // Main RAG query endpoint
+    CONFIRM: '/query/confirm', // Confirm document selection (after clarification)
     HEALTH: '/health',
   },
 } as const;

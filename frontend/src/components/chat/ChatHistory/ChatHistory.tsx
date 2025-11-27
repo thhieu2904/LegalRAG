@@ -9,7 +9,7 @@ import { TypingIndicator } from '../TypingIndicator';
 import styles from './ChatHistory.module.css';
 import type { ChatHistoryProps } from './ChatHistory.types';
 
-export const ChatHistory = ({ messages, loading }: ChatHistoryProps) => {
+export const ChatHistory = ({ messages, loading, onSelectDocument }: ChatHistoryProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +29,7 @@ export const ChatHistory = ({ messages, loading }: ChatHistoryProps) => {
         ) : (
           <>
             {messages.map((message) => (
-              <ChatMessage key={message.id} message={message} />
+              <ChatMessage key={message.id} message={message} onSelectDocument={onSelectDocument} />
             ))}
             {loading && <TypingIndicator />}
           </>

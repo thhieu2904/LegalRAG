@@ -27,9 +27,8 @@ class Settings(BaseSettings):
     HIGH_CONFIDENCE_THRESHOLD: float = 0.8  # Above this: auto-route
     
     # Reranking parameters
-    RERANK_TOP_K: int = 5  # Number of chunks to rerank
+    RERANK_TOP_K: int = 10  # Number of chunks to get from rerank (increased for multi-doc comparison)
     RERANK_THRESHOLD: float = 0.6  # Minimum rerank score
-    RERANK_SAME_DOCUMENT_ONLY: bool = True  # Only return chunks from same document
     
     # PostgreSQL for document metadata
     POSTGRES_HOST: str = "postgres"
@@ -38,8 +37,15 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = "legalrag"
     POSTGRES_DB: str = "legalrag"
     
-    # Clarification threshold
-    CLARIFICATION_THRESHOLD: float = 0.7  # Below this: show document options
+    # Clarification thresholds (Smart clarification based on document score gap)
+    CLARIFICATION_THRESHOLD: float = 0.7  # Below this: always clarify
+    SCORE_GAP_THRESHOLD: float = 0.1  # If gap between top-1 and top-2 doc < this: clarify
+    
+    # Heuristics
+    SPECIFIC_KEYWORDS: list = [
+        "nước ngoài", "lưu động", "quá hạn", "lại", "thay đổi", 
+        "cải chính", "bổ sung", "xác định lại", "nhận cha mẹ con"
+    ]
     
     class Config:
         env_file = ".env"

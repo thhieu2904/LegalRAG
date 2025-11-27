@@ -52,6 +52,14 @@ class VietnameseReranker:
             logger.warning("CUDA requested but not available, falling back to CPU")
             self.device = "cpu"
         
+        # Set cache folder BEFORE loading model
+        if cache_dir:
+            os.makedirs(cache_dir, exist_ok=True)
+            os.environ['SENTENCE_TRANSFORMERS_HOME'] = cache_dir
+            os.environ['HF_HOME'] = cache_dir
+            os.environ['TRANSFORMERS_CACHE'] = cache_dir
+            logger.info(f"Model cache directory: {cache_dir}")
+        
         # Load the Cross-Encoder model
         try:
             self.model = CrossEncoder(
@@ -59,10 +67,6 @@ class VietnameseReranker:
                 max_length=max_length,
                 device=self.device
             )
-            
-            # Manually set cache folder for model downloads if needed
-            if cache_dir:
-                os.environ['SENTENCE_TRANSFORMERS_HOME'] = cache_dir
                 
             logger.info(f"✓ Model loaded successfully on {self.device}")
             
@@ -133,109 +137,134 @@ class VietnameseReranker:
         
         return top_results
     
-    def rerank_with_document_filter(
+    def rerank_with_scores(
         self,
         query: str,
         documents: List[str],
         document_ids: Optional[List[str]] = None,
+        document_titles: Optional[List[str]] = None,
         top_k: int = 5,
         batch_size: int = 16,
-        same_document_only: bool = True
-    ) -> List[Tuple[int, str, float]]:
+        include_document_scores: bool = True
+    ) -> Tuple[List[Tuple[int, str, float]], Optional[List[dict]]]:
         """
-        Rerank documents and identify best document to preserve full context.
+        Rerank documents and return top-K chunks WITH document-level scores.
         
-        When same_document_only=True:
-        1. Rerank ALL chunks (no filtering at this stage)
-        2. Group chunks by document_id
-        3. Calculate aggregate score for each document
-        4. Pick document with majority of high-scoring chunks
-        5. Return ALL chunks from that document (preserves full legal context)
+        This is the hybrid approach:
+        1. Rerank ALL chunks with title-aware scoring
+        2. Return top-K chunks (from potentially multiple documents)
+        3. Also return aggregated document scores for query-service to decide clarification
         
-        This prevents hallucination from mixed contexts while preserving
-        complete legal document context.
+        Query-service uses document_scores to:
+        - If score_gap between top-1 and top-2 doc is large → answer directly
+        - If score_gap is small → trigger clarification (ambiguous query)
         
         Args:
             query: Search query
             documents: List of candidate documents
             document_ids: List of document IDs (same length as documents)
-            top_k: IGNORED - returns all chunks from best document
+            document_titles: List of document titles for title-aware reranking
+            top_k: Number of top chunks to return
             batch_size: Batch size for inference
-            same_document_only: If True, filter to single best document
+            include_document_scores: If True, calculate and return document scores
         
         Returns:
-            List of tuples (original_index, text, score) sorted by score descending
-            Contains ALL chunks from the selected document
+            Tuple of:
+            - List of tuples (original_index, text, score) sorted by score descending
+            - List of document score dicts (if include_document_scores=True)
         """
         if not documents:
-            return []
+            return [], None
         
-        # First, rerank all chunks
+        # Prepend document titles to content for title-aware reranking
+        docs_for_rerank = documents
+        if document_titles and len(document_titles) == len(documents):
+            docs_for_rerank = [
+                f"[{title}] {content}" if title else content
+                for title, content in zip(document_titles, documents)
+            ]
+            logger.info(f"Title-aware reranking enabled for {len(documents)} chunks")
+        
+        # Rerank all chunks
         all_results = self.rerank(
             query=query,
-            documents=documents,
+            documents=docs_for_rerank,
             top_k=len(documents),  # Get all scores first
             batch_size=batch_size
         )
         
-        # If same_document_only is False OR no document_ids provided, return normal top_k
-        if not same_document_only or not document_ids:
-            return all_results[:top_k]
+        # Map back to original documents (without title prefix)
+        all_results = [
+            (idx, documents[idx], score)
+            for idx, _, score in all_results
+        ]
         
-        # Validate document_ids length
-        if len(document_ids) != len(documents):
-            logger.warning(
-                f"document_ids length ({len(document_ids)}) != documents length ({len(documents)}). "
-                f"Falling back to normal reranking."
+        # Calculate document scores if requested and document_ids provided
+        document_scores = None
+        if include_document_scores and document_ids and len(document_ids) == len(documents):
+            start_time = time.time()
+            
+            # Group chunks by document_id
+            doc_groups = defaultdict(list)
+            for idx, text, score in all_results:
+                doc_id = document_ids[idx]
+                doc_groups[doc_id].append((idx, text, score))
+            
+            logger.info(f"Grouped {len(documents)} chunks into {len(doc_groups)} documents")
+            
+            # Calculate aggregate scores for each document
+            document_scores = []
+            for doc_id, chunks in doc_groups.items():
+                sorted_chunks = sorted(chunks, key=lambda x: x[2], reverse=True)
+                top_3 = sorted_chunks[:3]
+                avg_score = sum(c[2] for c in top_3) / len(top_3)
+                max_score = sorted_chunks[0][2]
+                
+                document_scores.append({
+                    'document_id': doc_id,
+                    'avg_score': avg_score,
+                    'max_score': max_score,
+                    'chunk_count': len(chunks)
+                })
+            
+            # Sort by avg_score descending
+            document_scores.sort(key=lambda x: x['avg_score'], reverse=True)
+            
+            elapsed = time.time() - start_time
+            logger.info(
+                f"Calculated scores for {len(document_scores)} documents in {elapsed:.3f}s. "
+                f"Top doc: {document_scores[0]['document_id'][:8]}... (avg={document_scores[0]['avg_score']:.4f})"
             )
-            return all_results[:top_k]
         
-        start_time = time.time()
-        
-        # Group chunks by document_id
-        doc_groups = defaultdict(list)
-        for idx, text, score in all_results:
-            doc_id = document_ids[idx]
-            doc_groups[doc_id].append((idx, text, score))
-        
-        logger.info(f"Grouped {len(documents)} chunks into {len(doc_groups)} documents")
-        
-        # Calculate aggregate score for each document
-        # Strategy: Average of top-3 chunks per document
-        doc_scores = {}
-        for doc_id, chunks in doc_groups.items():
-            # Sort chunks by score descending
-            sorted_chunks = sorted(chunks, key=lambda x: x[2], reverse=True)
-            # Take top-3 (or all if less than 3)
-            top_3 = sorted_chunks[:3]
-            # Calculate average score
-            avg_score = sum(c[2] for c in top_3) / len(top_3)
-            doc_scores[doc_id] = avg_score
-            logger.debug(f"Document {doc_id}: {len(chunks)} chunks, avg_top3_score={avg_score:.4f}")
-        
-        # Pick best document (document with highest aggregate score)
-        best_doc_id = max(doc_scores.items(), key=lambda x: x[1])[0]
-        best_doc_score = doc_scores[best_doc_id]
-        best_chunks = doc_groups[best_doc_id]
-        
-        logger.info(
-            f"Selected document {best_doc_id} (score={best_doc_score:.4f}) "
-            f"with {len(best_chunks)} chunks from {len(doc_groups)} candidates"
+        # Return top-K chunks (from any documents) + document scores
+        return all_results[:top_k], document_scores
+    
+    # Keep old method for backward compatibility but mark as deprecated
+    def rerank_with_document_filter(
+        self,
+        query: str,
+        documents: List[str],
+        document_ids: Optional[List[str]] = None,
+        document_titles: Optional[List[str]] = None,
+        top_k: int = 5,
+        batch_size: int = 16,
+        same_document_only: bool = True
+    ) -> List[Tuple[int, str, float]]:
+        """
+        DEPRECATED: Use rerank_with_scores instead.
+        Kept for backward compatibility.
+        """
+        logger.warning("rerank_with_document_filter is deprecated. Use rerank_with_scores instead.")
+        results, _ = self.rerank_with_scores(
+            query=query,
+            documents=documents,
+            document_ids=document_ids,
+            document_titles=document_titles,
+            top_k=top_k,
+            batch_size=batch_size,
+            include_document_scores=False
         )
-        
-        # Sort chunks from best document by score and return ALL of them
-        # (No top_k filtering - preserve full legal context)
-        best_chunks_sorted = sorted(best_chunks, key=lambda x: x[2], reverse=True)
-        final_results = best_chunks_sorted  # Return ALL chunks
-        
-        elapsed = time.time() - start_time
-        logger.info(
-            f"Document-first reranking completed in {elapsed:.3f}s: "
-            f"{len(documents)} input chunks → {len(doc_groups)} documents → "
-            f"Selected 1 document → Returning ALL {len(final_results)} chunks (full context preserved)"
-        )
-        
-        return final_results
+        return results
     
     def get_info(self) -> dict:
         """Get information about the loaded model."""

@@ -5,6 +5,17 @@
 import type { MessageRole, Source } from './common.types';
 
 /**
+ * Document Option (for clarification)
+ */
+export interface DocumentOption {
+  document_id: string;
+  title: string;
+  chunk_count: number;
+  confidence: number;
+  preview: string;
+}
+
+/**
  * Chat Message (for conversation history)
  */
 export interface Message {
@@ -25,6 +36,19 @@ export interface ChatMessage {
   took_ms?: number;
   confidence?: number;
   query?: string; // Original user question (for keyword highlighting in sources)
+
+  // Clarification fields
+  needs_clarification?: boolean;
+  document_options?: DocumentOption[];
+  originalQuestion?: string; // Store original question for confirm request
+}
+
+/**
+ * History Message (for API requests)
+ */
+export interface HistoryMessage {
+  role: 'user' | 'assistant';
+  content: string;
 }
 
 /**
@@ -34,6 +58,16 @@ export interface ChatRequest {
   question: string;
   top_k?: number;
   threshold?: number;
+  history?: HistoryMessage[]; // Last 3 turns for follow-up context
+}
+
+/**
+ * Confirm Document Request (when user selects a document option)
+ */
+export interface ConfirmRequest {
+  question: string;
+  document_id: string;
+  history?: HistoryMessage[]; // Chat history for follow-up context
 }
 
 /**
@@ -42,9 +76,14 @@ export interface ChatRequest {
 export interface ChatResponse {
   success: boolean;
   question: string;
-  answer: string;
+  answer: string | null;
   sources: Source[];
   tokens_used: number;
+
+  // Clarification fields
+  needs_clarification?: boolean;
+  clarification_message?: string;
+  document_options?: DocumentOption[];
 }
 
 /**

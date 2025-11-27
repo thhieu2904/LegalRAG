@@ -5,7 +5,7 @@ Coordinates embedding, vector search, and LLM to answer questions
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 import logging
 import httpx
 from collections import defaultdict
@@ -23,11 +23,18 @@ db_client = None
 
 # ============= MODELS =============
 
+class HistoryMessage(BaseModel):
+    """A single message in chat history"""
+    role: str  # 'user' or 'assistant'
+    content: str
+
+
 class QueryRequest(BaseModel):
-    """Query request"""
+    """Query request with optional chat history"""
     question: str
     top_k: int = settings.TOP_K
     threshold: float = settings.SIMILARITY_THRESHOLD
+    history: Optional[List[HistoryMessage]] = None  # Last 3 turns for context
 
 
 class SearchResult(BaseModel):
@@ -49,7 +56,7 @@ class ConfirmRequest(BaseModel):
     """User confirms document selection"""
     question: str
     document_id: str
-    history: Optional[List[dict]] = None
+    history: Optional[List[HistoryMessage]] = None  # Chat history for follow-up context
 
 
 class QueryResponse(BaseModel):
@@ -161,21 +168,30 @@ async def search_vectors(embedding: List[float]) -> List[dict]:
         return []
 
 
-async def rerank_documents(query: str, documents: List[dict], top_k: int = 5) -> List[dict]:
+async def rerank_documents(query: str, documents: List[dict], top_k: int = 10) -> Tuple[List[dict], Optional[List[dict]]]:
     """
-    Rerank documents using rerank service with document filtering.
+    Rerank documents using rerank service with title-aware scoring.
     
-    When same_document_only=True:
-    - Rerank service identifies best document
-    - Returns ALL chunks from that document (preserves full legal context)
-    - top_k parameter is ignored by rerank service
+    Returns:
+    - Tuple of (reranked_docs, document_scores)
+    - document_scores: List of {document_id, avg_score, max_score, chunk_count}
+      Used to decide if clarification is needed (when scores are close)
     """
     try:
         # Prepare documents for reranking
         doc_texts = [doc.get('content', '') for doc in documents]
         doc_ids = [doc.get('document_id', 'unknown') for doc in documents]
+        unique_doc_ids = list(set(doc_ids))
         
-        logger.info(f"Sending {len(documents)} chunks from {len(set(doc_ids))} unique documents to rerank")
+        # Fetch document titles for title-aware reranking
+        titles_map = {}
+        if db_client:
+            titles_map = db_client.fetch_document_titles(unique_doc_ids)
+        
+        # Map titles to each chunk (in same order as doc_ids)
+        doc_titles = [titles_map.get(doc_id, '') for doc_id in doc_ids]
+        
+        logger.info(f"Sending {len(documents)} chunks from {len(unique_doc_ids)} unique documents to rerank (title-aware)")
         
         response = await http_client.post(
             f"{settings.RERANK_SERVICE_URL}/rerank",
@@ -183,16 +199,17 @@ async def rerank_documents(query: str, documents: List[dict], top_k: int = 5) ->
                 "query": query,
                 "documents": doc_texts,
                 "document_ids": doc_ids,
-                # Note: top_k ignored when same_document_only=True (rerank returns all chunks from best doc)
+                "document_titles": doc_titles,
                 "top_k": top_k,
-                "same_document_only": settings.RERANK_SAME_DOCUMENT_ONLY
+                "include_document_scores": True  # NEW: Get aggregated doc scores
             },
-            timeout=10.0
+            timeout=30.0
         )
         
         if response.status_code == 200:
             data = response.json()
             reranked = data.get("results", [])
+            document_scores = data.get("document_scores", None)  # NEW: Get doc scores
             
             # Map reranked results back to original documents with scores
             reranked_docs = []
@@ -201,35 +218,52 @@ async def rerank_documents(query: str, documents: List[dict], top_k: int = 5) ->
                 if idx < len(documents):
                     doc = documents[idx].copy()
                     doc['rerank_score'] = item.get('score', 0.0)
+                    doc['document_title'] = titles_map.get(doc.get('document_id', ''), 'Văn bản')
                     reranked_docs.append(doc)
             
-            logger.info(f"✅ Reranked {len(reranked_docs)} documents")
-            return reranked_docs
+            logger.info(f"✅ Reranked {len(reranked_docs)} chunks, {len(document_scores) if document_scores else 0} document scores")
+            return reranked_docs, document_scores
         else:
             logger.warning(f"⚠️ Rerank failed: {response.text}, using original order")
-            return documents[:top_k]
+            return documents[:top_k], None
     except Exception as e:
         logger.warning(f"⚠️ Rerank error: {e}, using original order")
-        return documents[:top_k]
+        return documents[:top_k], None
 
 
-async def generate_answer(question: str, context: str) -> Optional[str]:
+async def generate_answer(
+    question: str, 
+    context: str, 
+    history: Optional[List[dict]] = None
+) -> Optional[str]:
     """
     Generate answer using LLM Service's /generate-rag endpoint.
     
-    This function sends question + context to LLM service,
+    This function sends question + context + history to LLM service,
     which automatically wraps with system_prompt.txt + citation_rules.txt.
+    
+    Args:
+        question: Current user question
+        context: RAG context from vector search
+        history: Optional chat history (last 3 turns) for follow-up questions
     """
     try:
+        payload = {
+            "question": question,
+            "context": context,
+            "max_tokens": 1280,  # Optimized for Vietnamese responses
+            "temperature": 0.3,  # Low temperature for factual legal answers
+            "top_p": 0.85
+        }
+        
+        # Add history if provided (for follow-up context)
+        if history:
+            payload["history"] = history
+            logger.info(f"📜 Sending {len(history)} history messages to LLM")
+        
         response = await http_client.post(
             f"{settings.LLM_SERVICE_URL}/generate-rag",
-            json={
-                "question": question,
-                "context": context,
-                "max_tokens": 1024,
-                "temperature": 0.3,  # Low temperature for factual legal answers
-                "top_p": 0.85
-            },
+            json=payload,
             timeout=120.0  # LLM can be slow
         )
         if response.status_code == 200:
@@ -261,6 +295,70 @@ def group_chunks_by_document(chunks: List[dict]) -> Dict[str, List[dict]]:
             groups[doc_id].append(chunk)
     
     return dict(groups)
+
+
+def apply_ranking_heuristics(query: str, document_scores: List[dict], titles_map: Dict[str, str]) -> List[dict]:
+    """
+    Re-sort document scores based on heuristics when scores are close.
+    
+    Heuristics:
+    1. Specificity Penalty: Titles with specific words (nước ngoài, lưu động) 
+       that are NOT in the query get penalized.
+    2. Title Length: Shorter titles are usually more general (tie-breaker).
+    
+    Args:
+        query: User query
+        document_scores: List of {document_id, avg_score, ...}
+        titles_map: Map of document_id -> title
+        
+    Returns:
+        Re-sorted document_scores
+    """
+    if not document_scores:
+        return []
+        
+    query_lower = query.lower()
+    
+    # Calculate heuristic score for each document
+    scored_docs = []
+    for doc in document_scores:
+        doc_id = doc.get('document_id')
+        title = titles_map.get(doc_id, "").lower()
+        original_score = doc.get('avg_score', 0)
+        
+        penalty = 0.0
+        
+        # Heuristic 1: Specificity Penalty (STRICT for legal domain)
+        # If title has specific keywords NOT in query -> Heavy penalty
+        # Legal documents require precision - wrong document = wrong legal advice
+        for keyword in settings.SPECIFIC_KEYWORDS:
+            if keyword in title and keyword not in query_lower:
+                penalty += 0.15  # 15% penalty per unmatched specific keyword (strict for legal)
+                logger.info(f"📉 Penalty applied to '{title[:30]}...': contains '{keyword}' not in query (-0.15)")
+        
+        # Heuristic 2: Title Length Bias (minor tie-breaker)
+        # Prefer shorter titles (usually more general)
+        # Normalize length factor: 0.001 per 10 chars
+        length_penalty = len(title) * 0.0001
+        
+        final_score = original_score - penalty - length_penalty
+        
+        # Store modified score
+        doc_copy = doc.copy()
+        doc_copy['heuristic_score'] = final_score
+        doc_copy['original_score'] = original_score
+        scored_docs.append(doc_copy)
+    
+    # Sort by heuristic_score descending
+    scored_docs.sort(key=lambda x: x['heuristic_score'], reverse=True)
+    
+    # Log reordering
+    if scored_docs[0]['document_id'] != document_scores[0]['document_id']:
+        old_top = titles_map.get(document_scores[0]['document_id'], "")
+        new_top = titles_map.get(scored_docs[0]['document_id'], "")
+        logger.info(f"🔄 Reordered top document: '{old_top}' -> '{new_top}'")
+        
+    return scored_docs
 
 
 # ============= ENDPOINTS =============
@@ -339,52 +437,128 @@ async def query(request: QueryRequest):
         
         # Step 3: Rerank documents for better relevance
         logger.info("Step 3: Reranking documents...")
-        reranked_results = await rerank_documents(request.question, search_results, top_k=5)
+        reranked_results, document_scores = await rerank_documents(
+            request.question, search_results, top_k=settings.RERANK_TOP_K
+        )
         
-        # Step 3.5: Check confidence
-        max_score = max(r.get('rerank_score', 0) for r in reranked_results)
-        logger.info(f"📊 Max confidence: {max_score:.3f}")
+        # Step 3.5: Smart clarification check using document scores
+        max_score = max(r.get('rerank_score', 0) for r in reranked_results) if reranked_results else 0
+        logger.info(f"📊 Max chunk confidence: {max_score:.3f}")
         
+        # NEW: Apply heuristics if we have document scores
+        if document_scores:
+            # Fetch titles early for heuristics
+            doc_ids = [ds.get('document_id') for ds in document_scores]
+            titles_map = db_client.fetch_document_titles(doc_ids)
+            
+            # Apply heuristics to reorder
+            document_scores = apply_ranking_heuristics(request.question, document_scores, titles_map)
+            
+            # Update max_score based on new top document (optional, but good for consistency)
+            # Note: We keep original max_score for low_confidence check, 
+            # but use reordered list for gap check
+        else:
+            titles_map = {}
+
+        needs_clarification = False
+        clarification_reason = ""
+        
+        # Check 1: Low confidence (using original max score from chunks)
         if max_score < settings.CLARIFICATION_THRESHOLD:
-            # LOW CONFIDENCE → CLARIFICATION
-            logger.info("❓ Low confidence → Showing document options")
-            
-            # Group by document
-            doc_groups = group_chunks_by_document(reranked_results)
-            
-            # Fetch titles
-            doc_ids = list(doc_groups.keys())
-            titles = db_client.fetch_document_titles(doc_ids)
-            
-            # Create options
-            options = []
-            for doc_id, chunks in doc_groups.items():
-                max_chunk_score = max(c.get('rerank_score', 0) for c in chunks)
-                
-                options.append(DocumentOption(
-                    document_id=doc_id,
-                    title=titles.get(doc_id, "Văn bản"),
-                    chunk_count=len(chunks),
-                    confidence=max_chunk_score,
-                    preview=chunks[0].get('content', '')[:150] + "..."
-                ))
-            
-            # Sort by confidence
-            options.sort(key=lambda x: x.confidence, reverse=True)
-            
-            return QueryResponse(
-                success=True,
-                question=request.question,
-                answer=None,
-                needs_clarification=True,
-                clarification_message="Tôi tìm thấy các văn bản có thể liên quan. Bạn muốn xem văn bản nào?",
-                document_options=options[:3],
-                sources=[],
-                tokens_used=0
-            )
+            needs_clarification = True
+            clarification_reason = "low_confidence"
+            logger.info(f"❓ Low confidence ({max_score:.3f} < {settings.CLARIFICATION_THRESHOLD}) → Clarification needed")
         
-        # HIGH CONFIDENCE → Continue with answer
-        logger.info("✅ High confidence → Answering directly")
+        # Check 2: Score gap between top documents (ambiguous query)
+        # Now using HEURISTIC scores for gap check
+        elif document_scores and len(document_scores) >= 2:
+            top1_score = document_scores[0].get('heuristic_score', document_scores[0].get('avg_score'))
+            top2_score = document_scores[1].get('heuristic_score', document_scores[1].get('avg_score'))
+            score_gap = top1_score - top2_score
+            
+            logger.info(f"📊 Document scores (heuristic): Top1={top1_score:.3f}, Top2={top2_score:.3f}, Gap={score_gap:.3f}")
+            
+            if score_gap < settings.SCORE_GAP_THRESHOLD:
+                needs_clarification = True
+                clarification_reason = "ambiguous_query"
+                logger.info(f"❓ Ambiguous query (gap={score_gap:.3f} < {settings.SCORE_GAP_THRESHOLD}) → Clarification needed")
+        
+        if needs_clarification:
+            # Build clarification options from document_scores
+            if document_scores:
+                # Titles are already fetched in titles_map
+                
+                options = []
+                for ds in document_scores[:3]:  # Top 3 documents
+                    doc_id = ds.get('document_id')
+                    
+                    # Find preview from reranked_results
+                    preview = ""
+                    for r in reranked_results:
+                        if r.get('document_id') == doc_id:
+                            preview = r.get('content', '')[:150] + "..."
+                            break
+                    
+                    options.append(DocumentOption(
+                        document_id=doc_id,
+                        title=titles_map.get(doc_id, "Văn bản"),
+                        chunk_count=ds.get('chunk_count', 1),
+                        confidence=ds.get('avg_score', 0),
+                        preview=preview
+                    ))
+                
+                return QueryResponse(
+                    success=True,
+                    question=request.question,
+                    answer=None,
+                    needs_clarification=True,
+                    clarification_message="Tôi tìm thấy nhiều văn bản có thể liên quan. Bạn muốn xem văn bản nào?",
+                    document_options=options,
+                    sources=[],
+                    tokens_used=0
+                )
+            else:
+                # Fallback: group by document from reranked_results
+                doc_groups = group_chunks_by_document(reranked_results)
+                doc_ids = list(doc_groups.keys())
+                titles = db_client.fetch_document_titles(doc_ids)
+                
+                options = []
+                for doc_id, chunks in doc_groups.items():
+                    max_chunk_score = max(c.get('rerank_score', 0) for c in chunks)
+                    options.append(DocumentOption(
+                        document_id=doc_id,
+                        title=titles.get(doc_id, "Văn bản"),
+                        chunk_count=len(chunks),
+                        confidence=max_chunk_score,
+                        preview=chunks[0].get('content', '')[:150] + "..."
+                    ))
+                
+                options.sort(key=lambda x: x.confidence, reverse=True)
+                
+                return QueryResponse(
+                    success=True,
+                    question=request.question,
+                    answer=None,
+                    needs_clarification=True,
+                    clarification_message="Tôi tìm thấy các văn bản có thể liên quan. Bạn muốn xem văn bản nào?",
+                    document_options=options[:3],
+                    sources=[],
+                    tokens_used=0
+                )
+        
+        # HIGH CONFIDENCE & CLEAR WINNER → Answer directly
+        logger.info("✅ High confidence with clear winner → Answering directly")
+        
+        # Filter to only chunks from top document for coherent answer
+        if document_scores and len(document_scores) > 0:
+            top_doc_id = document_scores[0].get('document_id')
+            reranked_results = [r for r in reranked_results if r.get('document_id') == top_doc_id]
+            logger.info(f"📄 Filtered to {len(reranked_results)} chunks from top document: {top_doc_id[:8]}...")
+            
+            # Add title to results for context building
+            for r in reranked_results:
+                r['document_title'] = titles_map.get(top_doc_id, 'Văn bản')
         
         # Step 4: Build context from reranked results
         context_parts = []
@@ -405,9 +579,14 @@ async def query(request: QueryRequest):
         context = "\n\n---\n\n".join(context_parts)
         
         # Step 5: Generate answer using LLM with RAG endpoint
-        # (LLM service will automatically wrap with system_prompt.txt + citation_rules.txt)
         logger.info("Step 5: Generating answer with RAG prompt...")
-        answer = await generate_answer(request.question, context)
+        
+        # Prepare history for LLM (convert to dict format)
+        history_for_llm = None
+        if request.history:
+            history_for_llm = [{"role": h.role, "content": h.content} for h in request.history]
+        
+        answer = await generate_answer(request.question, context, history=history_for_llm)
         if answer is None:
             raise HTTPException(status_code=503, detail="LLM service unavailable")
         
@@ -479,7 +658,7 @@ async def query_confirm(request: ConfirmRequest):
             )
         
         # Step 3: Rerank
-        reranked_results = await rerank_documents(
+        reranked_results, _ = await rerank_documents(
             request.question, 
             search_results, 
             top_k=5
@@ -498,8 +677,12 @@ async def query_confirm(request: ConfirmRequest):
         
         context = "\n\n---\n\n".join(context_parts)
         
-        # Step 5: Generate answer
-        answer = await generate_answer(request.question, context)
+        # Step 5: Generate answer with history for follow-up context
+        history_for_llm = None
+        if request.history:
+            history_for_llm = [{"role": h.role, "content": h.content} for h in request.history]
+        
+        answer = await generate_answer(request.question, context, history=history_for_llm)
         
         if not answer:
             raise HTTPException(503, "LLM service unavailable")

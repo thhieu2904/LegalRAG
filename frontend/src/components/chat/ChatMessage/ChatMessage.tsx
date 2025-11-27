@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { User, Bot } from 'lucide-react';
+import { User, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { formatTimeAgo } from '@/utils/formatters/date';
@@ -12,7 +12,7 @@ import { SourceViewer } from '../SourceViewer';
 import styles from './ChatMessage.module.css';
 import type { ChatMessageProps } from './ChatMessage.types';
 
-export const ChatMessage = ({ message }: ChatMessageProps) => {
+export const ChatMessage = ({ message, onSelectDocument }: ChatMessageProps) => {
   const [showSourceViewer, setShowSourceViewer] = useState(false);
   const isUser = message.role === 'user';
   const isAI = message.role === 'assistant';
@@ -48,6 +48,33 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
             <p>{message.content}</p>
           )}
         </div>
+
+        {/* Document Options (Clarification) */}
+        {isAI && message.needs_clarification && message.document_options && (
+          <div className={styles.documentOptions}>
+            {message.document_options.map((option) => (
+              <button
+                key={option.document_id}
+                className={styles.documentButton}
+                onClick={() =>
+                  onSelectDocument?.(
+                    message.originalQuestion || '',
+                    option.document_id,
+                    option.title
+                  )
+                }
+              >
+                <FileText size={16} className={styles.documentIcon} />
+                <div className={styles.documentInfo}>
+                  <span className={styles.documentTitle}>{option.title}</span>
+                  <span className={styles.documentConfidence}>
+                    Độ phù hợp: {Math.round(option.confidence * 100)}%
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Timestamp */}
         <time className={styles.timestamp}>{formatTimeAgo(message.timestamp)}</time>

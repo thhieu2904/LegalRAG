@@ -16,6 +16,7 @@ from .models import (
     RerankRequest,
     RerankResponse,
     RerankResult,
+    DocumentScore,
     HealthResponse,
     ErrorResponse
 )
@@ -201,27 +202,30 @@ async def rerank_documents(
     **Input:**
     - query: Vietnamese search query
     - documents: List of candidate documents (max 100)
-    - document_ids: List of document IDs for same-document filtering
-    - top_k: Number of results (IGNORED if same_document_only=True)
-    - same_document_only: If True, returns ALL chunks from best document
+    - document_ids: List of document IDs for document score aggregation
+    - document_titles: List of document titles for title-aware reranking
+    - top_k: Number of top chunks to return
+    - include_document_scores: If True, return aggregated scores per document
     
     **Output:**
-    - results: Reranked documents with scores
+    - results: Top-K reranked chunks with scores
+    - document_scores: Aggregated scores per document (for clarification logic)
     - processing_time: Time taken in seconds
     - model_name: Model used for reranking
     
-    **Behavior:**
-    - When same_document_only=True: Identifies best document, returns ALL its chunks (preserves legal context)
-    - When same_document_only=False: Returns top_k chunks regardless of document
+    **Query-service uses document_scores to:**
+    - If score_gap between top-1 and top-2 doc is large → answer directly
+    - If score_gap is small → trigger clarification (ambiguous query)
     
     **Example:**
     ```
     POST /rerank
     {
-      "query": "điều kiện thành lập công ty",
+      "query": "khai sinh cần gì",
       "documents": [...],
       "document_ids": ["doc_123", "doc_123", "doc_456", ...],
-      "same_document_only": true
+      "document_titles": ["Đăng ký khai sinh", "Đăng ký khai sinh", ...],
+      "include_document_scores": true
     }
     ```
     """
@@ -245,20 +249,21 @@ async def rerank_documents(
         top_k = request.top_k if request.top_k is not None else settings.top_k
         top_k = min(top_k, len(request.documents))
         
-        # Determine same_document_only setting
-        same_document_only = request.same_document_only if request.same_document_only is not None else True
+        # Determine include_document_scores setting
+        include_document_scores = request.include_document_scores if request.include_document_scores is not None else True
         
-        # Perform reranking with document filtering
-        reranked = reranker.rerank_with_document_filter(
+        # Perform reranking with new hybrid method
+        reranked, doc_scores = reranker.rerank_with_scores(
             query=request.query,
             documents=request.documents,
             document_ids=request.document_ids,
+            document_titles=request.document_titles,
             top_k=top_k,
             batch_size=settings.batch_size,
-            same_document_only=same_document_only
+            include_document_scores=include_document_scores
         )
         
-        # Build response
+        # Build chunk results
         results = [
             RerankResult(
                 index=idx,
@@ -269,10 +274,24 @@ async def rerank_documents(
             for rank, (idx, text, score) in enumerate(reranked)
         ]
         
+        # Build document scores if available
+        document_scores = None
+        if doc_scores:
+            document_scores = [
+                DocumentScore(
+                    document_id=ds['document_id'],
+                    avg_score=ds['avg_score'],
+                    max_score=ds['max_score'],
+                    chunk_count=ds['chunk_count']
+                )
+                for ds in doc_scores
+            ]
+        
         processing_time = time.time() - start_time
         
         return RerankResponse(
             results=results,
+            document_scores=document_scores,
             processing_time=processing_time,
             model_name=settings.model_name
         )

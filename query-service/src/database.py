@@ -28,7 +28,7 @@ class DatabaseClient:
         Batch fetch document titles
         
         Args:
-            doc_ids: List of document UUIDs
+            doc_ids: List of document UUIDs (as strings)
             
         Returns:
             Dict mapping document_id → title
@@ -40,9 +40,9 @@ class DatabaseClient:
             conn = psycopg2.connect(**self.config)
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
-            # Use ANY for PostgreSQL array matching
+            # Cast text array to uuid array for PostgreSQL
             cursor.execute(
-                "SELECT id, title FROM documents WHERE id = ANY(%s)",
+                "SELECT id, title FROM documents WHERE id = ANY(%s::uuid[])",
                 (doc_ids,)
             )
             

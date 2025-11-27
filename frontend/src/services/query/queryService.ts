@@ -7,6 +7,7 @@ import { ENDPOINTS } from '../api/endpoints';
 import type {
   ChatRequest,
   ChatResponse,
+  ConfirmRequest,
   SearchRequest,
   SearchResponse,
   HealthResponse,
@@ -14,9 +15,19 @@ import type {
 
 /**
  * Send chat request to LLM
+ * May return needs_clarification=true with document_options
  */
 export const sendChatMessage = async (request: ChatRequest): Promise<ChatResponse> => {
   const response = await queryClient.post<ChatResponse>(ENDPOINTS.QUERY.CHAT, request);
+  return response.data;
+};
+
+/**
+ * Confirm document selection after clarification
+ * Called when user clicks on a document option button
+ */
+export const confirmDocument = async (request: ConfirmRequest): Promise<ChatResponse> => {
+  const response = await queryClient.post<ChatResponse>(ENDPOINTS.QUERY.CONFIRM, request);
   return response.data;
 };
 

@@ -34,6 +34,12 @@ class RerankRequest(BaseModel):
         example=["doc_123", "doc_123", "doc_456"]
     )
     
+    document_titles: Optional[List[str]] = Field(
+        default=None,
+        description="List of document titles corresponding to each document (for title-aware reranking)",
+        example=["01. Đăng ký khai sinh", "01. Đăng ký khai sinh", "02. Khai sinh có yếu tố nước ngoài"]
+    )
+    
     top_k: Optional[int] = Field(
         default=None,
         description="Number of top results to return. IGNORED when same_document_only=True (returns all chunks from best doc)",
@@ -43,8 +49,14 @@ class RerankRequest(BaseModel):
     )
     
     same_document_only: Optional[bool] = Field(
+        default=False,
+        description="DEPRECATED: Now always returns top-K chunks from all documents. Query-service handles document filtering.",
+        example=False
+    )
+    
+    include_document_scores: Optional[bool] = Field(
         default=True,
-        description="If True, identify best document and return ALL its chunks (preserves full legal context)",
+        description="If True, include aggregated document scores for clarification logic",
         example=True
     )
 
@@ -80,12 +92,26 @@ class RerankResult(BaseModel):
     )
 
 
+class DocumentScore(BaseModel):
+    """Score info for a document."""
+    
+    document_id: str = Field(..., description="Document ID")
+    avg_score: float = Field(..., description="Average score of top chunks from this document")
+    max_score: float = Field(..., description="Max score of any chunk from this document")
+    chunk_count: int = Field(..., description="Number of chunks from this document")
+
+
 class RerankResponse(BaseModel):
     """Response model for reranking results."""
     
     results: List[RerankResult] = Field(
         ...,
         description="Reranked documents sorted by relevance score (descending)"
+    )
+    
+    document_scores: Optional[List[DocumentScore]] = Field(
+        default=None,
+        description="Aggregated scores per document (for query-service to decide clarification)"
     )
     
     processing_time: float = Field(

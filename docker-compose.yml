@@ -167,7 +167,7 @@ services:
     build:
       context: ./rerank-service
       dockerfile: Dockerfile
-      target: runtime  # Explicitly use CPU-only runtime stage
+      target: runtime # Explicitly use CPU-only runtime stage
     container_name: legalrag-rerank
     ports:
       - "8013:8013"
@@ -187,7 +187,8 @@ services:
     volumes:
       # Removed code mount - use image code instead
       # - ./rerank-service:/app
-      - rerank_models:/app/models
+      # Mount host HuggingFace cache to avoid re-downloading model
+      - D:/model_huggingface:/home/appuser/.cache/huggingface
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8013/health"]
       interval: 60s
