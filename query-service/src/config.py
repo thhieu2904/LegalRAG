@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     HIGH_CONFIDENCE_THRESHOLD: float = 0.8  # Above this: auto-route
     
     # Reranking parameters
-    RERANK_TOP_K: int = 10  # Number of chunks to get from rerank (increased for multi-doc comparison)
+    RERANK_TOP_K: int = 10  # Number of chunks to get from rerank
     RERANK_THRESHOLD: float = 0.6  # Minimum rerank score
     
     # PostgreSQL for document metadata

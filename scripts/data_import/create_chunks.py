@@ -147,66 +147,8 @@ def clean_text(text: str) -> str:
     return text
 
 
-def split_into_chunks(
-    text: str,
-    chunk_size: int = CHUNK_SIZE,
-    overlap: int = CHUNK_OVERLAP
-) -> List[Dict]:
-    """
-    Split text into overlapping chunks.
-    
-    Returns:
-        List of dicts with 'content' and 'chunk_index'
-    """
-    if not text or len(text) < MIN_CHUNK_SIZE:
-        return []
-    
-    chunks = []
-    
-    # Try to split by paragraphs first
-    paragraphs = text.split('\n\n')
-    
-    current_chunk = ""
-    chunk_index = 0
-    
-    for para in paragraphs:
-        para = para.strip()
-        if not para:
-            continue
-            
-        # If adding this paragraph exceeds chunk size
-        if len(current_chunk) + len(para) + 2 > chunk_size:
-            if current_chunk and len(current_chunk) >= MIN_CHUNK_SIZE:
-                chunks.append({
-                    "content": current_chunk.strip(),
-                    "chunk_index": chunk_index
-                })
-                chunk_index += 1
-                
-                # Start new chunk with overlap
-                words = current_chunk.split()
-                overlap_words = words[-overlap // 5:] if len(words) > overlap // 5 else []
-                current_chunk = " ".join(overlap_words) + "\n\n" + para
-            else:
-                current_chunk = para
-        else:
-            current_chunk = (current_chunk + "\n\n" + para).strip()
-    
-    # Don't forget the last chunk
-    if current_chunk and len(current_chunk) >= MIN_CHUNK_SIZE:
-        chunks.append({
-            "content": current_chunk.strip(),
-            "chunk_index": chunk_index
-        })
-    
-    # If no chunks were created (text too short or no paragraphs), create one chunk
-    if not chunks and len(text) >= MIN_CHUNK_SIZE:
-        chunks.append({
-            "content": text.strip(),
-            "chunk_index": 0
-        })
-    
-    return chunks
+# NOTE: split_into_chunks removed - we now use embedding-service's /chunk-and-embed endpoint
+# which uses UniversalDocumentChunker for better paragraph-based splitting
 
 
 # ============================================
@@ -219,6 +161,8 @@ class EmbeddingClient:
     def __init__(self, base_url: str = EMBEDDING_URL):
         self.base_url = base_url.rstrip('/')
         self.session = requests.Session()
+        # Admin API key for protected endpoints
+        self.api_key = os.getenv("ADMIN_API_KEY", "admin-secret-key-change-in-production")
     
     def health_check(self) -> bool:
         """Check if embedding service is healthy."""
@@ -229,8 +173,54 @@ class EmbeddingClient:
             logger.error(f"Embedding service health check failed: {e}")
             return False
     
+    def chunk_and_embed(self, text: str, document_id: str, document_title: str = None) -> List[Dict]:
+        """
+        Call /chunk-and-embed endpoint to chunk text AND get embeddings.
+        Uses UniversalDocumentChunker in embedding-service.
+        
+        Returns:
+            List of chunks with content, embedding, chunk_index, etc.
+        """
+        if not text:
+            return []
+        
+        try:
+            resp = self.session.post(
+                f"{self.base_url}/chunk-and-embed",
+                json={
+                    "text": text,
+                    "document_id": document_id,
+                    "add_overlap": False,  # UniversalChunker uses context prefix instead
+                    "metadata": {"title": document_title} if document_title else {}
+                },
+                headers={"X-API-Key": self.api_key},
+                timeout=180  # Longer timeout for large documents
+            )
+            resp.raise_for_status()
+            
+            data = resp.json()
+            if data.get("success"):
+                chunks = data.get("chunks", [])
+                # Convert to our expected format
+                result = []
+                for chunk in chunks:
+                    chunk_info = chunk.get("chunk_info", {})
+                    result.append({
+                        "content": chunk_info.get("text", ""),
+                        "chunk_index": chunk_info.get("chunk_index", 0),
+                        "embedding": chunk.get("embedding", []),
+                        "tokens": chunk_info.get("tokens", 0),
+                    })
+                return result
+            else:
+                logger.error(f"Chunk and embed failed: {data}")
+                return []
+        except Exception as e:
+            logger.error(f"Error calling chunk-and-embed: {e}")
+            return []
+    
     def get_embeddings(self, texts: List[str]) -> List[List[float]]:
-        """Get embeddings for a list of texts."""
+        """Get embeddings for a list of texts (legacy - kept for compatibility)."""
         if not texts:
             return []
         
@@ -412,7 +402,13 @@ def process_document(
     batch_size: int = 10
 ) -> Tuple[int, int]:
     """
-    Process a single document: extract text, create chunks, embed, save.
+    Process a single document: extract text, call embedding-service for chunks + embeddings, save.
+    
+    Uses embedding-service's /chunk-and-embed endpoint which:
+    - Uses UniversalDocumentChunker for paragraph-based splitting
+    - Removes form noise (lines with excessive dots/underscores)
+    - Adds context prefix [Văn bản: ...] to each chunk
+    - Creates embeddings for all chunks
     
     Returns:
         (chunks_created, embeddings_created)
@@ -429,27 +425,23 @@ def process_document(
         logger.warning(f"⚠️ No text extracted from: {file_path.name}")
         return 0, 0
     
-    # Clean text
+    # Clean text (basic cleaning - embedding-service does advanced cleaning)
     text = clean_text(text)
     
-    # Split into chunks
-    chunks = split_into_chunks(text)
+    if len(text) < MIN_CHUNK_SIZE:
+        logger.warning(f"⚠️ Text too short for: {doc['title']}")
+        return 0, 0
+    
+    # Call embedding-service's /chunk-and-embed endpoint
+    # This uses UniversalDocumentChunker which:
+    # - Splits by paragraphs (not fixed character count)
+    # - Removes form noise (......, _____)
+    # - Adds context prefix
+    chunks = embedding_client.chunk_and_embed(text, doc['id'], doc['title'])
+    
     if not chunks:
         logger.warning(f"⚠️ No chunks created for: {doc['title']}")
         return 0, 0
-    
-    # Get embeddings in batches
-    embeddings_created = 0
-    for i in range(0, len(chunks), batch_size):
-        batch = chunks[i:i + batch_size]
-        texts = [c['content'] for c in batch]
-        
-        embeddings = embedding_client.get_embeddings(texts)
-        
-        if embeddings and len(embeddings) == len(batch):
-            for j, emb in enumerate(embeddings):
-                batch[j]['embedding'] = emb
-                embeddings_created += 1
     
     # Add metadata
     for chunk in chunks:
@@ -461,6 +453,9 @@ def process_document(
     
     # Save to database
     chunks_saved = chunk_manager.insert_chunks(doc['id'], chunks)
+    
+    # All chunks should have embeddings from embedding-service
+    embeddings_created = len([c for c in chunks if c.get('embedding')])
     
     return chunks_saved, embeddings_created
 

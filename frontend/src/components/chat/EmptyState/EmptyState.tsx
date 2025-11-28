@@ -1,26 +1,27 @@
 /**
  * EmptyState Component
+ * Welcome screen for Legal RAG Q&A system
  */
 
-import { MessageSquare } from 'lucide-react';
+import { Scale } from 'lucide-react';
 import styles from './EmptyState.module.css';
 import type { EmptyStateProps } from './EmptyState.types';
 
 const quickTips = [
   {
-    title: 'Nhắc đến môn học',
+    title: 'Hỏi về thủ tục hành chính',
     description:
-      'Ghi rõ tên môn hoặc chủ đề của tài liệu (ví dụ: "Cấu trúc dữ liệu" hay "Lập trình Java") để hệ thống tra cứu nhanh hơn.',
+      'Ví dụ: "Thủ tục đăng ký kết hôn cần những giấy tờ gì?" hoặc "Làm giấy khai sinh ở đâu?"',
   },
   {
-    title: 'Nói rõ mong muốn',
+    title: 'Hỏi tiếp để làm rõ',
     description:
-      'Cho biết bạn cần tóm tắt, định nghĩa hay ví dụ thực hành để nhận được câu trả lời sát nhu cầu.',
+      'Sau câu trả lời, bạn có thể hỏi thêm như "Lệ phí bao nhiêu?" hoặc "Thời gian xử lý mất bao lâu?" - hệ thống sẽ hiểu ngữ cảnh.',
   },
   {
-    title: 'Theo dõi nguồn tham khảo',
+    title: 'Xem nguồn văn bản',
     description:
-      'Sau mỗi câu trả lời, mở mục "Nguồn tham khảo" để xem tài liệu gốc và trích dẫn liên quan.',
+      'Mỗi câu trả lời đều có trích dẫn từ văn bản pháp luật gốc. Bạn có thể kiểm tra độ tin cậy và tra cứu thêm.',
   },
 ];
 
@@ -31,13 +32,13 @@ export const EmptyState = ({ onSuggestionClick }: EmptyStateProps) => {
       <div className={styles.content}>
         <div className={styles.hero}>
           <div className={styles.iconWrapper}>
-            <MessageSquare size={48} />
+            <Scale size={48} />
           </div>
           <div className={styles.heroText}>
-            <h2 className={styles.title}>Bắt đầu cuộc trò chuyện</h2>
+            <h2 className={styles.title}>Hỏi đáp Pháp luật</h2>
             <p className={styles.description}>
-              Đặt câu hỏi về tài liệu học tập mà bạn quan tâm. AI sẽ tìm kiếm trong kho dữ liệu đã
-              được khoa xác thực và gửi lại câu trả lời phù hợp.
+              Đặt câu hỏi về thủ tục hành chính, quy định pháp luật. Hệ thống sẽ tìm kiếm trong kho
+              văn bản pháp luật và trả lời dựa trên nguồn chính thống.
             </p>
           </div>
         </div>

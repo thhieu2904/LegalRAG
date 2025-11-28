@@ -25,41 +25,13 @@ export interface FilterOptions {
 }
 
 /**
- * Chunk Info (individual piece of document)
- */
-export interface ChunkInfo {
-  chunk_id: string;
-  text_content: string;
-  chunk_index: number;
-  similarity: number;
-  chunk_metadata: Record<string, unknown> | null;
-
-  // Vector embeddings for comparison visualization
-  query_embedding?: number[]; // Query vector (3072-D)
-  chunk_embedding?: number[]; // Chunk vector (3072-D)
-}
-
-/**
  * Source (matching Query Service API response)
+ * Represents a legal document source used in the answer
  */
 export interface Source {
   content: string;
   similarity: number;
-}
-
-/**
- * Document Source (grouped chunks) - for future use
- */
-export interface DocumentSource {
-  document_id: string;
-  file_name: string;
-  upload_type: string;
-  ma_chuyen_nganh: string;
-  ma_mon: string;
-  nam_hoc: number | null;
-  chunk_count: number;
-  max_similarity: number;
-  chunks: ChunkInfo[];
+  document_title?: string; // Tên văn bản pháp luật (VD: "Luật Hôn nhân 2014")
 }
 
 /**

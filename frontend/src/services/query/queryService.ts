@@ -11,7 +11,66 @@ import type {
   SearchRequest,
   SearchResponse,
   HealthResponse,
+  SessionInfo,
 } from '@/types';
+
+// ============= SESSION API =============
+
+/**
+ * Session start request/response types
+ */
+interface SessionStartResponse {
+  success: boolean;
+  session_info: SessionInfo;
+  message: string;
+}
+
+interface ClearSessionRequest {
+  session_id: string;
+}
+
+interface ClearSessionResponse {
+  success: boolean;
+  session_id: string;
+  message: string;
+}
+
+interface SessionInfoResponse {
+  success: boolean;
+  session_info?: SessionInfo;
+  message: string;
+}
+
+/**
+ * Start a new session (called on F5/refresh/new tab)
+ */
+export const startSession = async (): Promise<SessionStartResponse> => {
+  const response = await queryClient.post<SessionStartResponse>(ENDPOINTS.QUERY.SESSION_START);
+  return response.data;
+};
+
+/**
+ * Clear session (unpin document)
+ */
+export const clearSession = async (request: ClearSessionRequest): Promise<ClearSessionResponse> => {
+  const response = await queryClient.post<ClearSessionResponse>(
+    ENDPOINTS.QUERY.SESSION_CLEAR,
+    request
+  );
+  return response.data;
+};
+
+/**
+ * Get session info
+ */
+export const getSessionInfo = async (sessionId: string): Promise<SessionInfoResponse> => {
+  const response = await queryClient.get<SessionInfoResponse>(
+    `${ENDPOINTS.QUERY.SESSION_INFO}/${sessionId}`
+  );
+  return response.data;
+};
+
+// ============= QUERY API =============
 
 /**
  * Send chat request to LLM

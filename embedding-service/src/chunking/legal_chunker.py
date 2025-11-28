@@ -1,10 +1,12 @@
 """
 Legal Document Chunker for Vietnamese Legal Documents
 Chunks documents by legal structure (Điều, Mục, Chương) while respecting token limits
+
+IMPROVED: Each chunk includes context prefix to prevent LLM hallucination
 """
 import re
 import logging
-from typing import List, Dict
+from typing import List, Dict, Optional
 from transformers import AutoTokenizer
 
 logger = logging.getLogger(__name__)
@@ -14,6 +16,10 @@ class LegalDocumentChunker:
     """
     Intelligent chunker for Vietnamese legal documents
     Respects legal structure hierarchy: Chương > Điều > Mục > Khoản
+    
+    KEY FEATURE: Each chunk includes context prefix like:
+    "[Văn bản: Đăng ký khai sinh | Phần: Thành phần hồ sơ]"
+    This helps LLM understand where this chunk belongs.
     """
     
     def __init__(self, model_name: str, chunk_size: int = 600, chunk_overlap: int = 100):
@@ -33,16 +39,31 @@ class LegalDocumentChunker:
         logger.info(f"✅ Chunker initialized (using token estimation)")
         
         # Legal structure separators (in order of priority)
+        # IMPROVED: Added separators for administrative documents (Quy trình, Trang, etc.)
         self.separators = [
-            r'\n(?=Chương\s+[IVXLCDM]+[\.\:])',  # Chương (Roman numerals)
-            r'\n(?=Điều\s+\d+[\.\:])',            # Điều 1, Điều 2, etc.
-            r'\n(?=Mục\s+[\d\.]+[\.\:])',         # Mục 1, Mục 1.1, etc.
-            r'\n(?=\d+\.\s)',                      # Numbered items: "1. ", "2. "
-            r'\n(?=Khoản\s+\d+[\.\:])',           # Khoản 1, Khoản 2, etc.
-            r'\n\n',                               # Double newline
-            r'\.\s',                               # Sentence boundary
-            r',\s',                                # Comma
-            r'\s',                                 # Whitespace
+            r'\n(?=Chương\s+[IVXLCDM]+[\.\:])',   # Chương (Roman numerals)
+            r'\n(?=Điều\s+\d+[\.\:])',             # Điều 1, Điều 2, etc.
+            r'\n(?=Mục\s+[\d\.]+[\.\:])',          # Mục 1, Mục 1.1, etc.
+            r'\n(?=[a-z]\.\s+[A-ZĐÀÁẢÃẠ])',        # a. Thành phần, b. Số lượng, etc.
+            r'\n(?=\d+\.\s+NỘI DUNG)',             # "5. NỘI DUNG" style headers
+            r'\n(?=\*\s+)',                         # Bullet points with *
+            r'\n(?=\-\s+)',                         # Bullet points with -
+            r'\n(?=\d+\.\s)',                       # Numbered items: "1. ", "2. "
+            r'\n(?=Khoản\s+\d+[\.\:])',            # Khoản 1, Khoản 2, etc.
+            r'(?=Ngày hiệu lực:)',                  # Page break marker
+            r'\n\n',                                # Double newline
+            r'\.\s+(?=[A-ZĐÀÁẢÃẠ])',               # Sentence end + Capital letter
+            r'\.\s',                                # Sentence boundary
+        ]
+        
+        # Section header patterns to extract context
+        self.section_patterns = [
+            (r'Tên quy trình:\s*([^\n]+)', 'quy_trinh'),
+            (r'(\d+)\.\s*NỘI DUNG', 'noi_dung'),
+            (r'([a-z])\.\s*([A-ZĐ][^:\n]+):', 'muc_nho'),
+            (r'Chương\s+([IVXLCDM]+)[\.:\s]+([^\n]+)', 'chuong'),
+            (r'Điều\s+(\d+)[\.:\s]+([^\n]+)', 'dieu'),
+            (r'Mục\s+([\d\.]+)[\.:\s]+([^\n]+)', 'muc'),
         ]
     
     def count_tokens(self, text: str) -> int:
@@ -55,6 +76,77 @@ class LegalDocumentChunker:
         
         # Fallback: estimation (Vietnamese ~1.3 tokens per word)
         return int(len(text.split()) * 1.3)
+    
+    def clean_text(self, text: str) -> str:
+        """
+        Clean up text before chunking:
+        - Remove page break markers (Trang: X/Y, Ngày hiệu lực, Lần ban hành)
+        - Normalize whitespace
+        """
+        # Remove page headers/footers that add noise
+        text = re.sub(r'Ngày hiệu lực:\s*[\d/]+\s*Trang:\s*\d+/\d+\s*Lần ban hành:\s*\d+', '', text)
+        text = re.sub(r'Trang:\s*\d+/\d+', '', text)
+        text = re.sub(r'Lần ban hành:\s*\d+', '', text)
+        
+        # Remove excessive underscores (often used as separators)
+        text = re.sub(r'_{5,}', '', text)
+        
+        # Normalize multiple newlines
+        text = re.sub(r'\n{3,}', '\n\n', text)
+        
+        # Remove leading/trailing whitespace from lines
+        lines = [line.strip() for line in text.split('\n')]
+        text = '\n'.join(lines)
+        
+        return text.strip()
+    
+    def extract_document_context(self, full_text: str) -> Dict:
+        """
+        Extract high-level context from the document.
+        This will be used to prefix each chunk.
+        """
+        context = {
+            'document_name': None,
+            'quy_trinh': None,
+        }
+        
+        # Try to extract "Tên quy trình"
+        quy_trinh_match = re.search(r'Tên quy trình:\s*([^\n_]+)', full_text)
+        if quy_trinh_match:
+            context['quy_trinh'] = quy_trinh_match.group(1).strip()
+            context['document_name'] = context['quy_trinh']
+        
+        return context
+    
+    def extract_section_context(self, text: str, prev_context: Optional[str] = None) -> str:
+        """
+        Extract the section/part that this chunk belongs to.
+        Returns a context string like "Thành phần hồ sơ" or "Căn cứ pháp lý"
+        """
+        # Check for common section headers
+        section_headers = [
+            (r'Thành phần[,\s]+số lượng hồ sơ', 'Thành phần hồ sơ'),
+            (r'Thành phần hồ sơ', 'Thành phần hồ sơ'),
+            (r'Giấy tờ phải nộp', 'Giấy tờ phải nộp'),
+            (r'Giấy tờ phải xuất trình', 'Giấy tờ phải xuất trình'),
+            (r'Căn cứ pháp lý', 'Căn cứ pháp lý'),
+            (r'Yêu cầu[,\s]+điều kiện', 'Yêu cầu, điều kiện'),
+            (r'Trình tự thực hiện', 'Trình tự thực hiện'),
+            (r'Cách thức thực hiện', 'Cách thức thực hiện'),
+            (r'Thời hạn giải quyết', 'Thời hạn giải quyết'),
+            (r'Lệ phí|Phí', 'Lệ phí'),
+            (r'Kết quả', 'Kết quả'),
+            (r'Biểu mẫu|Mẫu đơn', 'Biểu mẫu'),
+            (r'Tờ khai đăng ký', 'Mẫu tờ khai'),
+            (r'Lưu ý', 'Lưu ý'),
+        ]
+        
+        for pattern, label in section_headers:
+            if re.search(pattern, text[:300], re.IGNORECASE):
+                return label
+        
+        # If no header found, return previous context (inherit from previous chunk)
+        return prev_context
     
     def extract_structure_info(self, text: str) -> Dict:
         """
@@ -124,32 +216,32 @@ class LegalDocumentChunker:
         return merged
     
     def add_overlap(self, chunks: List[str]) -> List[str]:
-        """Add overlap between consecutive chunks"""
-        if len(chunks) <= 1:
-            return chunks
-        
-        overlapped = [chunks[0]]  # First chunk as-is
-        
-        for i in range(1, len(chunks)):
-            prev_chunk = chunks[i-1]
-            current_chunk = chunks[i]
-            
-            # Take last N tokens from previous chunk
-            prev_words = prev_chunk.split()
-            overlap_words = prev_words[-self.chunk_overlap:] if len(prev_words) > self.chunk_overlap else prev_words
-            overlap_text = ' '.join(overlap_words)
-            
-            # Prepend overlap to current chunk
-            if overlap_text:
-                overlapped_chunk = overlap_text + "\n\n" + current_chunk
-            else:
-                overlapped_chunk = current_chunk
-            
-            overlapped.append(overlapped_chunk)
-        
-        return overlapped
+        """
+        IMPROVED: Add context overlap between consecutive chunks.
+        Instead of just repeating text, we prepend section context.
+        """
+        # For now, skip overlap - we'll add context prefix instead
+        # The context prefix is more valuable than text repetition
+        return chunks
     
-    def chunk_text(self, text: str, add_overlap: bool = True) -> List[Dict]:
+    def create_context_prefix(self, doc_context: Dict, section: Optional[str]) -> str:
+        """
+        Create a context prefix for a chunk.
+        Format: [Quy trình: X | Phần: Y]
+        """
+        parts = []
+        
+        if doc_context.get('quy_trinh'):
+            parts.append(f"Quy trình: {doc_context['quy_trinh']}")
+        
+        if section:
+            parts.append(f"Phần: {section}")
+        
+        if parts:
+            return f"[{' | '.join(parts)}]\n\n"
+        return ""
+    
+    def chunk_text(self, text: str, add_overlap: bool = True, document_title: Optional[str] = None) -> List[Dict]:
         """
         Chunk text with legal structure awareness
         

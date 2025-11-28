@@ -55,7 +55,7 @@ async def startup():
     
     try:
         from sentence_transformers import SentenceTransformer
-        from .chunking.legal_chunker import LegalDocumentChunker
+        from .chunking import LegalDocumentChunker  # Uses UniversalDocumentChunker via alias
         
         # Load embedding model
         model = SentenceTransformer(

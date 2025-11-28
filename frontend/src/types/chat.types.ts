@@ -16,6 +16,17 @@ export interface DocumentOption {
 }
 
 /**
+ * Session Info (from backend)
+ */
+export interface SessionInfo {
+  session_id: string;
+  is_new_session: boolean;
+  pinned_document_id?: string | null;
+  pinned_document_title?: string | null;
+  conversation_turns: number;
+}
+
+/**
  * Chat Message (for conversation history)
  */
 export interface Message {
@@ -56,6 +67,7 @@ export interface HistoryMessage {
  */
 export interface ChatRequest {
   question: string;
+  session_id?: string | null; // null = request new session from backend
   top_k?: number;
   threshold?: number;
   history?: HistoryMessage[]; // Last 3 turns for follow-up context
@@ -67,6 +79,7 @@ export interface ChatRequest {
 export interface ConfirmRequest {
   question: string;
   document_id: string;
+  session_id?: string | null; // For conversation state tracking
   history?: HistoryMessage[]; // Chat history for follow-up context
 }
 
@@ -80,10 +93,18 @@ export interface ChatResponse {
   sources: Source[];
   tokens_used: number;
 
+  // Session info (always included)
+  session_id: string;
+  session_info?: SessionInfo;
+
   // Clarification fields
   needs_clarification?: boolean;
   clarification_message?: string;
   document_options?: DocumentOption[];
+
+  // Conversation state info (for debugging/transparency)
+  used_pinned_document?: boolean;
+  pinned_document_title?: string;
 }
 
 /**

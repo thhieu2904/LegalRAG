@@ -26,6 +26,12 @@ export const ENDPOINTS = {
   QUERY: {
     CHAT: '/query', // Main RAG query endpoint
     CONFIRM: '/query/confirm', // Confirm document selection (after clarification)
+
+    // Session management (backend-driven)
+    SESSION_START: '/session/start', // Start new session (F5/refresh)
+    SESSION_CLEAR: '/session/clear', // Clear session (unpin document)
+    SESSION_INFO: '/session/info', // Get session info (append /{session_id})
+
     HEALTH: '/health',
   },
 } as const;

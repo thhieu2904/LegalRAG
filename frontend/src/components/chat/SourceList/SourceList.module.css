@@ -52,6 +52,15 @@
   border-bottom: 1px solid var(--border-color-light);
 }
 
+.documentTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-color);
+}
+
 .sourceNumber {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);

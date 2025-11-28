@@ -1,38 +1,59 @@
 /**
- * SourceList Component - Display sources from Query Service
+ * SourceList Component - Display legal document sources
+ * Shows document titles and relevance scores
  */
 
 import { useState } from 'react';
-import { FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileText, ChevronDown, ChevronUp, Scale } from 'lucide-react';
 import styles from './SourceList.module.css';
 import type { SourceListProps } from './SourceList.types';
 
 export const SourceList = ({ sources }: SourceListProps) => {
   const [expanded, setExpanded] = useState(false);
-  const displaySources = expanded ? sources : sources.slice(0, 3);
-  const hasMore = sources.length > 3;
 
-  if (sources.length === 0) return null;
+  // Group sources by document_title to avoid duplicates
+  const uniqueDocuments = sources.reduce(
+    (acc, source) => {
+      const title = source.document_title || 'Văn bản pháp luật';
+      if (!acc.find((d) => d.title === title)) {
+        acc.push({
+          title,
+          similarity: source.similarity,
+          preview: source.content.substring(0, 150) + '...',
+        });
+      }
+      return acc;
+    },
+    [] as Array<{ title: string; similarity: number; preview: string }>
+  );
+
+  const displayDocs = expanded ? uniqueDocuments : uniqueDocuments.slice(0, 2);
+  const hasMore = uniqueDocuments.length > 2;
+
+  if (uniqueDocuments.length === 0) return null;
 
   return (
     <div className={styles.sourceList}>
       {/* Header */}
       <div className={styles.header}>
-        <FileText size={16} />
-        <span className={styles.headerText}>Nguồn tham khảo ({sources.length})</span>
+        <Scale size={16} />
+        <span className={styles.headerText}>Văn bản tham khảo ({uniqueDocuments.length})</span>
       </div>
 
-      {/* Sources */}
+      {/* Documents */}
       <div className={styles.sources}>
-        {displaySources.map((source, idx) => (
+        {displayDocs.map((doc, idx) => (
           <div key={idx} className={styles.sourceCard}>
             <div className={styles.sourceHeader}>
-              <span className={styles.sourceNumber}>#{idx + 1}</span>
+              <span className={styles.documentTitle}>
+                <FileText size={14} />
+                {doc.title}
+              </span>
               <span className={styles.similarity}>
-                Độ tương đồng: {(source.similarity * 100).toFixed(1)}%
+                {(doc.similarity * 100).toFixed(0)}% phù hợp
               </span>
             </div>
-            <div className={styles.sourceContent}>{source.content}</div>
+            <div className={styles.sourceContent}>{doc.preview}</div>
           </div>
         ))}
       </div>
@@ -48,7 +69,7 @@ export const SourceList = ({ sources }: SourceListProps) => {
           ) : (
             <>
               <ChevronDown size={16} />
-              <span>Xem thêm {sources.length - 3} nguồn</span>
+              <span>Xem thêm {uniqueDocuments.length - 2} văn bản</span>
             </>
           )}
         </button>

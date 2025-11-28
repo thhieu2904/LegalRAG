@@ -1,4 +1,10 @@
 """Chunking package"""
-from .legal_chunker import LegalDocumentChunker
+# Universal chunker works with ANY Vietnamese document structure
+# Uses paragraph-based splitting with sentence boundary awareness
+from .universal_chunker import UniversalDocumentChunker
 
-__all__ = ["LegalDocumentChunker"]
+# Backward compatibility alias
+LegalDocumentChunker = UniversalDocumentChunker
+
+__all__ = ["LegalDocumentChunker", "UniversalDocumentChunker"]
+

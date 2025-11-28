@@ -1,22 +1,18 @@
 /**
  * ChatInput Component
+ * Simple text input for legal Q&A
  */
 
 import { useState, useRef, useEffect } from 'react';
 import type { KeyboardEvent } from 'react';
 import { Send, Loader2 } from 'lucide-react';
-import { VoiceInput } from '../VoiceInput';
-// import { Filter } from 'lucide-react'; // TODO: Re-enable when filters fixed
-// import { Select } from '@/components/common'; // TODO: Re-enable when filters fixed
-// import { MA_KHOA_OPTIONS, MON_HOC_OPTIONS, HOC_KY_OPTIONS } from '@/constants/app.constants'; // TODO: Replace with new schema
 import type { FilterOptions } from '@/types/common.types';
 import styles from './ChatInput.module.css';
 import type { ChatInputProps } from './ChatInput.types';
 
 export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
   const [input, setInput] = useState('');
-  const [filters] = useState<FilterOptions>({}); // TODO: Re-enable setFilters when filters fixed
-  // const [showFilters, setShowFilters] = useState(false); // TODO: Re-enable when filters fixed
+  const [filters] = useState<FilterOptions>({});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-resize textarea
@@ -50,82 +46,9 @@ export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
   const charCount = input.length;
   const isNearLimit = charCount > maxLength * 0.8;
 
-  // Voice input handlers
-  const handleTranscriptChange = (transcript: string) => {
-    // Show interim transcript (optional - can be used for live preview)
-    console.log('Interim:', transcript);
-  };
-
-  const handleFinalTranscript = (transcript: string) => {
-    // Append final transcript to input
-    setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
-  };
-
-  const handleAutoSend = async (transcript: string) => {
-    // Auto-send when recording stops (if enabled in settings)
-    if (!disabled) {
-      await onSend(transcript.trim(), filters);
-      setInput('');
-    }
-  };
-
   return (
     <div className={styles.chatInput}>
       <form onSubmit={handleSubmit} className={styles.form}>
-        {/* TODO: Filters - Disabled temporarily due to schema mismatch
-          Current FilterOptions uses old schema (ma_khoa, ma_mon_hoc, loai_noi_dung)
-          Backend expects new schema (ma_chuyen_nganh, ma_mon, upload_type)
-          Need to:
-          1. Update FilterOptions type to match new schema
-          2. Update constants (MA_KHOA_OPTIONS -> CHUYEN_NGANH_OPTIONS)
-          3. Fetch dropdown data from backend (/admin/chuyen-nganh, /admin/mon-hoc)
-          4. Update filter UI accordingly
-      */}
-        {/* <div className={styles.filtersSection}>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={styles.filterToggle}
-          type="button"
-        >
-          <Filter size={16} />
-          <span>Bộ lọc</span>
-          {Object.keys(filters).length > 0 && (
-            <span className={styles.filterBadge}>{Object.keys(filters).length}</span>
-          )}
-        </button>
-
-        {showFilters && (
-          <div className={styles.filters}>
-            <Select
-              options={MA_KHOA_OPTIONS}
-              value={filters.ma_khoa}
-              onChange={(value) => setFilters({ ...filters, ma_khoa: value || undefined })}
-              placeholder="Chọn khoa"
-              size="sm"
-            />
-            <Select
-              options={MON_HOC_OPTIONS}
-              value={filters.ma_mon_hoc}
-              onChange={(value) => setFilters({ ...filters, ma_mon_hoc: value || undefined })}
-              placeholder="Chọn môn học"
-              size="sm"
-            />
-            <Select
-              options={HOC_KY_OPTIONS}
-              value={filters.hoc_ky}
-              onChange={(value) =>
-                setFilters({
-                  ...filters,
-                  hoc_ky: value as number | undefined,
-                })
-              }
-              placeholder="Chọn học kỳ"
-              size="sm"
-            />
-          </div>
-        )}
-      </div> */}
-
         {/* Input form */}
         <div className={styles.inputArea}>
           <div className={styles.editorRow}>
@@ -134,7 +57,7 @@ export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Nhập câu hỏi của bạn..."
+              placeholder="Nhập câu hỏi về pháp luật..."
               className={styles.textarea}
               rows={1}
               maxLength={maxLength}
@@ -142,13 +65,6 @@ export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
             />
 
             <div className={styles.buttonGroup}>
-              <VoiceInput
-                onTranscriptChange={handleTranscriptChange}
-                onFinalTranscript={handleFinalTranscript}
-                onAutoSend={handleAutoSend}
-                disabled={disabled}
-              />
-
               <button
                 type="submit"
                 disabled={!input.trim() || disabled}

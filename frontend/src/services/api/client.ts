@@ -25,7 +25,7 @@ export const apiClient: AxiosInstance = axios.create({
  */
 export const queryClient: AxiosInstance = axios.create({
   baseURL: QUERY_SERVICE_URL,
-  timeout: 60000, // Longer timeout for LLM responses
+  timeout: 180000, // 3 minutes for complex reranking + LLM generation
   headers: {
     'Content-Type': 'application/json',
   },
