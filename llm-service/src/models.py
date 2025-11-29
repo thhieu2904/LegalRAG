@@ -128,6 +128,11 @@ class HealthResponse(BaseModel):
         ...,
         description="Context window size"
     )
+    
+    gpu_swap_mode: Optional[bool] = Field(
+        default=None,
+        description="Whether GPU swap mode is enabled"
+    )
 
 
 class ErrorResponse(BaseModel):

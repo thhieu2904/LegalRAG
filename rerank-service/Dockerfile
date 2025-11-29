@@ -75,7 +75,13 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8013"]
 
 # ============================================
-# GPU Support (Optional)
+# CPU Runtime (Default for laptop 6GB VRAM)
+# ============================================
+# Alias for runtime stage - used explicitly in docker-compose
+FROM runtime as runtime-cpu
+
+# ============================================
+# GPU Support (Optional - for 12GB+ VRAM servers)
 # ============================================
 # To build with GPU support:
 # docker build --target runtime-gpu -t rerank-service:gpu .
@@ -85,13 +91,6 @@ CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "
 
 FROM runtime as runtime-gpu
 
-USER root
-
-# Install CUDA dependencies (if needed for torch)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libcudnn8 \
-    && rm -rf /var/lib/apt/lists/*
-
-USER appuser
-
-# No need to reinstall torch - just use GPU at runtime by setting DEVICE=cuda
+# No additional packages needed - PyTorch includes CUDA runtime
+# Just use this target to indicate GPU-capable build
+# NVIDIA GPU access is handled by Docker runtime with --gpus flag

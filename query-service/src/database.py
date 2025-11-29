@@ -385,3 +385,95 @@ class DatabaseClient:
         except Exception as e:
             logger.error(f"❌ Cleanup sessions failed: {e}")
             return 0
+
+    # ============= DOCUMENT & FORM QUERIES =============
+    
+    def fetch_document_info(self, doc_ids: List[str]) -> Dict[str, Dict[str, Any]]:
+        """
+        Fetch document info including file_path for download
+        
+        Args:
+            doc_ids: List of document UUIDs
+            
+        Returns:
+            Dict mapping document_id → {title, file_path, filename}
+        """
+        if not doc_ids:
+            return {}
+        
+        try:
+            conn = self._get_connection()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            cursor.execute(
+                "SELECT id, title, file_path, filename FROM documents WHERE id = ANY(%s::uuid[])",
+                (doc_ids,)
+            )
+            
+            results = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            info_map = {}
+            for row in results:
+                info_map[str(row['id'])] = {
+                    'title': row['title'],
+                    'file_path': row['file_path'],
+                    'filename': row['filename']
+                }
+            
+            logger.info(f"✅ Fetched info for {len(info_map)} documents")
+            return info_map
+            
+        except Exception as e:
+            logger.error(f"❌ Fetch document info failed: {e}")
+            return {}
+    
+    def fetch_forms_by_document_ids(self, doc_ids: List[str]) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Fetch forms associated with documents
+        
+        Args:
+            doc_ids: List of document UUIDs
+            
+        Returns:
+            Dict mapping document_id → list of forms [{id, form_name, template_path, description}]
+        """
+        if not doc_ids:
+            return {}
+        
+        try:
+            conn = self._get_connection()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            cursor.execute("""
+                SELECT id, document_id, form_name, template_path, description
+                FROM forms
+                WHERE document_id = ANY(%s::uuid[])
+                ORDER BY form_name
+            """, (doc_ids,))
+            
+            results = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            # Group by document_id
+            forms_map: Dict[str, List[Dict[str, Any]]] = {}
+            for row in results:
+                doc_id = str(row['document_id'])
+                if doc_id not in forms_map:
+                    forms_map[doc_id] = []
+                forms_map[doc_id].append({
+                    'id': str(row['id']),
+                    'form_name': row['form_name'],
+                    'template_path': row['template_path'],
+                    'description': row['description']
+                })
+            
+            total_forms = sum(len(forms) for forms in forms_map.values())
+            logger.info(f"✅ Fetched {total_forms} forms for {len(forms_map)} documents")
+            return forms_map
+            
+        except Exception as e:
+            logger.error(f"❌ Fetch forms failed: {e}")
+            return {}

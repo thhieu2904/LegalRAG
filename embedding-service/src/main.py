@@ -57,11 +57,18 @@ async def startup():
         from sentence_transformers import SentenceTransformer
         from .chunking import LegalDocumentChunker  # Uses UniversalDocumentChunker via alias
         
+        # Determine device based on GPU swap mode
+        device = settings.DEVICE
+        if settings.GPU_SWAP_MODE:
+            # Force CPU in swap mode to save VRAM for LLM+Rerank
+            device = "cpu"
+            logger.info("🔄 GPU Swap Mode enabled: Forcing embedding to CPU")
+        
         # Load embedding model
         model = SentenceTransformer(
             settings.MODEL_NAME,
             cache_folder=settings.MODEL_CACHE_DIR,
-            device=settings.DEVICE,
+            device=device,
             trust_remote_code=True
         )
         
@@ -72,7 +79,8 @@ async def startup():
             chunk_overlap=settings.CHUNK_OVERLAP
         )
         
-        logger.info(f"✅ Model loaded on device: {settings.DEVICE}")
+        logger.info(f"✅ Model loaded on device: {device}")
+        logger.info(f"✅ GPU Swap Mode: {settings.GPU_SWAP_MODE}")
         logger.info(f"✅ Model dimension: {settings.EMBEDDING_DIMENSION}")
         logger.info(f"✅ Max sequence length: {settings.MAX_SEQ_LENGTH}")
         logger.info(f"✅ Chunker configured: {settings.CHUNK_SIZE} tokens/chunk, {settings.CHUNK_OVERLAP} overlap")

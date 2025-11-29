@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     BATCH_SIZE: int = 32
     EMBEDDING_DIMENSION: int = 768  # Updated for Vietnamese model
     
+    # GPU Swap Mode - for low VRAM environments (6-8GB)
+    # When true: Force CPU for embedding to save VRAM for LLM+Rerank
+    # When false: Use configured DEVICE (GPU if available)
+    GPU_SWAP_MODE: bool = False
+    
     # Chunking configuration (for legal documents)
     CHUNK_SIZE: int = 600  # tokens per chunk (well below 8192 limit)
     CHUNK_OVERLAP: int = 100  # token overlap between chunks

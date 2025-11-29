@@ -203,26 +203,8 @@ services:
     container_name: legalrag-llm
     ports:
       - "8006:8006"
-    environment:
-      SERVICE_NAME: llm-service
-      SERVICE_PORT: 8006
-      MODEL_NAME: ggml-vistral-7B-chat-q4_0.gguf
-      MODEL_PATH: /app/models/ggml-vistral-7B-chat-q4_0.gguf
-      MODEL_CACHE_DIR: /app/models
-      N_CTX: 8192
-      N_GPU_LAYERS: -1
-      N_THREADS: 8
-      N_BATCH: 256
-      MAX_TOKENS: 2048
-      TEMPERATURE: 0.7
-      TOP_P: 0.9
-      TOP_K: 40
-      REPEAT_PENALTY: 1.1
-      DEVICE: cuda
-      USE_MMAP: "true"
-      USE_MLOCK: "false"
-      VERBOSE: "false"
-      LOG_LEVEL: INFO
+    env_file:
+      - ./llm-service/.env
     volumes:
       - ./llm-service/models:/app/models
     networks:

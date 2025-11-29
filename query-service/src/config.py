@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     LLM_SERVICE_URL: str = "http://llm-service:8006"
     STORAGE_SERVICE_URL: str = "http://storage-service:8010"
     
+    # GPU Swap Mode - for low VRAM environments (6-8GB)
+    # When true: Orchestrate model loading/unloading between rerank and LLM
+    # When false: All models loaded permanently (12GB+ VRAM)
+    GPU_SWAP_MODE: bool = False
+    
     # Search parameters
     TOP_K: int = 10
     

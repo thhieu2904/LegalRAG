@@ -52,13 +52,17 @@ class VietnameseReranker:
             logger.warning("CUDA requested but not available, falling back to CPU")
             self.device = "cpu"
         
-        # Set cache folder BEFORE loading model
-        if cache_dir:
-            os.makedirs(cache_dir, exist_ok=True)
-            os.environ['SENTENCE_TRANSFORMERS_HOME'] = cache_dir
-            os.environ['HF_HOME'] = cache_dir
-            os.environ['TRANSFORMERS_CACHE'] = cache_dir
-            logger.info(f"Model cache directory: {cache_dir}")
+        # Use HF_HOME from environment if set, otherwise use cache_dir
+        # Docker mount: D:/model_huggingface -> /home/appuser/.cache/huggingface
+        hf_home = os.environ.get('HF_HOME', cache_dir)
+        logger.info(f"HuggingFace cache: {hf_home}")
+        
+        # Set cache environment variables
+        if hf_home:
+            os.makedirs(hf_home, exist_ok=True)
+            os.environ.setdefault('SENTENCE_TRANSFORMERS_HOME', hf_home)
+            os.environ.setdefault('HF_HOME', hf_home)
+            os.environ.setdefault('TRANSFORMERS_CACHE', os.path.join(hf_home, 'hub'))
         
         # Load the Cross-Encoder model
         try:

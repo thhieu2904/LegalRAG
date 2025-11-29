@@ -67,7 +67,7 @@ export const ChatMessage = ({ message, onSelectDocument }: ChatMessageProps) => 
 
         {/* Sources - Show inline for AI messages */}
         {isAI && message.sources && message.sources.length > 0 && !message.needs_clarification && (
-          <SourceList sources={message.sources} />
+          <SourceList sources={message.sources} forms={message.forms} />
         )}
 
         {/* Timestamp */}

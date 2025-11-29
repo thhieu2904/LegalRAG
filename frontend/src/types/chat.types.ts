@@ -2,7 +2,7 @@
  * Chat Related Types
  */
 
-import type { MessageRole, Source } from './common.types';
+import type { MessageRole, Source, FormInfo } from './common.types';
 
 /**
  * Document Option (for clarification)
@@ -42,6 +42,7 @@ export interface ChatMessage {
   role: MessageRole;
   content: string;
   sources?: Source[];
+  forms?: FormInfo[]; // Forms attached to source documents
   timestamp: Date;
   tokens?: number;
   took_ms?: number;
@@ -91,6 +92,7 @@ export interface ChatResponse {
   question: string;
   answer: string | null;
   sources: Source[];
+  forms?: FormInfo[]; // Forms attached to source documents
   tokens_used: number;
 
   // Session info (always included)

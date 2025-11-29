@@ -33,6 +33,110 @@ db_client = None
 # Session counter (in-memory, synced with DB)
 _session_counter = {"date": "", "counter": 0}
 
+# GPU Swap state tracking
+_current_gpu_model: Optional[str] = None  # "rerank" | "llm" | None
+
+
+# ============= GPU SWAP HELPERS =============
+
+async def prepare_rerank():
+    """
+    Prepare rerank service (load model if swap mode).
+    Called before reranking documents.
+    """
+    global _current_gpu_model
+    
+    if not settings.GPU_SWAP_MODE:
+        return
+    
+    try:
+        logger.info("🔄 GPU Swap: Preparing rerank model...")
+        response = await http_client.post(
+            f"{settings.RERANK_SERVICE_URL}/prepare",
+            timeout=120.0  # Model loading can take time
+        )
+        if response.status_code == 200:
+            _current_gpu_model = "rerank"
+            logger.info("✅ GPU Swap: Rerank model loaded")
+        else:
+            logger.warning(f"⚠️ Rerank prepare failed: {response.text}")
+    except Exception as e:
+        logger.error(f"❌ Rerank prepare error: {e}")
+
+
+async def release_rerank():
+    """
+    Release rerank service (unload model if swap mode).
+    Called after reranking to free VRAM for LLM.
+    """
+    global _current_gpu_model
+    
+    if not settings.GPU_SWAP_MODE:
+        return
+    
+    try:
+        logger.info("🔄 GPU Swap: Releasing rerank model...")
+        await http_client.post(
+            f"{settings.RERANK_SERVICE_URL}/release",
+            timeout=30.0
+        )
+        if _current_gpu_model == "rerank":
+            _current_gpu_model = None
+        logger.info("✅ GPU Swap: Rerank model unloaded, VRAM freed")
+    except Exception as e:
+        logger.warning(f"⚠️ Rerank release error: {e}")
+
+
+async def prepare_llm():
+    """
+    Prepare LLM service (load model if swap mode).
+    Called before generating answers.
+    """
+    global _current_gpu_model
+    
+    if not settings.GPU_SWAP_MODE:
+        return
+    
+    try:
+        logger.info("🔄 GPU Swap: Preparing LLM model...")
+        response = await http_client.post(
+            f"{settings.LLM_SERVICE_URL}/prepare",
+            timeout=180.0  # LLM loading takes longer
+        )
+        if response.status_code == 200:
+            _current_gpu_model = "llm"
+            logger.info("✅ GPU Swap: LLM model loaded")
+        else:
+            logger.warning(f"⚠️ LLM prepare failed: {response.text}")
+    except Exception as e:
+        logger.error(f"❌ LLM prepare error: {e}")
+
+
+async def release_llm():
+    """
+    Release LLM service (unload model if swap mode).
+    Called after generation to free VRAM for rerank (optional).
+    
+    Note: Usually we keep LLM loaded since it's the most common operation.
+    Only release when explicitly needed for rerank.
+    """
+    global _current_gpu_model
+    
+    if not settings.GPU_SWAP_MODE:
+        return
+    
+    try:
+        logger.info("🔄 GPU Swap: Releasing LLM model...")
+        await http_client.post(
+            f"{settings.LLM_SERVICE_URL}/release",
+            timeout=30.0
+        )
+        if _current_gpu_model == "llm":
+            _current_gpu_model = None
+        logger.info("✅ GPU Swap: LLM model unloaded, VRAM freed")
+    except Exception as e:
+        logger.warning(f"⚠️ LLM release error: {e}")
+
 
 # ============= CONVERSATION STATE (Document Pinning) =============
 
@@ -162,6 +266,10 @@ def get_or_create_session_id(provided_session_id: Optional[str]) -> Tuple[str, b
         
     Returns:
         Tuple of (session_id, is_new_session)
+        
+    Note:
+        Backend is the source of truth. If session not found/expired,
+        create a NEW session. Frontend must sync from response.
     """
     # If no session ID provided, create new one
     if not provided_session_id:
@@ -174,8 +282,8 @@ def get_or_create_session_id(provided_session_id: Optional[str]) -> Tuple[str, b
             logger.debug(f"📂 Found existing session: {provided_session_id}")
             return provided_session_id, False
     
-    # Session not found or expired, but frontend sent an ID
-    # This means user refreshed page - create new session
+    # Session not found or expired - create NEW session
+    # Frontend will sync to new session_id from response
     logger.info(f"📌 Session {provided_session_id} not found/expired, creating new")
     return generate_session_id(), True
 
@@ -262,30 +370,20 @@ async def embed_text_cached(text: str) -> Optional[List[float]]:
     return embedding
 
 
-def extract_keywords(title: str) -> List[str]:
-    """Extract meaningful keywords from document title."""
-    # Remove numbering like "01. "
-    title = re.sub(r'^\d+\.\s*', '', title)
-    
-    # Split by common separators
-    words = re.split(r'[\s,;\-–]+', title)
-    
-    # Filter short words and stopwords
-    stopwords = {'thủ', 'tục', 'về', 'và', 'của', 'tại', 'cho', 'với', 'các', 'được', 'trong'}
-    keywords = [w for w in words if len(w) > 2 and w.lower() not in stopwords]
-    
-    return keywords
-
-
 def is_followup_question(question: str) -> bool:
     """
     Detect if a question is likely a follow-up that needs context.
     
-    Uses linguistic patterns, NOT hardcoded keywords.
+    Uses lightweight linguistic patterns. Semantic topic detection is handled
+    separately via embeddings to keep this function focused on phrasing hints.
+    
+    Args:
+        question: The user's question
     """
     q_lower = question.lower().strip()
     
     # Pattern 1: Very short questions (< 30 chars) are usually follow-ups
+    # But only if topic matches (checked above)
     if len(q_lower) < 30:
         logger.info(f"🔍 Short question ({len(q_lower)} chars): likely follow-up")
         return True
@@ -333,7 +431,8 @@ def should_use_pinned_document(question: str, state: ConversationState) -> bool:
     5. Long questions (>50 chars) → Full corpus (might be new topic)
     6. Default medium questions → Use pinned for continuity
     
-    Note: Semantic similarity check is done separately with async embedding.
+    Note: Semantic similarity checks run before this function; this helper only
+    looks at linguistic hints now that topic changes are governed by embeddings.
     """
     if not state.is_valid():
         logger.info("📌 No valid pinned document → Full corpus search")
@@ -356,16 +455,10 @@ def should_use_pinned_document(question: str, state: ConversationState) -> bool:
             return False
     
     # If it's a follow-up question, use pinned document
+    # Pass pinned title to check for topic mismatch
     if is_followup_question(question):
         logger.info(f"📌 Follow-up detected → Using pinned document: {state.active_document_title}")
         return True
-    
-    # Check if question mentions pinned document title keywords
-    if state.active_document_title:
-        title_keywords = extract_keywords(state.active_document_title)
-        if any(kw.lower() in q_lower for kw in title_keywords):
-            logger.info(f"📌 Question mentions pinned doc keywords → Using pinned document")
-            return True
     
     # For longer questions, check if they might be about a new topic
     if len(q_lower) > 50:
@@ -378,48 +471,11 @@ def should_use_pinned_document(question: str, state: ConversationState) -> bool:
     return True
 
 
-async def check_semantic_topic_change(
-    question: str, 
-    state: ConversationState,
-    current_embedding: Optional[List[float]] = None
-) -> bool:
-    """
-    Check if the question represents a semantic topic change.
-    Uses embedding similarity to detect when user switches topics.
-    
-    Returns:
-        True if topic change detected (should NOT use pinned doc)
-        False if same topic (should use pinned doc)
-    """
-    # No previous embedding to compare
-    if not state.last_question_embedding:
-        return False
-    
-    # Get current embedding (use provided or fetch new)
-    if current_embedding is None:
-        current_embedding = await embed_text_cached(question)
-    
-    if not current_embedding:
-        return False
-    
-    # Calculate similarity
-    similarity = cosine_similarity(current_embedding, state.last_question_embedding)
-    
-    # Thresholds for topic detection
-    TOPIC_CHANGE_THRESHOLD = 0.4  # Below this = topic change
-    TOPIC_CONTINUITY_THRESHOLD = 0.7  # Above this = definitely same topic
-    
-    if similarity < TOPIC_CHANGE_THRESHOLD:
-        logger.info(f"📌 Semantic topic change detected (sim={similarity:.3f} < {TOPIC_CHANGE_THRESHOLD})")
-        return True  # Topic change
-    
-    if similarity > TOPIC_CONTINUITY_THRESHOLD:
-        logger.info(f"📌 Strong topic continuity (sim={similarity:.3f} > {TOPIC_CONTINUITY_THRESHOLD})")
-        return False  # Same topic
-    
-    # Middle ground - rely on other heuristics
-    logger.info(f"📌 Moderate similarity (sim={similarity:.3f}) - using other heuristics")
-    return False
+
+
+# REMOVED: check_semantic_topic_change() function
+# Semantic similarity doesn't work well for legal documents
+# User must explicitly clear session (F5/Clear button) to start new topic
 
 
 # ============= MODELS =============
@@ -452,7 +508,17 @@ class SearchResult(BaseModel):
     """Search result with document info"""
     content: str
     similarity: float
+    document_id: Optional[str] = None  # Document UUID for download
     document_title: Optional[str] = None  # Tên văn bản pháp luật
+    file_path: Optional[str] = None  # Path in MinIO for download
+
+
+class FormInfo(BaseModel):
+    """Form information for download"""
+    id: str
+    form_name: str
+    template_path: Optional[str] = None
+    description: Optional[str] = None
 
 
 class DocumentOption(BaseModel):
@@ -517,7 +583,9 @@ class QueryResponse(BaseModel):
     used_pinned_document: bool = False
     pinned_document_title: Optional[str] = None
     
+    # Sources and forms (for UI display)
     sources: List[SearchResult]
+    forms: Optional[List[FormInfo]] = None  # Forms attached to source documents
     tokens_used: int
 
 
@@ -549,7 +617,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     """Initialize on startup"""
-    global http_client, db_client
+    global http_client, db_client, _session_counter
     http_client = httpx.AsyncClient(timeout=30.0)
     
     # Initialize PostgreSQL client
@@ -560,6 +628,47 @@ async def startup():
         password=settings.POSTGRES_PASSWORD,
         dbname=settings.POSTGRES_DB
     )
+    
+    # Sync session counter with database (find highest session number for today)
+    now = datetime.now()
+    date_str = now.strftime("%Y%m%d")
+    _session_counter["date"] = date_str
+    
+    # Query database for highest session number today
+    try:
+        import psycopg2
+        conn = psycopg2.connect(
+            host=settings.POSTGRES_HOST,
+            port=settings.POSTGRES_PORT,
+            user=settings.POSTGRES_USER,
+            password=settings.POSTGRES_PASSWORD,
+            dbname=settings.POSTGRES_DB
+        )
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT session_id FROM query_logs WHERE session_id LIKE %s ORDER BY session_id DESC LIMIT 1",
+            (f"{date_str}_%",)
+        )
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        if result:
+            last_session_id = result[0]
+            # Extract counter from session_id like "20251128_0003"
+            try:
+                counter = int(last_session_id.split("_")[1])
+                _session_counter["counter"] = counter
+                logger.info(f"📊 Synced session counter from DB: {date_str}_{counter:04d}")
+            except (IndexError, ValueError):
+                _session_counter["counter"] = 0
+                logger.warning(f"⚠️ Could not parse session ID from DB: {last_session_id}")
+        else:
+            _session_counter["counter"] = 0
+            logger.info(f"📊 No sessions found for today, starting from {date_str}_0001")
+    except Exception as e:
+        logger.warning(f"⚠️ Could not sync session counter from DB: {e}")
+        _session_counter["counter"] = 0
     
     logger.info("✅ Query Service started (with DB client)")
 
@@ -740,12 +849,17 @@ async def rerank_documents(query: str, documents: List[dict], top_k: int = 10) -
     """
     Rerank documents using rerank service with title-aware scoring.
     
+    GPU Swap Mode: Prepares rerank model before use, releases after.
+    
     Returns:
     - Tuple of (reranked_docs, document_scores)
     - document_scores: List of {document_id, avg_score, max_score, chunk_count}
       Used to decide if clarification is needed (when scores are close)
     """
     try:
+        # GPU Swap: Prepare rerank model
+        await prepare_rerank()
+        
         # Prepare documents for reranking
         doc_texts = [doc.get('content', '') for doc in documents]
         doc_ids = [doc.get('document_id', 'unknown') for doc in documents]
@@ -773,6 +887,9 @@ async def rerank_documents(query: str, documents: List[dict], top_k: int = 10) -
             },
             timeout=90.0  # Increased: rerank on CPU can take 30-40s
         )
+        
+        # GPU Swap: Release rerank model to free VRAM for LLM
+        await release_rerank()
         
         if response.status_code == 200:
             data = response.json()
@@ -803,9 +920,11 @@ async def generate_answer(
     question: str, 
     context: str, 
     history: Optional[List[dict]] = None
-) -> Optional[str]:
+) -> Tuple[Optional[str], int]:
     """
     Generate answer using LLM Service's /generate-rag endpoint.
+    
+    GPU Swap Mode: Prepares LLM model before use.
     
     This function sends question + context + history to LLM service,
     which automatically wraps with system_prompt.txt + citation_rules.txt.
@@ -816,12 +935,14 @@ async def generate_answer(
         history: Optional chat history (last 3 turns) for follow-up questions
     """
     try:
+        # GPU Swap: Prepare LLM model
+        await prepare_llm()
+        
         payload = {
             "question": question,
             "context": context,
-            "max_tokens": 512,  # Reduced for faster responses (was 1280)
-            "temperature": 0.3,  # Low temperature for factual legal answers
-            "top_p": 0.85
+            # Don't specify max_tokens, temperature, top_p - let LLM service use its env config
+            # LLM service will use: MAX_TOKENS=2048, TEMPERATURE=0.7, TOP_P=0.9
         }
         
         # Add history if provided (for follow-up context)
@@ -834,16 +955,21 @@ async def generate_answer(
             json=payload,
             timeout=120.0  # LLM can be slow
         )
+        
+        # Note: We keep LLM loaded after generation (most common operation)
+        # Only release if we need VRAM for something else
+        
         if response.status_code == 200:
             data = response.json()
-            logger.info(f"✅ LLM generated {data.get('completion_tokens', 0)} tokens")
-            return data.get("text", "")
+            tokens_used = data.get('total_tokens', 0)
+            logger.info(f"✅ LLM generated {data.get('completion_tokens', 0)} tokens (total: {tokens_used})")
+            return data.get("text", ""), tokens_used
         else:
             logger.error(f"❌ LLM generation failed: {response.status_code} - {response.text}")
-            return None
+            return None, 0
     except Exception as e:
         logger.error(f"❌ LLM generation error: {type(e).__name__}: {str(e)}")
-        return None
+        return None, 0
 
 
 def group_chunks_by_document(chunks: List[dict]) -> Dict[str, List[dict]]:
@@ -1021,6 +1147,11 @@ async def query(request: QueryRequest):
                 tokens_used=0,
                 used_pinned_document=False
             )
+        
+        # REMOVED: Semantic topic change detection
+        # In legal domain, questions about fees/procedures are still SAME TOPIC
+        # User must explicitly clear session (F5 reload or Clear button) to start new topic
+        # Example: "khai sinh" → "phí bao nhiêu?" should KEEP using pinned doc
         
         # Step 0: Check if we should use pinned document (Document Pinning)
         use_pinned = should_use_pinned_document(request.question, state)
@@ -1378,7 +1509,7 @@ async def query(request: QueryRequest):
         if request.history:
             history_for_llm = [{"role": h.role, "content": h.content} for h in request.history]
         
-        answer = await generate_answer(request.question, context, history=history_for_llm)
+        answer, tokens_used = await generate_answer(request.question, context, history=history_for_llm)
         if answer is None:
             raise HTTPException(status_code=503, detail="LLM service unavailable")
         
@@ -1386,12 +1517,13 @@ async def query(request: QueryRequest):
         # Track if we newly pinned a document in this request
         newly_pinned = False
         if final_doc_id and max_score >= settings.CLARIFICATION_THRESHOLD:
+            # Pin document with current embedding for future follow-ups
             state.update(
                 document_id=final_doc_id,
                 document_title=final_doc_title or "Văn bản",
                 question=request.question,
                 confidence=max_score,
-                embedding=embedding  # Store for semantic topic detection
+                embedding=embedding  # Use query embedding (no semantic check needed)
             )
             # Save to database for persistence
             save_conversation_state(state)
@@ -1417,6 +1549,22 @@ async def query(request: QueryRequest):
                 }
             )
         
+        # Step 8: Fetch document file paths and forms for frontend download
+        doc_info_map = {}
+        forms_list = []
+        if db_client and final_doc_id:
+            doc_info_map = db_client.fetch_document_info([final_doc_id])
+            forms_map = db_client.fetch_forms_by_document_ids([final_doc_id])
+            # Flatten forms from all documents
+            for doc_forms in forms_map.values():
+                for form in doc_forms:
+                    forms_list.append(FormInfo(
+                        id=form['id'],
+                        form_name=form['form_name'],
+                        template_path=form['template_path'],
+                        description=form['description']
+                    ))
+        
         return QueryResponse(
             success=True,
             question=request.question,
@@ -1429,11 +1577,14 @@ async def query(request: QueryRequest):
                 SearchResult(
                     content=result['content'],
                     similarity=result.get('rerank_score', result.get('similarity', 0.0)),
-                    document_title=result.get('document_title', 'Văn bản')
+                    document_id=result.get('document_id'),
+                    document_title=result.get('document_title', 'Văn bản'),
+                    file_path=doc_info_map.get(result.get('document_id'), {}).get('file_path')
                 )
                 for result in reranked_results
             ],
-            tokens_used=0  # LLM service will track tokens
+            forms=forms_list if forms_list else None,
+            tokens_used=tokens_used
         )
     
     except HTTPException:
@@ -1548,7 +1699,7 @@ async def query_confirm(request: ConfirmRequest):
         if request.history:
             history_for_llm = [{"role": h.role, "content": h.content} for h in request.history]
         
-        answer = await generate_answer(request.question, context, history=history_for_llm)
+        answer, tokens_used = await generate_answer(request.question, context, history=history_for_llm)
         
         if not answer:
             raise HTTPException(503, "LLM service unavailable")
@@ -1580,6 +1731,23 @@ async def query_confirm(request: ConfirmRequest):
                 }
             )
         
+        # Step 8: Fetch document file path and forms for frontend download
+        doc_info_map = {}
+        forms_list = []
+        if db_client:
+            doc_info_map = db_client.fetch_document_info([request.document_id])
+            forms_map = db_client.fetch_forms_by_document_ids([request.document_id])
+            for doc_forms in forms_map.values():
+                for form in doc_forms:
+                    forms_list.append(FormInfo(
+                        id=form['id'],
+                        form_name=form['form_name'],
+                        template_path=form['template_path'],
+                        description=form['description']
+                    ))
+        
+        file_path = doc_info_map.get(request.document_id, {}).get('file_path')
+        
         return QueryResponse(
             success=True,
             question=request.question,
@@ -1593,11 +1761,14 @@ async def query_confirm(request: ConfirmRequest):
                 SearchResult(
                     content=r['content'],
                     similarity=r.get('rerank_score', 0),
-                    document_title=doc_title
+                    document_id=request.document_id,
+                    document_title=doc_title,
+                    file_path=file_path
                 )
                 for r in reranked_results
             ],
-            tokens_used=0
+            forms=forms_list if forms_list else None,
+            tokens_used=tokens_used
         )
     
     except HTTPException:

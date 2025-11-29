@@ -29,18 +29,57 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  align-items: flex-start;
 }
 
 .sourceCard {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
   background: white;
   border: 1px solid var(--border-color-light);
   border-radius: var(--border-radius-md);
-  padding: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
   transition: border-color 0.2s;
+  width: fit-content;
+  max-width: 100%;
+  align-self: flex-start;
 }
 
 .sourceCard:hover {
   border-color: var(--primary-color);
+}
+
+.documentInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 1;
+  min-width: 0;
+}
+
+.downloadBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--primary-light);
+  color: var(--primary-color);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.downloadBtn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.downloadBtn:active {
+  transform: scale(0.95);
 }
 
 .sourceHeader {
@@ -59,6 +98,12 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--primary-color);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 280px;
 }
 
 .sourceNumber {
@@ -108,6 +153,58 @@
   transform: scale(0.98);
 }
 
+/* Forms Section */
+.formsSection {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.formsHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+}
+
+.formsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  align-items: flex-start;
+}
+
+.formItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius-sm);
+  transition: border-color 0.2s;
+  width: fit-content;
+  max-width: 100%;
+  align-self: flex-start;
+}
+
+.formItem:hover {
+  border-color: var(--success-color);
+}
+
+.formName {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .sourceList {
@@ -119,6 +216,15 @@
   }
 
   .toggleButton {
+    font-size: var(--font-size-xs);
+  }
+
+  .downloadBtn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .formName {
     font-size: var(--font-size-xs);
   }
 }

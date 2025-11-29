@@ -1,6 +1,127 @@
 # 📋 KẾ HOẠCH: GPU Memory Swap Mechanism
 
-> **Mục tiêu**: Tạo cơ chế swap GPU memory giữa LLM và Rerank khi VRAM giới hạn (8GB), với khả năng tắt swap trên server có đủ VRAM (16GB+).
+> **Status**: 🔄 **IN ANALYSIS - READY FOR IMPLEMENTATION**
+>
+> **Mục tiêu**: Tạo cơ chế swap GPU memory giữa LLM và Rerank khi VRAM giới hạn (6GB), với khả năng tắt swap trên server có đủ VRAM (12GB+).
+
+---
+
+## 📊 PHÂN TÍCH TỪ rag_service_old (Completed)
+
+### Findings từ Source Code Analysis
+
+**1. Config Pattern** (`rag_service_old/app/core/config.py`):
+
+```python
+class Settings(BaseSettings):
+    enable_vram_swapping: bool = False  # Control flag
+    n_gpu_layers: int = -1  # Full GPU offload for LLM
+```
+
+**2. RerankerService Pattern** (`rag_service_old/app/services/reranker.py`):
+
+```python
+class RerankerService:
+    def __init__(self):
+        if not settings.enable_vram_swapping:
+            self._load_model()  # Load immediately
+        else:
+            logger.info("Swapping mode: Load on-demand")
+
+    def ensure_loaded(self):
+        """Called before reranking"""
+        if not self.model_loaded:
+            self._load_model()
+
+    def unload_model(self):
+        """Called after reranking to free VRAM"""
+        del self.model
+        gc.collect()
+        torch.cuda.empty_cache()
+```
+
+**3. LLMService Pattern** (`rag_service_old/app/services/language_model.py`):
+
+```python
+class LLMService:
+    def __init__(self):
+        if not settings.enable_vram_swapping:
+            self._load_model()
+        else:
+            logger.info("Swapping mode: Load on-demand")
+
+    def ensure_loaded(self):
+        if not self.model_loaded:
+            self._load_model()
+
+    def unload_model(self):
+        del self.model
+        gc.collect()
+        torch.cuda.empty_cache()
+```
+
+**4. RAG Engine Orchestration** (`rag_service_old/app/services/rag_engine.py`):
+
+```python
+# Phase 1: Reranking
+if hasattr(self.llm_service, 'unload_model'):
+    self.llm_service.unload_model()  # Free VRAM for reranker
+
+# ... rerank logic ...
+
+if hasattr(self.reranker_service, 'unload_model'):
+    self.reranker_service.unload_model()  # Free VRAM for LLM
+
+# Phase 2: LLM Generation
+# LLM loads automatically via ensure_loaded()
+```
+
+**5. VectorDB/Embedding** (`rag_service_old/app/services/vector.py`):
+
+```python
+def get_optimal_device(self):
+    if settings.enable_vram_swapping:
+        return 'cpu'  # CPU để save VRAM cho LLM+Rerank
+    else:
+        return 'cuda' if torch.cuda.is_available() else 'cpu'
+```
+
+---
+
+## 🔍 PHÂN TÍCH CHI TIẾT VẤN ĐỀ KỸ THUẬT
+
+### Vấn đề cốt lõi
+
+Hiện tại hệ thống chạy 3 AI models trên GPU:
+
+| Model                           | Size        | Priority              | Reason               |
+| ------------------------------- | ----------- | --------------------- | -------------------- |
+| **LLM** (Vistral-7B Q4)         | ~4.5GB VRAM | ⭐ **GPU** (bắt buộc) | CPU quá chậm         |
+| **Rerank** (bge-reranker-v2-m3) | ~1.5GB VRAM | ⭐ **GPU** (ưu tiên)  | CPU chậm 2-3x        |
+| **Embedding** (bge-m3)          | ~1.5GB VRAM | ✅ **CPU** (OK)       | Chỉ embed query ngắn |
+
+**Dev Laptop VRAM: 6GB** → Cần swap Rerank và LLM, Embedding chạy CPU.
+
+### Hiện trạng Docker Compose
+
+```yaml
+# Embedding: GPU enabled
+embedding-service:
+  environment:
+    DEVICE: cuda # ← Đang dùng GPU
+
+# Rerank: CPU only (để tránh OOM)
+rerank-service:
+  environment:
+    DEVICE: cpu # ← Buộc phải dùng CPU vì thiếu VRAM
+
+# LLM: GPU enabled (bắt buộc cho performance)
+llm-service:
+  environment:
+    N_GPU_LAYERS: -1 # ← All layers on GPU
+```
+
+**Vấn đề hiện tại**: Rerank phải chạy CPU → **chậm đáng kể** (2-3x slower).
 
 ---
 
@@ -145,7 +266,7 @@ Lý do:
 | rerank-service    | bge-reranker-v2-m3 | ~1.5 GB    | Cần GPU cho speed |
 | llm-service       | Vistral-7B Q4      | ~4.5 GB    | Bắt buộc GPU      |
 
-### 3.2 Swap Mode Memory Flow
+### 3.2 Swap Mode Memory Flow (6GB VRAM Laptop)
 
 ```
 Query Flow (GPU_SWAP_MODE=true):
@@ -153,44 +274,68 @@ Query Flow (GPU_SWAP_MODE=true):
 1. User sends question
    GPU: Empty (0 GB used)
 
-2. Embed question (embedding on CPU)
-   GPU: Empty (0 GB used)
+2. Embed question (embedding on CPU - bge-m3)
+   GPU: Empty (0 GB used) ← Embedding chạy CPU
 
 3. Vector search (no GPU needed)
    GPU: Empty (0 GB used)
 
-4. Load Rerank → GPU
+4. Load Rerank → GPU (bge-reranker-v2-m3)
    GPU: Rerank (1.5 GB)
 
 5. Rerank documents
    GPU: Rerank (1.5 GB peak during inference)
 
-6. Unload Rerank
+6. Unload Rerank → Free VRAM
    GPU: Empty (0 GB)
 
-7. Load LLM → GPU
+7. Load LLM → GPU (Vistral-7B Q4)
    GPU: LLM (4.5 GB)
 
 8. Generate answer
    GPU: LLM (4.5 GB peak during generation)
 
-9. Unload LLM (optional, can keep loaded for next query)
-   GPU: Empty or LLM still loaded
+9. Keep LLM loaded for next query (optional)
+   GPU: LLM (4.5 GB) or Empty
 
-Peak VRAM: ~4.5 GB (only one model at a time)
+Peak VRAM: ~4.5 GB (fits in 6GB with headroom)
 ```
 
-### 3.3 No-Swap Mode Memory
+### 3.3 No-Swap Mode Memory (12GB+ Server)
 
 ```
-Startup:
-- Embedding: 1.5 GB
-- Rerank: 1.5 GB
-- LLM: 4.5 GB
+Startup (All models loaded permanently):
+- Embedding: 1.5 GB (GPU)
+- Rerank: 1.5 GB (GPU)
+- LLM: 4.5 GB (GPU)
 - Total: ~7.5 GB
 
-Required VRAM: 8GB minimum, 12GB+ recommended
+Required VRAM: 12GB+ recommended (8GB marginal)
 ```
+
+---
+
+## 📐 VRAM BUDGET ANALYSIS
+
+### 6GB VRAM Laptop (GPU_SWAP_MODE=true)
+
+| Phase     | Model on GPU | VRAM Used | Headroom  |
+| --------- | ------------ | --------- | --------- |
+| Idle      | None         | 0 GB      | 6 GB      |
+| Reranking | Rerank only  | 1.5 GB    | 4.5 GB ✅ |
+| LLM Gen   | LLM only     | 4.5 GB    | 1.5 GB ✅ |
+| Peak      | LLM (max)    | ~5 GB     | 1 GB ✅   |
+
+✅ **Fits 6GB VRAM** - Rerank và LLM never loaded simultaneously.
+
+### 12GB+ Server (GPU_SWAP_MODE=false)
+
+| Phase   | Models on GPU | VRAM Used | Headroom  |
+| ------- | ------------- | --------- | --------- |
+| Startup | All 3 models  | 7.5 GB    | 4.5 GB ✅ |
+| Query   | All 3 models  | ~8 GB     | 4 GB ✅   |
+
+✅ **Fits 12GB+ VRAM** - No swapping needed.
 
 ---
 
@@ -897,19 +1042,53 @@ GPU_SWAP_MODE=false
 
 ## 10. SUMMARY
 
-| Aspect           | Swap Mode (8GB)       | No-Swap Mode (16GB+)  |
-| ---------------- | --------------------- | --------------------- |
-| Embedding        | CPU                   | GPU                   |
-| Rerank           | GPU (on-demand)       | GPU (permanent)       |
-| LLM              | GPU (on-demand)       | GPU (permanent)       |
-| Peak VRAM        | ~4.5 GB               | ~7.5 GB               |
-| Latency overhead | +8-16s per query      | 0s                    |
-| Best for         | Development, Low VRAM | Production, High VRAM |
+| Aspect           | Swap Mode (6GB VRAM) | No-Swap Mode (12GB+)   |
+| ---------------- | -------------------- | ---------------------- |
+| Embedding        | **CPU** (always)     | GPU                    |
+| Rerank           | GPU (on-demand swap) | GPU (permanent)        |
+| LLM              | GPU (on-demand swap) | GPU (permanent)        |
+| Peak VRAM        | ~4.5 GB              | ~7.5 GB                |
+| Latency overhead | +8-16s per query     | 0s                     |
+| Best for         | Dev Laptop, 6GB VRAM | Production, 12GB+ VRAM |
 
 **Kết quả mong đợi:**
 
-- ✅ Chạy được trên 8GB VRAM với swap mode
+- ✅ Chạy được trên **6GB VRAM** với swap mode
+- ✅ Embedding chạy CPU (chỉ embed query ngắn, không cần GPU)
+- ✅ Rerank và LLM swap trên GPU (không bao giờ load đồng thời)
 - ✅ Không thay đổi behavior trên server có đủ VRAM
 - ✅ Dễ dàng switch qua ENV variable
-- ✅ Không cần merge services thành monolith
-- ✅ Maintain microservices architecture
+- ✅ Maintain microservices architecture (không merge thành monolith)
+
+---
+
+## 🔧 NEXT STEPS: IMPLEMENTATION
+
+**Phase 1 - Rerank Service** (Estimated: 2-3 hours):
+
+1. [ ] Add `GPU_SWAP_MODE` env reading
+2. [ ] Implement `/prepare` endpoint (load model)
+3. [ ] Implement `/release` endpoint (unload model)
+4. [ ] Update `load_model()` with swap logic
+5. [ ] Implement `unload_model()` with proper VRAM cleanup
+
+**Phase 2 - LLM Service** (Estimated: 2-3 hours):
+
+1. [ ] Same pattern as Rerank Service
+2. [ ] Handle llama-cpp-python model lifecycle
+
+**Phase 3 - Embedding Service** (Estimated: 1 hour):
+
+1. [ ] Force CPU when `GPU_SWAP_MODE=true`
+
+**Phase 4 - Query Service Orchestration** (Estimated: 2-3 hours):
+
+1. [ ] Add swap helper functions
+2. [ ] Update `/query` endpoint with swap coordination
+3. [ ] Implement SwapOptimizer (lazy release strategy)
+
+**Phase 5 - Testing** (Estimated: 2-3 hours):
+
+1. [ ] Test on 6GB VRAM laptop
+2. [ ] Measure swap overhead latency
+3. [ ] Verify no-swap mode on higher VRAM

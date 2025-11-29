@@ -11,6 +11,8 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic_settings import BaseSettings
+import gc
+import torch
 
 from .models import (
     RerankRequest,
@@ -41,6 +43,11 @@ class Settings(BaseSettings):
     
     # Hardware config
     device: str = "cpu"
+    
+    # GPU Swap Mode - for low VRAM environments (6-8GB)
+    # When true: Load model on-demand, unload after use
+    # When false: Load at startup, keep permanently (12GB+ VRAM)
+    gpu_swap_mode: bool = False
     
     # Inference config
     batch_size: int = 16
@@ -75,31 +82,85 @@ logger = logging.getLogger(__name__)
 # ============================================
 
 reranker: Optional[VietnameseReranker] = None
+model_loaded: bool = False
+
+
+def load_model():
+    """Load reranker model to GPU/CPU."""
+    global reranker, model_loaded
+    
+    if model_loaded and reranker is not None:
+        logger.info("Model already loaded")
+        return
+    
+    logger.info(f"🔄 Loading reranker model to {settings.device}...")
+    start = time.time()
+    
+    reranker = VietnameseReranker(
+        model_name=settings.model_name,
+        device=settings.device,
+        max_length=settings.model_max_length,
+        cache_dir=settings.model_cache_dir
+    )
+    
+    model_loaded = True
+    logger.info(f"✅ Reranker loaded in {time.time()-start:.2f}s on {settings.device.upper()}")
+
+
+def unload_model():
+    """Unload reranker model to free GPU memory."""
+    global reranker, model_loaded
+    
+    if reranker is None:
+        return
+    
+    logger.info("🔄 Unloading reranker model...")
+    
+    # Move model to CPU first if on GPU (helps with memory release)
+    if settings.device == 'cuda' and hasattr(reranker, 'model'):
+        try:
+            if hasattr(reranker.model, 'model'):
+                reranker.model.model.cpu()
+        except Exception as e:
+            logger.warning(f"Could not move model to CPU: {e}")
+    
+    # Delete model
+    del reranker
+    reranker = None
+    model_loaded = False
+    
+    # Force cleanup
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.synchronize()
+    
+    logger.info("✅ Reranker unloaded, VRAM freed")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Manage application lifecycle - load model on startup."""
-    global reranker
+    """Manage application lifecycle - load model based on swap mode."""
+    global reranker, model_loaded
     
     logger.info("=" * 60)
     logger.info(f"Starting {settings.service_name}")
     logger.info("=" * 60)
     logger.info(f"Model: {settings.model_name}")
     logger.info(f"Device: {settings.device}")
+    logger.info(f"GPU Swap Mode: {settings.gpu_swap_mode}")
     logger.info(f"Batch Size: {settings.batch_size}")
     logger.info(f"Default Top-K: {settings.top_k}")
     logger.info("=" * 60)
     
     try:
-        # Initialize reranker
-        reranker = VietnameseReranker(
-            model_name=settings.model_name,
-            device=settings.device,
-            max_length=settings.model_max_length,
-            cache_dir=settings.model_cache_dir
-        )
-        logger.info("✓ Reranker initialized successfully")
+        if not settings.gpu_swap_mode:
+            # Non-swap mode: Load model immediately at startup
+            logger.info("🚀 Non-swap mode: Loading Rerank model at startup")
+            load_model()
+        else:
+            # Swap mode: Model will load on-demand
+            logger.info("🔄 Swap mode: Rerank model will load on-demand")
         
     except Exception as e:
         logger.error(f"✗ Failed to initialize reranker: {e}")
@@ -107,6 +168,8 @@ async def lifespan(app: FastAPI):
     
     yield
     
+    # Cleanup on shutdown
+    unload_model()
     logger.info(f"Shutting down {settings.service_name}")
 
 
@@ -137,11 +200,17 @@ app.add_middleware(
 
 def get_reranker() -> VietnameseReranker:
     """Dependency to get reranker instance."""
-    if reranker is None:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Reranker model not loaded"
-        )
+    global model_loaded
+    
+    # In swap mode, auto-load if needed
+    if reranker is None or not model_loaded:
+        if settings.gpu_swap_mode:
+            load_model()
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Reranker model not loaded"
+            )
     return reranker
 
 
@@ -173,21 +242,69 @@ async def root():
 
 
 @app.get("/health", response_model=HealthResponse)
-async def health_check(
-    reranker: VietnameseReranker = Depends(get_reranker)
-):
+async def health_check():
     """
     Health check endpoint.
     
     Returns service status and model information.
     """
-    info = reranker.get_info()
     return HealthResponse(
         status="healthy",
         service=settings.service_name,
-        model_loaded=True,
-        device=info["device"]
+        model_loaded=model_loaded,
+        device=settings.device,
+        gpu_swap_mode=settings.gpu_swap_mode
     )
+
+
+# ============================================
+# GPU Swap Endpoints
+# ============================================
+
+@app.post("/prepare")
+async def prepare_model():
+    """
+    Load model to GPU (for swap mode).
+    Called by query-service before reranking.
+    
+    In non-swap mode, this is a no-op (model always loaded).
+    """
+    if not settings.gpu_swap_mode:
+        return {
+            "status": "ok",
+            "message": "Non-swap mode, model always loaded",
+            "model_loaded": model_loaded
+        }
+    
+    load_model()
+    return {
+        "status": "ok",
+        "loaded": True,
+        "device": settings.device
+    }
+
+
+@app.post("/release")
+async def release_model():
+    """
+    Unload model from GPU (for swap mode).
+    Called by query-service after reranking to free VRAM for LLM.
+    
+    In non-swap mode, this is a no-op (model stays loaded).
+    """
+    if not settings.gpu_swap_mode:
+        return {
+            "status": "ok",
+            "message": "Non-swap mode, model stays loaded",
+            "model_loaded": model_loaded
+        }
+    
+    unload_model()
+    return {
+        "status": "ok",
+        "unloaded": True,
+        "vram_freed": True
+    }
 
 
 @app.post("/rerank", response_model=RerankResponse)

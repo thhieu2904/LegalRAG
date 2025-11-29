@@ -19,24 +19,61 @@ import { sendChatMessage, confirmDocument, clearSession } from '@/services/query
 // Storage keys for session
 const SESSION_ID_KEY = 'legalrag_session_id';
 const SESSION_INIT_KEY = 'legalrag_session_initialized';
+const RELOAD_HANDLED_KEY = 'legalrag_reload_handled'; // Flag to prevent multiple reload checks
+
+// Determine whether current navigation was triggered by a reload (F5/Ctrl+R)
+const wasPageReloaded = (): boolean => {
+  if (typeof window === 'undefined' || typeof performance === 'undefined') {
+    return false;
+  }
+
+  const navigationEntries = performance.getEntriesByType('navigation') as
+    | PerformanceNavigationTiming[]
+    | [];
+
+  if (navigationEntries.length > 0) {
+    return navigationEntries[0]?.type === 'reload';
+  }
+
+  // Fallback for older browsers (deprecated API but still present in some WebViews)
+  const legacyNav = (performance as Performance & { navigation?: PerformanceNavigation })
+    .navigation;
+  // legacy type value 1 === TYPE_RELOAD
+  return legacyNav?.type === 1;
+};
+
+// CRITICAL: Handle page reload/initialization ONCE on app startup
+// This runs immediately when module loads (before any React renders)
+if (typeof window !== 'undefined') {
+  const isReload = wasPageReloaded();
+  const isInitialized = sessionStorage.getItem(SESSION_INIT_KEY);
+  const reloadHandled = sessionStorage.getItem(RELOAD_HANDLED_KEY);
+
+  // Only process reload check ONCE per page load
+  if (!reloadHandled) {
+    if (isReload || !isInitialized) {
+      // Clear old session on reload or fresh load
+      sessionStorage.removeItem(SESSION_ID_KEY);
+      sessionStorage.setItem(SESSION_INIT_KEY, 'true');
+      console.log('🔄 Page reload/fresh load detected - will request new session');
+    }
+    // Mark reload as handled to prevent multiple checks
+    sessionStorage.setItem(RELOAD_HANDLED_KEY, 'true');
+  }
+
+  // Reset flags when tab closes (so next page load can check again)
+  window.addEventListener('beforeunload', () => {
+    sessionStorage.removeItem(SESSION_INIT_KEY);
+    sessionStorage.removeItem(RELOAD_HANDLED_KEY);
+  });
+}
 
 /**
  * Get current session ID from sessionStorage (if any).
  * Returns null if no session exists (will trigger backend to create one).
  */
 const getCurrentSessionId = (): string | null => {
-  // Check if this is a fresh page load (F5/refresh or new tab)
-  const isInitialized = sessionStorage.getItem(SESSION_INIT_KEY);
-
-  if (!isInitialized) {
-    // Fresh page load - clear old session to trigger new session from backend
-    sessionStorage.removeItem(SESSION_ID_KEY);
-    sessionStorage.setItem(SESSION_INIT_KEY, 'true');
-    console.log('🔄 New page load - will request new session from backend');
-    return null;
-  }
-
-  // Return existing session ID (or null if not set)
+  // Simply return existing session ID (or null if cleared by reload handler)
   return sessionStorage.getItem(SESSION_ID_KEY);
 };
 
@@ -211,8 +248,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
         history: history.length > 0 ? history : undefined,
       });
 
-      // Save session_id from response for subsequent requests
+      // ALWAYS sync session_id from backend response (backend is source of truth)
+      // This handles: new session, expired session, or backend restart
       if (response.session_id) {
+        const currentId = sessionStorage.getItem(SESSION_ID_KEY);
+        if (currentId !== response.session_id) {
+          console.log(`🔄 Session updated: ${currentId} → ${response.session_id}`);
+        }
         saveSessionId(response.session_id);
       }
 
@@ -245,6 +287,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           role: 'assistant',
           content: response.answer || 'Không có câu trả lời.',
           sources: response.sources,
+          forms: response.forms, // Add forms from response
           timestamp: new Date(),
           tokens: response.tokens_used,
         };
@@ -290,8 +333,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
         history: history.length > 0 ? history : undefined,
       });
 
-      // Save session_id from response (in case it was created)
+      // ALWAYS sync session_id from backend response (backend is source of truth)
       if (response.session_id) {
+        const currentId = sessionStorage.getItem(SESSION_ID_KEY);
+        if (currentId !== response.session_id) {
+          console.log(`🔄 Session updated after confirm: ${currentId} → ${response.session_id}`);
+        }
         saveSessionId(response.session_id);
       }
 
@@ -301,6 +348,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         role: 'assistant',
         content: response.answer || 'Không tìm thấy thông tin trong văn bản đã chọn.',
         sources: response.sources,
+        forms: response.forms, // Add forms from response
         timestamp: new Date(),
         tokens: response.tokens_used,
       };

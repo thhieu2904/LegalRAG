@@ -102,7 +102,9 @@ Luôn trích dẫn nguồn rõ ràng."""
         history: Optional[List[Dict]] = None
     ) -> str:
         """
-        Build final prompt cho LLM
+        Build final prompt cho LLM theo Vistral/Mistral chat template format.
+        
+        Format: [INST] <<SYS>> system_prompt <</SYS>> user_message [/INST]
         
         Args:
             question: Câu hỏi của user
@@ -110,53 +112,53 @@ Luôn trích dẫn nguồn rõ ràng."""
             history: Chat history (optional)
             
         Returns:
-            Complete prompt string
+            Complete prompt string in Vistral format
         """
-        # Build conversation history nếu có
-        history_text = ""
-        if history:
-            history_parts = []
-            for msg in history[-3:]:  # Chỉ lấy 3 turns gần nhất
-                role = msg.get("role", "user")
-                content = msg.get("content", "")
-                if role == "user":
-                    history_parts.append(f"Người dùng: {content}")
-                else:
-                    history_parts.append(f"Trợ lý: {content}")
-            
-            history_text = "\n".join(history_parts)
-            history_section = f"\n\n## LỊCH SỬ HỘI THOẠI\n{history_text}\n"
-        else:
-            history_section = ""
-        
-        # Combine tất cả thành final prompt
-        prompt = f"""{self.system_prompt}
-
----
+        # Build system message với context
+        system_content = f"""{self.system_prompt}
 
 {self.citation_rules}
 
----
-
-## VĂN BẢN PHÁP LUẬT THAM KHẢO
-
-{context}
-
----
-{history_section}
----
-
-## CÂU HỎI CỦA NGƯỜI DÙNG
-
-{question}
-
----
-
-## CÂU TRẢ LỜI CỦA BẠN
-
-"""
+VĂN BẢN PHÁP LUẬT THAM KHẢO:
+{context}"""
         
-        return prompt
+        # Build conversation using Vistral/Mistral format
+        # Format: [INST] <<SYS>>\n{system}\n<</SYS>>\n\n{user} [/INST] {assistant}
+        
+        prompt_parts = []
+        
+        # First message includes system prompt
+        if history and len(history) > 0:
+            # Build with history
+            first_user_msg = None
+            remaining_history = []
+            
+            for i, msg in enumerate(history[-6:]):  # Lấy tối đa 6 turns gần nhất (3 cặp Q&A)
+                if msg.get("role") == "user" and first_user_msg is None:
+                    first_user_msg = msg.get("content", "")
+                else:
+                    remaining_history.append(msg)
+            
+            if first_user_msg:
+                # First turn with system
+                prompt_parts.append(f"[INST] <<SYS>>\n{system_content}\n<</SYS>>\n\n{first_user_msg} [/INST]")
+                
+                # Add remaining history
+                for msg in remaining_history:
+                    role = msg.get("role", "user")
+                    content = msg.get("content", "")
+                    if role == "assistant":
+                        prompt_parts.append(f" {content} </s>")
+                    else:
+                        prompt_parts.append(f"<s>[INST] {content} [/INST]")
+            
+            # Add current question
+            prompt_parts.append(f"<s>[INST] {question} [/INST]")
+        else:
+            # No history - single turn with system prompt
+            prompt_parts.append(f"[INST] <<SYS>>\n{system_content}\n<</SYS>>\n\n{question} [/INST]")
+        
+        return "".join(prompt_parts)
     
     def build_simple_prompt(self, question: str, context: str) -> str:
         """

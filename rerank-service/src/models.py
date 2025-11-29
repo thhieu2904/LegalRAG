@@ -151,6 +151,12 @@ class HealthResponse(BaseModel):
         description="Device being used (cpu/cuda)",
         example="cpu"
     )
+    
+    gpu_swap_mode: Optional[bool] = Field(
+        default=None,
+        description="Whether GPU swap mode is enabled",
+        example=False
+    )
 
 
 class ErrorResponse(BaseModel):

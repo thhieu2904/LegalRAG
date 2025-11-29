@@ -12,6 +12,12 @@ import { getAuthToken } from '@/stores/authStore';
 const QUERY_SERVICE_URL = import.meta.env.VITE_QUERY_SERVICE_URL || 'http://localhost:8002';
 
 /**
+ * Storage Service Base URL (for file downloads)
+ */
+export const STORAGE_SERVICE_URL =
+  import.meta.env.VITE_STORAGE_SERVICE_URL || 'http://localhost:8010';
+
+/**
  * Create Axios instance for Admin Service
  */
 export const apiClient: AxiosInstance = axios.create({

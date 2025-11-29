@@ -31,7 +31,19 @@ export interface FilterOptions {
 export interface Source {
   content: string;
   similarity: number;
+  document_id?: string; // Document UUID for download
   document_title?: string; // Tên văn bản pháp luật (VD: "Luật Hôn nhân 2014")
+  file_path?: string; // Path in MinIO for download
+}
+
+/**
+ * Form attached to a document
+ */
+export interface FormInfo {
+  id: string;
+  form_name: string;
+  template_path?: string;
+  description?: string;
 }
 
 /**

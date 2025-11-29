@@ -294,7 +294,7 @@ async def root():
             "health": "GET /health",
             "file_operations": {
                 "upload": "POST /upload",
-                "download": "GET /download",
+                "download": "GET /download?file_path=...",
                 "list": "GET /list",
                 "delete": "DELETE /delete"
             },
