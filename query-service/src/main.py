@@ -587,6 +587,9 @@ class QueryResponse(BaseModel):
     sources: List[SearchResult]
     forms: Optional[List[FormInfo]] = None  # Forms attached to source documents
     tokens_used: int
+    
+    # Performance metrics
+    took_ms: Optional[int] = None  # Processing time in milliseconds
 
 
 class HealthResponse(BaseModel):
@@ -1027,8 +1030,8 @@ def apply_ranking_heuristics(query: str, document_scores: List[dict], titles_map
         # Legal documents require precision - wrong document = wrong legal advice
         for keyword in settings.SPECIFIC_KEYWORDS:
             if keyword in title and keyword not in query_lower:
-                penalty += 0.15  # 15% penalty per unmatched specific keyword (strict for legal)
-                logger.info(f"📉 Penalty applied to '{title[:30]}...': contains '{keyword}' not in query (-0.15)")
+                penalty += settings.SPECIFIC_KEYWORD_PENALTY
+                logger.info(f"📉 Penalty applied to '{title[:40]}...': contains '{keyword}' not in query (-{settings.SPECIFIC_KEYWORD_PENALTY})")
         
         # Heuristic 2: Title Length Bias (minor tie-breaker)
         # Prefer shorter titles (usually more general)
@@ -1089,6 +1092,7 @@ async def query(request: QueryRequest):
     5. After confident answer → Pin the top document for future follow-ups
     6. Return session_id and session_info in response
     """
+    start_time = time.time()  # Track processing time
     try:
         logger.info(f"🔍 Query: {request.question}")
         
@@ -1145,7 +1149,8 @@ async def query(request: QueryRequest):
                 session_info=build_session_info(),
                 sources=[],
                 tokens_used=0,
-                used_pinned_document=False
+                used_pinned_document=False,
+                took_ms=int((time.time() - start_time) * 1000)
             )
         
         # REMOVED: Semantic topic change detection
@@ -1241,7 +1246,8 @@ async def query(request: QueryRequest):
                         sources=[],
                         tokens_used=0,
                         used_pinned_document=True,
-                        pinned_document_title=pinned_doc_title
+                        pinned_document_title=pinned_doc_title,
+                        took_ms=int((time.time() - start_time) * 1000)
                     )
             else:
                 logger.warning(f"⚠️ Pinned search failed, falling back to full corpus")
@@ -1258,7 +1264,8 @@ async def query(request: QueryRequest):
                 session_id=session_id,
                 session_info=build_session_info(),
                 sources=[],
-                tokens_used=0
+                tokens_used=0,
+                took_ms=int((time.time() - start_time) * 1000)
             )
         
         # Step 3: Rerank documents for better relevance
@@ -1336,7 +1343,8 @@ async def query(request: QueryRequest):
                     sources=[],
                     tokens_used=0,
                     used_pinned_document=True,
-                    pinned_document_title=pinned_doc_title
+                    pinned_document_title=pinned_doc_title,
+                    took_ms=int((time.time() - start_time) * 1000)
                 )
             else:
                 needs_clarification = True
@@ -1405,7 +1413,8 @@ async def query(request: QueryRequest):
                     used_pinned_document=use_pinned,
                     pinned_document_title=pinned_doc_title if use_pinned else None,
                     sources=[],
-                    tokens_used=0
+                    tokens_used=0,
+                    took_ms=int((time.time() - start_time) * 1000)
                 )
             else:
                 # Fallback: group by document from reranked_results
@@ -1450,7 +1459,8 @@ async def query(request: QueryRequest):
                     used_pinned_document=use_pinned,
                     pinned_document_title=pinned_doc_title if use_pinned else None,
                     sources=[],
-                    tokens_used=0
+                    tokens_used=0,
+                    took_ms=int((time.time() - start_time) * 1000)
                 )
         
         # HIGH CONFIDENCE & CLEAR WINNER → Answer directly
@@ -1565,6 +1575,9 @@ async def query(request: QueryRequest):
                         description=form['description']
                     ))
         
+        took_ms = int((time.time() - start_time) * 1000)
+        logger.info(f"⏱️ Query completed in {took_ms}ms")
+        
         return QueryResponse(
             success=True,
             question=request.question,
@@ -1584,7 +1597,8 @@ async def query(request: QueryRequest):
                 for result in reranked_results
             ],
             forms=forms_list if forms_list else None,
-            tokens_used=tokens_used
+            tokens_used=tokens_used,
+            took_ms=took_ms
         )
     
     except HTTPException:
@@ -1608,6 +1622,7 @@ async def query_confirm(request: ConfirmRequest):
     6. PIN the confirmed document for conversation state
     7. Return session_id and session_info in response
     """
+    start_time = time.time()  # Track processing time
     try:
         logger.info(f"✅ User confirmed document: {request.document_id}")
         
@@ -1668,7 +1683,8 @@ async def query_confirm(request: ConfirmRequest):
                 needs_clarification=False,
                 sources=[],
                 tokens_used=0,
-                used_pinned_document=False
+                used_pinned_document=False,
+                took_ms=int((time.time() - start_time) * 1000)
             )
         
         # Step 3: Rerank
@@ -1748,6 +1764,9 @@ async def query_confirm(request: ConfirmRequest):
         
         file_path = doc_info_map.get(request.document_id, {}).get('file_path')
         
+        took_ms = int((time.time() - start_time) * 1000)
+        logger.info(f"⏱️ Query confirm completed in {took_ms}ms")
+        
         return QueryResponse(
             success=True,
             question=request.question,
@@ -1768,7 +1787,8 @@ async def query_confirm(request: ConfirmRequest):
                 for r in reranked_results
             ],
             forms=forms_list if forms_list else None,
-            tokens_used=tokens_used
+            tokens_used=tokens_used,
+            took_ms=took_ms
         )
     
     except HTTPException:

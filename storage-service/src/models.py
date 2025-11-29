@@ -53,3 +53,4 @@ class TextExtractionResponse(BaseModel):
     pages: int
     character_count: int
     word_count: int
+    raw_length: Optional[int] = None  # Original text length before cleaning

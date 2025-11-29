@@ -251,6 +251,7 @@ async def extract_text(
         # Step 1: Extract raw text
         from .extractors.pdf_extractor import PDFExtractor
         raw_text = PDFExtractor.extract_text(content)
+        raw_length = len(raw_text)
         metadata = PDFExtractor.extract_metadata(content)
         
         # Step 2: Clean text (if requested)
@@ -264,14 +265,15 @@ async def extract_text(
         word_count = len(text.split())
         char_count = len(text)
         
-        logger.info(f"✅ Text extracted: {char_count} chars, {word_count} words (cleaned={clean})")
+        logger.info(f"✅ Text extracted: {raw_length} → {char_count} chars ({100*(1-char_count/raw_length):.1f}% reduction, cleaned={clean})")
         
         return TextExtractionResponse(
             success=True,
             text=text,
             pages=metadata.get("pages", 0),
             character_count=char_count,
-            word_count=word_count
+            word_count=word_count,
+            raw_length=raw_length
         )
     except HTTPException:
         raise

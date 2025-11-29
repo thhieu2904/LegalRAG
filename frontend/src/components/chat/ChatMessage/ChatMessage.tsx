@@ -3,7 +3,7 @@
  * Displays chat messages with legal document sources
  */
 
-import { User, FileText } from 'lucide-react';
+import { User, FileText, Clock, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { formatTimeAgo } from '@/utils/formatters/date';
@@ -11,6 +11,16 @@ import { cn } from '@/utils/helpers/className';
 import { SourceList } from '../SourceList';
 import styles from './ChatMessage.module.css';
 import type { ChatMessageProps } from './ChatMessage.types';
+
+/**
+ * Format processing time for display
+ */
+const formatProcessingTime = (ms: number): string => {
+  if (ms < 1000) {
+    return `${ms}ms`;
+  }
+  return `${(ms / 1000).toFixed(1)}s`;
+};
 
 export const ChatMessage = ({ message, onSelectDocument }: ChatMessageProps) => {
   const isUser = message.role === 'user';
@@ -70,8 +80,26 @@ export const ChatMessage = ({ message, onSelectDocument }: ChatMessageProps) => 
           <SourceList sources={message.sources} forms={message.forms} />
         )}
 
-        {/* Timestamp */}
-        <time className={styles.timestamp}>{formatTimeAgo(message.timestamp)}</time>
+        {/* Metadata: Timestamp and Processing Time */}
+        <div className={styles.messageFooter}>
+          <time className={styles.timestamp}>{formatTimeAgo(message.timestamp)}</time>
+
+          {/* Processing time for AI messages */}
+          {isAI && message.took_ms && (
+            <span className={styles.processingTime} title="Thời gian xử lý">
+              <Zap size={12} />
+              {formatProcessingTime(message.took_ms)}
+            </span>
+          )}
+
+          {/* Token count for AI messages */}
+          {isAI && message.tokens && message.tokens > 0 && (
+            <span className={styles.tokenCount} title="Số token sử dụng">
+              <Clock size={12} />
+              {message.tokens} tokens
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

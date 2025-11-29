@@ -107,6 +107,9 @@ export interface ChatResponse {
   // Conversation state info (for debugging/transparency)
   used_pinned_document?: boolean;
   pinned_document_title?: string;
+
+  // Performance metrics
+  took_ms?: number; // Processing time in milliseconds
 }
 
 /**

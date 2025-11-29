@@ -74,7 +74,9 @@ export const SourceList = ({ sources, forms }: SourceListProps) => {
                 <FileText size={14} />
                 {doc.title}
               </span>
-              <span className={styles.similarity}>{(doc.similarity * 100).toFixed(0)}%</span>
+              <span className={styles.similarity}>
+                Độ tương đồng: {(doc.similarity * 100).toFixed(0)}%
+              </span>
             </div>
             {doc.file_path && (
               <button

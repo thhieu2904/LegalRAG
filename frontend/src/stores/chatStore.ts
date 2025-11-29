@@ -278,6 +278,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           needs_clarification: true,
           document_options: response.document_options,
           originalQuestion: question, // Store for confirm request
+          took_ms: response.took_ms, // Processing time
         };
         addMessage(clarificationMessage);
       } else {
@@ -290,6 +291,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           forms: response.forms, // Add forms from response
           timestamp: new Date(),
           tokens: response.tokens_used,
+          took_ms: response.took_ms, // Processing time
         };
         addMessage(aiMessage);
       }
@@ -351,6 +353,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         forms: response.forms, // Add forms from response
         timestamp: new Date(),
         tokens: response.tokens_used,
+        took_ms: response.took_ms, // Processing time
       };
       addMessage(aiMessage);
     } catch (error) {

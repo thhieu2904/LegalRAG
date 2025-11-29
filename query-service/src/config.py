@@ -46,10 +46,14 @@ class Settings(BaseSettings):
     CLARIFICATION_THRESHOLD: float = 0.7  # Below this: always clarify
     SCORE_GAP_THRESHOLD: float = 0.1  # If gap between top-1 and top-2 doc < this: clarify
     
-    # Heuristics
+    # Heuristics - Penalty for specific keywords in title but NOT in query
+    # Legal domain requires STRICT matching - wrong document = wrong legal advice
+    # Penalty is applied per unmatched keyword (0.20 = 20%)
+    SPECIFIC_KEYWORD_PENALTY: float = 0.20  # 20% penalty per keyword
     SPECIFIC_KEYWORDS: list = [
         "nước ngoài", "lưu động", "quá hạn", "lại", "thay đổi", 
-        "cải chính", "bổ sung", "xác định lại", "nhận cha mẹ con"
+        "cải chính", "bổ sung", "xác định lại", "nhận cha mẹ con",
+        "kết hợp"  # e.g., "khai sinh kết hợp nhận cha mẹ con"
     ]
     
     class Config:

@@ -32,6 +32,62 @@ class LegalDocumentCleaner:
             'mã hiệu', 'lần ban hành', 'stt', 'nơi nhận', 'soạn thảo',
             'xem xét', 'phê duyệt', 'giám đốc', 'phó giám đốc'
         }
+        
+        # Form template patterns - these indicate form fields, not actual content
+        # Pattern: (số) hoặc số. followed by field description
+        self.form_field_patterns = [
+            r'^\s*\(\d+\)\s*[A-Za-zÀ-ỹ]',  # (1) Họ, chữ đệm, tên
+            r'^\s*\d+\.\s*[A-Za-zÀ-ỹ].*[;:]\s*$',  # 1. Họ tên;
+            r'\.\.\.\.+',  # Multiple dots: ....
+            r'^\s*[IVX]+\.\s',  # Roman numerals: I. II. III.
+        ]
+        
+        # Form section indicators - mark beginning of form template area
+        self.form_section_indicators = [
+            'nội dung mẫu',
+            'mẫu hộ tịch điện tử',
+            'mẫu điện tử tương tác',
+            'hướng dẫn điền',
+            'cách ghi thông tin',
+            'trường thông tin',
+            'thông tin về người',  # Thông tin về người cha/mẹ trong form
+        ]
+    
+    def is_form_template_line(self, line: str) -> bool:
+        """
+        Detect if a line is part of form template (not actual legal content).
+        Form templates typically have:
+        - Numbered fields: (1) Họ tên; (2) Ngày sinh;
+        - Fill-in dots: Số lượng: ....
+        - Field descriptions ending with semicolon
+        
+        Returns:
+            True if line is form template content (should be removed)
+        """
+        line_lower = line.lower().strip()
+        
+        if not line_lower:
+            return False
+        
+        # Check for form field patterns
+        for pattern in self.form_field_patterns:
+            if re.search(pattern, line, re.IGNORECASE):
+                return True
+        
+        # Check for multiple dots (fill-in blanks)
+        if re.search(r'\.{3,}', line):  # 3+ consecutive dots
+            return True
+        
+        # Check for form section indicators
+        for indicator in self.form_section_indicators:
+            if indicator in line_lower:
+                return True
+        
+        # Pattern: ends with semicolon and has numbered prefix -> likely form field
+        if re.match(r'^\s*\(\d+\)', line) and line.strip().endswith(';'):
+            return True
+        
+        return False
     
     def calculate_line_score(self, line: str) -> float:
         """
@@ -42,6 +98,10 @@ class LegalDocumentCleaner:
         
         if not line_lower:
             return 0.0  # Empty line is neutral
+        
+        # First check: if it's a form template line, heavily penalize
+        if self.is_form_template_line(line):
+            return -0.9  # Strong noise signal
         
         score = 0.0
         
@@ -156,6 +216,72 @@ class LegalDocumentCleaner:
         
         return text
     
+    def detect_and_remove_form_template(self, text: str) -> str:
+        """
+        Detect and remove form template sections that typically appear at the end
+        of ISO-standard legal documents.
+        
+        Form templates are characterized by:
+        - Numbered field descriptions: (1) Họ tên; (2) Ngày sinh;
+        - Fill-in blanks with dots: Số lượng: .....
+        - Section headers like "NỘI DUNG MẪU HỘ TỊCH ĐIỆN TỬ"
+        
+        Strategy: Find the start of form template section and truncate.
+        This is safer than line-by-line removal as it preserves context.
+        
+        Args:
+            text: Full document text
+            
+        Returns:
+            Text with form template section removed
+        """
+        lines = text.split('\n')
+        
+        # Find the start of form template section
+        form_start_idx = None
+        consecutive_form_lines = 0
+        
+        for i, line in enumerate(lines):
+            line_lower = line.lower().strip()
+            
+            # Strong indicators that form section has started
+            strong_form_indicators = [
+                'nội dung mẫu hộ tịch',
+                'mẫu điện tử tương tác',
+                'hướng dẫn ghi thông tin',
+                'cách điền mẫu',
+            ]
+            
+            for indicator in strong_form_indicators:
+                if indicator in line_lower:
+                    form_start_idx = i
+                    logger.info(f"🔍 Found form template start at line {i}: '{line[:50]}...'")
+                    break
+            
+            if form_start_idx:
+                break
+            
+            # Alternative: detect by consecutive form-like lines
+            if self.is_form_template_line(line):
+                consecutive_form_lines += 1
+                if consecutive_form_lines >= 5:  # 5+ consecutive form lines
+                    form_start_idx = i - consecutive_form_lines + 1
+                    logger.info(f"🔍 Detected form template by pattern at line {form_start_idx}")
+                    break
+            else:
+                consecutive_form_lines = 0
+        
+        # If form section found, truncate
+        if form_start_idx is not None:
+            # Keep some buffer lines before the form section
+            # to avoid cutting actual content
+            original_len = len(lines)
+            lines = lines[:form_start_idx]
+            removed = original_len - len(lines)
+            logger.info(f"✂️ Removed {removed} lines of form template content")
+        
+        return '\n'.join(lines)
+    
     def clean_text(self, raw_text: str, score_threshold: float = -0.2) -> str:
         """
         Main cleaning pipeline for already-extracted text
@@ -196,6 +322,9 @@ class LegalDocumentCleaner:
             
             # Step 4: Merge pages
             full_text = '\n\n'.join(cleaned_pages)
+            
+            # Step 4.5: Detect and remove form template sections (ISO documents)
+            full_text = self.detect_and_remove_form_template(full_text)
             
             # Step 5: Normalize Vietnamese spacing
             full_text = self.normalize_vietnamese_spacing(full_text)
