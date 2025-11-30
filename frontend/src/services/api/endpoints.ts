@@ -20,6 +20,8 @@ export const ENDPOINTS = {
 
     // Forms management
     FORMS: '/admin/forms',
+    // List forms for a specific document
+    FORMS_BY_DOCUMENT: (id: string) => `/admin/documents/${id}/forms`,
     FORM_BY_ID: (id: string) => `/admin/forms/${id}`,
     FORM_TEMPLATES: '/admin/form-templates',
 

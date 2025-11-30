@@ -60,9 +60,7 @@ export const DocumentDetailPage = () => {
 
       try {
         setFormsLoading(true);
-        const response = await apiClient.get(`${ENDPOINTS.ADMIN.FORMS}`, {
-          params: { document_id: documentId },
-        });
+        const response = await apiClient.get(`${ENDPOINTS.ADMIN.FORMS_BY_DOCUMENT(documentId)}`);
 
         setForms(response.data.forms || []);
       } catch (error) {
@@ -81,9 +79,7 @@ export const DocumentDetailPage = () => {
 
     try {
       setFormsLoading(true);
-      const response = await apiClient.get(`${ENDPOINTS.ADMIN.FORMS}`, {
-        params: { document_id: documentId },
-      });
+      const response = await apiClient.get(`${ENDPOINTS.ADMIN.FORMS_BY_DOCUMENT(documentId)}`);
 
       setForms(response.data.forms || []);
     } catch (error) {
