@@ -3,7 +3,7 @@
  */
 
 import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestConfig } from 'axios';
-import { API_BASE_URL, API_TIMEOUT, API_HEADERS } from '@/constants';
+import { API_TIMEOUT, API_HEADERS } from '@/constants';
 import { getAuthToken } from '@/stores/authStore';
 
 /**

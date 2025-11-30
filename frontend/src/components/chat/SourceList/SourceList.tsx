@@ -68,7 +68,7 @@ export const SourceList = ({ sources, forms }: SourceListProps) => {
       console.log('✅ Parsed:', { docId, formFilename });
 
       // Navigate to form fill page (no collectionId needed)
-      navigate(`/forms/${encodeURIComponent(docId)}/${encodeURIComponent(formFilename)}`);
+      navigate(`/forms/${encodeURIComponent(String(docId))}/${encodeURIComponent(formFilename)}`);
     } else {
       console.error('❌ Invalid template_path format:', templatePath);
       alert(`Đường dẫn biểu mẫu không hợp lệ: ${templatePath}`);

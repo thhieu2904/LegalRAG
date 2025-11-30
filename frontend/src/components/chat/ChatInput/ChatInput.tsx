@@ -6,6 +6,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { KeyboardEvent } from 'react';
 import { Send, Loader2 } from 'lucide-react';
+import { VoiceInput } from '../VoiceInput';
 import type { FilterOptions } from '@/types/common.types';
 import styles from './ChatInput.module.css';
 import type { ChatInputProps } from './ChatInput.types';
@@ -46,6 +47,25 @@ export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
   const charCount = input.length;
   const isNearLimit = charCount > maxLength * 0.8;
 
+  // Voice input handlers
+  const handleTranscriptChange = (transcript: string) => {
+    // Show interim transcript (optional - can be used for live preview)
+    console.log('Interim:', transcript);
+  };
+
+  const handleFinalTranscript = (transcript: string) => {
+    // Append final transcript to input
+    setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+  };
+
+  const handleAutoSend = async (transcript: string) => {
+    // Auto-send when recording stops (if enabled in settings)
+    if (!disabled) {
+      await onSend(transcript.trim(), filters);
+      setInput('');
+    }
+  };
+
   return (
     <div className={styles.chatInput}>
       <form onSubmit={handleSubmit} className={styles.form}>
@@ -65,6 +85,12 @@ export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
             />
 
             <div className={styles.buttonGroup}>
+              <VoiceInput
+                onTranscriptChange={handleTranscriptChange}
+                onFinalTranscript={handleFinalTranscript}
+                onAutoSend={handleAutoSend}
+                disabled={disabled}
+              />
               <button
                 type="submit"
                 disabled={!input.trim() || disabled}
