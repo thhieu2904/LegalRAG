@@ -5,9 +5,9 @@
 
 import { useState } from 'react';
 import { X, Upload, FileText } from 'lucide-react';
+import { apiClient } from '@/services/api/client';
+import { ENDPOINTS } from '@/services/api/endpoints';
 import styles from './UploadFormModal.module.css';
-
-const ADMIN_SERVICE_URL = 'http://localhost:8001';
 
 interface UploadFormModalProps {
   isOpen: boolean;
@@ -80,15 +80,11 @@ export const UploadFormModal = ({
         formData.append('description', description.trim());
       }
 
-      const response = await fetch(`${ADMIN_SERVICE_URL}/admin/forms`, {
-        method: 'POST',
-        body: formData,
+      await apiClient.post(ENDPOINTS.ADMIN.FORMS, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Failed to upload form');
-      }
 
       // Reset form and close modal
       setFormName('');

@@ -1,16 +1,18 @@
 /**
- * SourceList Component - Display legal document sources with download
+ * SourceList Component - Display legal document sources with forms
  * Shows document titles, relevance scores, and attached forms
  */
 
 import { useState } from 'react';
-import { FileText, ChevronDown, ChevronUp, Scale, Download, FileIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { FileText, ChevronDown, ChevronUp, Scale, Download, FileIcon, Edit3 } from 'lucide-react';
 import { STORAGE_SERVICE_URL } from '@/services/api/client';
 import styles from './SourceList.module.css';
 import type { SourceListProps } from './SourceList.types';
 
 export const SourceList = ({ sources, forms }: SourceListProps) => {
   const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
 
   // Group sources by document_title to avoid duplicates
   const uniqueDocuments = sources.reduce(
@@ -43,18 +45,35 @@ export const SourceList = ({ sources, forms }: SourceListProps) => {
     document.body.removeChild(link);
   };
 
-  // Handle form download
-  const handleDownloadForm = (templatePath: string, formName: string) => {
-    const downloadUrl = `${STORAGE_SERVICE_URL}/download?file_path=${encodeURIComponent(templatePath)}`;
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = formName;
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  // Handle form fill (navigate to FormFillPage)
+  const handleFillForm = (templatePath: string, formName: string) => {
+    console.log('📋 Template path:', templatePath);
+    console.log('📄 Form name:', formName);
 
+    // Parse template_path: forms/{document_id}/{filename}
+    // Example: forms/44f1cad7-59d1-4914-82a7-663fe8ca37e2/059c9cdb-1ca3-4fa7-b5e0-11fc37db41b1_Khai_sinh.docx
+
+    let parts = templatePath.split('/');
+    console.log('📦 Parts:', parts);
+
+    // Remove 'forms' prefix if exists
+    if (parts[0] === 'forms') {
+      parts = parts.slice(1);
+    }
+
+    if (parts.length >= 2) {
+      const docId = parts[0]; // document_id (UUID)
+      const formFilename = parts.slice(1).join('/'); // Handle nested paths
+
+      console.log('✅ Parsed:', { docId, formFilename });
+
+      // Navigate to form fill page (no collectionId needed)
+      navigate(`/forms/${encodeURIComponent(docId)}/${encodeURIComponent(formFilename)}`);
+    } else {
+      console.error('❌ Invalid template_path format:', templatePath);
+      alert(`Đường dẫn biểu mẫu không hợp lệ: ${templatePath}`);
+    }
+  };
   if (uniqueDocuments.length === 0) return null;
 
   return (
@@ -121,11 +140,12 @@ export const SourceList = ({ sources, forms }: SourceListProps) => {
                 <span className={styles.formName}>{form.form_name}</span>
                 {form.template_path && (
                   <button
-                    className={styles.downloadBtn}
-                    onClick={() => handleDownloadForm(form.template_path!, form.form_name)}
-                    title="Tải biểu mẫu"
+                    className={styles.fillBtn}
+                    onClick={() => handleFillForm(form.template_path!, form.form_name)}
+                    title="Điền biểu mẫu"
                   >
-                    <Download size={14} />
+                    <Edit3 size={14} />
+                    <span>Điền form</span>
                   </button>
                 )}
               </div>

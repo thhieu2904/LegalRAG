@@ -3,7 +3,7 @@
  * Navigation menu for Admin Dashboard
  */
 
-import { LayoutDashboard, FolderOpen, LogOut, Mic2 } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, LogOut, Mic2, FileCheck } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { cn } from '@/utils/helpers/className';
@@ -14,6 +14,7 @@ import type { SidebarProps, MenuItem } from './Sidebar.types';
 const menuItems: MenuItem[] = [
   { path: '/admin', icon: LayoutDashboard, label: 'Tổng quan', exact: true },
   { path: '/admin/collections', icon: FolderOpen, label: 'Bộ thủ tục' },
+  { path: '/admin/user-forms', icon: FileCheck, label: 'Biểu mẫu đã điền' },
 ];
 
 export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {

@@ -18,6 +18,17 @@ export const ENDPOINTS = {
     DOCUMENT_BY_ID: (id: string) => `/admin/documents/${id}`,
     DOCUMENT_REPLACE: (id: string) => `/admin/documents/${id}/replace`,
 
+    // Forms management
+    FORMS: '/admin/forms',
+    FORM_BY_ID: (id: string) => `/admin/forms/${id}`,
+    FORM_TEMPLATES: '/admin/form-templates',
+
+    // User-filled forms management
+    USER_FORMS: '/admin/user-forms',
+    USER_FORMS_BY_SESSION: (sessionId: string) => `/admin/user-forms/${sessionId}`,
+    DELETE_USER_FORM: (sessionId: string, formName: string) =>
+      `/admin/user-forms/${sessionId}/${formName}`,
+
     // Health
     HEALTH: '/health',
   },
@@ -31,6 +42,15 @@ export const ENDPOINTS = {
     SESSION_START: '/session/start', // Start new session (F5/refresh)
     SESSION_CLEAR: '/session/clear', // Clear session (unpin document)
     SESSION_INFO: '/session/info', // Get session info (append /{session_id})
+
+    // Form operations (via form-service:8015)
+    FORMS: {
+      HEALTH: '/forms/health',
+      CCCD_SCAN: '/forms/cccd/scan', // POST with base64 image
+      RENDER: '/forms/render', // POST with form_path
+      FILL: '/forms/fill', // POST with form_path and data
+      SAVE: '/forms/save', // POST to save filled form to storage
+    },
 
     HEALTH: '/health',
   },

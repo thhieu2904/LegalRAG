@@ -362,6 +362,32 @@ CREATE INDEX IF NOT EXISTS idx_metrics_type ON system_metrics(metric_type);
 CREATE INDEX IF NOT EXISTS idx_metrics_recorded ON system_metrics(recorded_at);
 CREATE INDEX IF NOT EXISTS idx_metrics_collection ON system_metrics(collection_id);
 
+-- Form Submissions: Log form đã điền + link đến file output trong MinIO
+-- Dùng cho admin dashboard - hiển thị danh sách forms đã được user điền
+-- 
+-- CHIẾN LƯỢC LƯU TRỮ MINIO:
+--   - Bucket: legal-documents (default bucket)
+--   - Path: user_forms/{session_id}/{cccd}_{form-name}.docx (nếu có CCCD)
+--         hoặc user_forms/{session_id}/{form-name}.docx (nếu không có CCCD)
+--   - Template gốc: forms/{collection_slug}/{form_name}.docx
+--
+-- NOTE: Có thể không cần table này nếu admin-service list files trực tiếp từ MinIO
+--       Giữ lại để query nhanh hơn + filter theo form_id
+CREATE TABLE IF NOT EXISTS form_submissions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    form_id UUID NOT NULL REFERENCES forms(id) ON DELETE CASCADE,
+    
+    -- Output file trong MinIO
+    output_file_path VARCHAR(1000) NOT NULL,  -- vd: user_forms/20251130_0001/079203012345_to-khai.docx
+    
+    -- Timestamps
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Index đơn giản
+CREATE INDEX IF NOT EXISTS idx_form_submissions_form ON form_submissions(form_id);
+CREATE INDEX IF NOT EXISTS idx_form_submissions_created ON form_submissions(created_at);
+
 -- ============================================
 -- HELPER FUNCTIONS
 -- ============================================
@@ -568,6 +594,7 @@ COMMENT ON TABLE collections IS 'Bộ thủ tục (procedure sets) - top-level g
 COMMENT ON TABLE documents IS 'Văn bản pháp luật - legal documents belonging to collections';
 COMMENT ON TABLE chunks IS 'Text chunks with vector embeddings for semantic search';
 COMMENT ON TABLE forms IS 'Biểu mẫu (forms) associated with documents';
+COMMENT ON TABLE form_submissions IS 'Log các form đã điền - output PDF lưu trong MinIO';
 COMMENT ON TABLE admin_users IS 'Admin accounts for system management';
 COMMENT ON TABLE query_sessions IS 'Session tracking for conversational queries';
 COMMENT ON TABLE query_logs IS 'Log of all user queries for analytics';

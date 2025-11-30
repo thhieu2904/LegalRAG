@@ -477,3 +477,98 @@ class DatabaseClient:
         except Exception as e:
             logger.error(f"❌ Fetch forms failed: {e}")
             return {}
+
+    # ============= FORM SUBMISSIONS =============
+    
+    def insert_form_submission(
+        self,
+        form_id: str,
+        output_file_path: str
+    ) -> Optional[str]:
+        """
+        Insert a form submission record.
+        Called by query-service after successfully saving filled form to MinIO.
+        
+        Args:
+            form_id: UUID of the form template
+            output_file_path: Path in MinIO where filled form is stored
+                              (e.g., user_forms/20251130_0001/079203012345_to-khai.docx)
+            
+        Returns:
+            submission_id if successful, None otherwise
+        """
+        try:
+            conn = self._get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute("""
+                INSERT INTO form_submissions (form_id, output_file_path)
+                VALUES (%s::uuid, %s)
+                RETURNING id
+            """, (form_id, output_file_path))
+            
+            submission_id = cursor.fetchone()[0]
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+            logger.info(f"✅ Form submission logged: {submission_id}")
+            return str(submission_id)
+            
+        except Exception as e:
+            logger.error(f"❌ Insert form submission failed: {e}")
+            return None
+    
+    def get_form_submissions(
+        self,
+        form_id: Optional[str] = None,
+        limit: int = 50,
+        offset: int = 0
+    ) -> List[Dict[str, Any]]:
+        """
+        Get form submissions for admin dashboard.
+        
+        Args:
+            form_id: Optional filter by form template
+            limit: Max results
+            offset: Pagination offset
+            
+        Returns:
+            List of submission records with form info
+        """
+        try:
+            conn = self._get_connection()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            if form_id:
+                cursor.execute("""
+                    SELECT fs.id, fs.form_id, fs.output_file_path, fs.created_at,
+                           f.form_name, d.title as document_title
+                    FROM form_submissions fs
+                    JOIN forms f ON fs.form_id = f.id
+                    JOIN documents d ON f.document_id = d.id
+                    WHERE fs.form_id = %s::uuid
+                    ORDER BY fs.created_at DESC
+                    LIMIT %s OFFSET %s
+                """, (form_id, limit, offset))
+            else:
+                cursor.execute("""
+                    SELECT fs.id, fs.form_id, fs.output_file_path, fs.created_at,
+                           f.form_name, d.title as document_title
+                    FROM form_submissions fs
+                    JOIN forms f ON fs.form_id = f.id
+                    JOIN documents d ON f.document_id = d.id
+                    ORDER BY fs.created_at DESC
+                    LIMIT %s OFFSET %s
+                """, (limit, offset))
+            
+            results = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return [dict(row) for row in results]
+            
+        except Exception as e:
+            logger.error(f"❌ Get form submissions failed: {e}")
+            return []

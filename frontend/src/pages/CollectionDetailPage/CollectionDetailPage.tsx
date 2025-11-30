@@ -1,13 +1,9 @@
-/**
- * Collection Detail Page
- * Shows grid of document cards for a specific collection (similar to CollectionsPage)
- */
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { useDocumentStore } from '@/stores/useDocumentStore';
 import { useAdminStore } from '@/stores/adminStore';
+import { STORAGE_SERVICE_URL } from '@/services/api/client';
 import { DocumentsGrid } from '@/components/admin/DocumentsGrid';
 import { DeleteDocumentDialog } from '@/components/admin/DeleteDocumentDialog';
 import styles from './CollectionDetailPage.module.css';
@@ -57,7 +53,6 @@ export const CollectionDetailPage = () => {
 
   const handleDownloadDocument = async (filePath: string, filename: string) => {
     try {
-      const STORAGE_SERVICE_URL = 'http://localhost:8010';
       const url = `${STORAGE_SERVICE_URL}/download?file_path=${encodeURIComponent(filePath)}`;
 
       // Create a temporary link and click it

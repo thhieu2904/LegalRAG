@@ -1,11 +1,11 @@
 import { create } from 'zustand';
+import { apiClient } from '@/services/api/client';
+import { ENDPOINTS } from '@/services/api/endpoints';
 import type {
   Document,
   ListDocumentsResponse,
   DocumentDetailResponse,
 } from '../types/document.types';
-
-const API_BASE_URL = 'http://localhost:8001';
 
 interface DocumentStore {
   documents: Document[];
@@ -41,26 +41,22 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
   fetchDocuments: async (collectionId?: string, limit = 100, offset = 0) => {
     set({ loading: true, error: null });
     try {
-      const params = new URLSearchParams({
-        limit: limit.toString(),
-        offset: offset.toString(),
-      });
+      const params: Record<string, string | number> = {
+        limit,
+        offset,
+      };
 
       if (collectionId) {
-        params.append('collection_id', collectionId);
+        params.collection_id = collectionId;
       }
 
-      const response = await fetch(`${API_BASE_URL}/admin/documents?${params}`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch documents: ${response.statusText}`);
-      }
-
-      const data: ListDocumentsResponse = await response.json();
+      const response = await apiClient.get<ListDocumentsResponse>(ENDPOINTS.ADMIN.DOCUMENTS, {
+        params,
+      });
 
       set({
-        documents: data.documents,
-        totalCount: data.total,
+        documents: response.data.documents,
+        totalCount: response.data.total,
         loading: false,
       });
     } catch (error) {
@@ -79,15 +75,11 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
       formData.append('collection_id', collectionId);
       formData.append('title', title);
 
-      const response = await fetch(`${API_BASE_URL}/admin/process-document`, {
-        method: 'POST',
-        body: formData,
+      await apiClient.post(ENDPOINTS.ADMIN.DOCUMENTS, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to upload document');
-      }
 
       // Refresh documents list
       await get().fetchDocuments(collectionId);
@@ -105,17 +97,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
   updateDocument: async (id: string, title: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/documents/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ title }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update document');
-      }
+      await apiClient.patch(ENDPOINTS.ADMIN.DOCUMENT_BY_ID(id), { title });
 
       // Update local state
       set((state) => ({
@@ -134,13 +116,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
   deleteDocument: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/documents/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete document');
-      }
+      await apiClient.delete(ENDPOINTS.ADMIN.DOCUMENT_BY_ID(id));
 
       // Remove from local state
       set((state) => ({
@@ -160,15 +136,12 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
   getDocumentDetail: async (id: string): Promise<DocumentDetailResponse> => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/documents/${id}`);
+      const response = await apiClient.get<DocumentDetailResponse>(
+        ENDPOINTS.ADMIN.DOCUMENT_BY_ID(id)
+      );
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch document details');
-      }
-
-      const data = await response.json();
       set({ loading: false });
-      return data;
+      return response.data;
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Failed to fetch document details',

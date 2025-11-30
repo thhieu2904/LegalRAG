@@ -27,22 +27,16 @@ RUN npx vite build
 # Stage 2: Production Stage with Nginx
 FROM nginx:alpine
 
-# Copy custom nginx config
+# Copy built files to nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Create nginx config for React Router (SPA)
+# Simple nginx config - just serve SPA (no proxy needed)
 RUN echo 'server { \
     listen 3000; \
+    root /usr/share/nginx/html; \
+    index index.html; \
     location / { \
-        root /usr/share/nginx/html; \
-        index index.html index.htm; \
         try_files $uri $uri/ /index.html; \
-    } \
-    # Health check endpoint \
-    location /health { \
-        access_log off; \
-        return 200 "healthy\n"; \
-        add_header Content-Type text/plain; \
     } \
 }' > /etc/nginx/conf.d/default.conf
 

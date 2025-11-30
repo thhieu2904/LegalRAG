@@ -23,6 +23,8 @@ import time
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
+from .routers import user_forms
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
@@ -197,6 +199,9 @@ app = FastAPI(
     description="Document processing orchestrator with direct PostgreSQL access",
     version="2.0.0"
 )
+
+# Include routers
+app.include_router(user_forms.router)
 
 app.add_middleware(
     CORSMiddleware,

@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     
     # Service config
     service_name: str = "llm-service"
-    service_port: int = 8006
+    service_port: int = 8014
     service_host: str = "0.0.0.0"
     
     # Model config - Vistral-7B-Chat

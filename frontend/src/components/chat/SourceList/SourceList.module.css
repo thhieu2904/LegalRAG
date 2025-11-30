@@ -208,6 +208,32 @@
   white-space: nowrap;
 }
 
+.fillBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--success-color, #10b981);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.fillBtn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.fillBtn:active {
+  transform: translateY(0);
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .sourceList {

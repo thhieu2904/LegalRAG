@@ -42,6 +42,12 @@ const DocumentDetailPage = lazy(() =>
   import('@/pages/DocumentDetailPage').then((m) => ({ default: m.DocumentDetailPage }))
 );
 const AdminPage = lazy(() => import('@/pages/AdminPage').then((m) => ({ default: m.AdminPage })));
+const FormFillPage = lazy(() =>
+  import('@/pages/FormFillPage').then((m) => ({ default: m.FormFillPage }))
+);
+const UserFormsPage = lazy(() =>
+  import('@/pages/UserFormsPage').then((m) => ({ default: m.UserFormsPage }))
+);
 
 export const router = createBrowserRouter([
   // ============ PUBLIC ROUTES ============
@@ -53,6 +59,11 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <ChatPage />,
+      },
+      // Form Fill Page - nested under MainLayout
+      {
+        path: 'forms/:docId/:formFilename',
+        element: <FormFillPage />,
       },
     ],
   },
@@ -97,6 +108,10 @@ export const router = createBrowserRouter([
       {
         path: 'documents/:id',
         element: <DocumentDetailPage />,
+      },
+      {
+        path: 'user-forms',
+        element: <UserFormsPage />,
       },
       // TODO: Add more admin routes
       // { path: 'stats', element: <StatsPage /> },

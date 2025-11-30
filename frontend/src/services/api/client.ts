@@ -7,9 +7,19 @@ import { API_BASE_URL, API_TIMEOUT, API_HEADERS } from '@/constants';
 import { getAuthToken } from '@/stores/authStore';
 
 /**
+ * Admin Service Base URL
+ */
+const ADMIN_SERVICE_URL = import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:8001';
+
+/**
  * Query Service Base URL (separate from admin service)
  */
 const QUERY_SERVICE_URL = import.meta.env.VITE_QUERY_SERVICE_URL || 'http://localhost:8002';
+
+/**
+ * Form Service Base URL (accessed via query-service /forms/*)
+ */
+export const FORM_SERVICE_URL = import.meta.env.VITE_FORM_SERVICE_URL || 'http://localhost:8015';
 
 /**
  * Storage Service Base URL (for file downloads)
@@ -21,7 +31,7 @@ export const STORAGE_SERVICE_URL =
  * Create Axios instance for Admin Service
  */
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: ADMIN_SERVICE_URL,
   timeout: API_TIMEOUT,
   headers: API_HEADERS,
 });
@@ -32,6 +42,17 @@ export const apiClient: AxiosInstance = axios.create({
 export const queryClient: AxiosInstance = axios.create({
   baseURL: QUERY_SERVICE_URL,
   timeout: 180000, // 3 minutes for complex reranking + LLM generation
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+/**
+ * Create Axios instance for Form Service (via query-service gateway)
+ */
+export const formClient: AxiosInstance = axios.create({
+  baseURL: QUERY_SERVICE_URL,
+  timeout: 60000, // 1 minute for form operations
   headers: {
     'Content-Type': 'application/json',
   },

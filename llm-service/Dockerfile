@@ -104,14 +104,14 @@ COPY --chown=appuser:appuser download_model.py /app/
 USER appuser
 
 # Expose service port
-EXPOSE 8006
+EXPOSE 8014
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
-    CMD curl -f http://localhost:8006/health || exit 1
+    CMD curl -f http://localhost:8014/health || exit 1
 
 # Start command
-CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8006"]
+CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8014"]
 
 # ============================================
 # Runtime Stage - GPU (CUDA)
@@ -148,12 +148,12 @@ COPY --chown=appuser:appuser download_model.py /app/
 
 USER appuser
 
-EXPOSE 8006
+EXPOSE 8014
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
-    CMD curl -f http://localhost:8006/health || exit 1
+    CMD curl -f http://localhost:8014/health || exit 1
 
-CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8006"]
+CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8014"]
 
 # ============================================
 # Build Instructions
@@ -165,8 +165,8 @@ CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "
 #   docker build --target runtime-gpu -t llm-service:gpu .
 #
 # Run CPU:
-#   docker run -p 8006:8006 -v $(pwd)/models:/app/models llm-service:cpu
+#   docker run -p 8014:8014 -v $(pwd)/models:/app/models llm-service:cpu
 #
 # Run GPU:
-#   docker run --gpus all -p 8006:8006 -v $(pwd)/models:/app/models llm-service:gpu
+#   docker run --gpus all -p 8014:8014 -v $(pwd)/models:/app/models llm-service:gpu
 # ============================================

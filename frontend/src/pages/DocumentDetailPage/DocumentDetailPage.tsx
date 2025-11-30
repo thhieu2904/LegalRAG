@@ -9,12 +9,11 @@ import { ArrowLeft, Plus, Database } from 'lucide-react';
 import { FormsGrid } from '@/components/admin/FormsGrid';
 import { UploadFormModal } from '@/components/admin/UploadFormModal';
 import { DeleteFormDialog } from '@/components/admin/DeleteFormDialog';
+import { apiClient, STORAGE_SERVICE_URL } from '@/services/api/client';
+import { ENDPOINTS } from '@/services/api/endpoints';
 import styles from './DocumentDetailPage.module.css';
 import type { Document } from '@/types/document.types';
 import type { Form } from '@/types/form.types';
-
-const ADMIN_SERVICE_URL = 'http://localhost:8001';
-const STORAGE_SERVICE_URL = 'http://localhost:8010';
 
 export const DocumentDetailPage = () => {
   const { id: documentId } = useParams<{ id: string }>();
@@ -33,11 +32,11 @@ export const DocumentDetailPage = () => {
     const fetchDocument = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${ADMIN_SERVICE_URL}/admin/documents?limit=1000`);
-        if (!response.ok) throw new Error('Failed to fetch document');
+        const response = await apiClient.get(ENDPOINTS.ADMIN.DOCUMENTS, {
+          params: { limit: 1000 },
+        });
 
-        const data = await response.json();
-        const doc = data.documents?.find((d: Document) => d.id === documentId);
+        const doc = response.data.documents?.find((d: Document) => d.id === documentId);
 
         if (doc) {
           setDocument(doc);
@@ -56,16 +55,16 @@ export const DocumentDetailPage = () => {
 
   // Fetch forms for document
   useEffect(() => {
-    const fetchForms = async () => {
+    const fetchFormsList = async () => {
       if (!documentId) return;
 
       try {
         setFormsLoading(true);
-        const response = await fetch(`${ADMIN_SERVICE_URL}/admin/documents/${documentId}/forms`);
-        if (!response.ok) throw new Error('Failed to fetch forms');
+        const response = await apiClient.get(`${ENDPOINTS.ADMIN.FORMS}`, {
+          params: { document_id: documentId },
+        });
 
-        const data = await response.json();
-        setForms(data.forms || []);
+        setForms(response.data.forms || []);
       } catch (error) {
         console.error('Error fetching forms:', error);
         setForms([]);
@@ -74,7 +73,7 @@ export const DocumentDetailPage = () => {
       }
     };
 
-    fetchForms();
+    fetchFormsList();
   }, [documentId]);
 
   const fetchForms = async () => {
@@ -82,11 +81,11 @@ export const DocumentDetailPage = () => {
 
     try {
       setFormsLoading(true);
-      const response = await fetch(`${ADMIN_SERVICE_URL}/admin/documents/${documentId}/forms`);
-      if (!response.ok) throw new Error('Failed to fetch forms');
+      const response = await apiClient.get(`${ENDPOINTS.ADMIN.FORMS}`, {
+        params: { document_id: documentId },
+      });
 
-      const data = await response.json();
-      setForms(data.forms || []);
+      setForms(response.data.forms || []);
     } catch (error) {
       console.error('Error fetching forms:', error);
       setForms([]);

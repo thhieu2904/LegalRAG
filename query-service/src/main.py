@@ -19,6 +19,7 @@ import time
 
 from .config import settings
 from .database import DatabaseClient
+from .routers import forms as forms_router
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -607,6 +608,9 @@ app = FastAPI(
     description="RAG orchestrator for legal document Q&A",
     version="1.0.0"
 )
+
+# Include routers
+app.include_router(forms_router.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -1811,6 +1815,13 @@ async def root():
             "session_start": "POST /session/start",
             "session_clear": "POST /session/clear",
             "session_info": "GET /session/info/{session_id}",
+            "forms": {
+                "cccd_scan": "POST /forms/cccd/scan",
+                "cccd_upload": "POST /forms/cccd/scan/upload",
+                "render": "POST /forms/render",
+                "fill": "POST /forms/fill",
+                "save": "POST /forms/save"
+            },
             "docs": "/docs"
         }
     }

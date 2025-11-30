@@ -5,9 +5,9 @@
 
 import { useState } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
+import { apiClient } from '@/services/api/client';
+import { ENDPOINTS } from '@/services/api/endpoints';
 import styles from './DeleteFormDialog.module.css';
-
-const ADMIN_SERVICE_URL = 'http://localhost:8001';
 
 interface DeleteFormDialogProps {
   isOpen: boolean;
@@ -34,14 +34,7 @@ export const DeleteFormDialog = ({
       setDeleting(true);
       setError(null);
 
-      const response = await fetch(`${ADMIN_SERVICE_URL}/admin/forms/${formId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Failed to delete form');
-      }
+      await apiClient.delete(ENDPOINTS.ADMIN.FORM_BY_ID(formId));
 
       onSuccess();
       onClose();

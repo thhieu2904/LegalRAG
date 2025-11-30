@@ -202,7 +202,7 @@ services:
     image: llm-service:vistral-gpu
     container_name: legalrag-llm
     ports:
-      - "8006:8006"
+      - "8014:8006"
     env_file:
       - ./llm-service/.env
     volumes:
@@ -240,12 +240,14 @@ services:
       STORAGE_SERVICE_URL: http://storage-service:8010
       LLM_SERVICE_URL: http://llm-service:8006
       RERANK_SERVICE_URL: http://rerank-service:8013
+      FORM_SERVICE_URL: http://form-service:8015
     depends_on:
       - embedding-service
       - vector-service
       - storage-service
       - llm-service
       - rerank-service
+      - form-service
     networks:
       - legalrag-network
     volumes:
@@ -292,23 +294,28 @@ services:
       retries: 3
     restart: unless-stopped
 
-  # Identifill Service - CCCD scanning (existing service, no changes)
-  identifill-service:
+  # Form Service - Form processing (fill templates, render HTML, CCCD scanning)
+  form-service:
     build:
-      context: ./identifill_service
+      context: ./form-service
       dockerfile: Dockerfile
-    container_name: legalrag-identifill
+    container_name: legalrag-form
     ports:
-      - "8005:8005"
+      - "8015:8015"
     environment:
-      SERVICE_NAME: identifill-service
-      SERVICE_PORT: 8005
+      SERVICE_NAME: form-service
+      SERVICE_PORT: 8015
+      STORAGE_SERVICE_URL: http://storage-service:8010
+      STORAGE_TIMEOUT: 30
+      LOG_LEVEL: INFO
+    depends_on:
+      - storage-service
     networks:
       - legalrag-network
     volumes:
-      - ./identifill_service:/app
+      - ./form-service:/app
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8015/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -371,15 +378,17 @@ networks:
 #   - MinIO Console:   9001
 #   - PostgreSQL:      5432
 #
-# Services:
+# Services (User-facing 800X):
 #   - Admin:           8001
 #   - Query:           8002
-#   - LLM:             8006
-#   - Identifill:      8005
+#
+# Services (Internal 801X):
 #   - Storage:         8010
 #   - Embedding:       8011
 #   - Vector:          8012
 #   - Rerank:          8013
+#   - LLM:             8014
+#   - Form:            8015
 #
 # Frontend:
 #   - React App:       3000
