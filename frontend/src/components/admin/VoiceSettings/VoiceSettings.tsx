@@ -4,7 +4,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X, Mic, Volume2, Info } from 'lucide-react';
+import { X, Mic, Volume2, Info, Play } from 'lucide-react';
+import { useTTS } from '@/hooks/useTTS';
 import type { VoiceSettingsProps, VoiceSettingsState } from './VoiceSettings.types';
 import { DEFAULT_VOICE_SETTINGS, LANGUAGE_OPTIONS } from './VoiceSettings.types';
 import styles from './VoiceSettings.module.css';
@@ -12,6 +13,8 @@ import styles from './VoiceSettings.module.css';
 export const VoiceSettings = ({ isOpen, onClose }: VoiceSettingsProps) => {
   const [settings, setSettings] = useState<VoiceSettingsState>(DEFAULT_VOICE_SETTINGS);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const { speak, stop, state: ttsState } = useTTS();
+  const [isTestPlaying, setIsTestPlaying] = useState(false);
 
   // Load settings from localStorage
   useEffect(() => {
@@ -31,11 +34,30 @@ export const VoiceSettings = ({ isOpen, onClose }: VoiceSettingsProps) => {
       const voices = speechSynthesis.getVoices();
       setAvailableVoices(voices);
 
-      // Auto-select first Vietnamese voice if none selected
+      // Auto-select voice with priority: Google An > Microsoft An > first Vietnamese > first available
       if (!settings.ttsVoice && voices.length > 0) {
-        const viVoice = voices.find((v) => v.lang.startsWith('vi'));
-        if (viVoice) {
-          updateSetting('ttsVoice', viVoice.name);
+        // Priority 1: Google An (Vietnamese female voice)
+        let selectedVoice = voices.find((v) => v.name.includes('An') && v.lang.startsWith('vi'));
+
+        // Priority 2: Microsoft An (alternative)
+        if (!selectedVoice) {
+          selectedVoice = voices.find(
+            (v) => v.name.toLowerCase().includes('an') && v.lang.startsWith('vi')
+          );
+        }
+
+        // Priority 3: First Vietnamese voice
+        if (!selectedVoice) {
+          selectedVoice = voices.find((v) => v.lang.startsWith('vi'));
+        }
+
+        // Priority 4: First available voice
+        if (!selectedVoice) {
+          selectedVoice = voices[0];
+        }
+
+        if (selectedVoice) {
+          updateSetting('ttsVoice', selectedVoice.name);
         }
       }
     };
@@ -69,6 +91,26 @@ export const VoiceSettings = ({ isOpen, onClose }: VoiceSettingsProps) => {
   const toggleTTS = () => {
     updateSetting('ttsEnabled', !settings.ttsEnabled);
   };
+
+  // Test voice preview
+  const handleTestVoice = () => {
+    if (isTestPlaying) {
+      stop();
+      setIsTestPlaying(false);
+    } else {
+      const testText = 'Xin chào, đây là giọng đọc của hệ thống.';
+      // Use forceSpeak=true to test even when TTS is disabled
+      speak(testText, 'test-voice', true);
+      setIsTestPlaying(true);
+    }
+  };
+
+  // Update test state based on TTS state
+  useEffect(() => {
+    if (!ttsState.isPlaying && isTestPlaying) {
+      setIsTestPlaying(false);
+    }
+  }, [ttsState.isPlaying, isTestPlaying]);
 
   // Calculate slider percentage for CSS custom property
   const getSliderPercent = (value: number, min: number, max: number) => {
@@ -176,20 +218,47 @@ export const VoiceSettings = ({ isOpen, onClose }: VoiceSettingsProps) => {
               <label htmlFor="ttsVoice" className={styles.label}>
                 Giọng đọc
               </label>
-              <select
-                id="ttsVoice"
-                value={settings.ttsVoice}
-                onChange={(e) => updateSetting('ttsVoice', e.target.value)}
-                className={styles.select}
-                disabled={!settings.ttsEnabled}
-              >
-                <option value="">Mặc định</option>
-                {availableVoices.map((voice) => (
-                  <option key={voice.name} value={voice.name}>
-                    {voice.name} ({voice.lang})
-                  </option>
-                ))}
-              </select>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <select
+                  id="ttsVoice"
+                  value={settings.ttsVoice}
+                  onChange={(e) => updateSetting('ttsVoice', e.target.value)}
+                  className={styles.select}
+                  disabled={!settings.ttsEnabled}
+                  style={{ flex: 1 }}
+                >
+                  <option value="">Mặc định</option>
+                  {availableVoices.map((voice) => (
+                    <option key={voice.name} value={voice.name}>
+                      {voice.name} ({voice.lang})
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleTestVoice}
+                  disabled={!settings.ttsEnabled}
+                  className={styles.testButton}
+                  title={isTestPlaying ? 'Dừng' : 'Test giọng'}
+                  style={{
+                    padding: '8px 12px',
+                    backgroundColor: isTestPlaying ? '#ff6b6b' : '#4CAF50',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: settings.ttsEnabled ? 'pointer' : 'not-allowed',
+                    opacity: settings.ttsEnabled ? 1 : 0.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <Play size={14} />
+                  {isTestPlaying ? 'Dừng' : 'Test'}
+                </button>
+              </div>
             </div>
 
             {/* Speed slider */}

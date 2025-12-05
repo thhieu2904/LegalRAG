@@ -159,29 +159,38 @@ class FormFiller:
                     
                     # Find all placeholders in this run
                     for field_id, value in context.items():
-                        if not value:  # Skip empty values
-                            continue
-                        
                         placeholder = f"{{{{{field_id}}}}}"
                         
-                        if placeholder in text:
-                            # Pattern: {{field}}[dots] - capture dots after placeholder
-                            pattern = re.escape(placeholder) + r'([\.…]*)'
-                            match = re.search(pattern, text)
+                        if placeholder not in text:
+                            continue
+                        
+                        # Pattern: {{field}}[dots] - capture dots after placeholder
+                        pattern = re.escape(placeholder) + r'([\.…]*)'
+                        match = re.search(pattern, text)
+                        
+                        if not match:
+                            continue
+                        
+                        original_dots = match.group(1)
+                        total_space = len(placeholder) + len(original_dots)
+                        
+                        if value:  # Has value - replace with value + padding dots
+                            # Calculate padding: value + dots to fill original space
+                            value_len = len(value)
+                            padding_dots = max(self.MIN_PADDING_DOTS, total_space - value_len)
                             
-                            if match:
-                                original_dots = match.group(1)
-                                total_space = len(placeholder) + len(original_dots)
-                                
-                                # Calculate padding: value + dots to fill original space
-                                value_len = len(value)
-                                padding_dots = max(self.MIN_PADDING_DOTS, total_space - value_len)
-                                
-                                # Replace with value + padding dots
-                                replacement = value + ('.' * padding_dots)
-                                text = re.sub(pattern, replacement, text, count=1)
-                                filled_count += 1
-                                logger.debug(f"Filled '{field_id}' = '{value}' ({padding_dots} dots)")
+                            # Replace with value + padding dots
+                            replacement = value + ('.' * padding_dots)
+                            text = re.sub(pattern, replacement, text, count=1)
+                            filled_count += 1
+                            logger.debug(f"Filled '{field_id}' = '{value}' ({padding_dots} dots)")
+                        
+                        else:  # Empty value - restore original dots (remove placeholder)
+                            # Replace {{field_N}} with dots to match original length
+                            # Example: {{field_5}}...... → ................. (restore to dots only)
+                            restored_dots = '.' * total_space
+                            text = re.sub(pattern, restored_dots, text, count=1)
+                            logger.debug(f"Restored '{field_id}' to {total_space} dots (empty value)")
                     
                     run.text = text
             

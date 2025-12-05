@@ -3,9 +3,11 @@
  * Displays chat messages with legal document sources
  */
 
-import { User, FileText, Clock, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, FileText, Clock, Zap, Play, Pause, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useTTS } from '@/hooks/useTTS';
 import { formatTimeAgo } from '@/utils/formatters/date';
 import { cn } from '@/utils/helpers/className';
 import { SourceList } from '../SourceList';
@@ -25,6 +27,50 @@ const formatProcessingTime = (ms: number): string => {
 export const ChatMessage = ({ message, onSelectDocument }: ChatMessageProps) => {
   const isUser = message.role === 'user';
   const isAI = message.role === 'assistant';
+  const { speak, pause, resume, stop, state: ttsState } = useTTS();
+  const [isThisMessagePlaying, setIsThisMessagePlaying] = useState(false);
+
+  // Check if TTS is enabled
+  const isTTSEnabled = (() => {
+    const stored = localStorage.getItem('voiceSettings');
+    if (stored) {
+      try {
+        return JSON.parse(stored).ttsEnabled || false;
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  })();
+
+  // Update state based on TTS state
+  useEffect(() => {
+    if (ttsState.utteranceId === `message-${message.id}`) {
+      setIsThisMessagePlaying(ttsState.isPlaying);
+    } else if (isThisMessagePlaying && !ttsState.isPlaying) {
+      setIsThisMessagePlaying(false);
+    }
+  }, [ttsState.isPlaying, ttsState.utteranceId, message.id, isThisMessagePlaying]);
+
+  const handlePlayTTS = () => {
+    if (isThisMessagePlaying) {
+      if (ttsState.isPaused) {
+        resume();
+      } else {
+        pause();
+      }
+    } else {
+      // Stop any other message that's playing and play this one
+      stop();
+      speak(message.content, `message-${message.id}`);
+      setIsThisMessagePlaying(true);
+    }
+  };
+
+  const handleStopTTS = () => {
+    stop();
+    setIsThisMessagePlaying(false);
+  };
 
   return (
     <div className={cn(styles.chatMessage, isUser && styles.userMessage, isAI && styles.aiMessage)}>
@@ -47,6 +93,81 @@ export const ChatMessage = ({ message, onSelectDocument }: ChatMessageProps) => 
             <p>{message.content}</p>
           )}
         </div>
+
+        {/* TTS Controls for AI Messages */}
+        {isAI && isTTSEnabled && !message.needs_clarification && (
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              marginTop: '8px',
+              alignItems: 'center',
+            }}
+          >
+            <button
+              onClick={handlePlayTTS}
+              title={
+                isThisMessagePlaying
+                  ? ttsState.isPaused
+                    ? 'Tiếp tục'
+                    : 'Tạm dừng'
+                  : 'Đọc thành tiếng'
+              }
+              style={{
+                padding: '6px 10px',
+                backgroundColor: isThisMessagePlaying ? '#ff9800' : '#2196F3',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '12px',
+                fontWeight: '500',
+              }}
+            >
+              {isThisMessagePlaying && ttsState.isPaused ? (
+                <>
+                  <Play size={14} />
+                  Tiếp tục
+                </>
+              ) : isThisMessagePlaying ? (
+                <>
+                  <Pause size={14} />
+                  Tạm dừng
+                </>
+              ) : (
+                <>
+                  <Play size={14} />
+                  Đọc
+                </>
+              )}
+            </button>
+            {isThisMessagePlaying && (
+              <button
+                onClick={handleStopTTS}
+                title="Dừng đọc"
+                style={{
+                  padding: '6px 10px',
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                }}
+              >
+                <X size={14} />
+                Dừng
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Document Options (Clarification) */}
         {isAI && message.needs_clarification && message.document_options && (
