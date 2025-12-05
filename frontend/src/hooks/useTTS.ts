@@ -4,7 +4,17 @@
  * Uses configuration from localStorage (VoiceSettings)
  */
 
-import { useEffect, useRef, useCallback, useState } from 'react';
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+  createContext,
+  useContext,
+  useMemo,
+  createElement,
+} from 'react';
+import type { ReactNode } from 'react';
 
 export interface TTSConfig {
   ttsEnabled: boolean;
@@ -38,7 +48,10 @@ const DEFAULT_CONFIG: TTSConfig = {
   ttsVolume: 1.0,
 };
 
-export const useTTS = (): UseTTSReturn => {
+const TTSContext = createContext<UseTTSReturn | null>(null);
+
+// Internal provider logic (singleton via context)
+const useProvideTTS = (): UseTTSReturn => {
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const configRef = useRef<TTSConfig>(DEFAULT_CONFIG);
   const [state, setState] = useState<TTSState>({
@@ -164,12 +177,12 @@ export const useTTS = (): UseTTSReturn => {
 
       // Setup event listeners
       utterance.onstart = () => {
+        // Confirm state (already set before speak() call)
+        // Only update if something changed
         setState((prev) => ({
           ...prev,
           isPlaying: true,
           isPaused: false,
-          currentText: cleanText,
-          utteranceId: utteranceId || null,
         }));
       };
 
@@ -203,6 +216,16 @@ export const useTTS = (): UseTTSReturn => {
           isPaused: false,
         }));
       };
+
+      // Update state IMMEDIATELY before starting speech (don't wait for onstart event)
+      const newState = {
+        isPlaying: true,
+        isPaused: false,
+        currentText: cleanText,
+        utteranceId: utteranceId || null,
+      };
+
+      setState(newState);
 
       // Start speech
       window.speechSynthesis.speak(utterance);
@@ -255,4 +278,19 @@ export const useTTS = (): UseTTSReturn => {
     getAvailableVoices,
     isEnabled,
   };
+};
+
+export const TTSProvider = ({ children }: { children: ReactNode }) => {
+  const value = useProvideTTS();
+  const memoValue = useMemo(() => value, [value]);
+  return createElement(TTSContext.Provider, { value: memoValue, children });
+};
+
+// Consumer hook – must be used inside TTSProvider
+export const useTTS = (): UseTTSReturn => {
+  const ctx = useContext(TTSContext);
+  if (!ctx) {
+    throw new Error('useTTS must be used within TTSProvider');
+  }
+  return ctx;
 };

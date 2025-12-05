@@ -2,7 +2,7 @@
  * Chat Page
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useChatStore } from '@/stores/chatStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useTTS } from '@/hooks/useTTS';
@@ -14,6 +14,7 @@ export default function ChatPage() {
   const { messages, loading, sendMessage, selectDocument } = useChatStore();
   const { addToast } = useUIStore();
   const { speak } = useTTS();
+  const lastSpokeMessageId = useRef<string | null>(null);
 
   // Auto-speak new AI messages when TTS is enabled
   useEffect(() => {
@@ -26,7 +27,8 @@ export default function ChatPage() {
     if (
       lastMessage.role === 'assistant' &&
       !lastMessage.needs_clarification &&
-      lastMessage.content
+      lastMessage.content &&
+      lastMessage.id !== lastSpokeMessageId.current // Only speak if it's a new message
     ) {
       // Check if TTS is enabled
       const stored = localStorage.getItem('voiceSettings');
@@ -45,12 +47,14 @@ export default function ChatPage() {
       }
 
       if (isTTSEnabled && autoSpeak) {
-        // Delay slightly to ensure content is rendered
+        // Track that we're speaking this message
+        lastSpokeMessageId.current = lastMessage.id;
+        // Delay slightly to ensure content is rendered and ChatMessage component mounted
         const timer = setTimeout(() => {
           if (lastMessage) {
             speak(lastMessage.content, `message-${lastMessage.id}`);
           }
-        }, 300);
+        }, 500);
 
         return () => clearTimeout(timer);
       }

@@ -48,14 +48,17 @@ export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
   const isNearLimit = charCount > maxLength * 0.8;
 
   // Voice input handlers
+  const [interimTranscript, setInterimTranscript] = useState('');
+
   const handleTranscriptChange = (transcript: string) => {
-    // Show interim transcript (optional - can be used for live preview)
-    console.log('Interim:', transcript);
+    // Show interim transcript in realtime
+    setInterimTranscript(transcript);
   };
 
   const handleFinalTranscript = (transcript: string) => {
     // Append final transcript to input
     setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+    setInterimTranscript('');
   };
 
   const handleAutoSend = async (transcript: string) => {
@@ -74,8 +77,11 @@ export const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
           <div className={styles.editorRow}>
             <textarea
               ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
+              value={interimTranscript || input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                setInterimTranscript('');
+              }}
               onKeyDown={handleKeyDown}
               placeholder="Nhập câu hỏi về pháp luật..."
               className={styles.textarea}

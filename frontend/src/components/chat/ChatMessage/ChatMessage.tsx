@@ -29,27 +29,50 @@ export const ChatMessage = ({ message, onSelectDocument }: ChatMessageProps) => 
   const isAI = message.role === 'assistant';
   const { speak, pause, resume, stop, state: ttsState } = useTTS();
   const [isThisMessagePlaying, setIsThisMessagePlaying] = useState(false);
+  const [isTTSEnabled, setIsTTSEnabled] = useState(false);
 
-  // Check if TTS is enabled
-  const isTTSEnabled = (() => {
-    const stored = localStorage.getItem('voiceSettings');
-    if (stored) {
-      try {
-        return JSON.parse(stored).ttsEnabled || false;
-      } catch {
-        return false;
-      }
-    }
-    return false;
-  })();
-
-  // Update state based on TTS state
+  // Check and sync TTS enabled state
   useEffect(() => {
-    if (ttsState.utteranceId === `message-${message.id}`) {
-      setIsThisMessagePlaying(ttsState.isPlaying);
-    } else if (isThisMessagePlaying && !ttsState.isPlaying) {
-      setIsThisMessagePlaying(false);
-    }
+    const checkTTSEnabled = () => {
+      const stored = localStorage.getItem('voiceSettings');
+      if (stored) {
+        try {
+          return JSON.parse(stored).ttsEnabled || false;
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    };
+
+    setIsTTSEnabled(checkTTSEnabled());
+
+    // Also listen to storage changes
+    const handleStorageChange = () => {
+      setIsTTSEnabled(checkTTSEnabled());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Update state based on TTS state - sync with hook state
+  useEffect(() => {
+    const messageUtteranceId = `message-${message.id}`;
+    const isThisMessageCurrentlySpeaking =
+      ttsState.utteranceId === messageUtteranceId && ttsState.isPlaying;
+
+    console.log('[ChatMessage] TTS State Update:', {
+      messageId: message.id,
+      messageUtteranceId,
+      ttsStateUtteranceId: ttsState.utteranceId,
+      ttsStateIsPlaying: ttsState.isPlaying,
+      isThisMessageCurrentlySpeaking,
+      currentIsThisMessagePlaying: isThisMessagePlaying,
+    });
+
+    // Always update to match current TTS state
+    setIsThisMessagePlaying(isThisMessageCurrentlySpeaking);
   }, [ttsState.isPlaying, ttsState.utteranceId, message.id, isThisMessagePlaying]);
 
   const handlePlayTTS = () => {

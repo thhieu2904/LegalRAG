@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Mic, StopCircle } from 'lucide-react';
 import styles from './VoiceInput.module.css';
 import type { VoiceInputProps } from './VoiceInput.types';
 
-// Minimal cross-browser typing for SpeechRecognition
+// Cross-browser SpeechRecognition
 interface SpeechRecognitionInstance {
   interimResults: boolean;
   continuous: boolean;
   lang?: string;
   start: () => void;
   stop: () => void;
+  abort: () => void;
   onresult?: (e: SpeechRecognitionEventLike) => void;
-  onerror?: (e: unknown) => void;
+  onerror?: (e: { error: string }) => void;
   onend?: () => void;
 }
 
@@ -22,7 +23,7 @@ const getSpeechRecognition = (): SpeechRecognitionCtor | undefined => {
     webkitSpeechRecognition?: SpeechRecognitionCtor;
     SpeechRecognition?: SpeechRecognitionCtor;
   };
-  return win.SpeechRecognition || win.webkitSpeechRecognition || undefined;
+  return win.SpeechRecognition || win.webkitSpeechRecognition;
 };
 
 interface SpeechRecognitionResultItem {
@@ -35,137 +36,178 @@ interface SpeechRecognitionEventLike {
   results: SpeechRecognitionResultItem[] & { length: number };
 }
 
+const getVoiceSettings = () => {
+  try {
+    const raw = localStorage.getItem('voiceSettings');
+    if (!raw) return { language: 'vi-VN', isAutoSendEnabled: false };
+    const parsed = JSON.parse(raw);
+    return {
+      language: parsed.language || 'vi-VN',
+      isAutoSendEnabled: Boolean(parsed.isAutoSendEnabled),
+    };
+  } catch {
+    return { language: 'vi-VN', isAutoSendEnabled: false };
+  }
+};
+
+// Silence timeout in ms (3 seconds)
+const SILENCE_TIMEOUT = 3000;
+
 export const VoiceInput = ({
   onTranscriptChange,
   onFinalTranscript,
   onAutoSend,
   disabled,
-  autoSend = false,
 }: VoiceInputProps) => {
   const [listening, setListening] = useState(false);
-  const [supported, setSupported] = useState<boolean | null>(null);
+  const [supported, setSupported] = useState(true);
+
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const transcriptRef = useRef('');
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
+  // Clear silence timer
+  const clearSilenceTimer = useCallback(() => {
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+  }, []);
+
+  // Stop and send
+  const stopAndSend = useCallback(async () => {
+    clearSilenceTimer();
+    recognitionRef.current?.stop();
+    setListening(false);
+
+    const { isAutoSendEnabled } = getVoiceSettings();
+    if (isAutoSendEnabled && onAutoSend && transcriptRef.current.trim()) {
+      await onAutoSend(transcriptRef.current.trim());
+    }
+    transcriptRef.current = '';
+    onTranscriptChange?.('');
+  }, [onAutoSend, onTranscriptChange, clearSilenceTimer]);
+
+  // Reset silence timer (called on each speech)
+  const resetSilenceTimer = useCallback(() => {
+    clearSilenceTimer();
+    silenceTimerRef.current = setTimeout(() => {
+      stopAndSend();
+    }, SILENCE_TIMEOUT);
+  }, [clearSilenceTimer, stopAndSend]);
+
+  // Start recognition
+  const start = useCallback(() => {
     const SpeechRecognition = getSpeechRecognition();
-    setSupported(Boolean(SpeechRecognition));
-
-    if (!SpeechRecognition) return;
+    if (!SpeechRecognition || disabled) return;
 
     const recognition = new SpeechRecognition();
     recognition.interimResults = true;
-    recognition.continuous = false;
+    recognition.continuous = true; // Keep listening
+    recognition.lang = getVoiceSettings().language;
 
-    recognition.onresult = (event: SpeechRecognitionEventLike) => {
+    recognition.onresult = (event) => {
       let interim = '';
-      let final = '';
+      let finalText = '';
 
-      for (let i = event.resultIndex; i < event.results.length; i += 1) {
-        const result = event.results[i] as SpeechRecognitionResultItem | undefined;
+      // Build full transcript from all results
+      for (let i = 0; i < event.results.length; i++) {
+        const result = event.results[i];
         if (!result) continue;
-        const transcript = result[0]?.transcript || '';
+        const text = result[0]?.transcript || '';
         if (result.isFinal) {
-          final += transcript;
+          finalText += text;
         } else {
-          interim += transcript;
+          interim += text;
         }
       }
 
-      if (onTranscriptChange) onTranscriptChange(interim);
+      // Show realtime (accumulated final + current interim)
+      const display = transcriptRef.current
+        ? `${transcriptRef.current} ${interim}`
+        : interim || finalText;
+      onTranscriptChange?.(display);
 
-      if (final) {
-        // Final transcript
-        if (onFinalTranscript) onFinalTranscript(final.trim());
-
-        // Auto-send option
-        (async () => {
-          try {
-            if (autoSend && onAutoSend) {
-              await onAutoSend(final.trim());
-            }
-          } catch (err) {
-            // Swallow errors; UI still usable
-            console.error('autoSend failed:', err);
-          }
-        })();
+      if (finalText && !transcriptRef.current.includes(finalText.trim())) {
+        transcriptRef.current = transcriptRef.current
+          ? `${transcriptRef.current} ${finalText.trim()}`
+          : finalText.trim();
+        onFinalTranscript?.(finalText.trim());
       }
+
+      // Reset silence timer on any speech activity
+      resetSilenceTimer();
     };
 
-    recognition.onerror = (e: unknown) => {
-      console.warn('Speech recognition error', e);
+    recognition.onerror = (e) => {
+      if (e.error !== 'no-speech' && e.error !== 'aborted') {
+        console.warn('Speech recognition error:', e.error);
+      }
+      clearSilenceTimer();
       setListening(false);
     };
 
     recognition.onend = () => {
+      // Only set listening false if not manually stopped
       setListening(false);
     };
 
     recognitionRef.current = recognition;
 
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.onresult = undefined;
-        recognitionRef.current.onerror = undefined;
-        recognitionRef.current.onend = undefined;
-        recognitionRef.current.stop?.();
-        recognitionRef.current = null;
-      }
-    };
-  }, [onTranscriptChange, onFinalTranscript, onAutoSend, autoSend]);
-
-  const start = () => {
-    if (disabled) return;
-    const SpeechRecognition = getSpeechRecognition();
-    if (!SpeechRecognition || !recognitionRef.current) return;
-
     try {
-      recognitionRef.current.lang = localStorage.getItem('voiceSettings')
-        ? JSON.parse(localStorage.getItem('voiceSettings') || '{}')?.language || 'vi-VN'
-        : 'vi-VN';
-      recognitionRef.current.start();
+      recognition.start();
       setListening(true);
-      // noop
+      transcriptRef.current = '';
+      // Start initial silence timer
+      resetSilenceTimer();
     } catch (err) {
-      console.error('start recognition failed', err);
+      console.error('Failed to start recognition:', err);
       setListening(false);
     }
-  };
+  }, [disabled, onTranscriptChange, onFinalTranscript, resetSilenceTimer, clearSilenceTimer]);
 
-  const stop = () => {
-    if (!recognitionRef.current) return;
-    try {
-      recognitionRef.current.stop?.();
-      setListening(false);
-      // noop
-    } catch (err) {
-      console.error('stop recognition failed', err);
+  // Stop recognition (manual)
+  const stop = useCallback(() => {
+    stopAndSend();
+  }, [stopAndSend]);
+
+  // Toggle
+  const toggle = useCallback(() => {
+    if (listening) {
+      stop();
+    } else {
+      start();
     }
-  };
+  }, [listening, start, stop]);
 
-  const toggle = () => {
-    if (!supported) return;
-    if (listening) stop();
-    else start();
-  };
+  // Check support on mount
+  useEffect(() => {
+    setSupported(Boolean(getSpeechRecognition()));
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      clearSilenceTimer();
+      recognitionRef.current?.abort();
+    };
+  }, [clearSilenceTimer]);
+
+  if (!supported) {
+    return null;
+  }
 
   return (
     <div
       className={styles.voiceStatus}
-      title={
-        !supported
-          ? 'Trình duyệt không hỗ trợ nhận dạng giọng nói'
-          : listening
-            ? 'Đang ghi âm...'
-            : 'Ghi âm bằng giọng nói'
-      }
+      title={listening ? 'Đang ghi âm... Nhấn để dừng' : 'Nhấn để ghi âm'}
     >
       <button
         type="button"
         onClick={toggle}
         className={`${styles.voiceButton} ${listening ? styles.listening : ''}`}
-        disabled={disabled || supported === false}
+        disabled={disabled}
         aria-pressed={listening}
-        aria-disabled={disabled || supported === false}
       >
         {listening ? <StopCircle size={18} /> : <Mic size={18} />}
       </button>
