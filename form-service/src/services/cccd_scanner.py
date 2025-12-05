@@ -47,13 +47,13 @@ class QRCodeParser:
                 return None
             
             return CCCDData(
-                scan_cccd=citizen_id.strip(),
-                scan_cmnd=old_id.strip() if old_id.strip() else None,
-                scan_ho_ten=full_name.strip(),
-                scan_ngay_sinh=dob_formatted,
-                scan_gioi_tinh=gender.strip(),
-                scan_dia_chi=address.strip(), 
-                scan_ngay_cap=issue_date_formatted
+                field_cccd=citizen_id.strip(),
+                field_cmnd=old_id.strip() if old_id.strip() else None,
+                field_ho_ten=full_name.strip(),
+                field_ngay_sinh=dob_formatted,
+                field_gioi_tinh=gender.strip(),
+                field_dia_chi=address.strip(), 
+                field_ngay_cap=issue_date_formatted
             )
             
         except Exception as e:
@@ -80,17 +80,17 @@ class QRCodeParser:
         """Validate extracted CCCD data - basic checks only"""
         try:
             # CCCD number must be 12 digits
-            if not re.match(r'^\d{12}$', data.scan_cccd):
+            if not re.match(r'^\d{12}$', data.field_cccd):
                 return False
             
             # Name must not be empty
-            if not data.scan_ho_ten or len(data.scan_ho_ten) < 2:
+            if not data.field_ho_ten or len(data.field_ho_ten) < 2:
                 return False
             
             # Date format validation
-            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.scan_ngay_sinh):
+            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.field_ngay_sinh):
                 return False
-            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.scan_ngay_cap):
+            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.field_ngay_cap):
                 return False
             
             return True

@@ -180,6 +180,84 @@ Câu hỏi: {question}
 
 Trả lời:"""
     
+    def build_prompt_for_provider(
+        self,
+        question: str,
+        context: str,
+        history: Optional[List[Dict]] = None,
+        provider: str = "local"
+    ) -> str:
+        """
+        Build prompt phù hợp với từng provider.
+        
+        Args:
+            question: Câu hỏi của user
+            context: Context từ search results
+            history: Chat history (optional)
+            provider: "local" | "gemini"
+            
+        Returns:
+            Formatted prompt string cho provider tương ứng
+        """
+        if provider == "gemini":
+            return self._build_prompt_gemini(question, context, history)
+        else:
+            return self.build_prompt(question, context, history)
+    
+    def _build_prompt_gemini(
+        self,
+        question: str,
+        context: str,
+        history: Optional[List[Dict]] = None
+    ) -> str:
+        """
+        Build prompt cho Gemini API (plain text, không cần special tokens).
+        
+        Gemini xử lý tốt hơn với plain text format thay vì [INST]...[/INST].
+        
+        Args:
+            question: Câu hỏi của user
+            context: Context từ search results
+            history: Chat history (optional)
+            
+        Returns:
+            Plain text prompt cho Gemini
+        """
+        # Build system instructions
+        prompt_parts = [
+            "=== HƯỚNG DẪN HỆ THỐNG ===",
+            self.system_prompt,
+            "",
+            self.citation_rules,
+            "",
+            "=== VĂN BẢN PHÁP LUẬT THAM KHẢO ===",
+            context,
+            ""
+        ]
+        
+        # Add history if available
+        if history and len(history) > 0:
+            prompt_parts.append("=== LỊCH SỬ HỘI THOẠI ===")
+            for msg in history[-6:]:  # Lấy tối đa 6 messages gần nhất
+                role = msg.get("role", "user")
+                content = msg.get("content", "")
+                if role == "user":
+                    prompt_parts.append(f"Người dùng: {content}")
+                else:
+                    prompt_parts.append(f"Trợ lý: {content}")
+            prompt_parts.append("")
+        
+        # Add current question
+        prompt_parts.extend([
+            "=== CÂU HỎI HIỆN TẠI ===",
+            f"Người dùng: {question}",
+            "",
+            "=== TRẢ LỜI ===",
+            "Trợ lý:"
+        ])
+        
+        return "\n".join(prompt_parts)
+    
     def extract_metadata_summary(self, chunks: List[Dict]) -> Dict:
         """
         Extract summary metadata từ chunks

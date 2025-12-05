@@ -5,12 +5,24 @@ pydantic==2.10.3
 pydantic-settings==2.6.1
 python-dotenv==1.0.1
 
-# LLM inference - llama-cpp-python for PhoGPT
-llama-cpp-python==0.2.90
-# For GPU support, install with: pip install llama-cpp-python[cuda]
-# Or build from source with CUDA flags
+# ============================================
+# LLM Providers (select one via LLM_PROVIDER env)
+# ============================================
 
-# Model download
+# Local Provider: llama-cpp-python for Vistral 7B
+# For GPU support: pip install llama-cpp-python[cuda]
+# Or build from source with CUDA flags
+llama-cpp-python==0.2.90
+
+# Gemini Provider: Google Generative AI SDK
+google-generativeai>=0.3.0
+
+# Retry logic for API providers
+tenacity>=8.2.0
+
+# ============================================
+# Model download (for local provider)
+# ============================================
 huggingface-hub==0.26.2
 
 # Utilities

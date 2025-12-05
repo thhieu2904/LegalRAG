@@ -197,9 +197,11 @@ services:
       start_period: 90s
     restart: unless-stopped
 
-  # LLM Service - Vistral-7B-Chat Q4 with GPU acceleration
+  # LLM Service - Multi-Provider (Vistral GPU / Gemini API)
   llm-service:
-    image: llm-service:vistral-gpu
+    build:
+      context: ./llm-service
+      dockerfile: Dockerfile
     container_name: legalrag-llm
     ports:
       - "8014:8006"
@@ -207,6 +209,8 @@ services:
       - ./llm-service/.env
     volumes:
       - ./llm-service/models:/app/models
+      - ./llm-service/src:/app/src
+      - ./llm-service/prompts:/app/prompts
     networks:
       - legalrag-network
     healthcheck:
@@ -273,6 +277,7 @@ services:
       STORAGE_SERVICE_URL: http://storage-service:8010
       EMBEDDING_SERVICE_URL: http://embedding-service:8011
       VECTOR_SERVICE_URL: http://vector-service:8012
+      FORM_SERVICE_URL: http://form-service:8015
       POSTGRES_HOST: postgres-vector
       POSTGRES_PORT: 5432
       POSTGRES_USER: legalrag

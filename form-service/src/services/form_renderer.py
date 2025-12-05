@@ -144,8 +144,8 @@ class FormRenderer:
         
         # Wrap {{placeholder}} with CSS classes
         def wrap_placeholder(match):
-            placeholder_full = match.group(0)  # {{scan_ho_ten}}
-            placeholder_name = match.group(1)  # scan_ho_ten
+            placeholder_full = match.group(0)  # {{field_1}}
+            placeholder_name = match.group(1)  # field_1
             return f'<span class="placeholder_{placeholder_name}">{placeholder_full}</span>'
         
         html_content = re.sub(r'\{\{([^}]+)\}\}', wrap_placeholder, html_content)
@@ -186,9 +186,14 @@ class FormRenderer:
         matches = re.findall(r'\{\{([^}]+)\}\}', html_content)
         unique_placeholders = list(set(matches))
         
-        # Sort: scan_* first, then form_*
-        scan_fields = [p for p in unique_placeholders if p.startswith('scan_')]
-        form_fields = [p for p in unique_placeholders if p.startswith('form_')]
-        other_fields = [p for p in unique_placeholders if not p.startswith(('scan_', 'form_'))]
+        # Sort by field number: field_1, field_2, field_3, ...
+        def sort_key(p: str) -> tuple:
+            if p.startswith('field_'):
+                try:
+                    num = int(p.split('_')[1])
+                    return (0, num)  # field_N first, sorted by number
+                except:
+                    return (1, p)  # Invalid field_N, sort alphabetically
+            return (2, p)  # Other placeholders last
         
-        return sorted(scan_fields) + sorted(form_fields) + sorted(other_fields)
+        return sorted(unique_placeholders, key=sort_key)

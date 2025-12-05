@@ -2,15 +2,15 @@
  * API Types for FormFillPage
  */
 
-// CCCD Data from backend - uses scan_ prefix to match template placeholders
+// CCCD Data from backend - unified field naming
 export interface CCCDData {
-  scan_cccd: string; // Số căn cước công dân
-  scan_cmnd?: string; // Số CMND cũ (optional)
-  scan_ho_ten: string; // Họ và tên
-  scan_ngay_sinh: string; // Ngày sinh
-  scan_gioi_tinh: string; // Giới tính
-  scan_dia_chi: string; // Địa chỉ
-  scan_ngay_cap: string; // Ngày cấp
+  field_cccd: string; // Số căn cước công dân
+  field_cmnd?: string; // Số CMND cũ (optional)
+  field_ho_ten: string; // Họ và tên
+  field_ngay_sinh: string; // Ngày sinh
+  field_gioi_tinh: string; // Giới tính
+  field_dia_chi: string; // Địa chỉ
+  field_ngay_cap: string; // Ngày cấp
 }
 
 // Form render response

@@ -396,12 +396,12 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
           </div>
 
           <div className={styles.dataGrid}>
-            <DataField label="Số CCCD" value={cccdData.scan_cccd} />
-            <DataField label="Họ và tên" value={cccdData.scan_ho_ten} />
-            <DataField label="Ngày sinh" value={cccdData.scan_ngay_sinh} />
-            <DataField label="Giới tính" value={cccdData.scan_gioi_tinh} />
-            <DataField label="Địa chỉ" value={cccdData.scan_dia_chi} fullWidth />
-            <DataField label="Ngày cấp" value={cccdData.scan_ngay_cap} />
+            <DataField label="Số CCCD" value={cccdData.field_cccd} />
+            <DataField label="Họ và tên" value={cccdData.field_ho_ten} />
+            <DataField label="Ngày sinh" value={cccdData.field_ngay_sinh} />
+            <DataField label="Giới tính" value={cccdData.field_gioi_tinh} />
+            <DataField label="Địa chỉ" value={cccdData.field_dia_chi} fullWidth />
+            <DataField label="Ngày cấp" value={cccdData.field_ngay_cap} />
           </div>
 
           <button onClick={onReset} className={styles.resetButton}>

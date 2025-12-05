@@ -149,7 +149,7 @@ export const useFormFill = () => {
       }
 
       // Get CCCD number from scanned data or form data
-      const cccdNumber = cccdData?.scan_cccd || formData['scan_cccd'] || undefined;
+      const cccdNumber = cccdData?.field_cccd || formData['field_cccd'] || undefined;
 
       // Call fill API
       const response = await queryClient.post<FormFillResponse>(ENDPOINTS.QUERY.FORMS.FILL, {

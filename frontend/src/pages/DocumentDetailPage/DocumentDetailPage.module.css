@@ -108,6 +108,11 @@
   color: #8b5cf6;
 }
 
+.buttonGroup {
+  display: flex;
+  gap: 0.75rem;
+}
+
 .addButton {
   display: flex;
   align-items: center;
@@ -116,7 +121,7 @@
   font-size: 0.95rem;
   font-weight: 500;
   color: white;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -125,7 +130,29 @@
 
 .addButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.addButtonSecondary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #374151;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addButtonSecondary:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .chunksInfo {

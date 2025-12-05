@@ -121,7 +121,7 @@ class HealthResponse(BaseModel):
     
     device: str = Field(
         ...,
-        description="Device being used (cuda/cpu)"
+        description="Device being used (cuda/cpu/api)"
     )
     
     n_ctx: int = Field(
@@ -129,9 +129,15 @@ class HealthResponse(BaseModel):
         description="Context window size"
     )
     
+    provider: str = Field(
+        default="local",
+        description="LLM provider type (local/gemini)",
+        examples=["local", "gemini"]
+    )
+    
     gpu_swap_mode: Optional[bool] = Field(
         default=None,
-        description="Whether GPU swap mode is enabled"
+        description="Whether GPU swap mode is enabled (deprecated - use provider field)"
     )
 
 

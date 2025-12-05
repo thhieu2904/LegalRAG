@@ -1,11 +1,16 @@
-"""LLM Service - Vistral 7B with llama-cpp-python
+"""LLM Service - Multi-Provider Support (Local Vistral / Gemini API)
+
+Provider Pattern cho phép chuyển đổi giữa các LLM backends:
+- LLM_PROVIDER=local → Vistral 7B với llama-cpp-python (requires GPU)
+- LLM_PROVIDER=gemini → Google Gemini API (no GPU required)
+
+Endpoints giữ nguyên API contract để query-service không cần thay đổi.
 """
-import os
 import logging
 from contextlib import asynccontextmanager
 from typing import Optional, List
 
-from fastapi import FastAPI, HTTPException, status, Depends
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -15,9 +20,9 @@ from .models import (
     GenerateRequest,
     GenerateResponse,
     HealthResponse,
-    ErrorResponse
 )
 from .services.prompt_builder import prompt_builder
+from .providers.base import BaseLLMProvider
 
 # ============================================
 # Logging Setup
@@ -30,69 +35,67 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ============================================
-# Global State
+# Global State - LLM Provider Instance
 # ============================================
 
-llm: Optional[any] = None  # Llama model instance
+llm_provider: Optional[BaseLLMProvider] = None
+
+
+def get_llm_provider() -> BaseLLMProvider:
+    """
+    Factory function để lấy LLM provider instance.
+    
+    Provider được chọn dựa trên LLM_PROVIDER env variable:
+    - "local" → LocalProvider (Vistral 7B)
+    - "gemini" → GeminiProvider (Gemini API)
+    """
+    global llm_provider
+    
+    if llm_provider is None:
+        if settings.llm_provider == "gemini":
+            from .providers.gemini_provider import GeminiProvider
+            llm_provider = GeminiProvider()
+            logger.info("Using Gemini Provider")
+        else:
+            from .providers.local_provider import LocalProvider
+            llm_provider = LocalProvider()
+            logger.info("Using Local Provider (Vistral 7B)")
+    
+    return llm_provider
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Manage application lifecycle - load model on startup."""
-    global llm
+    """Manage application lifecycle - initialize provider on startup."""
+    global llm_provider
     
     logger.info("=" * 60)
     logger.info(f"Starting {settings.service_name}")
-    logger.info("=" * 60)
-    logger.info(f"Model: {settings.model_name}")
-    logger.info(f"Model Path: {settings.model_path}")
-    logger.info(f"Device: {settings.device}")
-    logger.info(f"Context Window: {settings.n_ctx}")
-    logger.info(f"GPU Layers: {settings.n_gpu_layers}")
+    logger.info(f"Provider: {settings.llm_provider}")
     logger.info("=" * 60)
     
     try:
-        from llama_cpp import Llama
+        # Initialize provider
+        provider = get_llm_provider()
+        await provider.initialize()
         
-        # Check if model file exists
-        if not os.path.exists(settings.model_path):
-            logger.error(f"Model file not found: {settings.model_path}")
-            logger.info("Run download_model.py to download Vistral 7B model")
-            raise FileNotFoundError(f"Model not found: {settings.model_path}")
+        logger.info("=" * 60)
+        logger.info(f"✓ {settings.service_name} ready")
+        logger.info(f"✓ Provider: {provider.provider_name}")
+        logger.info(f"✓ Model: {provider.model_name}")
+        logger.info("=" * 60)
         
-        # Load Vistral 7B model with llama-cpp-python
-        logger.info("Loading Vistral 7B model (this may take a minute)...")
-        llm = Llama(
-            model_path=settings.model_path,
-            n_ctx=settings.n_ctx,
-            n_gpu_layers=settings.n_gpu_layers if settings.device == "cuda" else 0,
-            n_threads=settings.n_threads,
-            n_batch=settings.n_batch,
-            use_mmap=settings.use_mmap,
-            use_mlock=settings.use_mlock,
-            verbose=settings.verbose
-        )
-        
-        logger.info("✓ Vistral 7B model loaded successfully")
-        logger.info(f"✓ Using device: {settings.device}")
-        if settings.device == "cuda" and settings.n_gpu_layers == -1:
-            logger.info("✓ All layers loaded on GPU")
-        elif settings.device == "cuda":
-            logger.info(f"✓ {settings.n_gpu_layers} layers on GPU")
-        
-    except ImportError as e:
-        logger.error(f"✗ llama-cpp-python not installed: {e}")
-        logger.error("Install with: pip install llama-cpp-python")
-        raise
     except Exception as e:
-        logger.error(f"✗ Failed to load model: {e}")
+        logger.error(f"✗ Failed to initialize provider: {e}")
         raise
     
     yield
     
+    # Shutdown
     logger.info(f"Shutting down {settings.service_name}")
-    if llm:
-        del llm
+    if llm_provider:
+        await llm_provider.shutdown()
+    logger.info("✓ Shutdown complete")
 
 
 # ============================================
@@ -101,8 +104,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.service_name,
-    description="Vietnamese Legal LLM using Vistral 7B with llama-cpp",
-    version="1.0.0",
+    description="Vietnamese Legal LLM Service - Multi-Provider Support",
+    version="2.0.0",
     lifespan=lifespan
 )
 
@@ -117,35 +120,23 @@ app.add_middleware(
 
 
 # ============================================
-# Dependencies
-# ============================================
-
-def get_llm():
-    """Dependency to get LLM instance."""
-    if llm is None:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="LLM model not loaded. Please ensure model file exists."
-        )
-    return llm
-
-
-# ============================================
 # API Endpoints
 # ============================================
 
 @app.get("/", include_in_schema=False)
 async def root():
     """Root endpoint."""
+    provider = get_llm_provider()
     return {
         "service": settings.service_name,
-        "model": settings.model_name,
-        "device": settings.device,
-        "status": "running",
-        "version": "1.0.0",
+        "provider": provider.provider_name,
+        "model": provider.model_name,
+        "status": "running" if provider.is_ready else "initializing",
+        "version": "2.0.0",
         "endpoints": {
             "health": "GET /health",
             "generate": "POST /generate",
+            "generate_rag": "POST /generate-rag",
             "docs": "GET /docs"
         }
     }
@@ -156,83 +147,64 @@ async def health_check():
     """
     Health check endpoint.
     
-    Returns service status and model information.
+    Returns service status và provider information.
     """
+    provider = get_llm_provider()
+    health = await provider.health_check()
+    
     return HealthResponse(
-        status="healthy" if llm is not None else "unhealthy",
+        status=health.get("status", "unknown"),
         service=settings.service_name,
-        model_loaded=llm is not None,
-        model_name=settings.model_name,
-        device=settings.device,
-        n_ctx=settings.n_ctx
+        model_loaded=provider.is_ready,
+        model_name=provider.model_name,
+        device=settings.device if settings.llm_provider == "local" else "api",
+        n_ctx=settings.n_ctx if settings.llm_provider == "local" else 0,
+        provider=provider.provider_name
     )
 
 
 @app.post("/generate", response_model=GenerateResponse)
-async def generate_text(
-    request: GenerateRequest,
-    llm_model = Depends(get_llm)
-):
-    """Generate text using Vistral 7B (raw prompt, no system wrapping).
+async def generate_text(request: GenerateRequest):
+    """
+    Generate text using current LLM provider (raw prompt, no system wrapping).
     
     For RAG queries with automatic system prompt wrapping, use /generate-rag instead.
-    
-    **Input:**
-    - prompt: Vietnamese text prompt (already formatted)
-    - max_tokens: Maximum tokens to generate (optional)
-    - temperature: Sampling temperature 0-2 (optional)
-    - top_p: Nucleus sampling threshold (optional)
-    - top_k: Top-K sampling (optional)
-    - repeat_penalty: Penalty for repetition (optional)
-    - stop: Stop sequences (optional)
-    
-    **Output:**
-    - success: Whether generation succeeded
-    - text: Generated text
-    - prompt_tokens: Input token count
-    - completion_tokens: Generated token count
-    - total_tokens: Total token count
-    - model: Model name
     """
+    provider = get_llm_provider()
+    
+    if not provider.is_ready:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"LLM provider ({provider.provider_name}) not ready"
+        )
+    
     try:
-        # Use defaults from settings if not provided
-        max_tokens = request.max_tokens or settings.max_tokens
-        temperature = request.temperature or settings.temperature
-        top_p = request.top_p or settings.top_p
-        top_k = request.top_k or settings.top_k
-        repeat_penalty = request.repeat_penalty or settings.repeat_penalty
-        
-        # Use prompt as-is (caller is responsible for formatting)
-        formatted_prompt = request.prompt
-        
-        # Generate với llama-cpp-python
-        output = llm_model(
-            formatted_prompt,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            top_p=top_p,
-            top_k=top_k,
-            repeat_penalty=repeat_penalty,
-            stop=request.stop or ["---", "## ", "Người dùng:", "CÂU HỎI"],
-            echo=False  # Don't include prompt in output
+        result = await provider.generate(
+            prompt=request.prompt,
+            max_tokens=request.max_tokens,
+            temperature=request.temperature,
+            top_p=request.top_p,
+            top_k=request.top_k,
+            stop=request.stop
         )
         
-        # Extract generated text
-        generated_text = output["choices"][0]["text"].strip()
-        
-        # Token counts
-        prompt_tokens = output["usage"]["prompt_tokens"]
-        completion_tokens = output["usage"]["completion_tokens"]
+        if not result.success:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Generation failed: {result.error}"
+            )
         
         return GenerateResponse(
             success=True,
-            text=generated_text,
-            prompt_tokens=prompt_tokens,
-            completion_tokens=completion_tokens,
-            total_tokens=prompt_tokens + completion_tokens,
-            model=settings.model_name
+            text=result.text,
+            prompt_tokens=result.prompt_tokens,
+            completion_tokens=result.completion_tokens,
+            total_tokens=result.total_tokens,
+            model=result.model
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Generation failed: {e}", exc_info=True)
         raise HTTPException(
@@ -259,17 +231,15 @@ class RAGGenerateRequest(BaseModel):
 
 
 @app.post("/generate-rag", response_model=GenerateResponse)
-async def generate_rag(
-    request: RAGGenerateRequest,
-    llm_model = Depends(get_llm)
-):
+async def generate_rag(request: RAGGenerateRequest):
     """
     Generate RAG response with automatic system prompt wrapping.
     
     This endpoint:
     1. Takes question + context from query service
     2. Automatically wraps with system_prompt.txt + citation_rules.txt
-    3. Generates response with proper guardrails against hallucination
+    3. Uses appropriate prompt format for current provider
+    4. Generates response with proper guardrails against hallucination
     
     **Input:**
     - question: User's original question
@@ -283,54 +253,57 @@ async def generate_rag(
     - prompt_tokens, completion_tokens, total_tokens: Token counts
     - model: Model name
     """
+    provider = get_llm_provider()
+    
+    if not provider.is_ready:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"LLM provider ({provider.provider_name}) not ready"
+        )
+    
     try:
-        # Use defaults from settings if not provided
-        max_tokens = request.max_tokens or settings.max_tokens
-        temperature = request.temperature or settings.temperature
-        top_p = request.top_p or settings.top_p
-        top_k = request.top_k or settings.top_k
-        repeat_penalty = request.repeat_penalty or settings.repeat_penalty
-        
-        # Build prompt using prompt_builder (includes system_prompt.txt + citation_rules.txt)
-        formatted_prompt = prompt_builder.build_prompt(
+        # Build prompt using appropriate format for provider
+        formatted_prompt = prompt_builder.build_prompt_for_provider(
             question=request.question,
             context=request.context,
-            history=request.history
+            history=request.history,
+            provider=settings.llm_provider
         )
         
+        logger.info(f"RAG Generation - Provider: {provider.provider_name}")
         logger.info(f"RAG Generation - Question: {request.question[:100]}...")
         logger.debug(f"Full Prompt:\n{formatted_prompt[:500]}...")
         
-        # Generate với llama-cpp-python
-        output = llm_model(
-            formatted_prompt,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            top_p=top_p,
-            top_k=top_k,
-            repeat_penalty=repeat_penalty,
-            stop=request.stop or ["---", "## ", "Người dùng:", "CÂU HỎI"],
-            echo=False
+        # Generate response
+        result = await provider.generate(
+            prompt=formatted_prompt,
+            max_tokens=request.max_tokens,
+            temperature=request.temperature,
+            top_p=request.top_p,
+            top_k=request.top_k,
+            stop=request.stop,
+            repeat_penalty=request.repeat_penalty
         )
         
-        # Extract generated text
-        generated_text = output["choices"][0]["text"].strip()
+        if not result.success:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"RAG Generation failed: {result.error}"
+            )
         
-        # Token counts
-        prompt_tokens = output["usage"]["prompt_tokens"]
-        completion_tokens = output["usage"]["completion_tokens"]
-        
-        logger.info(f"Generated {completion_tokens} tokens")
+        logger.info(f"Generated {result.completion_tokens} tokens")
         
         return GenerateResponse(
             success=True,
-            text=generated_text,
-            prompt_tokens=prompt_tokens,
-            completion_tokens=completion_tokens,
-            total_tokens=prompt_tokens + completion_tokens,
-            model=settings.model_name
+            text=result.text,
+            prompt_tokens=result.prompt_tokens,
+            completion_tokens=result.completion_tokens,
+            total_tokens=result.total_tokens,
+            model=result.model
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"RAG Generation failed: {e}", exc_info=True)
         raise HTTPException(

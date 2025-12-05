@@ -1,15 +1,19 @@
 # ============================================
-# Dockerfile for LLM Service - PhoGPT Edition
+# Dockerfile for LLM Service - Multi-Provider
 # ============================================
-# Multi-stage build with llama-cpp-python
-# Supports both CPU and GPU (CUDA) inference
+# Supports:
+# - Local Vistral 7B with llama-cpp-python (GPU/CPU)
+# - Gemini API (no GPU required)
+#
+# Build GPU: docker build --target runtime-gpu -t llm-service:gpu .
+# Build CPU: docker build --target runtime -t llm-service:cpu .
 
 FROM python:3.11-slim as base
 
 # Metadata
 LABEL maintainer="LegalRAG Team"
-LABEL description="Vietnamese Legal LLM using PhoGPT-4B"
-LABEL version="1.0.0"
+LABEL description="Vietnamese Legal LLM - Multi-Provider (Local/Gemini)"
+LABEL version="2.0.0"
 
 # Environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -93,25 +97,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Create non-root user and directories
 RUN useradd -m -u 1000 appuser && \
-    mkdir -p /app/models && \
+    mkdir -p /app/models /app/prompts && \
     chown -R appuser:appuser /app
 
 # Copy application code
 COPY --chown=appuser:appuser src/ /app/src/
+COPY --chown=appuser:appuser prompts/ /app/prompts/
 COPY --chown=appuser:appuser download_model.py /app/
 
 # Switch to non-root user
 USER appuser
 
-# Expose service port
-EXPOSE 8014
+# Expose service port (default 8006, can override with SERVICE_PORT)
+EXPOSE 8006
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
-    CMD curl -f http://localhost:8014/health || exit 1
+    CMD curl -f http://localhost:${SERVICE_PORT:-8006}/health || exit 1
 
 # Start command
-CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8014"]
+CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8006"]
 
 # ============================================
 # Runtime Stage - GPU (CUDA)
@@ -139,21 +144,23 @@ COPY --from=dependencies-gpu /usr/local/lib/python3.11/dist-packages /usr/local/
 
 # Create non-root user and directories
 RUN useradd -m -u 1000 appuser && \
-    mkdir -p /app/models && \
+    mkdir -p /app/models /app/prompts && \
     chown -R appuser:appuser /app
 
 # Copy application code
 COPY --chown=appuser:appuser src/ /app/src/
+COPY --chown=appuser:appuser prompts/ /app/prompts/
 COPY --chown=appuser:appuser download_model.py /app/
 
 USER appuser
 
-EXPOSE 8014
+# Expose service port (default 8006, can override with SERVICE_PORT)
+EXPOSE 8006
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
-    CMD curl -f http://localhost:8014/health || exit 1
+    CMD curl -f http://localhost:${SERVICE_PORT:-8006}/health || exit 1
 
-CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8014"]
+CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8006"]
 
 # ============================================
 # Build Instructions
@@ -164,9 +171,15 @@ CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "
 # GPU version (requires NVIDIA Docker):
 #   docker build --target runtime-gpu -t llm-service:gpu .
 #
-# Run CPU:
-#   docker run -p 8014:8014 -v $(pwd)/models:/app/models llm-service:cpu
+# Run with Local Provider (GPU):
+#   docker run --gpus all -p 8006:8006 \
+#     -e LLM_PROVIDER=local \
+#     -v $(pwd)/models:/app/models \
+#     llm-service:gpu
 #
-# Run GPU:
-#   docker run --gpus all -p 8014:8014 -v $(pwd)/models:/app/models llm-service:gpu
+# Run with Gemini Provider (no GPU):
+#   docker run -p 8006:8006 \
+#     -e LLM_PROVIDER=gemini \
+#     -e GEMINI_API_KEY=your-key \
+#     llm-service:cpu
 # ============================================

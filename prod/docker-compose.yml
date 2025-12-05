@@ -228,7 +228,7 @@ services:
               count: 1
               capabilities: [gpu]
 
-  # LLM Service - Vistral-7B-Chat Q4 with GPU acceleration
+  # LLM Service - Vistral-7B-Chat Q4 with GPU acceleration OR Gemini API
   llm-service:
     image: ${DOCKERHUB_USER}/legalrag-llm:${IMAGE_TAG:-latest}
     container_name: legalrag-llm
@@ -238,6 +238,17 @@ services:
       SERVICE_NAME: llm-service
       SERVICE_PORT: "8014"
       SERVICE_HOST: "0.0.0.0"
+      # ========== PROVIDER SELECTION ==========
+      # "local" = Vistral 7B (GPU), "gemini" = Gemini API
+      LLM_PROVIDER: ${LLM_PROVIDER:-local}
+      # ========== GEMINI CONFIG (if LLM_PROVIDER=gemini) ==========
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_TEMPERATURE: ${GEMINI_TEMPERATURE:-0.7}
+      GEMINI_TOP_P: ${GEMINI_TOP_P:-0.9}
+      GEMINI_TOP_K: ${GEMINI_TOP_K:-40}
+      GEMINI_MAX_TOKENS: ${GEMINI_MAX_TOKENS:-4096}
+      # ========== LOCAL CONFIG (if LLM_PROVIDER=local) ==========
       # Model config - auto-download from HuggingFace
       MODEL_NAME: ggml-vistral-7B-chat-q4_0.gguf
       MODEL_PATH: /app/models/ggml-vistral-7B-chat-q4_0.gguf

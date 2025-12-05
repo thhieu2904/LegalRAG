@@ -8,6 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Database } from 'lucide-react';
 import { FormsGrid } from '@/components/admin/FormsGrid';
 import { UploadFormModal } from '@/components/admin/UploadFormModal';
+import { CreateTemplateModal } from '@/components/admin/CreateTemplateModal/CreateTemplateModal';
 import { DeleteFormDialog } from '@/components/admin/DeleteFormDialog';
 import { apiClient, STORAGE_SERVICE_URL } from '@/services/api/client';
 import { ENDPOINTS } from '@/services/api/endpoints';
@@ -23,6 +24,7 @@ export const DocumentDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [formsLoading, setFormsLoading] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showCreateTemplateModal, setShowCreateTemplateModal] = useState(false);
   const [deletingFormId, setDeletingFormId] = useState<string | null>(null);
 
   // Fetch document details
@@ -211,10 +213,16 @@ export const DocumentDetailPage = () => {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Biểu mẫu ({forms.length})</h2>
-          <button onClick={() => setShowUploadModal(true)} className={styles.addButton}>
-            <Plus size={20} />
-            Thêm biểu mẫu
-          </button>
+          <div className={styles.buttonGroup}>
+            <button onClick={() => setShowCreateTemplateModal(true)} className={styles.addButton}>
+              <Plus size={20} />
+              Tạo mẫu tự động
+            </button>
+            <button onClick={() => setShowUploadModal(true)} className={styles.addButtonSecondary}>
+              <Plus size={20} />
+              Upload có sẵn
+            </button>
+          </div>
         </div>
         <FormsGrid
           forms={forms}
@@ -230,6 +238,14 @@ export const DocumentDetailPage = () => {
         isOpen={showUploadModal}
         documentId={documentId!}
         onClose={() => setShowUploadModal(false)}
+        onSuccess={handleUploadSuccess}
+      />
+
+      {/* Create Template Modal */}
+      <CreateTemplateModal
+        isOpen={showCreateTemplateModal}
+        documentId={documentId!}
+        onClose={() => setShowCreateTemplateModal(false)}
         onSuccess={handleUploadSuccess}
       />
 

@@ -15,14 +15,14 @@ class ScanMode(str, Enum):
 
 
 class CCCDData(BaseModel):
-    """CCCD data extracted from QR code"""
-    scan_cccd: str  # Số căn cước công dân (12 digits)
-    scan_cmnd: Optional[str] = None  # Số CMND cũ
-    scan_ho_ten: str  # Họ và tên
-    scan_ngay_sinh: str  # Ngày sinh (DD/MM/YYYY)
-    scan_gioi_tinh: str  # Giới tính
-    scan_dia_chi: str  # Địa chỉ
-    scan_ngay_cap: str  # Ngày cấp (DD/MM/YYYY)
+    """CCCD data extracted from QR code - unified field naming"""
+    field_cccd: str  # Số căn cước công dân (12 digits)
+    field_cmnd: Optional[str] = None  # Số CMND cũ
+    field_ho_ten: str  # Họ và tên
+    field_ngay_sinh: str  # Ngày sinh (DD/MM/YYYY)
+    field_gioi_tinh: str  # Giới tính
+    field_dia_chi: str  # Địa chỉ
+    field_ngay_cap: str  # Ngày cấp (DD/MM/YYYY)
 
 
 class CCCDScanRequest(BaseModel):
@@ -92,6 +92,47 @@ class FormSaveResponse(BaseModel):
     """Response after saving filled form"""
     success: bool
     file_path: Optional[str] = None  # Path in MinIO: user_forms/{session}/{cccd}_{form}.docx
+    message: Optional[str] = None
+
+
+# ============================================
+# Form Template Admin Models
+# ============================================
+
+class DetectedPosition(BaseModel):
+    """A detected fillable position in DOCX"""
+    index: int  # Sequential index (0, 1, 2, ...)
+    paragraph_index: int  # Paragraph index in document
+    text: str  # Context text (e.g., "Họ tên: ......")
+    pattern_type: str  # "dots" or "tab"
+    label: str = ""  # Label text before the fillable area (e.g., "Họ tên")
+    full_paragraph: str = ""  # Full paragraph text for preview
+    context_before: list[str] = []  # 2-3 paragraphs before this position
+    context_after: list[str] = []  # 2-3 paragraphs after this position
+    
+    class Config:
+        # Always serialize all fields, even if empty
+        exclude_none = False
+
+
+class FormDetectResponse(BaseModel):
+    """Response from form detection"""
+    success: bool
+    positions: list[DetectedPosition] = []
+    total_positions: int = 0
+    message: Optional[str] = None
+
+
+class FormFinalizeRequest(BaseModel):
+    """Request to finalize template with placeholders"""
+    selected_indices: list[int]  # List of position indices to convert to fields
+
+
+class FormFinalizeResponse(BaseModel):
+    """Response with finalized template"""
+    success: bool
+    template_content: Optional[str] = None  # Base64 encoded DOCX
+    placeholders: list[str] = []  # List of generated placeholders ["field_1", "field_2", ...]
     message: Optional[str] = None
 
 

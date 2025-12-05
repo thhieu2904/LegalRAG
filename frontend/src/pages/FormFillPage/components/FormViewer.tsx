@@ -88,9 +88,9 @@ export const FormViewer = ({
 
     console.log('🔄 Starting placeholder hydration...');
 
-    // Find all placeholders (both form_ and scan_ prefixes)
+    // Find all placeholders with field_ prefix (unified naming)
     const placeholders = formContainer.querySelectorAll(
-      '[class*="placeholder_scan_"], [class*="placeholder_form_"], [class*="placeholder_"]'
+      '[class*="placeholder_field_"], [class*="placeholder_"]'
     );
 
     console.log(`📍 Found ${placeholders.length} placeholders to hydrate`);

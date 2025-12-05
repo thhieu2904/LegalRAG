@@ -1,0 +1,47 @@
+# ============================================
+# LegalRAG - LOCAL MODE (Vistral 7B GPU)
+# ============================================
+# LLM: Vistral 7B GPU (~6GB VRAM)
+# Embedding: GPU (~2GB)
+# Rerank: CPU (tiết kiệm VRAM cho LLM)
+#
+# Yêu cầu: 10GB+ VRAM
+# Chạy: docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+# ============================================
+
+services:
+  # Rerank Service - CPU (tiết kiệm VRAM cho LLM)
+  rerank-service:
+    build:
+      context: ./rerank-service
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: legalrag-rerank-local
+    environment:
+      SERVICE_NAME: rerank-service
+      SERVICE_PORT: 8013
+      MODEL_NAME: BAAI/bge-reranker-v2-m3
+      MODEL_CACHE_DIR: /app/models
+      MODEL_MAX_LENGTH: 1024
+      DEVICE: cpu
+      BATCH_SIZE: 32
+      TOP_K: 5
+      API_KEY_ENABLED: "false"
+      LOG_LEVEL: INFO
+    # No GPU for rerank in local mode
+    deploy:
+      resources:
+        reservations: {}
+
+  # LLM Service - Vistral 7B GPU
+  llm-service:
+    container_name: legalrag-llm-local
+    env_file:
+      - ./llm-service/.env.local
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

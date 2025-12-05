@@ -24,6 +24,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from .routers import user_forms
+from .routers import form_templates
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -34,6 +35,7 @@ ADMIN_SERVICE_URL = os.getenv("ADMIN_SERVICE_URL", "http://localhost:8001")
 STORAGE_SERVICE_URL = os.getenv("STORAGE_SERVICE_URL", "http://localhost:8010")
 EMBEDDING_SERVICE_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://localhost:8002")
 VECTOR_SERVICE_URL = os.getenv("VECTOR_SERVICE_URL", "http://localhost:8004")
+FORM_SERVICE_URL = os.getenv("FORM_SERVICE_URL", "http://localhost:8003")
 SERVICE_PORT = int(os.getenv("SERVICE_PORT", 8001))
 
 # PostgreSQL config (AICenter pattern: Admin has direct DB access)
@@ -47,6 +49,7 @@ logger.info(f"📡 Admin Service URL: {ADMIN_SERVICE_URL}")
 logger.info(f"📡 Storage Service URL: {STORAGE_SERVICE_URL}")
 logger.info(f"📡 Embedding Service URL: {EMBEDDING_SERVICE_URL}")
 logger.info(f"📡 Vector Service URL: {VECTOR_SERVICE_URL}")
+logger.info(f"📡 Form Service URL: {FORM_SERVICE_URL}")
 logger.info(f"🗄️  PostgreSQL: {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
 
 # ============= MODELS =============
@@ -202,6 +205,7 @@ app = FastAPI(
 
 # Include routers
 app.include_router(user_forms.router)
+app.include_router(form_templates.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -2053,6 +2057,285 @@ async def delete_form(form_id: str):
         raise
     except Exception as e:
         logger.error(f"❌ Failed to delete form: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============= HYBRID FORM TEMPLATE PROCESSING =============
+
+class ProcessTemplateRequest(BaseModel):
+    """Request to process template with hybrid workflow"""
+    document_id: str
+    form_name: str
+    description: Optional[str] = None
+
+
+class DetectedPosition(BaseModel):
+    """A detected fillable position"""
+    index: int
+    paragraph_index: int
+    text: str
+    pattern_type: str
+    label: str = ""
+    full_paragraph: str = ""
+    context_before: List[str] = []
+    context_after: List[str] = []
+
+
+class ProcessTemplateStep1Response(BaseModel):
+    """Response from Step 1: Detect positions"""
+    success: bool
+    total_positions: int
+    positions: List[DetectedPosition]
+    message: str = ""
+
+
+class FinalizeTemplateRequest(BaseModel):
+    """Request to finalize template with selected positions"""
+    document_id: str
+    form_name: str
+    description: Optional[str] = None
+    selected_indices: List[int]
+
+
+@app.post("/admin/forms/process-template/detect", response_model=ProcessTemplateStep1Response)
+async def process_template_detect(
+    document_id: str = Form(...),
+    form_name: str = Form(...),
+    file: UploadFile = File(...)
+):
+    """
+    Step 1: Upload form template and detect fillable positions
+    
+    Workflow:
+    1. Admin uploads DOCX
+    2. Forward to form-service /forms/detect
+    3. Return detected positions to frontend for review
+    
+    Args:
+        document_id: UUID of parent document
+        form_name: Display name for form
+        file: DOCX file to process
+    
+    Returns:
+        List of detected positions for admin to review
+    """
+    # Validate
+    try:
+        uuid.UUID(document_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid document_id UUID")
+    
+    if not file.filename or not file.filename.endswith('.docx'):
+        raise HTTPException(status_code=400, detail="Only DOCX files are supported")
+    
+    try:
+        # Read file content
+        file_content = await file.read()
+        
+        logger.info(f"📄 Step 1: Detecting positions in {file.filename}...")
+        
+        # Forward to form-service /forms/detect
+        async with httpx.AsyncClient() as client:
+            files = {'file': (file.filename, file_content, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')}
+            
+            resp = await client.post(
+                f"{FORM_SERVICE_URL}/forms/detect",
+                files=files,
+                timeout=30.0
+            )
+            
+            if resp.status_code != 200:
+                error_msg = resp.text
+                logger.error(f"❌ Form service detect failed: {error_msg}")
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Form detection failed: {error_msg}"
+                )
+            
+            detect_result = resp.json()
+        
+        logger.info(f"✅ Detected {detect_result['total_positions']} positions")
+        
+        return ProcessTemplateStep1Response(
+            success=True,
+            total_positions=detect_result['total_positions'],
+            positions=[DetectedPosition(**pos) for pos in detect_result['positions']],
+            message=f"Detected {detect_result['total_positions']} fillable positions"
+        )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to detect positions: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/admin/forms/process-template/finalize")
+async def process_template_finalize(
+    document_id: str = Form(...),
+    form_name: str = Form(...),
+    description: Optional[str] = Form(None),
+    selected_indices: str = Form(...),  # Comma-separated: "0,1,2,3"
+    file: UploadFile = File(...)
+):
+    """
+    Step 2: Finalize template with admin-confirmed positions
+    
+    Workflow:
+    1. Admin confirms which positions to keep (selected_indices)
+    2. Forward to form-service /forms/finalize
+    3. Receive template DOCX with {{field_1}}, {{field_2}}, ...
+    4. Upload template to MinIO
+    5. Save form record to DB
+    
+    Args:
+        document_id: UUID of parent document
+        form_name: Display name
+        description: Optional description
+        selected_indices: Comma-separated indices (e.g., "0,1,2,5")
+        file: Original DOCX file
+    
+    Returns:
+        Created form info with template path
+    """
+    # Validate
+    try:
+        uuid.UUID(document_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid document_id UUID")
+    
+    if not file.filename or not file.filename.endswith('.docx'):
+        raise HTTPException(status_code=400, detail="Only DOCX files are supported")
+    
+    # Parse selected indices
+    try:
+        indices_list = [int(i.strip()) for i in selected_indices.split(',') if i.strip()]
+    except:
+        raise HTTPException(status_code=400, detail="Invalid selected_indices format. Expected comma-separated numbers.")
+    
+    if not indices_list:
+        raise HTTPException(status_code=400, detail="At least one position must be selected")
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Check if document exists (commented for testing)
+        # cursor.execute("SELECT id, title FROM documents WHERE id = %s", (document_id,))
+        # document = cursor.fetchone()
+        # 
+        # if not document:
+        #     cursor.close()
+        #     conn.close()
+        #     raise HTTPException(status_code=404, detail="Document not found")
+        
+        cursor.close()
+        conn.close()
+        
+        # Read file
+        file_content = await file.read()
+        
+        logger.info(f"📝 Step 2: Creating template with {len(indices_list)} selected positions...")
+        
+        # Forward to form-service /forms/finalize
+        async with httpx.AsyncClient() as client:
+            files = {'file': (file.filename, file_content, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')}
+            data = {'selected_indices': selected_indices}
+            
+            resp = await client.post(
+                f"{FORM_SERVICE_URL}/forms/finalize",
+                files=files,
+                data=data,
+                timeout=30.0
+            )
+            
+            if resp.status_code != 200:
+                error_msg = resp.text
+                logger.error(f"❌ Form service finalize failed: {error_msg}")
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Template creation failed: {error_msg}"
+                )
+            
+            finalize_result = resp.json()
+        
+        if not finalize_result.get('success'):
+            raise HTTPException(status_code=500, detail="Template finalization failed")
+        
+        # Decode template content from base64
+        import base64
+        template_bytes = base64.b64decode(finalize_result['template_content'])
+        placeholders = finalize_result['placeholders']
+        
+        logger.info(f"✅ Template created with {len(placeholders)} placeholders: {placeholders}")
+        
+        # Upload template to MinIO via storage-service
+        form_id = str(uuid.uuid4())
+        storage_folder = f"forms/{document_id}"
+        safe_filename = f"{form_id}_{form_name.replace(' ', '_')}.docx"
+        
+        logger.info(f"📤 Uploading template to MinIO: {safe_filename}")
+        
+        async with httpx.AsyncClient() as client:
+            files_data = {"file": (safe_filename, template_bytes, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')}
+            
+            resp = await client.post(
+                f"{STORAGE_SERVICE_URL}/upload",
+                params={"folder": storage_folder},
+                files=files_data,
+                timeout=30.0
+            )
+            
+            if resp.status_code not in [200, 201]:
+                error_msg = resp.text
+                logger.error(f"❌ Storage upload failed: {error_msg}")
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Failed to upload template: {error_msg}"
+                )
+            
+            storage_result = resp.json()
+            template_path = storage_result.get('file_path')
+        
+        logger.info(f"✅ Template uploaded: {template_path}")
+        
+        # Save form record to DB
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        cursor.execute("""
+            INSERT INTO forms (
+                id, document_id, form_name, description, template_path
+            )
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id, form_name, template_path, created_at
+        """, (
+            form_id, document_id, form_name, description, template_path
+        ))
+        
+        form = cursor.fetchone()
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        logger.info(f"✅ Form record saved: {form_id}")
+        
+        return {
+            "success": True,
+            "message": f"Template processed and saved with {len(placeholders)} fields",
+            "form": {
+                "id": str(form['id']),
+                "form_name": form['form_name'],
+                "template_path": template_path,
+                "placeholders": placeholders,
+                "created_at": form['created_at'].isoformat() if form.get('created_at') else None
+            }
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Failed to finalize template: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 

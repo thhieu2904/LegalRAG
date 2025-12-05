@@ -9,11 +9,6 @@ __pycache__/
 # /backend/data/documents/
 backend/data/documents/
 
-# Backend AI Models and Cache (Large files)
-backend/data/models/hf_cache/
-backend/data/models/llm_dir/
-backend/data/vectordb/
-backend/data/cache/
 
 # Service Models - LLM, Embedding, Reranker (>1GB each)
 llm-service/models/*.gguf
@@ -23,6 +18,7 @@ rag_service/models/
 llm-service_old/models/
 rag_service_old/data/models/
 rag_service_old/app/models/
+
 
 # Hugging Face cache (auto-downloaded models)
 **/hf_cache/

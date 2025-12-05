@@ -1,4 +1,8 @@
-"""LLM Service Configuration - Vistral 7B with llama-cpp-python
+"""LLM Service Configuration - Multi-Provider Support (Local Vistral / Gemini API)
+
+Provider Pattern:
+- LLM_PROVIDER=local → Use Vistral 7B with llama-cpp-python (requires GPU)
+- LLM_PROVIDER=gemini → Use Gemini API (no GPU required)
 """
 from pydantic_settings import BaseSettings
 from typing import Optional
@@ -12,6 +16,24 @@ class Settings(BaseSettings):
     service_port: int = 8014
     service_host: str = "0.0.0.0"
     
+    # ============================================
+    # LLM Provider Selection
+    # ============================================
+    llm_provider: str = "local"  # "local" | "gemini"
+    
+    # ============================================
+    # Gemini Settings (khi llm_provider = "gemini")
+    # ============================================
+    gemini_api_key: Optional[str] = None
+    gemini_model: str = "gemini-2.5-flash-lite"
+    gemini_temperature: float = 0.3
+    gemini_max_output_tokens: int = 1024
+    gemini_top_p: float = 0.95
+    gemini_top_k: int = 40
+    
+    # ============================================
+    # Local Model Settings (khi llm_provider = "local")
+    # ============================================
     # Model config - Vistral-7B-Chat
     model_name: str = "ggml-vistral-7B-chat-q4_0.gguf"
     model_path: str = "/app/models/ggml-vistral-7B-chat-q4_0.gguf"

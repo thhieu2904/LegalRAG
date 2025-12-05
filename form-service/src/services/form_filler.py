@@ -1,13 +1,17 @@
 """
 Form Filler Service
 Fills DOCX templates with provided data and returns filled document.
+
+Features:
+- Dot-padding: Keeps trailing dots to preserve formatting
+- Run-level replacement: Preserves text styles
 """
 
 import io
 import re
 import logging
 import httpx
-from typing import Dict, Any
+from typing import Dict, Any, Optional, Tuple
 
 from config import settings
 
@@ -17,8 +21,16 @@ logger = logging.getLogger(__name__)
 class FormFiller:
     """
     Fills DOCX form templates with data.
-    Replaces {{placeholder}} with actual values.
+    Replaces {{placeholder}} with actual values + dot padding to preserve format.
+    
+    Example:
+        Template: "Họ tên: {{ho_ten}}............"
+        Data: {"ho_ten": "Nguyễn Văn A"}
+        Result: "Họ tên: Nguyễn Văn A..........."
     """
+    
+    # Minimum dots to keep after value
+    MIN_PADDING_DOTS = 1
     
     def __init__(self):
         self.storage_url = settings.STORAGE_SERVICE_URL
@@ -109,7 +121,7 @@ class FormFiller:
     def _prepare_context(self, data: Dict[str, Any], placeholders: list[str]) -> Dict[str, str]:
         """
         Prepare context by mapping input data to template placeholders.
-        Direct mapping: placeholder name = data key
+        Direct mapping: placeholder name = data key (field_1 = field_1)
         """
         context = {}
         
@@ -126,15 +138,65 @@ class FormFiller:
         return context
     
     def _fill_docx(self, template_content: bytes, context: Dict[str, str]) -> bytes | None:
-        """Fill DOCX template using docxtpl"""
+        """
+        Fill DOCX template with dot-padding to preserve formatting.
+        
+        Uses run-level replacement instead of docxtpl to keep trailing dots.
+        Pattern: {{field_id}}.... → value........
+        """
         try:
-            from docxtpl import DocxTemplate
+            from docx import Document
             
-            template_file = io.BytesIO(template_content)
-            doc = DocxTemplate(template_file)
+            doc = Document(io.BytesIO(template_content))
+            filled_count = 0
             
-            # Render with context
-            doc.render(context)
+            def process_runs(runs):
+                """Process runs in a paragraph, replacing placeholders with values + dots."""
+                nonlocal filled_count
+                
+                for run in runs:
+                    text = run.text
+                    
+                    # Find all placeholders in this run
+                    for field_id, value in context.items():
+                        if not value:  # Skip empty values
+                            continue
+                        
+                        placeholder = f"{{{{{field_id}}}}}"
+                        
+                        if placeholder in text:
+                            # Pattern: {{field}}[dots] - capture dots after placeholder
+                            pattern = re.escape(placeholder) + r'([\.…]*)'
+                            match = re.search(pattern, text)
+                            
+                            if match:
+                                original_dots = match.group(1)
+                                total_space = len(placeholder) + len(original_dots)
+                                
+                                # Calculate padding: value + dots to fill original space
+                                value_len = len(value)
+                                padding_dots = max(self.MIN_PADDING_DOTS, total_space - value_len)
+                                
+                                # Replace with value + padding dots
+                                replacement = value + ('.' * padding_dots)
+                                text = re.sub(pattern, replacement, text, count=1)
+                                filled_count += 1
+                                logger.debug(f"Filled '{field_id}' = '{value}' ({padding_dots} dots)")
+                    
+                    run.text = text
+            
+            # Process all paragraphs in tables
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        for para in cell.paragraphs:
+                            process_runs(para.runs)
+            
+            # Process main document paragraphs
+            for para in doc.paragraphs:
+                process_runs(para.runs)
+            
+            logger.info(f"Filled {filled_count} placeholders with dot-padding")
             
             # Save to bytes
             output_buffer = io.BytesIO()
@@ -144,7 +206,7 @@ class FormFiller:
             return output_buffer.getvalue()
             
         except ImportError:
-            logger.error("docxtpl not installed")
+            logger.error("python-docx not installed")
             return None
         except Exception as e:
             logger.error(f"Fill DOCX error: {e}")

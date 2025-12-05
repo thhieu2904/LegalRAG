@@ -25,6 +25,11 @@ export const ENDPOINTS = {
     FORM_BY_ID: (id: string) => `/admin/forms/${id}`,
     FORM_TEMPLATES: '/admin/form-templates',
 
+    // Hybrid form template creation (detect + finalize)
+    PROCESS_TEMPLATE_DETECT: '/admin/forms/process-template/detect',
+    PROCESS_TEMPLATE_FINALIZE: '/admin/forms/process-template/finalize',
+    PROCESS_TEMPLATE_PREVIEW: '/admin/templates/preview',
+
     // User-filled forms management
     USER_FORMS: '/admin/user-forms',
     USER_FORMS_BY_SESSION: (sessionId: string) => `/admin/user-forms/${sessionId}`,
