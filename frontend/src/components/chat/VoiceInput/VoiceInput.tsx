@@ -50,8 +50,8 @@ const getVoiceSettings = () => {
   }
 };
 
-// Silence timeout in ms (3 seconds)
-const SILENCE_TIMEOUT = 3000;
+// Silence timeout in ms (2 seconds)
+const SILENCE_TIMEOUT = 2000;
 
 export const VoiceInput = ({
   onTranscriptChange,
