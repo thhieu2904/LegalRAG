@@ -133,14 +133,17 @@ async def fill_form(request: FormFillRequest):
     Args:
         template_path: Path in MinIO
         data: Dictionary with values {scan_ho_ten: "...", form_nghe_nghiep: "..."}
+        session_id: Optional session ID for filename
+        form_name: Optional human-readable form name
         
     Returns:
         JSON with base64 encoded filled DOCX
     """
     import base64
+    from datetime import datetime
     
     try:
-        filled_content, error = await form_filler.fill(
+        filled_content, error, validation_info = await form_filler.fill(
             template_path=request.template_path,
             data=request.data
         )
@@ -149,25 +152,50 @@ async def fill_form(request: FormFillRequest):
             return {
                 "success": False,
                 "message": error,
-                "file_bytes": None
+                "file_bytes": None,
+                "total_fields": validation_info.get("total_fields") if validation_info else None,
+                "filled_fields": validation_info.get("filled_fields") if validation_info else None,
+                "missing_fields": validation_info.get("missing_fields") if validation_info else None
             }
         
         # filled_content is guaranteed to be bytes here (not None)
         assert filled_content is not None
+        assert validation_info is not None
         
         # Encode to base64 for JSON transport
         file_bytes_b64 = base64.b64encode(filled_content).decode("utf-8")
         
-        # Generate filename from template path
+        # Generate descriptive filename
         template_name = request.template_path.split("/")[-1]
         base_name = template_name.rsplit(".", 1)[0]
-        filename = f"{base_name}_filled.docx"
+        
+        # Build filename: {form_name}_{session_id_last6}_{timestamp}.docx
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        if request.session_id:
+            session_suffix = request.session_id[-6:]  # Last 6 chars of session
+            filename = f"{base_name}_{session_suffix}_{timestamp}.docx"
+        else:
+            filename = f"{base_name}_{timestamp}.docx"
+        
+        # Build success message based on validation
+        total = validation_info["total_fields"]
+        filled = validation_info["filled_fields"]
+        
+        if filled == total:
+            message = f"Đã điền đầy đủ tất cả {total} trường"
+        else:
+            missing_count = total - filled
+            message = f"Đã điền {filled}/{total} trường (còn {missing_count} trường chưa điền)"
         
         return {
             "success": True,
-            "message": f"Form filled successfully",
+            "message": message,
             "file_bytes": file_bytes_b64,
-            "filename": filename
+            "filename": filename,
+            "total_fields": total,
+            "filled_fields": filled,
+            "missing_fields": validation_info["missing_fields"]
         }
         
     except HTTPException:

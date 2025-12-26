@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { X, Mic, Volume2, Info, Play } from 'lucide-react';
 import { useTTS } from '@/hooks/useTTS';
+import { getStorageItem, setStorageItem } from '@/utils/helpers/storage';
 import type { VoiceSettingsProps, VoiceSettingsState } from './VoiceSettings.types';
 import { DEFAULT_VOICE_SETTINGS, LANGUAGE_OPTIONS } from './VoiceSettings.types';
 import styles from './VoiceSettings.module.css';
@@ -18,14 +19,8 @@ export const VoiceSettings = ({ isOpen, onClose }: VoiceSettingsProps) => {
 
   // Load settings from localStorage
   useEffect(() => {
-    const stored = localStorage.getItem('voiceSettings');
-    if (stored) {
-      try {
-        setSettings({ ...DEFAULT_VOICE_SETTINGS, ...JSON.parse(stored) });
-      } catch (error) {
-        console.error('Failed to load voice settings:', error);
-      }
-    }
+    const stored = getStorageItem<Partial<VoiceSettingsState>>('voiceSettings', {});
+    setSettings({ ...DEFAULT_VOICE_SETTINGS, ...stored });
   }, []);
 
   // Load available TTS voices
@@ -72,7 +67,7 @@ export const VoiceSettings = ({ isOpen, onClose }: VoiceSettingsProps) => {
 
   // Save settings to localStorage
   const saveSettings = (newSettings: VoiceSettingsState) => {
-    localStorage.setItem('voiceSettings', JSON.stringify(newSettings));
+    setStorageItem('voiceSettings', newSettings);
     setSettings(newSettings);
   };
 

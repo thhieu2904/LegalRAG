@@ -35,7 +35,7 @@ export const ChatMessage = ({ message, onSelectDocument }: ChatMessageProps) => 
   useEffect(() => {
     const checkTTSEnabled = () => {
       const stored = localStorage.getItem('voiceSettings');
-      if (stored) {
+      if (stored && stored !== 'undefined' && stored !== 'null') {
         try {
           return JSON.parse(stored).ttsEnabled || false;
         } catch {

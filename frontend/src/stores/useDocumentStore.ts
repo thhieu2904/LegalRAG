@@ -75,7 +75,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
       formData.append('collection_id', collectionId);
       formData.append('title', title);
 
-      await apiClient.post(ENDPOINTS.ADMIN.DOCUMENTS, formData, {
+      await apiClient.post(ENDPOINTS.ADMIN.PROCESS_DOCUMENT, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

@@ -22,7 +22,9 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const [isVoiceSettingsOpen, setIsVoiceSettingsOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem('isAdminLoggedIn');
+    // Clear JWT token
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_token_expires');
     navigate('/admin/login', { replace: true });
   };
 

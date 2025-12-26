@@ -37,6 +37,7 @@ export const FormViewer = ({
   // Refs for managing React roots and state
   const formContentRef = useRef<HTMLDivElement>(null);
   const reactRootsRef = useRef<Map<HTMLElement, Root>>(new Map());
+  const fieldElementsRef = useRef<Map<string, HTMLElement>>(new Map()); // Track field elements
   const isHydratedRef = useRef(false);
   const htmlSetRef = useRef(false);
   const formDataRef = useRef<Record<string, string>>({});
@@ -48,6 +49,7 @@ export const FormViewer = ({
   // Cleanup React roots on unmount
   useEffect(() => {
     const currentRoots = reactRootsRef.current;
+    const currentFieldElements = fieldElementsRef.current;
     return () => {
       currentRoots.forEach((root, element) => {
         try {
@@ -58,6 +60,7 @@ export const FormViewer = ({
         }
       });
       currentRoots.clear();
+      currentFieldElements.clear();
       isHydratedRef.current = false;
     };
   }, []);
@@ -71,6 +74,22 @@ export const FormViewer = ({
   const handleFieldSave = useCallback((fieldName: string, value: string) => {
     formDataRef.current[fieldName] = value;
     onFieldChangeRef.current(fieldName, value);
+
+    // Re-render only this specific field component
+    const element = fieldElementsRef.current.get(fieldName);
+    const root = element ? reactRootsRef.current.get(element) : null;
+
+    if (element && root) {
+      root.render(
+        <EditablePlaceholder
+          fieldName={fieldName}
+          value={value}
+          onSave={handleFieldSave}
+          placeholder={`Nhập ${fieldName.replace(/_/g, ' ')}`}
+        />
+      );
+      console.log(`🔄 Re-rendered field: ${fieldName} with value: "${value}"`);
+    }
   }, []);
 
   // Hydrate placeholders with React components
@@ -119,6 +138,7 @@ export const FormViewer = ({
         // Create React root
         const root = createRoot(htmlElement);
         reactRootsRef.current.set(htmlElement, root);
+        fieldElementsRef.current.set(fieldName, htmlElement); // Track element for re-render
         htmlElement.classList.add('react-hydrated');
 
         // Render EditablePlaceholder

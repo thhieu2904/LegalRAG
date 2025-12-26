@@ -35,8 +35,22 @@ RUN echo 'server { \
     listen 3000; \
     root /usr/share/nginx/html; \
     index index.html; \
+    \
+    # Cache static assets (JS/CSS) with hash in filename \
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ { \
+        expires 1y; \
+        add_header Cache-Control "public, immutable"; \
+    } \
+    \
+    # Never cache HTML files \
+    location ~* \.html$ { \
+        expires -1; \
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"; \
+    } \
+    \
     location / { \
         try_files $uri $uri/ /index.html; \
+        add_header Cache-Control "no-store, no-cache, must-revalidate"; \
     } \
 }' > /etc/nginx/conf.d/default.conf
 

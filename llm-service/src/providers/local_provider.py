@@ -124,7 +124,14 @@ class LocalProvider(BaseLLMProvider):
             temperature = temperature or settings.temperature
             top_p = top_p or settings.top_p
             top_k = top_k or settings.top_k
-            repeat_penalty = kwargs.get("repeat_penalty", settings.repeat_penalty)
+            repeat_penalty = kwargs.get("repeat_penalty") or settings.repeat_penalty
+            
+            # Ensure all numeric params are correct types (avoid string from env)
+            max_tokens = int(max_tokens)
+            temperature = float(temperature)
+            top_p = float(top_p)
+            top_k = int(top_k)
+            repeat_penalty = float(repeat_penalty)
             
             # Generate với llama-cpp-python
             output = self._llm(

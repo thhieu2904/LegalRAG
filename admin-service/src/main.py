@@ -9,8 +9,9 @@ Workflow:
 6. Call Vector-Service: INSERT chunks (document already exists)
 7. Admin: UPDATE documents chunk_count
 """
-from fastapi import FastAPI, File, UploadFile, HTTPException, Form
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import logging
@@ -25,6 +26,7 @@ from psycopg2.extras import RealDictCursor
 
 from .routers import user_forms
 from .routers import form_templates
+from .routers import auth
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -33,9 +35,12 @@ logging.basicConfig(level=logging.INFO)
 
 ADMIN_SERVICE_URL = os.getenv("ADMIN_SERVICE_URL", "http://localhost:8001")
 STORAGE_SERVICE_URL = os.getenv("STORAGE_SERVICE_URL", "http://localhost:8010")
-EMBEDDING_SERVICE_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://localhost:8002")
-VECTOR_SERVICE_URL = os.getenv("VECTOR_SERVICE_URL", "http://localhost:8004")
-FORM_SERVICE_URL = os.getenv("FORM_SERVICE_URL", "http://localhost:8003")
+EMBEDDING_SERVICE_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://localhost:8011")
+VECTOR_SERVICE_URL = os.getenv("VECTOR_SERVICE_URL", "http://localhost:8012")
+RERANK_SERVICE_URL = os.getenv("RERANK_SERVICE_URL", "http://localhost:8013")
+LLM_SERVICE_URL = os.getenv("LLM_SERVICE_URL", "http://localhost:8014")
+FORM_SERVICE_URL = os.getenv("FORM_SERVICE_URL", "http://localhost:8015")
+QUERY_SERVICE_URL = os.getenv("QUERY_SERVICE_URL", "http://localhost:8002")
 SERVICE_PORT = int(os.getenv("SERVICE_PORT", 8001))
 
 # PostgreSQL config (AICenter pattern: Admin has direct DB access)
@@ -46,9 +51,12 @@ POSTGRES_USER = os.getenv("POSTGRES_USER", "legalrag")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "legalrag_password")
 
 logger.info(f"📡 Admin Service URL: {ADMIN_SERVICE_URL}")
+logger.info(f"📡 Query Service URL: {QUERY_SERVICE_URL}")
 logger.info(f"📡 Storage Service URL: {STORAGE_SERVICE_URL}")
 logger.info(f"📡 Embedding Service URL: {EMBEDDING_SERVICE_URL}")
 logger.info(f"📡 Vector Service URL: {VECTOR_SERVICE_URL}")
+logger.info(f"📡 Rerank Service URL: {RERANK_SERVICE_URL}")
+logger.info(f"📡 LLM Service URL: {LLM_SERVICE_URL}")
 logger.info(f"📡 Form Service URL: {FORM_SERVICE_URL}")
 logger.info(f"🗄️  PostgreSQL: {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
 
@@ -206,6 +214,7 @@ app = FastAPI(
 # Include routers
 app.include_router(user_forms.router)
 app.include_router(form_templates.router)
+app.include_router(auth.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -214,6 +223,69 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ============= AUTH MIDDLEWARE =============
+
+@app.middleware("http")
+async def protect_admin_endpoints(request: Request, call_next):
+    """
+    Protect all /admin/* endpoints (except /admin/health, OPTIONS, and /auth/*)
+    Require JWT token in Authorization header
+    """
+    path = request.url.path
+    method = request.method
+    
+    # Public endpoints (no auth required)
+    public_endpoints = [
+        "/health",
+        "/docs",
+        "/openapi.json",
+        "/redoc"
+    ]
+    
+    # Skip auth for public endpoints
+    if any(path == endpoint for endpoint in public_endpoints):
+        return await call_next(request)
+    
+    # Skip auth for /auth/* endpoints (login, etc.)
+    if path.startswith("/auth/"):
+        return await call_next(request)
+    
+    # Skip auth for OPTIONS requests (CORS preflight)
+    if method == "OPTIONS":
+        return await call_next(request)
+    
+    # Require auth for all /admin/* endpoints (except health checks)
+    if path.startswith("/admin/"):
+        # Allow health checks without auth
+        if path == "/admin/health" or path == "/admin/services-health":
+            return await call_next(request)
+        
+        # Validate JWT token
+        auth_header = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            logger.warning(f"⚠️  Unauthorized admin access attempt: {path} from {request.client.host}")
+            return JSONResponse(
+                {"detail": "Missing or invalid authorization header"},
+                status_code=401
+            )
+        
+        token = auth_header.split(" ")[1]
+        
+        try:
+            # Validate token using auth module
+            from .routers.auth import decode_token
+            token_data = decode_token(token)
+            logger.debug(f"✅ Authenticated request: {method} {path} by {token_data.username}")
+        except HTTPException as e:
+            logger.warning(f"⚠️  Invalid token for {path}: {e.detail}")
+            return JSONResponse(
+                {"detail": e.detail},
+                status_code=e.status_code
+            )
+    
+    return await call_next(request)
 
 
 # ============= AUDIT LOG HELPER =============
@@ -474,10 +546,16 @@ async def get_recent_queries(limit: int = 10):
 async def get_services_health():
     """Check health of all microservices"""
     services = [
+        # User-facing services (800X)
         {"name": "Admin Service", "url": f"{ADMIN_SERVICE_URL}/health", "port": 8001},
+        {"name": "Query Service", "url": f"{QUERY_SERVICE_URL}/health", "port": 8002},
+        # Internal services (801X)
         {"name": "Storage Service", "url": f"{STORAGE_SERVICE_URL}/health", "port": 8010},
-        {"name": "Embedding Service", "url": f"{EMBEDDING_SERVICE_URL}/health", "port": 8002},
-        {"name": "Vector Service", "url": f"{VECTOR_SERVICE_URL}/health", "port": 8004},
+        {"name": "Embedding Service", "url": f"{EMBEDDING_SERVICE_URL}/health", "port": 8011},
+        {"name": "Vector Service", "url": f"{VECTOR_SERVICE_URL}/health", "port": 8012},
+        {"name": "Rerank Service", "url": f"{RERANK_SERVICE_URL}/health", "port": 8013},
+        {"name": "LLM Service", "url": f"{LLM_SERVICE_URL}/health", "port": 8014},
+        {"name": "Form Service", "url": f"{FORM_SERVICE_URL}/health", "port": 8015},
     ]
     
     results = []

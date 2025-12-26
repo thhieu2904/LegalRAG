@@ -6,20 +6,36 @@
  *
  * Admin Routes:
  * - /admin/login → Admin login
- * - /admin → Admin dashboard (auth required - TODO)
+ * - /admin → Admin dashboard (JWT auth required)
  */
 
 import { createBrowserRouter } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 import { ROUTES } from '@/constants';
 import { MainLayout, AdminLayout } from '@/layouts';
-// import { ProtectedRoute } from '@/components/auth'; // TODO: Enable when auth service ready
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      fontSize: '1.5rem',
+    }}
+  >
+    Đang tải...
+  </div>
+);
 
 // Lazy load pages
-import { lazy } from 'react';
-
 // Pages with default export (no conversion needed)
 const ChatPage = lazy(() => import('@/pages/ChatPage'));
-const AdminLoginPage = lazy(() => import('@/pages/AdminLoginPage'));
+const AdminLoginPage = lazy(() =>
+  import('@/pages/AdminLoginPage').then((m) => ({ default: m.AdminLoginPage }))
+);
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 // Pages with named export (need conversion)
@@ -58,12 +74,20 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <ChatPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <ChatPage />
+          </Suspense>
+        ),
       },
       // Form Fill Page - nested under MainLayout
       {
         path: 'forms/:docId/:formFilename',
-        element: <FormFillPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <FormFillPage />
+          </Suspense>
+        ),
       },
     ],
   },
@@ -72,46 +96,77 @@ export const router = createBrowserRouter([
   // Admin login (public)
   {
     path: '/admin/login',
-    element: <AdminLoginPage />,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <AdminLoginPage />
+      </Suspense>
+    ),
   },
 
-  // Admin dashboard (TODO: protect with auth)
+  // Admin dashboard (protected with JWT)
   {
     path: ROUTES.ADMIN,
-    element: <AdminLayout />,
-    // element: ( // TODO: Uncomment when auth service ready
-    //   <ProtectedRoute requiredRole="admin">
-    //     <AdminLayout />
-    //   </ProtectedRoute>
-    // ),
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
-        element: <DashboardPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <DashboardPage />
+          </Suspense>
+        ),
       },
       {
         path: 'collections',
-        element: <CollectionsPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <CollectionsPage />
+          </Suspense>
+        ),
       },
       {
         path: 'collections/:id',
-        element: <CollectionDetailPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <CollectionDetailPage />
+          </Suspense>
+        ),
       },
       {
         path: 'collections/:id/upload',
-        element: <UploadDocumentPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <UploadDocumentPage />
+          </Suspense>
+        ),
       },
       {
         path: 'documents',
-        element: <DocumentsPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <DocumentsPage />
+          </Suspense>
+        ),
       },
       {
         path: 'documents/:id',
-        element: <DocumentDetailPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <DocumentDetailPage />
+          </Suspense>
+        ),
       },
       {
         path: 'user-forms',
-        element: <UserFormsPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <UserFormsPage />
+          </Suspense>
+        ),
       },
       // TODO: Add more admin routes
       // { path: 'stats', element: <StatsPage /> },
@@ -120,7 +175,11 @@ export const router = createBrowserRouter([
       // Legacy AdminPage (will be removed)
       {
         path: 'old',
-        element: <AdminPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <AdminPage />
+          </Suspense>
+        ),
       },
     ],
   },
@@ -128,6 +187,10 @@ export const router = createBrowserRouter([
   // ============ 404 NOT FOUND ============
   {
     path: '*',
-    element: <NotFoundPage />,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <NotFoundPage />
+      </Suspense>
+    ),
   },
 ]);

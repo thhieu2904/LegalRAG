@@ -17,6 +17,7 @@ export const ENDPOINTS = {
     DOCUMENTS: '/admin/documents',
     DOCUMENT_BY_ID: (id: string) => `/admin/documents/${id}`,
     DOCUMENT_REPLACE: (id: string) => `/admin/documents/${id}/replace`,
+    PROCESS_DOCUMENT: '/admin/process-document',
 
     // Forms management
     FORMS: '/admin/forms',

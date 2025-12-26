@@ -28,13 +28,13 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
 
 class CCCDData(BaseModel):
     """Parsed CCCD data from QR code - matches form-service output"""
-    scan_cccd: str  # Số căn cước công dân
-    scan_cmnd: Optional[str] = None  # Số CMND cũ
-    scan_ho_ten: str  # Họ và tên
-    scan_ngay_sinh: str  # Ngày sinh
-    scan_gioi_tinh: str  # Giới tính
-    scan_dia_chi: str  # Địa chỉ
-    scan_ngay_cap: str  # Ngày cấp
+    field_cccd: str  # Số căn cước công dân
+    field_cmnd: Optional[str] = None  # Số CMND cũ
+    field_ho_ten: str  # Họ và tên
+    field_ngay_sinh: str  # Ngày sinh
+    field_gioi_tinh: str  # Giới tính
+    field_dia_chi: str  # Địa chỉ
+    field_ngay_cap: str  # Ngày cấp
 
 
 class CCCDScanRequest(BaseModel):
@@ -71,6 +71,7 @@ class FormFillRequest(BaseModel):
     template_path: str  # Path in MinIO: forms/{doc_id}/{filename}
     data: Dict[str, Any]  # Mapping of placeholders to values
     session_id: Optional[str] = None  # For naming saved file
+    form_name: Optional[str] = None  # Human-readable form name for filename
     cccd_number: Optional[str] = None  # For naming saved file
 
 
@@ -80,6 +81,11 @@ class FormFillResponse(BaseModel):
     message: str
     file_bytes: Optional[str] = None  # Base64 encoded DOCX
     saved_path: Optional[str] = None  # Path where form was saved (if auto-save)
+    filename: Optional[str] = None  # Suggested filename
+    # Validation info
+    total_fields: Optional[int] = None
+    filled_fields: Optional[int] = None
+    missing_fields: Optional[list] = None
 
 
 class FormSaveRequest(BaseModel):
@@ -283,6 +289,8 @@ async def fill_form(request: FormFillRequest):
         
         if request.session_id:
             payload["session_id"] = request.session_id
+        if request.form_name:
+            payload["form_name"] = request.form_name
         if request.cccd_number:
             payload["cccd_number"] = request.cccd_number
         

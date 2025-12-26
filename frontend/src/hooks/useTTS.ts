@@ -64,7 +64,7 @@ const useProvideTTS = (): UseTTSReturn => {
   // Load config from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem('voiceSettings');
-    if (stored) {
+    if (stored && stored !== 'undefined' && stored !== 'null') {
       try {
         const settings = JSON.parse(stored);
         configRef.current = {
@@ -83,7 +83,7 @@ const useProvideTTS = (): UseTTSReturn => {
   useEffect(() => {
     const handleStorageChange = () => {
       const stored = localStorage.getItem('voiceSettings');
-      if (stored) {
+      if (stored && stored !== 'undefined' && stored !== 'null') {
         try {
           const settings = JSON.parse(stored);
           configRef.current = {
@@ -121,7 +121,7 @@ const useProvideTTS = (): UseTTSReturn => {
     (text: string, utteranceId?: string, forceSpeak = false) => {
       // Reload config from localStorage BEFORE checking (fix bug: stale config)
       const stored = localStorage.getItem('voiceSettings');
-      if (stored) {
+      if (stored && stored !== 'undefined' && stored !== 'null') {
         try {
           const settings = JSON.parse(stored);
           configRef.current = {
@@ -257,7 +257,7 @@ const useProvideTTS = (): UseTTSReturn => {
 
   const isEnabled = useCallback((): boolean => {
     const stored = localStorage.getItem('voiceSettings');
-    if (stored) {
+    if (stored && stored !== 'undefined' && stored !== 'null') {
       try {
         const settings = JSON.parse(stored);
         return settings.ttsEnabled || false;

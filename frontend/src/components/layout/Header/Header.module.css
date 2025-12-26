@@ -79,6 +79,7 @@
   justify-content: flex-end;
   align-items: center;
   flex-shrink: 0;
+  padding-right: 1.5rem;
 }
 
 .assistantInfo {

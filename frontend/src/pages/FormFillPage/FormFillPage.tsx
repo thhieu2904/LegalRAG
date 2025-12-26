@@ -22,6 +22,8 @@ import { ArrowLeft } from 'lucide-react';
 import { CCCDScanner } from './components/CCCDScanner';
 import { FormViewer } from './components';
 import { useFormFill } from './hooks/useFormFill';
+import { ConfirmModal } from '@/components/common/ConfirmModal';
+import { ToastItem } from '@/components/common/Toast';
 import styles from './FormFillPage.module.css';
 
 export const FormFillPage = () => {
@@ -41,12 +43,19 @@ export const FormFillPage = () => {
     cccdData,
     cccdScanning,
 
+    // Modal/Toast state
+    validationModal,
+    setValidationModal,
+    toast,
+    setToast,
+
     // Actions
     loadForm,
     handleCCCDScan,
     resetCCCD,
     handleFieldChange,
     handleDownload,
+    executeDownload,
     downloadLoading,
   } = useFormFill();
 
@@ -106,6 +115,47 @@ export const FormFillPage = () => {
           </div>
         </div>
       </main>
+
+      {/* Validation Modal */}
+      <ConfirmModal
+        isOpen={validationModal.isOpen}
+        onClose={() => setValidationModal({ ...validationModal, isOpen: false })}
+        onConfirm={() => {
+          setValidationModal({ ...validationModal, isOpen: false });
+          executeDownload(); // Execute download with stored data
+        }}
+        title="Biểu mẫu chưa điền đầy đủ"
+        message={
+          <>
+            <p style={{ marginBottom: '12px' }}>
+              Đã điền:{' '}
+              <strong>
+                {validationModal.filledFields}/{validationModal.totalFields}
+              </strong>{' '}
+              trường
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Còn thiếu: <strong>{validationModal.missingCount}</strong> trường chưa điền
+            </p>
+            <p style={{ color: '#6b7280', fontSize: '13px' }}>
+              💡 Lưu ý: Các trường còn thiếu có thể điền bằng tay sau khi tải về.
+            </p>
+          </>
+        }
+        confirmText="Tải xuống"
+        cancelText="Hủy"
+        variant="warning"
+      />
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <ToastItem
+          id="form-toast"
+          message={toast.message}
+          type={toast.variant}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
     </div>
   );
 };

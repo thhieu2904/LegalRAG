@@ -39,7 +39,8 @@ interface SpeechRecognitionEventLike {
 const getVoiceSettings = () => {
   try {
     const raw = localStorage.getItem('voiceSettings');
-    if (!raw) return { language: 'vi-VN', isAutoSendEnabled: false };
+    if (!raw || raw === 'undefined' || raw === 'null')
+      return { language: 'vi-VN', isAutoSendEnabled: false };
     const parsed = JSON.parse(raw);
     return {
       language: parsed.language || 'vi-VN',

@@ -1,0 +1,23 @@
+{
+  "api_base_url": "http://localhost:8002",
+  "db_connection": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "legalrag",
+    "user": "postgres",
+    "password": "postgres"
+  },
+  "test_set_size": 50,
+  "top_k": 5,
+  "evaluation_metrics": {
+    "precision_k": [1, 3, 5, 10],
+    "recall_k": [5, 10],
+    "mrr": true,
+    "hit_rate_k": [1, 5],
+    "ndcg_k": [5, 10]
+  },
+  "performance_metrics": {
+    "latency_percentiles": [50, 90, 95, 99],
+    "measure_breakdown": true
+  }
+}

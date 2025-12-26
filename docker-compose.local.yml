@@ -12,11 +12,11 @@
 services:
   # Rerank Service - CPU (tiết kiệm VRAM cho LLM)
   rerank-service:
+    container_name: legalrag-rerank
     build:
       context: ./rerank-service
       dockerfile: Dockerfile
       target: runtime
-    container_name: legalrag-rerank-local
     environment:
       SERVICE_NAME: rerank-service
       SERVICE_PORT: 8013
@@ -35,9 +35,30 @@ services:
 
   # LLM Service - Vistral 7B GPU
   llm-service:
-    container_name: legalrag-llm-local
-    env_file:
-      - ./llm-service/.env.local
+    container_name: legalrag-llm
+    ports:
+      - "8014:8014"
+    environment:
+      SERVICE_PORT: "8014"
+      LLM_PROVIDER: "local"
+      MODEL_NAME: ggml-vistral-7B-chat-q4_0.gguf
+      MODEL_PATH: /app/models/ggml-vistral-7B-chat-q4_0.gguf
+      MODEL_CACHE_DIR: /app/models
+      HF_MODEL_REPO: uonlp/Vistral-7B-Chat-gguf
+      HF_MODEL_FILE: ggml-vistral-7B-chat-q4_0.gguf
+      N_CTX: 5120
+      N_GPU_LAYERS: -1
+      N_THREADS: 4
+      N_BATCH: 512
+      MAX_TOKENS: 1280
+      TEMPERATURE: 0.7
+      TOP_P: 0.9
+      TOP_K: 40
+      REPEAT_PENALTY: 1.1
+      DEVICE: cuda
+      USE_MMAP: "true"
+      USE_MLOCK: "false"
+      VERBOSE: "false"
     deploy:
       resources:
         reservations:

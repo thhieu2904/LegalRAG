@@ -330,7 +330,7 @@ if __name__ == "__main__":
     import uvicorn
     
     uvicorn.run(
-        "main:app",
+        "src.main:app",
         host=settings.service_host,
         port=settings.service_port,
         reload=False,

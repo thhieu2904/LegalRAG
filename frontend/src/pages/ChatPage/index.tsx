@@ -35,7 +35,7 @@ export default function ChatPage() {
       let isTTSEnabled = false;
       let autoSpeak = true;
 
-      if (stored) {
+      if (stored && stored !== 'undefined' && stored !== 'null') {
         try {
           const settings = JSON.parse(stored);
           isTTSEnabled = settings.ttsEnabled || false;

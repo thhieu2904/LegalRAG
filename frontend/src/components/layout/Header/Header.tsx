@@ -4,7 +4,7 @@
  * Admin adds Sidebar + Menu button (mobile)
  */
 
-import { Menu, Settings } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUIStore } from '@/stores/uiStore';
 import styles from './Header.module.css';
@@ -47,11 +47,8 @@ export const Header = ({ variant = 'chat' }: HeaderProps) => {
                 Hệ thống hỗ trợ thông tin thủ tục hành chính
               </div>
             </div>
-            {variant === 'chat' ? (
-              <Link to="/admin/login" className={styles.settingsButton} title="Đăng nhập Admin">
-                <Settings size={20} />
-              </Link>
-            ) : (
+            {/* Admin login removed - access via direct URL: /admin/login */}
+            {variant !== 'chat' && (
               <Link to="/" className={styles.backButton} title="Trang chủ">
                 Trang chủ
               </Link>

@@ -37,7 +37,7 @@ class FormFiller:
         self.timeout = settings.STORAGE_TIMEOUT
         logger.info(f"FormFiller initialized with storage: {self.storage_url}")
     
-    async def fill(self, template_path: str, data: Dict[str, Any]) -> tuple[bytes | None, str | None]:
+    async def fill(self, template_path: str, data: Dict[str, Any]) -> tuple[bytes | None, str | None, Dict[str, Any] | None]:
         """
         Fill template with provided data.
         
@@ -46,13 +46,13 @@ class FormFiller:
             data: Dictionary with placeholder values {scan_ho_ten: "...", form_nghe_nghiep: "..."}
             
         Returns:
-            Tuple of (filled_docx_bytes, error_message)
+            Tuple of (filled_docx_bytes, error_message, validation_info)
         """
         try:
             # Download template
             template_content = await self._download_template(template_path)
             if not template_content:
-                return None, f"Failed to download template: {template_path}"
+                return None, f"Failed to download template: {template_path}", None
             
             # Extract placeholders from template
             placeholders = self._extract_placeholders_from_docx(template_content)
@@ -61,17 +61,27 @@ class FormFiller:
             # Prepare context (map data to placeholders)
             context = self._prepare_context(data, placeholders)
             
+            # Calculate validation info
+            filled_count = len([v for v in context.values() if v])
+            missing_fields = [k for k, v in context.items() if not v]
+            
+            validation_info = {
+                "total_fields": len(placeholders),
+                "filled_fields": filled_count,
+                "missing_fields": missing_fields
+            }
+            
             # Fill template
             filled_content = self._fill_docx(template_content, context)
             if not filled_content:
-                return None, "Failed to fill template"
+                return None, "Failed to fill template", validation_info
             
-            logger.info(f"✅ Filled template: {template_path}, {len(context)} values")
-            return filled_content, None
+            logger.info(f"✅ Filled template: {template_path}, {filled_count}/{len(placeholders)} fields")
+            return filled_content, None, validation_info
             
         except Exception as e:
             logger.error(f"Fill error: {e}")
-            return None, f"Fill error: {str(e)}"
+            return None, f"Fill error: {str(e)}", None
     
     async def _download_template(self, template_path: str) -> bytes | None:
         """Download template from storage-service"""

@@ -8,7 +8,7 @@
  * - Download logic
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { queryClient } from '@/services/api/client';
 import { ENDPOINTS } from '@/services/api/endpoints';
 import type {
@@ -40,6 +40,30 @@ export const useFormFill = () => {
 
   // Download state
   const [downloadLoading, setDownloadLoading] = useState(false);
+
+  // Store response data for modal confirmation flow
+  const pendingDownloadRef = useRef<{
+    fileBytes: string;
+    filename: string;
+    totalFields: number;
+    filledFields: number;
+    sessionId: string | null;
+    cccdNumber?: string;
+  } | null>(null);
+
+  // Modal/Toast state
+  const [validationModal, setValidationModal] = useState<{
+    isOpen: boolean;
+    totalFields: number;
+    filledFields: number;
+    missingCount: number;
+  }>({ isOpen: false, totalFields: 0, filledFields: 0, missingCount: 0 });
+
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    variant: 'success' | 'error' | 'info';
+  }>({ show: false, message: '', variant: 'success' });
 
   /**
    * Load and render form
@@ -131,39 +155,20 @@ export const useFormFill = () => {
   }, []);
 
   /**
-   * Download filled form and save to storage
+   * Execute actual download (called after modal confirmation or directly)
    */
-  const handleDownload = useCallback(async () => {
-    if (!templatePath) {
-      alert('Chưa có biểu mẫu để tải');
+  const executeDownload = useCallback(async () => {
+    if (!pendingDownloadRef.current) {
+      console.error('No pending download data');
       return;
     }
+
+    const { fileBytes, filename, totalFields, filledFields, sessionId, cccdNumber } =
+      pendingDownloadRef.current;
 
     setDownloadLoading(true);
 
     try {
-      // Get session ID from sessionStorage
-      const sessionId = sessionStorage.getItem(SESSION_ID_KEY);
-      if (!sessionId) {
-        console.warn('⚠️ No session ID found - form will not be saved to storage');
-      }
-
-      // Get CCCD number from scanned data or form data
-      const cccdNumber = cccdData?.field_cccd || formData['field_cccd'] || undefined;
-
-      // Call fill API
-      const response = await queryClient.post<FormFillResponse>(ENDPOINTS.QUERY.FORMS.FILL, {
-        template_path: templatePath,
-        data: formData,
-      });
-
-      if (!response.data.success || !response.data.file_bytes) {
-        throw new Error(response.data.message || 'Không thể tải biểu mẫu');
-      }
-
-      const fileBytes = response.data.file_bytes;
-      const filename = response.data.filename || 'form.docx';
-
       // Save to MinIO and database if session exists
       if (sessionId && formId) {
         try {
@@ -211,15 +216,105 @@ export const useFormFill = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      alert('✅ Đã tải xuống biểu mẫu thành công!');
+      // Show success toast based on validation
+      if (filledFields === totalFields) {
+        setToast({
+          show: true,
+          message: `Đã tải xuống biểu mẫu thành công! Đã điền đầy đủ tất cả ${totalFields} trường.`,
+          variant: 'success',
+        });
+      } else {
+        setToast({
+          show: true,
+          message: `Đã tải xuống biểu mẫu! Lưu ý: Đã điền ${filledFields}/${totalFields} trường.`,
+          variant: 'info',
+        });
+      }
+
+      // Clear pending download
+      pendingDownloadRef.current = null;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Lỗi tải xuống';
-      alert(message);
+      setToast({ show: true, message, variant: 'error' });
       console.error('Download error:', error);
     } finally {
       setDownloadLoading(false);
     }
-  }, [templatePath, formData, formId, formName, cccdData]);
+  }, [formId, formName]);
+
+  /**
+   * Download filled form and save to storage
+   */
+  const handleDownload = useCallback(async () => {
+    if (!templatePath) {
+      setToast({ show: true, message: 'Chưa có biểu mẫu để tải', variant: 'error' });
+      return;
+    }
+
+    setDownloadLoading(true);
+
+    try {
+      // Get session ID from sessionStorage
+      const sessionId = sessionStorage.getItem(SESSION_ID_KEY);
+      if (!sessionId) {
+        console.warn('⚠️ No session ID found - form will not be saved to storage');
+      }
+
+      // Get CCCD number from scanned data or form data
+      const cccdNumber = cccdData?.field_cccd || formData['field_cccd'] || undefined;
+
+      // Call fill API
+      const response = await queryClient.post<FormFillResponse>(ENDPOINTS.QUERY.FORMS.FILL, {
+        template_path: templatePath,
+        data: formData,
+        session_id: sessionId || undefined,
+        form_name: formName || undefined,
+      });
+
+      if (!response.data.success || !response.data.file_bytes) {
+        throw new Error(response.data.message || 'Không thể tải biểu mẫu');
+      }
+
+      const fileBytes = response.data.file_bytes;
+      const filename = response.data.filename || 'form.docx';
+      const totalFields = response.data.total_fields || 0;
+      const filledFields = response.data.filled_fields || 0;
+
+      // Store response for later execution
+      pendingDownloadRef.current = {
+        fileBytes,
+        filename,
+        totalFields,
+        filledFields,
+        sessionId,
+        cccdNumber,
+      };
+
+      // Show validation notification - use modal for confirmation
+      if (filledFields < totalFields) {
+        const missingCount = totalFields - filledFields;
+
+        setValidationModal({
+          isOpen: true,
+          totalFields,
+          filledFields,
+          missingCount,
+        });
+
+        // Wait for user confirmation via modal
+        setDownloadLoading(false);
+        return;
+      }
+
+      // If complete, execute download immediately
+      await executeDownload();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Lỗi tải xuống';
+      setToast({ show: true, message, variant: 'error' });
+      console.error('Download error:', error);
+      setDownloadLoading(false);
+    }
+  }, [templatePath, formData, formName, cccdData, executeDownload]);
 
   return {
     // Form state
@@ -231,12 +326,19 @@ export const useFormFill = () => {
     cccdData,
     cccdScanning,
 
+    // Modal/Toast state
+    validationModal,
+    setValidationModal,
+    toast,
+    setToast,
+
     // Actions
     loadForm,
     handleCCCDScan,
     resetCCCD,
     handleFieldChange,
     handleDownload,
+    executeDownload,
     downloadLoading,
   };
 };

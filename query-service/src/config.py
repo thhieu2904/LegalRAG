@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     EMBEDDING_SERVICE_URL: str = "http://embedding-service:8011"
     VECTOR_SERVICE_URL: str = "http://vector-service:8012"
     RERANK_SERVICE_URL: str = "http://rerank-service:8013"
-    LLM_SERVICE_URL: str = "http://llm-service:8006"
+    LLM_SERVICE_URL: str = "http://llm-service:8014"
     STORAGE_SERVICE_URL: str = "http://storage-service:8010"
     FORM_SERVICE_URL: str = "http://form-service:8015"
     

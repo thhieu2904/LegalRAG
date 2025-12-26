@@ -242,7 +242,7 @@ services:
       EMBEDDING_SERVICE_URL: http://embedding-service:8011
       VECTOR_SERVICE_URL: http://vector-service:8012
       STORAGE_SERVICE_URL: http://storage-service:8010
-      LLM_SERVICE_URL: http://llm-service:8006
+      LLM_SERVICE_URL: http://llm-service:8014
       RERANK_SERVICE_URL: http://rerank-service:8013
       FORM_SERVICE_URL: http://form-service:8015
     depends_on:
@@ -274,10 +274,16 @@ services:
     environment:
       SERVICE_NAME: admin-service
       SERVICE_PORT: 8001
+      # Service URLs for health check dashboard
+      ADMIN_SERVICE_URL: http://admin-service:8001
+      QUERY_SERVICE_URL: http://query-service:8002
       STORAGE_SERVICE_URL: http://storage-service:8010
       EMBEDDING_SERVICE_URL: http://embedding-service:8011
       VECTOR_SERVICE_URL: http://vector-service:8012
+      RERANK_SERVICE_URL: http://rerank-service:8013
+      LLM_SERVICE_URL: http://llm-service:8014
       FORM_SERVICE_URL: http://form-service:8015
+      # PostgreSQL
       POSTGRES_HOST: postgres-vector
       POSTGRES_PORT: 5432
       POSTGRES_USER: legalrag

@@ -10,7 +10,15 @@
 export const getStorageItem = <T>(key: string, defaultValue: T): T => {
   try {
     const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
+    // Guard against literal strings "undefined" / "null" written by older code
+    if (!item || item === 'undefined' || item === 'null') return defaultValue;
+    try {
+      return JSON.parse(item);
+    } catch (parseErr) {
+      // If corrupted, remove and return default
+      window.localStorage.removeItem(key);
+      return defaultValue;
+    }
   } catch (error) {
     console.error(`Error reading localStorage key "${key}":`, error);
     return defaultValue;

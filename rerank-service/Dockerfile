@@ -53,10 +53,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
+# Create non-root user and cache directories
 RUN useradd -m -u 1000 appuser && \
     mkdir -p /app/models && \
-    chown -R appuser:appuser /app
+    mkdir -p /home/appuser/.cache/huggingface && \
+    chown -R appuser:appuser /app && \
+    chown -R appuser:appuser /home/appuser/.cache
+
+# Set HuggingFace cache to use /app/models (mounted volume)
+ENV HF_HOME=/app/models
+ENV TRANSFORMERS_CACHE=/app/models
+ENV SENTENCE_TRANSFORMERS_HOME=/app/models
 
 # Copy application code
 COPY --chown=appuser:appuser src/ /app/src/

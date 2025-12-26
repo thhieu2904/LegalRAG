@@ -4,7 +4,6 @@
 
 import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { API_TIMEOUT, API_HEADERS } from '@/constants';
-import { getAuthToken } from '@/stores/authStore';
 
 /**
  * Admin Service Base URL
@@ -59,15 +58,16 @@ export const formClient: AxiosInstance = axios.create({
 });
 
 /**
- * Request Interceptor - Inject JWT token
+ * Request Interceptor - Inject JWT token for admin requests
  */
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Get token from auth store
-    const token = getAuthToken();
+    // Get admin token from localStorage
+    const adminToken = localStorage.getItem('admin_token');
 
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Add token to admin requests
+    if (adminToken && config.headers && config.url?.startsWith('/admin')) {
+      config.headers.Authorization = `Bearer ${adminToken}`;
     }
 
     return config;
@@ -94,12 +94,13 @@ apiClient.interceptors.response.use(
         case 401: {
           console.error('Unauthorized - Token expired or invalid');
 
-          // Clear localStorage
-          localStorage.removeItem('auth-storage');
+          // Clear admin token
+          localStorage.removeItem('admin_token');
+          localStorage.removeItem('admin_token_expires');
 
-          // Redirect to login (if not already there)
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
+          // Redirect to admin login if on admin page
+          if (window.location.pathname.startsWith('/admin')) {
+            window.location.href = '/admin/login';
           }
           break;
         }

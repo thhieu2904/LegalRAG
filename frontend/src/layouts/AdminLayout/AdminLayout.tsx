@@ -3,8 +3,7 @@
  * Layout for Admin Dashboard with Sidebar Navigation
  */
 
-import { useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Sidebar } from '@/components/layout/Sidebar';
@@ -13,15 +12,9 @@ import styles from './AdminLayout.module.css';
 
 export const AdminLayout = () => {
   const { sidebarOpen, toggleSidebar } = useUIStore();
-  const navigate = useNavigate();
 
-  // Simple auth check (TODO: replace with real auth service)
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
-    if (!isLoggedIn) {
-      navigate('/admin/login', { replace: true });
-    }
-  }, [navigate]);
+  // Token validation is handled by ProtectedRoute
+  // No need for additional check here
 
   return (
     <div className={styles.adminLayout}>

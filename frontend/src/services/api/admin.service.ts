@@ -129,14 +129,16 @@ export async function deleteDocument(id: string): Promise<DeleteDocumentResponse
  */
 export async function uploadDocument(
   file: File,
-  collection_id: string
+  collection_id: string,
+  title: string
 ): Promise<{ success: boolean; message: string }> {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('collection_id', collection_id);
+  formData.append('title', title);
 
   const response = await apiClient.post<{ success: boolean; message: string }>(
-    '/process-document',
+    ENDPOINTS.ADMIN.PROCESS_DOCUMENT,
     formData,
     {
       headers: {

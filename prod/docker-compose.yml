@@ -375,6 +375,7 @@ services:
       STORAGE_SERVICE_URL: http://storage-service:8010
       EMBEDDING_SERVICE_URL: http://embedding-service:8011
       VECTOR_SERVICE_URL: http://vector-service:8012
+      FORM_SERVICE_URL: http://form-service:8015
       # PostgreSQL
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
@@ -387,6 +388,8 @@ services:
       embedding-service:
         condition: service_started
       vector-service:
+        condition: service_started
+      form-service:
         condition: service_started
       postgres:
         condition: service_healthy

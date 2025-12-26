@@ -66,6 +66,8 @@ class FormFillRequest(BaseModel):
     """Request to fill a form template with data"""
     template_path: str  # Path to template in MinIO
     data: Dict[str, Any]  # Combined data: {scan_ho_ten: "...", form_nghe_nghiep: "..."}
+    session_id: Optional[str] = None  # For filename generation
+    form_name: Optional[str] = None  # Human-readable form name
 
 
 class FormFillResponse(BaseModel):
@@ -74,6 +76,10 @@ class FormFillResponse(BaseModel):
     file_content: Optional[bytes] = None  # Filled DOCX bytes
     filename: Optional[str] = None  # Suggested filename
     message: Optional[str] = None
+    # Validation info
+    total_fields: Optional[int] = None  # Total placeholders in template
+    filled_fields: Optional[int] = None  # Number of filled fields
+    missing_fields: Optional[list[str]] = None  # List of empty field names
 
 
 # ============================================

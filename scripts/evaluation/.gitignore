@@ -1,0 +1,28 @@
+# Evaluation results (không commit vào git)
+evaluation_results.json
+database_analysis.json
+final_report.md
+final_report_vi.md
+evaluation_summary.txt
+database_analysis.txt
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment (nếu tạo)
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+.DS_Store

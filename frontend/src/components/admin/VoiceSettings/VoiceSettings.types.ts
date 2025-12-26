@@ -20,9 +20,9 @@ export interface VoiceSettingsState {
 }
 
 export const DEFAULT_VOICE_SETTINGS: VoiceSettingsState = {
-  isAutoSendEnabled: false,
+  isAutoSendEnabled: true, // Auto-send enabled by default
   language: 'vi-VN',
-  ttsEnabled: false,
+  ttsEnabled: true, // TTS enabled by default
   ttsVoice: '',
   ttsSpeed: 1.0,
   ttsVolume: 1.0,

@@ -30,6 +30,10 @@ export interface FormFillResponse {
   file_bytes?: string; // base64 encoded DOCX
   saved_path?: string;
   filename?: string;
+  // Validation info
+  total_fields?: number;
+  filled_fields?: number;
+  missing_fields?: string[];
 }
 
 // Form save request

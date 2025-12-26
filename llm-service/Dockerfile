@@ -108,15 +108,15 @@ COPY --chown=appuser:appuser download_model.py /app/
 # Switch to non-root user
 USER appuser
 
-# Expose service port (default 8006, can override with SERVICE_PORT)
-EXPOSE 8006
+# Expose service port (default 8014, can override with SERVICE_PORT)
+EXPOSE 8014
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
-    CMD curl -f http://localhost:${SERVICE_PORT:-8006}/health || exit 1
+    CMD curl -f http://localhost:${SERVICE_PORT:-8014}/health || exit 1
 
-# Start command
-CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8006"]
+# Start command uses Pydantic settings (SERVICE_PORT env) via src.main
+CMD ["sh", "-c", "python -m src.main"]
 
 # ============================================
 # Runtime Stage - GPU (CUDA)
@@ -154,13 +154,13 @@ COPY --chown=appuser:appuser download_model.py /app/
 
 USER appuser
 
-# Expose service port (default 8006, can override with SERVICE_PORT)
-EXPOSE 8006
+# Expose service port (default 8014, can override with SERVICE_PORT)
+EXPOSE 8014
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
-    CMD curl -f http://localhost:${SERVICE_PORT:-8006}/health || exit 1
+    CMD curl -f http://localhost:${SERVICE_PORT:-8014}/health || exit 1
 
-CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8006"]
+CMD ["sh", "-c", "python -m src.main"]
 
 # ============================================
 # Build Instructions

@@ -52,7 +52,7 @@ interface AdminActions {
 
   // Documents
   fetchDocuments: (collection_id?: string) => Promise<void>;
-  uploadDocument: (file: File, collection_id: string) => Promise<void>;
+  uploadDocument: (file: File, collection_id: string, title: string) => Promise<void>;
   selectDocument: (document: Document | null) => void;
   setDocumentFilters: (filters: { collection_id?: string; status?: string }) => void;
 
@@ -165,10 +165,10 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
     }
   },
 
-  uploadDocument: async (file: File, collection_id: string) => {
+  uploadDocument: async (file: File, collection_id: string, title: string) => {
     set({ isUploading: true, uploadProgress: 0, uploadError: null });
     try {
-      await uploadDocumentAPI(file, collection_id);
+      await uploadDocumentAPI(file, collection_id, title);
       set({ isUploading: false, uploadProgress: 100 });
       // Refresh documents list
       await get().fetchDocuments(collection_id);
