@@ -1,0 +1,154 @@
+/* Button Component Styles */
+
+/* Base styles */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+  position: relative;
+  white-space: nowrap;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Variants */
+.primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.primary:hover:not(.disabled) {
+  background-color: var(--primary-color-dark);
+}
+
+.primary:active:not(.disabled) {
+  transform: translateY(1px);
+}
+
+.secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.secondary:hover:not(.disabled) {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color-dark);
+}
+
+.danger {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.danger:hover:not(.disabled) {
+  background-color: #ff7875;
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.ghost:hover:not(.disabled) {
+  background-color: var(--bg-hover);
+}
+
+/* Sizes */
+.sm {
+  padding: 6px 12px;
+  font-size: var(--font-size-xs);
+  min-height: 28px;
+}
+
+.md {
+  padding: 10px 20px;
+  font-size: var(--font-size-sm);
+  min-height: 36px;
+}
+
+.lg {
+  padding: 14px 28px;
+  font-size: var(--font-size-md);
+  min-height: 44px;
+}
+
+/* States */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* Icons */
+.leftIcon,
+.rightIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leftIcon {
+  margin-right: -4px;
+}
+
+.rightIcon {
+  margin-left: -4px;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinnerInner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.sm .spinnerInner {
+  width: 12px;
+  height: 12px;
+  border-width: 2px;
+}
+
+.lg .spinnerInner {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Content */
+.content {
+  display: inline-flex;
+  align-items: center;
+}

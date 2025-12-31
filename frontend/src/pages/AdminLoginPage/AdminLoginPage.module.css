@@ -1,0 +1,152 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #fafafa;
+  padding: 2rem;
+}
+
+.loginCard {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  max-width: 380px;
+  width: 100%;
+  padding: 2.5rem 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.icon {
+  color: #171717;
+  margin-bottom: 1rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #171717;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.header p {
+  color: #737373;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #404040;
+  font-size: 0.875rem;
+}
+
+.inputGroup input {
+  padding: 0.75rem 0.875rem;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  transition: all 0.15s ease;
+  background: #ffffff;
+  color: #171717;
+}
+
+.inputGroup input::placeholder {
+  color: #a3a3a3;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: #171717;
+  box-shadow: 0 0 0 1px #171717;
+}
+
+.submitButton {
+  padding: 0.75rem 1.25rem;
+  background: #171717;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 0.25rem;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #262626;
+}
+
+.submitButton:active:not(:disabled) {
+  background: #0a0a0a;
+  transform: scale(0.98);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.footer small {
+  color: #a3a3a3;
+  font-size: 0.75rem;
+}
+
+.backButton {
+  background: transparent;
+  border: 1px solid #e5e5e5;
+  color: #525252;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.backButton:hover {
+  background: #fafafa;
+  border-color: #d4d4d4;
+}

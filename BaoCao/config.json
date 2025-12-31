@@ -1,0 +1,14 @@
+{
+  "api_base_url": "http://localhost:8002",
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "legalrag",
+    "password": "legalrag123",
+    "database": "legalrag"
+  },
+  "evaluation": {
+    "top_k": 5,
+    "timeout_seconds": 60
+  }
+}

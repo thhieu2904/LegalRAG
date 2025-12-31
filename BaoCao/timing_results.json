@@ -1,0 +1,300 @@
+{
+  "timestamp": "2025-12-28T00:34:36.897265",
+  "total_queries": 25,
+  "queries_with_timing": 23,
+  "queries_clarification": 2,
+  "timing_breakdown": {
+    "embed_ms": {
+      "mean": 88.7,
+      "std": 23.6,
+      "min": 68,
+      "max": 159,
+      "percentage": 0.7
+    },
+    "search_ms": {
+      "mean": 6.5,
+      "std": 0.6,
+      "min": 6,
+      "max": 8,
+      "percentage": 0.1
+    },
+    "rerank_ms": {
+      "mean": 11695.8,
+      "std": 1816.8,
+      "min": 9752,
+      "max": 15664,
+      "percentage": 90.4
+    },
+    "llm_ms": {
+      "mean": 1070.7,
+      "std": 362.0,
+      "min": 594,
+      "max": 2040,
+      "percentage": 8.3
+    },
+    "other_ms": {
+      "mean": 78.0,
+      "percentage": 0.6
+    },
+    "total_ms": {
+      "mean": 12939.6,
+      "std": 1848.8,
+      "min": 10741,
+      "max": 16973
+    }
+  },
+  "per_query_results": [
+    {
+      "query_id": 1,
+      "query": "Thời hạn giải quyết đăng ký khai sinh là bao lâu?",
+      "embed_ms": 84,
+      "search_ms": 7,
+      "rerank_ms": 15664,
+      "llm_ms": 1139,
+      "total_ms": 16973,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 2,
+      "query": "Cha mẹ có trách nhiệm đăng ký khai sinh cho con trong thời hạn bao nhiêu ngày?",
+      "embed_ms": 89,
+      "search_ms": 6,
+      "rerank_ms": 15210,
+      "llm_ms": 1044,
+      "total_ms": 16413,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 3,
+      "query": "Thời hạn xác minh tình trạng hôn nhân khi đăng ký khai sinh là bao lâu?",
+      "embed_ms": 159,
+      "search_ms": 7,
+      "rerank_ms": 11136,
+      "llm_ms": 831,
+      "total_ms": 12236,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 4,
+      "query": "Trường hợp cha mẹ lựa chọn quốc tịch nước ngoài cho con khi đăng ký khai sinh có yếu tố nước ngoài cần giấy tờ gì?",
+      "embed_ms": 119,
+      "search_ms": 8,
+      "rerank_ms": 15599,
+      "llm_ms": 1021,
+      "total_ms": 16816,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 5,
+      "query": "Đối tượng nào được thực hiện thủ tục đăng ký khai sinh có yếu tố nước ngoài?",
+      "embed_ms": 148,
+      "search_ms": 7,
+      "rerank_ms": 14540,
+      "llm_ms": 1005,
+      "total_ms": 15766,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 6,
+      "query": "Điều kiện độ tuổi để đăng ký kết hôn là gì?",
+      "embed_ms": 73,
+      "search_ms": 7,
+      "rerank_ms": 12674,
+      "llm_ms": 998,
+      "total_ms": 13830,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 7,
+      "query": "Khi nộp hồ sơ đăng ký kết hôn, bên nam hoặc bên nữ có cần văn bản ủy quyền của bên còn lại không?",
+      "embed_ms": 85,
+      "search_ms": 7,
+      "rerank_ms": 12011,
+      "llm_ms": 810,
+      "total_ms": 13001,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 8,
+      "query": "Thời hạn giải quyết việc xác minh tình trạng hôn nhân khi đăng ký kết hôn là bao nhiêu ngày?",
+      "embed_ms": 0,
+      "search_ms": 0,
+      "rerank_ms": 0,
+      "llm_ms": 0,
+      "total_ms": 12214,
+      "needs_clarification": true,
+      "note": "early_return_no_timing"
+    },
+    {
+      "query_id": 9,
+      "query": "Cơ quan nào thực hiện đăng ký khai tử?",
+      "embed_ms": 101,
+      "search_ms": 6,
+      "rerank_ms": 10545,
+      "llm_ms": 734,
+      "total_ms": 11462,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 10,
+      "query": "Thời hạn đăng ký khai tử là bao nhiêu ngày kể từ ngày có người chết?",
+      "embed_ms": 68,
+      "search_ms": 7,
+      "rerank_ms": 10740,
+      "llm_ms": 891,
+      "total_ms": 11766,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 11,
+      "query": "Những trường hợp nào được miễn lệ phí đăng ký khai tử?",
+      "embed_ms": 78,
+      "search_ms": 7,
+      "rerank_ms": 10607,
+      "llm_ms": 635,
+      "total_ms": 11408,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 12,
+      "query": "Khi đăng ký khai tử cho người chết đã lâu không có Giấy báo tử thì cần giấy tờ gì?",
+      "embed_ms": 86,
+      "search_ms": 6,
+      "rerank_ms": 11130,
+      "llm_ms": 1887,
+      "total_ms": 13181,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 13,
+      "query": "Khi đăng ký giám hộ, nếu nộp bản sao được chứng thực thì có cần xuất trình bản chính không?",
+      "embed_ms": 74,
+      "search_ms": 6,
+      "rerank_ms": 9752,
+      "llm_ms": 838,
+      "total_ms": 10741,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 14,
+      "query": "Tờ khai đăng ký giám hộ theo mẫu nào?",
+      "embed_ms": 72,
+      "search_ms": 6,
+      "rerank_ms": 9956,
+      "llm_ms": 1087,
+      "total_ms": 11202,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 15,
+      "query": "Lệ phí đăng ký thành lập hộ kinh doanh do cơ quan nào quyết định?",
+      "embed_ms": 78,
+      "search_ms": 6,
+      "rerank_ms": 10504,
+      "llm_ms": 1034,
+      "total_ms": 11697,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 16,
+      "query": "Thành phần hồ sơ đăng ký thành lập hộ kinh doanh gồm những giấy tờ gì?",
+      "embed_ms": 75,
+      "search_ms": 6,
+      "rerank_ms": 12051,
+      "llm_ms": 762,
+      "total_ms": 12975,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 17,
+      "query": "Trường hợp ủy quyền thực hiện thủ tục đăng ký hộ kinh doanh thì cần thêm giấy tờ gì?",
+      "embed_ms": 0,
+      "search_ms": 0,
+      "rerank_ms": 0,
+      "llm_ms": 0,
+      "total_ms": 10482,
+      "needs_clarification": true,
+      "note": "early_return_no_timing"
+    },
+    {
+      "query_id": 18,
+      "query": "Những trường hợp nào được miễn lệ phí đăng ký nuôi con nuôi trong nước?",
+      "embed_ms": 71,
+      "search_ms": 6,
+      "rerank_ms": 10918,
+      "llm_ms": 1199,
+      "total_ms": 12280,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 19,
+      "query": "Thời gian kiểm tra hồ sơ và lấy ý kiến khi đăng ký nuôi con nuôi là bao lâu?",
+      "embed_ms": 73,
+      "search_ms": 7,
+      "rerank_ms": 10296,
+      "llm_ms": 910,
+      "total_ms": 11365,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 20,
+      "query": "Những trường hợp nào không được nhận con nuôi?",
+      "embed_ms": 102,
+      "search_ms": 6,
+      "rerank_ms": 10508,
+      "llm_ms": 1489,
+      "total_ms": 12186,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 21,
+      "query": "Hồ sơ đăng ký nuôi con nuôi trong nước cần những giấy tờ gì?",
+      "embed_ms": 79,
+      "search_ms": 6,
+      "rerank_ms": 10737,
+      "llm_ms": 2040,
+      "total_ms": 12944,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 22,
+      "query": "Thời hạn xác minh hoàn cảnh gia đình người nhận con nuôi là bao lâu?",
+      "embed_ms": 83,
+      "search_ms": 6,
+      "rerank_ms": 10117,
+      "llm_ms": 1068,
+      "total_ms": 11347,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 23,
+      "query": "Khi khám bệnh bảo hiểm y tế, trẻ em dưới 6 tuổi cần xuất trình giấy tờ gì?",
+      "embed_ms": 77,
+      "search_ms": 7,
+      "rerank_ms": 11549,
+      "llm_ms": 1522,
+      "total_ms": 13228,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 24,
+      "query": "Phiếu chuyển cơ sở khám bệnh chữa bệnh bảo hiểm y tế có giá trị sử dụng trong bao nhiêu ngày?",
+      "embed_ms": 80,
+      "search_ms": 6,
+      "rerank_ms": 11133,
+      "llm_ms": 594,
+      "total_ms": 11896,
+      "needs_clarification": false
+    },
+    {
+      "query_id": 25,
+      "query": "Người đã hiến bộ phận cơ thể khi khám bệnh bảo hiểm y tế mà chưa có thẻ BHYT thì cần xuất trình giấy tờ gì?",
+      "embed_ms": 85,
+      "search_ms": 6,
+      "rerank_ms": 11627,
+      "llm_ms": 1087,
+      "total_ms": 12897,
+      "needs_clarification": false
+    }
+  ]
+}

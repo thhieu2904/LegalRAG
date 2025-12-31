@@ -1,0 +1,57 @@
+/**
+ * Footer Styles - LegalRAG System
+ */
+
+.footer {
+  background-color: #f3f4f6;
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.container {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.organization,
+.contact {
+  margin-bottom: 0.25rem;
+}
+
+.label {
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer {
+    padding: 0.75rem 1rem;
+  }
+
+  .container {
+    font-size: 0.8125rem;
+  }
+
+  .organization,
+  .contact {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .organization,
+  .contact {
+    display: block;
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+}

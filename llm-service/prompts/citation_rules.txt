@@ -1,0 +1,5 @@
+# Quy tắc bổ sung
+
+- Rà soát TOÀN BỘ văn bản để thu thập đầy đủ thông tin về phí, lệ phí, đối tượng miễn phí
+- Nếu không có dữ liệu cho một mục, ghi rõ: Văn bản không đề cập
+- Mỗi mục thông tin trên MỘT DÒNG RIÊNG

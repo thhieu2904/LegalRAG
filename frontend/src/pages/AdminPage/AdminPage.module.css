@@ -1,0 +1,64 @@
+/**
+ * AdminPage Styles
+ */
+
+.adminPage {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #718096;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.placeholder {
+  text-align: center;
+  padding: 3rem;
+  background: #f7fafc;
+  border-radius: 1rem;
+  border: 2px dashed #e2e8f0;
+}
+
+.icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.placeholder h2 {
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.placeholder p {
+  color: #718096;
+  margin-bottom: 0.5rem;
+}
+
+.info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #edf2f7;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #4a5568;
+}

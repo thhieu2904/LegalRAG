@@ -1,0 +1,203 @@
+/**
+ * PositionSelectionStep Component
+ * Step 2: Select detected positions to convert to form fields
+ */
+
+import { useState, useEffect } from 'react';
+import { CheckSquare, Square, Filter } from 'lucide-react';
+import type { DetectedPosition } from '@/types/template.types';
+import styles from './CreateTemplateModal.module.css';
+
+interface PositionSelectionStepProps {
+  positions: DetectedPosition[];
+  onNext: (selectedIndices: number[]) => void;
+  onBack: () => void;
+}
+
+export const PositionSelectionStep = ({
+  positions,
+  onNext,
+  onBack,
+}: PositionSelectionStepProps) => {
+  const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set());
+  const [filterType, setFilterType] = useState<'all' | 'dots' | 'tab'>('all');
+
+  // Auto-select all on mount
+  useEffect(() => {
+    const allIndices = positions.map((p) => p.index);
+    setSelectedIndices(new Set(allIndices));
+  }, [positions]);
+
+  const filteredPositions =
+    filterType === 'all' ? positions : positions.filter((p) => p.pattern_type === filterType);
+
+  const togglePosition = (index: number) => {
+    const newSelected = new Set(selectedIndices);
+    if (newSelected.has(index)) {
+      newSelected.delete(index);
+    } else {
+      newSelected.add(index);
+    }
+    setSelectedIndices(newSelected);
+  };
+
+  const toggleAll = () => {
+    if (selectedIndices.size === positions.length) {
+      setSelectedIndices(new Set());
+    } else {
+      const allIndices = positions.map((p) => p.index);
+      setSelectedIndices(new Set(allIndices));
+    }
+  };
+
+  const handleNext = () => {
+    if (selectedIndices.size === 0) {
+      alert('Vui lòng chọn ít nhất một vị trí');
+      return;
+    }
+    onNext(Array.from(selectedIndices).sort((a, b) => a - b));
+  };
+
+  const allSelected = selectedIndices.size === positions.length;
+  const someSelected = selectedIndices.size > 0 && selectedIndices.size < positions.length;
+
+  return (
+    <div className={styles.stepForm}>
+      <div className={styles.stepContent}>
+        <h3 className={styles.stepTitle}>Bước 2: Chọn vị trí điền thông tin</h3>
+        <p className={styles.stepDescription}>
+          Đã phát hiện {positions.length} vị trí có thể điền. Chọn các vị trí bạn muốn chuyển thành
+          trường điền thông tin.
+        </p>
+
+        {/* Filter & Select All */}
+        <div className={styles.tableControls}>
+          <div className={styles.filterGroup}>
+            <Filter size={16} />
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as 'all' | 'dots' | 'tab')}
+              className={styles.filterSelect}
+            >
+              <option value="all">Tất cả ({positions.length})</option>
+              <option value="dots">
+                Dấu chấm ({positions.filter((p) => p.pattern_type === 'dots').length})
+              </option>
+              <option value="tab">
+                Tab ({positions.filter((p) => p.pattern_type === 'tab').length})
+              </option>
+            </select>
+          </div>
+
+          <button type="button" onClick={toggleAll} className={styles.selectAllButton}>
+            {allSelected ? (
+              <>
+                <CheckSquare size={16} />
+                Bỏ chọn tất cả
+              </>
+            ) : (
+              <>
+                <Square size={16} />
+                Chọn tất cả
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Positions Table */}
+        <div className={styles.tableWrapper}>
+          <table className={styles.positionsTable}>
+            <thead>
+              <tr>
+                <th className={styles.checkboxCell}>
+                  <button
+                    type="button"
+                    onClick={toggleAll}
+                    className={styles.checkboxButton}
+                    aria-label="Toggle all"
+                  >
+                    {allSelected ? (
+                      <CheckSquare size={20} />
+                    ) : someSelected ? (
+                      <div className={styles.indeterminateCheckbox} />
+                    ) : (
+                      <Square size={20} />
+                    )}
+                  </button>
+                </th>
+                <th className={styles.indexCell}>#</th>
+                <th className={styles.paragraphCell}>Đoạn văn</th>
+                <th className={styles.contextCell}>Nội dung</th>
+                <th className={styles.typeCell}>Loại</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPositions.map((position) => (
+                <tr
+                  key={position.index}
+                  className={selectedIndices.has(position.index) ? styles.selectedRow : ''}
+                  onClick={() => togglePosition(position.index)}
+                >
+                  <td className={styles.checkboxCell}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        togglePosition(position.index);
+                      }}
+                      className={styles.checkboxButton}
+                      aria-label={`Toggle position ${position.index}`}
+                    >
+                      {selectedIndices.has(position.index) ? (
+                        <CheckSquare size={20} />
+                      ) : (
+                        <Square size={20} />
+                      )}
+                    </button>
+                  </td>
+                  <td className={styles.indexCell}>{position.index}</td>
+                  <td className={styles.paragraphCell}>#{position.paragraph_index}</td>
+                  <td className={styles.contextCell}>
+                    <span className={styles.contextText}>{position.text}</span>
+                  </td>
+                  <td className={styles.typeCell}>
+                    <span
+                      className={`${styles.badge} ${
+                        position.pattern_type === 'dots' ? styles.badgeDots : styles.badgeTab
+                      }`}
+                    >
+                      {position.pattern_type === 'dots' ? 'Dấu chấm' : 'Tab'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Selection Summary */}
+        <div className={styles.selectionSummary}>
+          <p>
+            Đã chọn: <strong>{selectedIndices.size}</strong> / {positions.length} vị trí
+          </p>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className={styles.stepActions}>
+        <button type="button" onClick={onBack} className={styles.backButton}>
+          ← Quay lại
+        </button>
+        <div className={styles.stepInfo}>Bước 2/3</div>
+        <button
+          type="button"
+          onClick={handleNext}
+          disabled={selectedIndices.size === 0}
+          className={styles.nextButton}
+        >
+          Tiếp theo ({selectedIndices.size} trường) →
+        </button>
+      </div>
+    </div>
+  );
+};

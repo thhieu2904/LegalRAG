@@ -1,0 +1,68 @@
+/**
+ * ChatPage Styles
+ * Layout: ChatHistory (flex: 1, scrollable) + ChatInput (fixed at bottom)
+ */
+
+.chatPage {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0; /* Allow ChatHistory to control its own scroll */
+  width: 100%;
+  background: var(--bg-primary);
+  overflow: hidden;
+  position: relative;
+}
+
+.chatPage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/LOGO_HCC.jpg');
+  background-repeat: no-repeat;
+  background-position: center 24%;
+  background-size: clamp(220px, 32vw, 420px);
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.chatPage > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ChatHistory container - takes remaining space */
+.chatPage > :first-child {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0; /* Important for flex child to scroll */
+}
+
+/* ChatInput container - handled by ChatInput.module.css with fixed positioning */
+.chatPage > :last-child {
+  flex-shrink: 0;
+  /* Position fixed is handled in ChatInput.module.css */
+}
+
+/* Desktop: Container with max width */
+@media (min-width: 768px) {
+  .chatPage {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+  }
+}
+
+/* Mobile: Full width */
+@media (max-width: 767px) {
+  .chatPage {
+    padding: 0;
+  }
+
+  .chatPage::before {
+    background-position: center 18%;
+    background-size: clamp(160px, 58vw, 260px);
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "created_at": "2025-12-21",
+    "description": "Test set cho evaluation hệ thống LegalRAG",
+    "total_queries": 10,
+    "note": "Đây là test set mẫu. Bạn cần tạo test set đầy đủ với 1_create_test_set.py"
+  },
+  "queries": [
+    {
+      "id": 1,
+      "query": "Thủ tục xin cấp giấy khai sinh",
+      "collection": "ho-tich",
+      "relevant_chunk_ids": [
+        "PLACEHOLDER_UUID_1",
+        "PLACEHOLDER_UUID_2"
+      ],
+      "ground_truth_answer": "Hồ sơ khai sinh gồm: 1) Giấy chứng sinh do cơ sở y tế cấp; 2) Giấy tờ tùy thân của cha mẹ; 3) Giấy xác nhận tình trạng hôn nhân (nếu có). Thời hạn khai sinh là 60 ngày kể từ ngày sinh.",
+      "ground_truth_citations": [
+        "Điều 15 Luật Hộ tịch 2014",
+        "Điều 16 Luật Hộ tịch 2014"
+      ],
+      "relevance_scores": {
+        "PLACEHOLDER_UUID_1": 3,
+        "PLACEHOLDER_UUID_2": 2
+      },
+      "note": "Query phổ biến về thủ tục hộ tịch"
+    },
+    {
+      "id": 2,
+      "query": "Điều kiện đăng ký bảo hiểm xã hội bắt buộc",
+      "collection": "bao-hiem",
+      "relevant_chunk_ids": [
+        "PLACEHOLDER_UUID_3"
+      ],
+      "ground_truth_answer": "Người lao động thuộc đối tượng tham gia BHXH bắt buộc khi: 1) Làm việc theo hợp đồng lao động từ 1 tháng trở lên; 2) Làm việc cho cơ quan, tổ chức, doanh nghiệp.",
+      "ground_truth_citations": [
+        "Điều 2 Luật Bảo hiểm xã hội 2014"
+      ],
+      "relevance_scores": {
+        "PLACEHOLDER_UUID_3": 3
+      }
+    },
+    {
+      "id": 3,
+      "query": "Thủ tục ly hôn đơn phương",
+      "collection": "dan-su",
+      "relevant_chunk_ids": [
+        "PLACEHOLDER_UUID_4",
+        "PLACEHOLDER_UUID_5"
+      ],
+      "ground_truth_answer": "Ly hôn đơn phương được thực hiện khi một bên yêu cầu ly hôn và đáp ứng điều kiện theo Điều 56 Luật Hôn nhân và Gia đình. Trình tự: 1) Nộp đơn yêu cầu ly hôn tại Tòa án; 2) Tòa án tiến hành hòa giải; 3) Xét xử nếu hòa giải không thành.",
+      "ground_truth_citations": [
+        "Điều 56 Luật Hôn nhân và Gia đình 2014"
+      ],
+      "relevance_scores": {
+        "PLACEHOLDER_UUID_4": 3,
+        "PLACEHOLDER_UUID_5": 2
+      }
+    },
+    {
+      "id": 4,
+      "query": "Hồ sơ đăng ký kết hôn cần những giấy tờ gì",
+      "collection": "ho-tich",
+      "relevant_chunk_ids": [],
+      "note": "Test case để đo false positive nếu không có relevant docs"
+    },
+    {
+      "id": 5,
+      "query": "Quyền lợi của người tham gia bảo hiểm y tế",
+      "collection": "bao-hiem",
+      "relevant_chunk_ids": [
+        "PLACEHOLDER_UUID_6"
+      ],
+      "ground_truth_answer": "Người tham gia BHYT được hưởng: 1) Khám chữa bệnh tại cơ sở y tế đăng ký; 2) Chi phí thuốc, xét nghiệm theo quy định; 3) Chi phí phẫu thuật, điều trị nội trú.",
+      "relevance_scores": {
+        "PLACEHOLDER_UUID_6": 3
+      }
+    },
+    {
+      "id": 6,
+      "query": "Thời hiệu khởi kiện trong tranh chấp dân sự",
+      "collection": "dan-su",
+      "relevant_chunk_ids": [
+        "PLACEHOLDER_UUID_7"
+      ],
+      "ground_truth_answer": "Thời hiệu khởi kiện là 3 năm kể từ ngày phát sinh quyền yêu cầu, trừ trường hợp luật có quy định khác.",
+      "ground_truth_citations": [
+        "Điều 155 Bộ luật Dân sự 2015"
+      ],
+      "relevance_scores": {
+        "PLACEHOLDER_UUID_7": 3
+      }
+    },
+    {
+      "id": 7,
+      "query": "Cách tính lương hưu hàng tháng",
+      "collection": "bao-hiem",
+      "relevant_chunk_ids": [
+        "PLACEHOLDER_UUID_8"
+      ],
+      "ground_truth_answer": "Lương hưu hàng tháng = Tỷ lệ hưởng × Mức bình quân tiền lương tháng đóng BHXH. Tỷ lệ hưởng tối thiểu là 45% (với 15 năm đóng BHXH), mỗi năm đóng thêm tăng 2%.",
+      "relevance_scores": {
+        "PLACEHOLDER_UUID_8": 3
+      }
+    },
+    {
+      "id": 8,
+      "query": "Điều kiện nhận con nuôi theo pháp luật Việt Nam",
+      "collection": "dan-su",
+      "relevant_chunk_ids": [
+        "PLACEHOLDER_UUID_9",
+        "PLACEHOLDER_UUID_10"
+      ],
+      "ground_truth_answer": "Người nhận con nuôi phải: 1) Có đủ điều kiện về sức khỏe, kinh tế; 2) Hơn người được nhận làm con nuôi từ 20 tuổi trở lên; 3) Có năng lực hành vi dân sự đầy đủ.",
+      "relevance_scores": {
+        "PLACEHOLDER_UUID_9": 3,
+        "PLACEHOLDER_UUID_10": 2
+      }
+    },
+    {
+      "id": 9,
+      "query": "Phí thay đổi giấy khai sinh là bao nhiêu",
+      "collection": "ho-tich",
+      "relevant_chunk_ids": [
+        "PLACEHOLDER_UUID_11"
+      ],
+      "note": "Query về phí, có thể không có trong KB"
+    },
+    {
+      "id": 10,
+      "query": "Trường hợp nào được hưởng trợ cấp tai nạn lao động",
+      "collection": "bao-hiem",
+      "relevant_chunk_ids": [
+        "PLACEHOLDER_UUID_12"
+      ],
+      "ground_truth_answer": "Được hưởng trợ cấp tai nạn lao động khi: 1) Bị tai nạn trong giờ làm việc, tại nơi làm việc; 2) Bị tai nạn trên đường đi làm, về nhà; 3) Bị bệnh nghề nghiệp.",
+      "relevance_scores": {
+        "PLACEHOLDER_UUID_12": 3
+      }
+    }
+  ]
+}

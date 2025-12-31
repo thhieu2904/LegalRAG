@@ -1,0 +1,304 @@
+/**
+ * ChatMessage Styles
+ */
+
+.chatMessage {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  max-width: 800px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* User message: Right-aligned */
+.userMessage {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+/* AI message: Left-aligned */
+.aiMessage {
+  margin-right: auto;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.userMessage .avatar {
+  background: linear-gradient(135deg, var(--secondary-color), var(--secondary-color-dark));
+  color: white;
+}
+
+.aiMessage .avatar {
+  background: linear-gradient(135deg, var(--primary-color-light), var(--primary-color));
+  color: white;
+  overflow: hidden;
+}
+
+.botAvatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  min-width: 0; /* Allow text truncation */
+}
+
+.text {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  line-height: 1.6;
+}
+
+.userMessage .text {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) var(--border-radius-sm)
+    var(--border-radius-lg);
+}
+
+.aiMessage .text {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) var(--border-radius-lg)
+    var(--border-radius-sm);
+}
+
+/* Markdown styles for AI messages */
+.aiMessage .text :global(h1),
+.aiMessage .text :global(h2),
+.aiMessage .text :global(h3),
+.aiMessage .text :global(h4) {
+  margin: var(--spacing-md) 0 var(--spacing-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.aiMessage .text :global(p) {
+  margin: 0 0 var(--spacing-sm);
+}
+
+.aiMessage .text :global(ul),
+.aiMessage .text :global(ol) {
+  margin: var(--spacing-sm) 0;
+  padding-left: var(--spacing-lg);
+}
+
+.aiMessage .text :global(li) {
+  margin: var(--spacing-xs) 0;
+}
+
+.aiMessage .text :global(code) {
+  padding: 2px 6px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-mono);
+  font-size: 0.9em;
+}
+
+.aiMessage .text :global(pre) {
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-md);
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+  overflow-x: auto;
+}
+
+.aiMessage .text :global(pre code) {
+  padding: 0;
+  background-color: transparent;
+}
+
+.aiMessage .text :global(blockquote) {
+  margin: var(--spacing-md) 0;
+  padding-left: var(--spacing-md);
+  border-left: 3px solid var(--primary-color);
+  color: var(--text-secondary);
+}
+
+.userMessage .text p {
+  margin: 0;
+  color: white;
+}
+
+/* Message Footer: Timestamp and Metrics */
+.messageFooter {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.timestamp {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.userMessage .messageFooter {
+  justify-content: flex-end;
+}
+
+.processingTime,
+.tokenCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  padding: 2px 6px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.processingTime:hover,
+.tokenCount:hover {
+  color: var(--primary-color);
+  background-color: var(--primary-color-light);
+}
+
+.processingTime svg,
+.tokenCount svg {
+  opacity: 0.7;
+}
+
+/* Document Options (Clarification buttons) */
+.documentOptions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.documentButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.documentButton:hover {
+  background: var(--primary-color-light);
+  border-color: var(--primary-color);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.documentButton:active {
+  transform: translateX(2px);
+}
+
+.documentIcon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.documentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.documentTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.documentConfidence {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* Sources Button - Compact style */
+.sourcesButton {
+  align-self: flex-start;
+  padding: 6px 12px;
+  font-size: var(--font-size-sm);
+  color: var(--primary-color);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.sourcesButton:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sourcesButton:active {
+  transform: translateY(0);
+}
+
+.metadata {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .chatMessage {
+    padding: var(--spacing-md);
+    max-width: 100%;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .text {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .timestamp {
+    font-size: 10px;
+  }
+}

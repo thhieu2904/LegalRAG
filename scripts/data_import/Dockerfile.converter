@@ -1,0 +1,44 @@
+# ============================================
+# LibreOffice Document Converter
+# Converts .doc/.docx files to PDF
+# ============================================
+FROM python:3.11-slim
+
+# Install LibreOffice, antiword, catdoc and dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libreoffice \
+    libreoffice-writer \
+    fonts-liberation \
+    fonts-dejavu \
+    fonts-noto \
+    fonts-noto-cjk \
+    antiword \
+    catdoc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    minio \
+    psycopg2-binary \
+    python-dotenv \
+    tqdm \
+    requests \
+    pymupdf
+
+# Set working directory
+WORKDIR /app
+
+# Copy scripts
+COPY import_data.py .
+COPY create_chunks.py .
+COPY collections_mapping.json .
+
+# Create directories
+RUN mkdir -p /app/input /app/output /app/logs
+
+# Set environment
+ENV PYTHONUNBUFFERED=1
+
+# Entry point
+CMD ["python", "import_data.py"]

@@ -1,0 +1,139 @@
+/* Select Component Styles */
+
+/* Wrapper */
+.wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* Label */
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.required {
+  color: var(--error-color);
+  margin-left: 2px;
+}
+
+/* Select wrapper */
+.selectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.selectWrapper:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+}
+
+.selectWrapper.error {
+  border-color: var(--error-color);
+}
+
+.selectWrapper.error:focus-within {
+  box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.1);
+}
+
+.selectWrapper.disabled {
+  background-color: var(--bg-disabled);
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.sm {
+  padding: 4px 8px;
+  min-height: 28px;
+}
+
+.sm .select {
+  font-size: var(--font-size-xs);
+}
+
+.md {
+  padding: 8px 12px;
+  min-height: 36px;
+}
+
+.md .select {
+  font-size: var(--font-size-sm);
+}
+
+.lg {
+  padding: 12px 16px;
+  min-height: 44px;
+}
+
+.lg .select {
+  font-size: var(--font-size-md);
+}
+
+/* Select */
+.select {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  cursor: pointer;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 24px;
+}
+
+.select:disabled {
+  cursor: not-allowed;
+  color: var(--text-disabled);
+}
+
+.select option {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+.select option:disabled {
+  color: var(--text-disabled);
+}
+
+/* Arrow icon */
+.arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-tertiary);
+  font-size: 10px;
+  transition: transform var(--transition-fast);
+}
+
+.selectWrapper:focus-within .arrow {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.disabled .arrow {
+  color: var(--text-disabled);
+}
+
+/* Error message */
+.errorMessage {
+  font-size: var(--font-size-xs);
+  color: var(--error-color);
+  margin-top: -2px;
+}

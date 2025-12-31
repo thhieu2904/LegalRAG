@@ -1,0 +1,155 @@
+/* Toast Component Styles */
+
+/* Container */
+.container {
+  position: fixed;
+  z-index: var(--z-tooltip);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  pointer-events: none;
+  max-width: 400px;
+}
+
+/* Positions */
+.topRight {
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+}
+
+.topLeft {
+  top: var(--spacing-lg);
+  left: var(--spacing-lg);
+}
+
+.bottomRight {
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+}
+
+.bottomLeft {
+  bottom: var(--spacing-lg);
+  left: var(--spacing-lg);
+}
+
+.topCenter {
+  top: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Toast item */
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border-left: 4px solid;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease-out;
+  min-width: 300px;
+  max-width: 100%;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Toast types */
+.success {
+  border-left-color: var(--success-color);
+}
+
+.success .icon {
+  color: var(--success-color);
+}
+
+.error {
+  border-left-color: var(--error-color);
+}
+
+.error .icon {
+  color: var(--error-color);
+}
+
+.warning {
+  border-left-color: var(--warning-color);
+}
+
+.warning .icon {
+  color: var(--warning-color);
+}
+
+.info {
+  border-left-color: var(--info-color);
+}
+
+.info .icon {
+  color: var(--info-color);
+}
+
+/* Icon */
+.icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+/* Message */
+.message {
+  flex: 1;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  line-height: var(--line-height-normal);
+  word-break: break-word;
+}
+
+/* Close button */
+.closeButton {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.closeButton:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 1px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .container {
+    max-width: calc(100vw - 32px);
+    margin: 0 var(--spacing-md);
+  }
+
+  .toast {
+    min-width: auto;
+  }
+}

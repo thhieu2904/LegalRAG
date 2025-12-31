@@ -1,0 +1,92 @@
+{
+  "collections": [
+    {
+      "folder_name": "QUY TRINH CONG CHUNG",
+      "name": "quy_trinh_cong_chung",
+      "display_name": "Quy trình công chứng",
+      "description": "Thủ tục công chứng các loại hợp đồng, giao dịch",
+      "icon": "file-signature",
+      "color": "#8b5cf6"
+    },
+    {
+      "folder_name": "QUY TRINH HỘ TỊCH CẤP Thành Phố",
+      "name": "quy_trinh_ho_tich_cap_thanh_pho",
+      "display_name": "Quy trình hộ tịch cấp Thành phố",
+      "description": "Thủ tục đăng ký hộ tịch tại UBND cấp thành phố",
+      "icon": "building-2",
+      "color": "#3b82f6"
+    },
+    {
+      "folder_name": "QUY TRINH HỘ TỊCH CẤP XÃ",
+      "name": "quy_trinh_ho_tich_cap_xa",
+      "display_name": "Quy trình hộ tịch cấp Xã",
+      "description": "Thủ tục đăng ký hộ tịch tại UBND cấp xã/phường",
+      "icon": "home",
+      "color": "#10b981"
+    },
+    {
+      "folder_name": "QUY TRINH NUOI CON NUOI",
+      "name": "quy_trinh_nuoi_con_nuoi",
+      "display_name": "Quy trình nuôi con nuôi",
+      "description": "Thủ tục đăng ký nuôi con nuôi trong nước và quốc tế",
+      "icon": "baby",
+      "color": "#f59e0b"
+    },
+    {
+      "folder_name": "QUY TRINH QUAN TAI VIEN",
+      "name": "quy_trinh_quan_tai_vien",
+      "display_name": "Quy trình quản tài viên",
+      "description": "Thủ tục liên quan đến quản tài viên trong phá sản",
+      "icon": "briefcase",
+      "color": "#6366f1"
+    },
+    {
+      "folder_name": "QUY TRINH TRONG TAI THƯƠNG MẠI",
+      "name": "quy_trinh_trong_tai_thuong_mai",
+      "display_name": "Quy trình trọng tài thương mại",
+      "description": "Thủ tục giải quyết tranh chấp bằng trọng tài thương mại",
+      "icon": "scale",
+      "color": "#ec4899"
+    },
+    {
+      "folder_name": "QUY TRINH ĐẤU GIÁ TÀI SẢN",
+      "name": "quy_trinh_dau_gia_tai_san",
+      "display_name": "Quy trình đấu giá tài sản",
+      "description": "Thủ tục đấu giá tài sản theo quy định pháp luật",
+      "icon": "gavel",
+      "color": "#14b8a6"
+    },
+    {
+      "folder_name": "QUY TRÌNH BỒI THƯỜNG Nhà nước",
+      "name": "quy_trinh_boi_thuong_nha_nuoc",
+      "display_name": "Quy trình bồi thường Nhà nước",
+      "description": "Thủ tục yêu cầu bồi thường thiệt hại do Nhà nước gây ra",
+      "icon": "shield-check",
+      "color": "#ef4444"
+    },
+    {
+      "folder_name": "QUY TRÌNH LUẬT SƯ",
+      "name": "quy_trinh_luat_su",
+      "display_name": "Quy trình luật sư",
+      "description": "Thủ tục hành nghề luật sư, cấp chứng chỉ, thẻ luật sư",
+      "icon": "user-tie",
+      "color": "#0ea5e9"
+    },
+    {
+      "folder_name": "QUY TRÌNH THỪA PHÁT LẠI",
+      "name": "quy_trinh_thua_phat_lai",
+      "display_name": "Quy trình thừa phát lại",
+      "description": "Thủ tục liên quan đến thừa phát lại, tống đạt văn bản",
+      "icon": "file-check",
+      "color": "#84cc16"
+    },
+    {
+      "folder_name": "QUY TRÌNH TƯ VẤN PHÁP LUẬT",
+      "name": "quy_trinh_tu_van_phap_luat",
+      "display_name": "Quy trình tư vấn pháp luật",
+      "description": "Thủ tục đăng ký tổ chức tư vấn pháp luật, cấp giấy phép",
+      "icon": "message-circle-question",
+      "color": "#f97316"
+    }
+  ]
+}

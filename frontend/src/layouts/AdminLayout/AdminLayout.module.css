@@ -1,0 +1,41 @@
+/**
+ * AdminLayout Styles
+ * Modern Admin Dashboard with Sidebar
+ */
+
+.adminLayout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.contentWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left var(--transition-duration) var(--transition-timing);
+}
+
+.content {
+  flex: 1;
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+}
+
+/* Desktop: Add left margin for fixed sidebar */
+@media (min-width: 1024px) {
+  .contentWrapper {
+    margin-left: 260px; /* Sidebar width */
+  }
+}
+
+/* Tablet/Mobile: Full width, sidebar overlay */
+@media (max-width: 1023px) {
+  .contentWrapper {
+    margin-left: 0;
+  }
+
+  .content {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+}

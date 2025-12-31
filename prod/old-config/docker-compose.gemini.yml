@@ -1,0 +1,47 @@
+# ============================================
+# LegalRAG - GEMINI MODE (API-based LLM)
+# ============================================
+# LLM: Gemini API (0 VRAM)
+# Embedding: GPU (~2GB)
+# Rerank: GPU (~1GB) - có dư VRAM nên bật GPU
+#
+# Chạy: docker compose -f docker-compose.yml -f docker-compose.gemini.yml up -d
+# ============================================
+
+services:
+  # Rerank Service - GPU enabled (có dư VRAM khi dùng Gemini)
+  rerank-service:
+    container_name: legalrag-rerank
+    build:
+      context: ./rerank-service
+      dockerfile: Dockerfile
+      target: runtime-gpu
+    environment:
+      SERVICE_NAME: rerank-service
+      SERVICE_PORT: 8013
+      HF_HOME: /app/models
+      MODEL_NAME: BAAI/bge-reranker-v2-m3
+      MODEL_CACHE_DIR: /app/models
+      MODEL_MAX_LENGTH: 1024
+      DEVICE: cuda
+      BATCH_SIZE: 32
+      TOP_K: 5
+      API_KEY_ENABLED: "false"
+      LOG_LEVEL: INFO
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # LLM Service - Gemini API (no GPU needed)
+  llm-service:
+    container_name: legalrag-llm
+    env_file:
+      - ./llm-service/.env
+    # No GPU reservation needed for Gemini API
+    deploy:
+      resources:
+        reservations: {}

@@ -1,0 +1,49 @@
+/**
+ * EditCollectionModal Styles
+ * Inherits most styles from CreateCollectionModal
+ */
+
+@import '../CreateCollectionModal/CreateCollectionModal.module.css';
+
+/* Readonly Input */
+.inputReadonly {
+  background: #f1f5f9 !important;
+  cursor: not-allowed;
+  color: #64748b;
+}
+
+.readonlyBadge {
+  display: inline-block;
+  margin-left: var(--spacing-sm);
+  padding: 2px 8px;
+  background: #e2e8f0;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--border-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Checkbox */
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #dc2626;
+}
+
+.checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
