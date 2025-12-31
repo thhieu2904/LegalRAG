@@ -151,7 +151,7 @@ class FormFiller:
         """
         Fill DOCX template with dot-padding to preserve formatting.
         
-        Uses run-level replacement instead of docxtpl to keep trailing dots.
+        Uses RUN MERGING to handle Word splitting {{placeholder}} across multiple runs.
         Pattern: {{field_id}}.... → value........
         """
         try:
@@ -160,60 +160,70 @@ class FormFiller:
             doc = Document(io.BytesIO(template_content))
             filled_count = 0
             
-            def process_runs(runs):
-                """Process runs in a paragraph, replacing placeholders with values + dots."""
+            def process_paragraph(para):
+                """Process a paragraph by merging runs, replacing placeholders, then writing back."""
                 nonlocal filled_count
                 
-                for run in runs:
-                    text = run.text
+                runs = para.runs
+                if not runs:
+                    return
+                
+                # Step 1: Merge all runs into single text
+                full_text = ''.join(run.text for run in runs)
+                
+                if not full_text or '{{' not in full_text:
+                    return  # No placeholders possible
+                
+                original_text = full_text
+                
+                # Step 2: Replace all placeholders in merged text
+                for field_id, value in context.items():
+                    placeholder = f"{{{{{field_id}}}}}"
                     
-                    # Find all placeholders in this run
-                    for field_id, value in context.items():
-                        placeholder = f"{{{{{field_id}}}}}"
-                        
-                        if placeholder not in text:
-                            continue
-                        
-                        # Pattern: {{field}}[dots] - capture dots after placeholder
-                        pattern = re.escape(placeholder) + r'([\.…]*)'
-                        match = re.search(pattern, text)
-                        
-                        if not match:
-                            continue
-                        
-                        original_dots = match.group(1)
-                        total_space = len(placeholder) + len(original_dots)
-                        
-                        if value:  # Has value - replace with value + padding dots
-                            # Calculate padding: value + dots to fill original space
-                            value_len = len(value)
-                            padding_dots = max(self.MIN_PADDING_DOTS, total_space - value_len)
-                            
-                            # Replace with value + padding dots
-                            replacement = value + ('.' * padding_dots)
-                            text = re.sub(pattern, replacement, text, count=1)
-                            filled_count += 1
-                            logger.debug(f"Filled '{field_id}' = '{value}' ({padding_dots} dots)")
-                        
-                        else:  # Empty value - restore original dots (remove placeholder)
-                            # Replace {{field_N}} with dots to match original length
-                            # Example: {{field_5}}...... → ................. (restore to dots only)
-                            restored_dots = '.' * total_space
-                            text = re.sub(pattern, restored_dots, text, count=1)
-                            logger.debug(f"Restored '{field_id}' to {total_space} dots (empty value)")
+                    if placeholder not in full_text:
+                        continue
                     
-                    run.text = text
+                    # Pattern: {{field}}[dots] - capture dots after placeholder
+                    pattern = re.escape(placeholder) + r'([\.\…]*)'
+                    match = re.search(pattern, full_text)
+                    
+                    if not match:
+                        continue
+                    
+                    original_dots = match.group(1)
+                    total_space = len(placeholder) + len(original_dots)
+                    
+                    if value:  # Has value - replace with value + padding dots
+                        value_len = len(value)
+                        padding_dots = max(self.MIN_PADDING_DOTS, total_space - value_len)
+                        replacement = value + ('.' * padding_dots)
+                        full_text = re.sub(pattern, replacement, full_text, count=1)
+                        filled_count += 1
+                        logger.debug(f"Filled '{field_id}' = '{value}' ({padding_dots} dots)")
+                    
+                    else:  # Empty value - restore to dots
+                        restored_dots = '.' * total_space
+                        full_text = re.sub(pattern, restored_dots, full_text, count=1)
+                        logger.debug(f"Restored '{field_id}' to {total_space} dots (empty value)")
+                
+                # Step 3: Only update if text changed
+                if full_text != original_text:
+                    # Put all text in first run, clear others
+                    if runs:
+                        runs[0].text = full_text
+                        for run in runs[1:]:
+                            run.text = ''
             
             # Process all paragraphs in tables
             for table in doc.tables:
                 for row in table.rows:
                     for cell in row.cells:
                         for para in cell.paragraphs:
-                            process_runs(para.runs)
+                            process_paragraph(para)
             
             # Process main document paragraphs
             for para in doc.paragraphs:
-                process_runs(para.runs)
+                process_paragraph(para)
             
             logger.info(f"Filled {filled_count} placeholders with dot-padding")
             

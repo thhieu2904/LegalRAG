@@ -509,6 +509,7 @@ class SearchResult(BaseModel):
     """Search result with document info"""
     content: str
     similarity: float
+    chunk_id: Optional[str] = None  # Chunk UUID for evaluation metrics
     document_id: Optional[str] = None  # Document UUID for download
     document_title: Optional[str] = None  # Tên văn bản pháp luật
     file_path: Optional[str] = None  # Path in MinIO for download
@@ -590,7 +591,8 @@ class QueryResponse(BaseModel):
     tokens_used: int
     
     # Performance metrics
-    took_ms: Optional[int] = None  # Processing time in milliseconds
+    took_ms: Optional[int] = None  # Total processing time in milliseconds
+    timing: Optional[dict] = None  # Step-by-step timing: embed_ms, search_ms, rerank_ms, llm_ms
 
 
 class HealthResponse(BaseModel):
@@ -1097,6 +1099,7 @@ async def query(request: QueryRequest):
     6. Return session_id and session_info in response
     """
     start_time = time.time()  # Track processing time
+    timing = {"embed_ms": 0, "search_ms": 0, "rerank_ms": 0, "llm_ms": 0}  # Step-by-step timing
     try:
         logger.info(f"🔍 Query: {request.question}")
         
@@ -1172,6 +1175,7 @@ async def query(request: QueryRequest):
         
         # Step 1: Embed question (with context expansion for follow-ups)
         logger.info("Step 1: Embedding question...")
+        embed_start = time.time()
         
         # QUERY EXPANSION: For short follow-up questions, add context from pinned document
         # This helps semantic search find relevant chunks
@@ -1189,12 +1193,13 @@ async def query(request: QueryRequest):
             logger.info(f"📌 Expanded query for embedding: '{query_for_embedding}'")
         
         embedding = await embed_text(query_for_embedding)
+        timing["embed_ms"] = int((time.time() - embed_start) * 1000)
         if embedding is None:
             raise HTTPException(status_code=503, detail="Embedding service unavailable")
         
         # Step 2: Search - either pinned document or full corpus
         logger.info("Step 2: Searching similar documents...")
-        
+        search_start = time.time()
         if use_pinned and pinned_doc_id:
             # PINNED DOCUMENT SEARCH - search within specific document only
             # For pinned doc, get ALL chunks (no top_k limit) since user chose this doc
@@ -1271,15 +1276,18 @@ async def query(request: QueryRequest):
                 tokens_used=0,
                 took_ms=int((time.time() - start_time) * 1000)
             )
+        timing["search_ms"] = int((time.time() - search_start) * 1000)
         
         # Step 3: Rerank documents for better relevance
         # For pinned doc: rerank ALL chunks to find best matches
         # For corpus search: use standard top_k to limit processing
         rerank_top_k = len(search_results) if use_pinned else settings.RERANK_TOP_K
         logger.info(f"Step 3: Reranking {len(search_results)} documents (top_k={rerank_top_k})...")
+        rerank_start = time.time()
         reranked_results, document_scores = await rerank_documents(
             request.question, search_results, top_k=rerank_top_k
         )
+        timing["rerank_ms"] = int((time.time() - rerank_start) * 1000)
         
         # Step 3.5: Smart clarification check using document scores
         max_score = max(r.get('rerank_score', 0) for r in reranked_results) if reranked_results else 0
@@ -1517,6 +1525,7 @@ async def query(request: QueryRequest):
         
         # Step 5: Generate answer using LLM with RAG endpoint
         logger.info("Step 5: Generating answer with RAG prompt...")
+        llm_start = time.time()
         
         # Prepare history for LLM (convert to dict format)
         history_for_llm = None
@@ -1524,6 +1533,7 @@ async def query(request: QueryRequest):
             history_for_llm = [{"role": h.role, "content": h.content} for h in request.history]
         
         answer, tokens_used = await generate_answer(request.question, context, history=history_for_llm)
+        timing["llm_ms"] = int((time.time() - llm_start) * 1000)
         if answer is None:
             raise HTTPException(status_code=503, detail="LLM service unavailable")
         
@@ -1580,7 +1590,7 @@ async def query(request: QueryRequest):
                     ))
         
         took_ms = int((time.time() - start_time) * 1000)
-        logger.info(f"⏱️ Query completed in {took_ms}ms")
+        logger.info(f"⏱️ Query completed in {took_ms}ms | Embed: {timing['embed_ms']}ms, Search: {timing['search_ms']}ms, Rerank: {timing['rerank_ms']}ms, LLM: {timing['llm_ms']}ms")
         
         return QueryResponse(
             success=True,
@@ -1594,6 +1604,7 @@ async def query(request: QueryRequest):
                 SearchResult(
                     content=result['content'],
                     similarity=result.get('rerank_score', result.get('similarity', 0.0)),
+                    chunk_id=result.get('chunk_id') or result.get('vector_id') or result.get('id'),  # For evaluation metrics
                     document_id=result.get('document_id'),
                     document_title=result.get('document_title', 'Văn bản'),
                     file_path=doc_info_map.get(result.get('document_id'), {}).get('file_path')
@@ -1602,7 +1613,8 @@ async def query(request: QueryRequest):
             ],
             forms=forms_list if forms_list else None,
             tokens_used=tokens_used,
-            took_ms=took_ms
+            took_ms=took_ms,
+            timing=timing
         )
     
     except HTTPException:
@@ -1784,6 +1796,7 @@ async def query_confirm(request: ConfirmRequest):
                 SearchResult(
                     content=r['content'],
                     similarity=r.get('rerank_score', 0),
+                    chunk_id=r.get('chunk_id') or r.get('vector_id') or r.get('id'),  # For evaluation metrics
                     document_id=request.document_id,
                     document_title=doc_title,
                     file_path=file_path

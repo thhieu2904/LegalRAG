@@ -1,73 +1,76 @@
-# React + TypeScript + Vite
+# LegalRAG Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Giao diện người dùng cho hệ thống hỏi-đáp pháp luật LegalRAG.
 
-Currently, two official plugins are available:
+## Công nghệ
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 18
+- TypeScript
+- Vite
+- shadcn/ui (component library)
+- React Router
+- Zustand (state management)
+- React Hook Form + Zod (form validation)
 
-## React Compiler
+## Cài đặt
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Chạy development server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm run dev
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Truy cập: http://localhost:5173
+
+## Build production
+
+```bash
+npm run build
+```
+
+## Cấu trúc thư mục
+
+```
+src/
+├── components/     # UI components (140+ components)
+├── pages/          # Route pages
+├── layouts/        # Layout components
+├── hooks/          # Custom React hooks
+├── services/       # API service calls
+├── stores/         # Zustand state stores
+├── types/          # TypeScript type definitions
+├── utils/          # Utility functions
+├── constants/      # App constants
+├── styles/         # Global styles
+├── assets/         # Static assets
+└── lib/            # Third-party library configs
+```
+
+## Các trang chính
+
+### Người dùng
+
+- `/` - Trang chủ, giao diện chat hỏi-đáp
+- `/collections` - Danh sách bộ thủ tục
+- `/documents` - Xem tài liệu
+
+### Admin
+
+- `/admin/login` - Đăng nhập admin
+- `/admin/dashboard` - Dashboard quản trị
+- `/admin/collections` - Quản lý bộ thủ tục
+- `/admin/documents` - Quản lý tài liệu
+- `/admin/forms` - Quản lý biểu mẫu
+
+## Biến môi trường
+
+Tạo file `.env.local`:
+
+```env
+VITE_API_BASE_URL=http://localhost:8001
+VITE_APP_TITLE=LegalRAG System
 ```

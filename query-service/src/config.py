@@ -44,8 +44,9 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "legalrag"
     
     # Clarification thresholds (Smart clarification based on document score gap)
+    # Clarification thresholds (Smart clarification based on document score gap)
     CLARIFICATION_THRESHOLD: float = 0.7  # Below this: always clarify
-    SCORE_GAP_THRESHOLD: float = 0.1  # If gap between top-1 and top-2 doc < this: clarify
+    SCORE_GAP_THRESHOLD: float = 0.2  # If gap between top-1 and top-2 doc < this: clarify (relaxed for evaluation)
     
     # Heuristics - Penalty for specific keywords in title but NOT in query
     # Legal domain requires STRICT matching - wrong document = wrong legal advice

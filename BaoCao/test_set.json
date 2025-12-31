@@ -1,0 +1,227 @@
+[
+  {
+    "id": 1,
+    "query": "Thời hạn giải quyết đăng ký khai sinh là bao lâu?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký khai sinh",
+    "relevant_chunk_ids": ["7fe2854d-029d-41c5-b8b8-5bcc986585bb"],
+    "category": "ho-tich",
+    "notes": "Chunk 6 chứa: Ngay trong ngày tiếp nhận, trường hợp nhận hồ sơ sau không giải quyết được ngay thì trả kết quả trong ngày làm việc tiếp"
+  },
+  {
+    "id": 2,
+    "query": "Cha mẹ có trách nhiệm đăng ký khai sinh cho con trong thời hạn bao nhiêu ngày?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký khai sinh",
+    "relevant_chunk_ids": ["968b1631-3e2f-42cf-83a0-9479d7630dd6"],
+    "category": "ho-tich",
+    "notes": "Chunk 5 chứa: Trong thời hạn 60 ngày kể từ ngày sinh con, cha hoặc mẹ có trách nhiệm đăng ký khai sinh cho con"
+  },
+  {
+    "id": 3,
+    "query": "Thời hạn xác minh tình trạng hôn nhân khi đăng ký khai sinh là bao lâu?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký khai sinh",
+    "relevant_chunk_ids": ["44220614-5ab9-464b-8032-2175b1f84c20"],
+    "category": "ho-tich",
+    "notes": "Chunk 3 chứa: Trong thời hạn 03 ngày làm việc kể từ ngày nhận được yêu cầu xác minh"
+  },
+  {
+    "id": 4,
+    "query": "Trường hợp cha mẹ lựa chọn quốc tịch nước ngoài cho con khi đăng ký khai sinh có yếu tố nước ngoài cần giấy tờ gì?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký khai sinh có yếu tố nước ngoài",
+    "relevant_chunk_ids": ["6377736f-494a-4282-b254-b732e4f0be50"],
+    "category": "ho-tich",
+    "notes": "Chunk 6 chứa: văn bản thỏa thuận lựa chọn quốc tịch, xác nhận của cơ quan có thẩm quyền của nước mà trẻ được lựa chọn mang quốc tịch"
+  },
+  {
+    "id": 5,
+    "query": "Đối tượng nào được thực hiện thủ tục đăng ký khai sinh có yếu tố nước ngoài?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký khai sinh có yếu tố nước ngoài",
+    "relevant_chunk_ids": ["1a2513d3-2e05-4323-8cf8-8accdec36fe4"],
+    "category": "ho-tich",
+    "notes": "Chunk 0 chứa thông tin chung về thủ tục, bao gồm đối tượng thực hiện (ngầm hiểu hoặc được đề cập trong phạm vi áp dụng)"
+  },
+  {
+    "id": 6,
+    "query": "Điều kiện độ tuổi để đăng ký kết hôn là gì?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký kết hôn",
+    "relevant_chunk_ids": ["545ed893-0c64-442a-8da8-de116e5cadea"],
+    "category": "ho-tich",
+    "notes": "Chunk 11 chứa: Nam từ đủ 20 tuổi trở lên"
+  },
+  {
+    "id": 7,
+    "query": "Khi nộp hồ sơ đăng ký kết hôn, bên nam hoặc bên nữ có cần văn bản ủy quyền của bên còn lại không?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký kết hôn",
+    "relevant_chunk_ids": ["de0d9c3c-c673-4e05-9c7c-68ef40eb6784"],
+    "category": "ho-tich",
+    "notes": "Chunk 6 chứa: bên nam hoặc bên nữ có thể nộp hồ sơ mà không cần có văn bản ủy quyền của bên còn lại"
+  },
+  {
+    "id": 8,
+    "query": "Thời hạn giải quyết việc xác minh tình trạng hôn nhân khi đăng ký kết hôn là bao nhiêu ngày?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký kết hôn",
+    "relevant_chunk_ids": ["b5e4b8c0-c757-4d34-9187-b0db5f474b29"],
+    "category": "ho-tich",
+    "notes": "Chunk 3 chứa: Trong thời hạn 03 ngày làm việc kể từ ngày nhận được yêu cầu xác minh"
+  },
+  {
+    "id": 9,
+    "query": "Cơ quan nào thực hiện đăng ký khai tử?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký khai tử",
+    "relevant_chunk_ids": ["d4afcd8a-e9f4-4e7b-942f-a6c0f2c9bdad"],
+    "category": "ho-tich",
+    "notes": "Chunk 10 chứa: Ủy ban nhân dân cấp xã nơi cư trú cuối cùng của người chết thực hiện việc đăng ký khai tử"
+  },
+  {
+    "id": 10,
+    "query": "Thời hạn đăng ký khai tử là bao nhiêu ngày kể từ ngày có người chết?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký khai tử",
+    "relevant_chunk_ids": ["edde4612-523e-4611-91ec-663c94098090"],
+    "category": "ho-tich",
+    "notes": "Chunk 7 chứa: Trong thời hạn 15 ngày kể từ ngày có người chết"
+  },
+  {
+    "id": 11,
+    "query": "Những trường hợp nào được miễn lệ phí đăng ký khai tử?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký khai tử",
+    "relevant_chunk_ids": ["29c63ce4-48e8-4261-830d-b676dc4e5121"],
+    "category": "ho-tich",
+    "notes": "Chunk 4 chứa: Miễn lệ phí đối với trường hợp đăng ký khai tử đúng hạn, người thuộc gia đình có công với cách mạng; người thuộc hộ nghèo; người khuyết tật"
+  },
+  {
+    "id": 12,
+    "query": "Khi đăng ký khai tử cho người chết đã lâu không có Giấy báo tử thì cần giấy tờ gì?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký khai tử",
+    "relevant_chunk_ids": ["a2e18ff2-9066-4c88-8860-e6a9bde0e7d2"],
+    "category": "ho-tich",
+    "notes": "Chunk 5 chứa: Giấy tờ, tài liệu, chứng cứ do cơ quan, tổ chức có thẩm quyền cấp hoặc xác nhận hợp lệ chứng minh sự kiện chết"
+  },
+  {
+    "id": 13,
+    "query": "Khi đăng ký giám hộ, nếu nộp bản sao được chứng thực thì có cần xuất trình bản chính không?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký giám hộ",
+    "relevant_chunk_ids": ["836b76b4-4289-4606-a9c9-179a15e2d6fe"],
+    "category": "ho-tich",
+    "notes": "Chunk 1 chứa: Trường hợp người yêu cầu nộp giấy tờ là bản sao được chứng thực từ bản chính thì người tiếp nhận hồ sơ không được yêu cầu xuất trình bản chính"
+  },
+  {
+    "id": 14,
+    "query": "Tờ khai đăng ký giám hộ theo mẫu nào?",
+    "collection": "ho-tich",
+    "expected_document": "Thủ tục đăng ký giám hộ",
+    "relevant_chunk_ids": ["3d10e386-e69a-43da-81d1-af11ff621366"],
+    "category": "ho-tich",
+    "notes": "Chunk 6 chứa: Tờ khai đăng ký giám hộ theo mẫu - 4.TKngkgimh.doc"
+  },
+  {
+    "id": 15,
+    "query": "Lệ phí đăng ký thành lập hộ kinh doanh do cơ quan nào quyết định?",
+    "collection": "doanh-nghiep",
+    "expected_document": "Đăng ký thành lập hộ kinh doanh",
+    "relevant_chunk_ids": ["be86327c-0938-465d-a311-ba326c52a6f6"],
+    "category": "doanh-nghiep",
+    "notes": "Chunk 2 chứa: Mức lệ phí cụ thể do Hội đồng nhân dân thành phố quyết định"
+  },
+  {
+    "id": 16,
+    "query": "Thành phần hồ sơ đăng ký thành lập hộ kinh doanh gồm những giấy tờ gì?",
+    "collection": "doanh-nghiep",
+    "expected_document": "Đăng ký thành lập hộ kinh doanh",
+    "relevant_chunk_ids": ["dc940c81-74ee-407f-ae2e-8ca39b109ec0"],
+    "category": "doanh-nghiep",
+    "notes": "Chunk 4 chứa: Giấy đề nghị đăng ký hộ kinh doanh; Bản sao văn bản ủy quyền của thành viên hộ gia đình"
+  },
+  {
+    "id": 17,
+    "query": "Trường hợp ủy quyền thực hiện thủ tục đăng ký hộ kinh doanh thì cần thêm giấy tờ gì?",
+    "collection": "doanh-nghiep",
+    "expected_document": "Đăng ký thành lập hộ kinh doanh",
+    "relevant_chunk_ids": ["51064b29-c584-43d7-93e4-4a360d2382e5"],
+    "category": "doanh-nghiep",
+    "notes": "Chunk 3 chứa: bản sao hợp đồng cung cấp dịch vụ với tổ chức làm dịch vụ thực hiện"
+  },
+  {
+    "id": 18,
+    "query": "Những trường hợp nào được miễn lệ phí đăng ký nuôi con nuôi trong nước?",
+    "collection": "nuoi-con-nuoi",
+    "expected_document": "Đăng ký việc nuôi con nuôi trong nước",
+    "relevant_chunk_ids": ["ab81a924-9ac7-4072-839e-d17d19d882f6", "e53e0fdc-86cb-47ad-8636-f41783258b1d"],
+    "category": "nuoi-con-nuoi",
+    "notes": "Chunk 2,5 chứa: Miễn lệ phí đăng ký nuôi con nuôi trong nước đối với trường hợp cha dượng hoặc mẹ kế nhận con riêng"
+  },
+  {
+    "id": 19,
+    "query": "Thời gian kiểm tra hồ sơ và lấy ý kiến khi đăng ký nuôi con nuôi là bao lâu?",
+    "collection": "nuoi-con-nuoi",
+    "expected_document": "Đăng ký việc nuôi con nuôi trong nước",
+    "relevant_chunk_ids": ["d8818542-a26a-47ab-b508-e75799c752f7", "a7966649-3e10-45f6-a0cd-75ca3090999c"],
+    "category": "nuoi-con-nuoi",
+    "notes": "Chunk 3,6 chứa: Thời gian kiểm tra hồ sơ và lấy ý kiến: 10 ngày"
+  },
+  {
+    "id": 20,
+    "query": "Những trường hợp nào không được nhận con nuôi?",
+    "collection": "nuoi-con-nuoi",
+    "expected_document": "Đăng ký việc nuôi con nuôi trong nước",
+    "relevant_chunk_ids": ["ae699776-d672-47f9-9574-028aee283ca1"],
+    "category": "nuoi-con-nuoi",
+    "notes": "Chunk 10 chứa: Đang bị hạn chế một số quyền của cha, mẹ; Đang chấp hành quyết định xử lý hành chính; Đang chấp hành hình phạt tù; Chưa được xóa án tích"
+  },
+  {
+    "id": 21,
+    "query": "Hồ sơ đăng ký nuôi con nuôi trong nước cần những giấy tờ gì?",
+    "collection": "nuoi-con-nuoi",
+    "expected_document": "Đăng ký việc nuôi con nuôi trong nước",
+    "relevant_chunk_ids": ["865901ed-7545-44d7-ae7c-c65621e1cea0"],
+    "category": "nuoi-con-nuoi",
+    "notes": "Chunk 7 chứa: Đơn xin nhận con nuôi; Giấy khám sức khỏe do bệnh viện đa khoa hoặc phòng khám đa khoa cấp"
+  },
+  {
+    "id": 22,
+    "query": "Thời hạn xác minh hoàn cảnh gia đình người nhận con nuôi là bao lâu?",
+    "collection": "nuoi-con-nuoi",
+    "expected_document": "Đăng ký việc nuôi con nuôi trong nước",
+    "relevant_chunk_ids": ["18e9eb89-20d7-4c18-88a8-8c05f3ae5e7f"],
+    "category": "nuoi-con-nuoi",
+    "notes": "Chunk 4 chứa: Trong thời hạn 05 ngày làm việc, kể từ ngày nhận được văn bản đề nghị"
+  },
+  {
+    "id": 23,
+    "query": "Khi khám bệnh bảo hiểm y tế, trẻ em dưới 6 tuổi cần xuất trình giấy tờ gì?",
+    "collection": "bao-hiem-y-te",
+    "expected_document": "Thủ tục khám bệnh, chữa bệnh bảo hiểm y tế",
+    "relevant_chunk_ids": ["89c87ba6-4f99-45b6-93ac-5183a32745a1"],
+    "category": "bao-hiem-y-te",
+    "notes": "Chunk 1 chứa: Đối với trẻ em dưới 6 tuổi chỉ xuất trình thẻ bảo hiểm y tế bản giấy hoặc bản điện tử hoặc mã số bảo hiểm y tế; trường hợp chưa được cấp thẻ bảo hiểm y tế thì xuất trình giấy chứng sinh"
+  },
+  {
+    "id": 24,
+    "query": "Phiếu chuyển cơ sở khám bệnh chữa bệnh bảo hiểm y tế có giá trị sử dụng trong bao nhiêu ngày?",
+    "collection": "bao-hiem-y-te",
+    "expected_document": "Thủ tục khám bệnh, chữa bệnh bảo hiểm y tế",
+    "relevant_chunk_ids": ["6325622e-65ae-4d5d-a6ab-592dab797285"],
+    "category": "bao-hiem-y-te",
+    "notes": "Chunk 6 chứa: Phiếu chuyển cơ sở khám bệnh, chữa bệnh có giá trị sử dụng trong 10 ngày làm việc"
+  },
+  {
+    "id": 25,
+    "query": "Người đã hiến bộ phận cơ thể khi khám bệnh bảo hiểm y tế mà chưa có thẻ BHYT thì cần xuất trình giấy tờ gì?",
+    "collection": "bao-hiem-y-te",
+    "expected_document": "Thủ tục khám bệnh, chữa bệnh bảo hiểm y tế",
+    "relevant_chunk_ids": ["9d4cb50f-8ee0-468f-8945-50946251c8c3"],
+    "category": "bao-hiem-y-te",
+    "notes": "Chunk 2 chứa: phải xuất trình giấy ra viện do cơ sở khám bệnh, chữa bệnh nơi lấy bộ phận cơ thể người cấp và giấy tờ chứng minh nhân thân"
+  }
+]

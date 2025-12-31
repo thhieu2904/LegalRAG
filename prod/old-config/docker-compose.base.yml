@@ -1,13 +1,16 @@
+version: "3.8"
+
 # ============================================
-# LegalRAG - Production Configuration
+# LegalRAG - Microservices Architecture
 # ============================================
-# Mode: Gemini API (LLM) + GPU (Embedding + Rerank)
+# Simple version: Direct port exposure (no Kong Gateway)
+# Each service has its own port for easy development & testing
 #
-# LLM: Gemini API (0 VRAM)
-# Embedding: GPU (~2GB VRAM)
-# Rerank: GPU (~1GB VRAM)
+# Architecture:
+#   Frontend (3000) → Services (8001-8007)
+#   Services → MinIO (9000) + PostgreSQL (5432)
 #
-# To start: docker compose up -d
+# To start: docker compose up --build
 # ============================================
 
 services:
@@ -119,7 +122,7 @@ services:
       retries: 3
     restart: unless-stopped
 
-  # Embedding Service - GPU enabled
+  # Embedding Service - Local sentence-transformers model
   embedding-service:
     build:
       context: ./embedding-service
@@ -132,7 +135,7 @@ services:
       SERVICE_PORT: 8011
       MODEL_NAME: dangvantuan/vietnamese-document-embedding
       MODEL_CACHE_DIR: /app/models
-      DEVICE: cuda
+      DEVICE: cuda # GPU enabled for faster embedding
       MAX_SEQ_LENGTH: 8192
       BATCH_SIZE: 32
       EMBEDDING_DIMENSION: 768
@@ -150,6 +153,7 @@ services:
       timeout: 30s
       retries: 3
     restart: unless-stopped
+    # GPU support enabled
     deploy:
       resources:
         reservations:
@@ -158,23 +162,22 @@ services:
               count: 1
               capabilities: [gpu]
 
-  # Rerank Service - GPU enabled (Gemini mode has spare VRAM)
+  # Rerank Service - BGE Reranker v2-m3 for relevance scoring
   rerank-service:
     build:
       context: ./rerank-service
       dockerfile: Dockerfile
-      target: runtime-gpu
+      target: runtime # Explicitly use CPU-only runtime stage
     container_name: legalrag-rerank
     ports:
       - "8013:8013"
     environment:
       SERVICE_NAME: rerank-service
       SERVICE_PORT: 8013
-      HF_HOME: /app/models
       MODEL_NAME: BAAI/bge-reranker-v2-m3
       MODEL_CACHE_DIR: /app/models
       MODEL_MAX_LENGTH: 1024
-      DEVICE: cuda
+      DEVICE: cpu
       BATCH_SIZE: 32
       TOP_K: 5
       API_KEY_ENABLED: "false"
@@ -182,6 +185,9 @@ services:
     networks:
       - legalrag-network
     volumes:
+      # Removed code mount - use image code instead
+      # - ./rerank-service:/app
+      # Mount host HuggingFace cache to avoid re-downloading model
       - D:/model_huggingface:/home/appuser/.cache/huggingface
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8013/health"]
@@ -190,15 +196,8 @@ services:
       retries: 3
       start_period: 90s
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
 
-  # LLM Service - Gemini API (no GPU needed)
+  # LLM Service - Multi-Provider (Vistral GPU / Gemini API)
   llm-service:
     build:
       context: ./llm-service
@@ -221,7 +220,13 @@ services:
       retries: 3
       start_period: 60s
     restart: unless-stopped
-    # No GPU reservation - using Gemini API
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
   # Query Service - RAG orchestrator (Q&A, USER-facing)
   query-service:
@@ -269,6 +274,7 @@ services:
     environment:
       SERVICE_NAME: admin-service
       SERVICE_PORT: 8001
+      # Service URLs for health check dashboard
       ADMIN_SERVICE_URL: http://admin-service:8001
       QUERY_SERVICE_URL: http://query-service:8002
       STORAGE_SERVICE_URL: http://storage-service:8010
@@ -277,6 +283,7 @@ services:
       RERANK_SERVICE_URL: http://rerank-service:8013
       LLM_SERVICE_URL: http://llm-service:8014
       FORM_SERVICE_URL: http://form-service:8015
+      # PostgreSQL
       POSTGRES_HOST: postgres-vector
       POSTGRES_PORT: 5432
       POSTGRES_USER: legalrag
@@ -298,7 +305,7 @@ services:
       retries: 3
     restart: unless-stopped
 
-  # Form Service - Form processing
+  # Form Service - Form processing (fill templates, render HTML, CCCD scanning)
   form-service:
     build:
       context: ./form-service
@@ -334,7 +341,9 @@ services:
     ports:
       - "3000:3000"
     environment:
+      # API Base URL (direct to services, no Kong Gateway)
       VITE_API_BASE_URL: http://localhost:8001
+      # App Configuration
       VITE_APP_TITLE: LegalRAG System
       VITE_MAX_FILE_SIZE: 10485760
     depends_on:
@@ -373,25 +382,25 @@ networks:
   legalrag-network:
     driver: bridge
 # ============================================
-# CONFIGURATION SUMMARY
+# PORT MAPPING SUMMARY
 # ============================================
-# Mode: GEMINI (API-based LLM)
+# Infrastructure:
+#   - MinIO API:       9000
+#   - MinIO Console:   9001
+#   - PostgreSQL:      5432
 #
-# GPU Usage:
-#   - Embedding: CUDA (~2GB)
-#   - Rerank: CUDA (~1GB)
-#   - LLM: None (Gemini API)
+# Services (User-facing 800X):
+#   - Admin:           8001
+#   - Query:           8002
 #
-# Port Mapping:
-#   - Frontend: 3000
-#   - Admin API: 8001
-#   - Query API: 8002
-#   - Storage: 8010
-#   - Embedding: 8011
-#   - Vector: 8012
-#   - Rerank: 8013
-#   - LLM: 8014
-#   - Form: 8015
-#   - MinIO: 9000/9001
-#   - PostgreSQL: 5432
+# Services (Internal 801X):
+#   - Storage:         8010
+#   - Embedding:       8011
+#   - Vector:          8012
+#   - Rerank:          8013
+#   - LLM:             8014
+#   - Form:            8015
+#
+# Frontend:
+#   - React App:       3000
 # ============================================

@@ -220,6 +220,7 @@ class VectorDatabase:
             query = """
             SELECT 
                 id as vector_id,
+                id as chunk_id,
                 document_id,
                 chunk_index,
                 content,
