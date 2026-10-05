@@ -9,6 +9,7 @@ import re
 import logging
 import httpx
 import mammoth
+import hashlib
 
 from config import settings
 from src.models import FormRenderResponse
@@ -70,6 +71,7 @@ class FormRenderer:
                 html_content=styled_html,
                 raw_html=processed_html,
                 placeholders=placeholders,
+                template_sha256=hashlib.sha256(docx_content).hexdigest(),
                 message="Template rendered successfully"
             )
             

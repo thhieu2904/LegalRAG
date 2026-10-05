@@ -130,23 +130,11 @@
 /* Placeholder styling */
 .formHTML [class*='placeholder_'] {
   display: inline-block;
-  padding: 2px 6px;
+  padding: 0;
   border-radius: 3px;
   transition: all 0.2s;
 }
 
-.formHTML [class*='placeholder_']:not(.filled) {
-  background: #fef3c7;
-  border: 1px dashed #f59e0b;
-  color: #92400e;
-}
-
-.formHTML [class*='placeholder_'].filled {
-  background: #d1fae5;
-  border: 1px solid #a7f3d0;
-  color: #065f46;
-  font-weight: 500;
-}
 
 /* Edit Mode */
 .formHTML.editMode [class*='placeholder_'] {

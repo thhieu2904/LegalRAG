@@ -4,7 +4,7 @@
 # ============================================
 
 # Stage 1: Build Stage
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -13,7 +13,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies (including devDependencies for build)
-RUN npm ci --include=dev --only=production=false
+RUN npm ci --include=dev
 
 # Copy source code
 COPY . .
@@ -21,8 +21,8 @@ COPY . .
 # Copy Docker environment file for build
 COPY .env.docker .env.production
 
-# Build the application (vite build only, skip tsc type checking)
-RUN npx vite build
+# Build with the same TypeScript checks as local verification.
+RUN npm run build
 
 # Stage 2: Production Stage with Nginx
 FROM nginx:alpine

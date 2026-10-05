@@ -1,0 +1,86 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "LegalRAG: Start QR + Word dev",
+      "dependsOn": ["LegalRAG: Prepare form backend", "LegalRAG: Dev terminals"],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "LegalRAG: Prepare form backend",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/scripts/dev/form-dev.ps1", "-Action", "up"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": []
+    },
+    {
+      "label": "LegalRAG: Dev terminals",
+      "dependsOn": ["LegalRAG: Frontend", "LegalRAG: Query log", "LegalRAG: Form QR log", "LegalRAG: Storage log"],
+      "dependsOrder": "parallel",
+      "hide": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "LegalRAG: Frontend",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/scripts/dev/form-dev.ps1", "-Action", "frontend"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "legalrag-form-dev" },
+      "problemMatcher": []
+    },
+    {
+      "label": "LegalRAG: Query log",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/scripts/dev/form-dev.ps1", "-Action", "logs", "-Service", "query-service"],
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "legalrag-form-dev" },
+      "problemMatcher": []
+    },
+    {
+      "label": "LegalRAG: Form QR log",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/scripts/dev/form-dev.ps1", "-Action", "logs", "-Service", "form-service"],
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "legalrag-form-dev" },
+      "problemMatcher": []
+    },
+    {
+      "label": "LegalRAG: Storage log",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/scripts/dev/form-dev.ps1", "-Action", "logs", "-Service", "storage-service"],
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "legalrag-form-dev" },
+      "problemMatcher": []
+    },
+    {
+      "label": "LegalRAG: Test form backend + real QR",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/scripts/dev/form-dev.ps1", "-Action", "test"],
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "LegalRAG: Stop form dev backend",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/scripts/dev/form-dev.ps1", "-Action", "stop"],
+      "problemMatcher": []
+    },
+    {
+      "label": "LegalRAG: Form dev status",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/scripts/dev/form-dev.ps1", "-Action", "status"],
+      "problemMatcher": []
+    }
+  ]
+}

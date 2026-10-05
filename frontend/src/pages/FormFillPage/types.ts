@@ -21,6 +21,7 @@ export interface FormRenderResponse {
   raw_html?: string;
   placeholders?: string[];
   template_path?: string;
+  template_sha256?: string;
 }
 
 // Form fill response
@@ -60,4 +61,5 @@ export interface CCCDScanResponse {
   data?: CCCDData;
   processing_time?: number;
   confidence?: number;
+  scan_mode?: 'qr';
 }

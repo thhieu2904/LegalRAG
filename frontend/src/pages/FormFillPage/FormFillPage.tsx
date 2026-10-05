@@ -38,6 +38,12 @@ export const FormFillPage = () => {
     formHtml,
     formLoading,
     formError,
+    templateConfig,
+    templatePath,
+    placeholders,
+    draft,
+    selectedRole,
+    setSelectedRole,
 
     // CCCD state
     cccdData,
@@ -45,7 +51,6 @@ export const FormFillPage = () => {
 
     // Modal/Toast state
     validationModal,
-    setValidationModal,
     toast,
     setToast,
 
@@ -56,6 +61,7 @@ export const FormFillPage = () => {
     handleFieldChange,
     handleDownload,
     executeDownload,
+    cancelDownload,
     downloadLoading,
   } = useFormFill();
 
@@ -85,15 +91,39 @@ export const FormFillPage = () => {
         <div className={styles.pageHeader}>
           <h1 className={styles.pageTitle}>Điền Biểu Mẫu</h1>
           <p className={styles.pageSubtitle}>
-            {formFilename ? decodeURIComponent(formFilename) : 'Đang tải...'}
+            {formFilename ?? 'Đang tải...'}
           </p>
         </div>
 
         {/* 2-Column Layout */}
         <div className={styles.content}>
-          {/* Left Column: CCCD Scanner - Display only, no auto-fill */}
+          {/* Role-aware QR mapping. Unknown files remain manual-only. */}
           <div className={styles.leftColumn}>
+            <section className={styles.mappingPanel} aria-label="Cấu hình điền mẫu">
+              <h2>{templateConfig?.name ?? 'Điền mẫu thủ công'}</h2>
+              {templateConfig ? (
+                <>
+                  {templateConfig.roles.length > 1 ? (
+                    <>
+                      <label htmlFor="scan-role">QR này thuộc người nào?</label>
+                      <select id="scan-role" value={selectedRole} disabled={formLoading || cccdScanning} onChange={(event) => setSelectedRole(event.target.value)}>
+                        {templateConfig.roles.map((role) => <option key={role.id} value={role.id}>{role.label}</option>)}
+                      </select>
+                    </>
+                  ) : (
+                    <p>Quét căn cước của người yêu cầu để điền họ tên, ngày sinh, nơi cư trú và số căn cước.</p>
+                  )}
+                  <p>Ô đã chỉnh được giữ nguyên. Các ô còn lại có thể gõ hoặc bấm mic để nói.</p>
+                </>
+              ) : !formLoading && formHtml && (
+                <p>Mẫu này chưa khớp cấu hình đã kiểm tra. Bạn vẫn có thể gõ hoặc nói từng ô; QR chỉ dùng để tham khảo, không tự điền.</p>
+              )}
+              {draft.scanReport?.role === selectedRole && <p role="status">QR đã điền {draft.scanReport.applied} ô; giữ nguyên {draft.scanReport.protected} ô có dữ liệu khác.</p>}
+              <p>Đã điền {placeholders.filter((field) => draft.values[field]?.trim()).length}/{placeholders.length} ô.</p>
+              <p>Bản nháp chỉ giữ trong phiên trang. Tải Word không tự lưu hồ sơ lên server.</p>
+            </section>
             <CCCDScanner
+              key={templatePath}
               cccdData={cccdData}
               scanning={cccdScanning}
               onScan={handleCCCDScan}
@@ -104,13 +134,15 @@ export const FormFillPage = () => {
           {/* Right Column: Form Viewer */}
           <div className={styles.rightColumn}>
             <FormViewer
+              key={templatePath}
               html={formHtml}
               loading={formLoading}
               error={formError}
+              draft={draft}
+              templateConfig={templateConfig}
               onFieldChange={handleFieldChange}
               onDownload={handleDownload}
               downloadLoading={downloadLoading}
-              formFilename={formFilename}
             />
           </div>
         </div>
@@ -119,9 +151,8 @@ export const FormFillPage = () => {
       {/* Validation Modal */}
       <ConfirmModal
         isOpen={validationModal.isOpen}
-        onClose={() => setValidationModal({ ...validationModal, isOpen: false })}
+        onClose={cancelDownload}
         onConfirm={() => {
-          setValidationModal({ ...validationModal, isOpen: false });
           executeDownload(); // Execute download with stored data
         }}
         title="Biểu mẫu chưa điền đầy đủ"

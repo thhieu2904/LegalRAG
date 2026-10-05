@@ -12,6 +12,7 @@ from typing import Optional, Tuple, List
 import time
 import logging
 import re
+from datetime import datetime
 
 from src.models import CCCDData, CCCDScanResponse
 
@@ -29,6 +30,10 @@ class QRCodeParser:
         """
         try:
             parts = qr_string.strip().split('|')
+            # Some cards append empty reserved columns. Keep the same seven
+            # validated identity fields; never guess at non-empty extensions.
+            while len(parts) > 7 and not parts[-1].strip():
+                parts.pop()
             
             if len(parts) != 7:
                 return None
@@ -36,7 +41,7 @@ class QRCodeParser:
             citizen_id, old_id, full_name, date_of_birth, gender, address, issue_date = parts
             
             # Validate citizen ID (12 digits)
-            if not re.match(r'^\d{12}$', citizen_id.strip()):
+            if not re.fullmatch(r'[0-9]{12}', citizen_id.strip()):
                 return None
                 
             # Format dates (DDMMYYYY -> DD/MM/YYYY)
@@ -57,20 +62,16 @@ class QRCodeParser:
             )
             
         except Exception as e:
-            logger.error(f"Error parsing QR data: {e}")
+            logger.debug('QR parse failed (%s)', type(e).__name__)
             return None
     
     @staticmethod
     def _format_date(date_str: str) -> Optional[str]:
         """Format date from DDMMYYYY to DD/MM/YYYY"""
         try:
-            if len(date_str) == 8 and date_str.isdigit():
-                day = date_str[:2]
-                month = date_str[2:4]
-                year = date_str[4:8]
-                
-                if 1 <= int(day) <= 31 and 1 <= int(month) <= 12:
-                    return f"{day}/{month}/{year}"
+            if re.fullmatch(r'[0-9]{8}', date_str):
+                datetime.strptime(date_str, '%d%m%Y')
+                return f'{date_str[:2]}/{date_str[2:4]}/{date_str[4:]}'
             return None
         except (ValueError, IndexError):
             return None
@@ -80,7 +81,7 @@ class QRCodeParser:
         """Validate extracted CCCD data - basic checks only"""
         try:
             # CCCD number must be 12 digits
-            if not re.match(r'^\d{12}$', data.field_cccd):
+            if not re.fullmatch(r'[0-9]{12}', data.field_cccd):
                 return False
             
             # Name must not be empty
@@ -88,9 +89,9 @@ class QRCodeParser:
                 return False
             
             # Date format validation
-            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.field_ngay_sinh):
+            if not QRCodeParser._format_date(data.field_ngay_sinh.replace('/', '')):
                 return False
-            if not re.match(r'^\d{2}/\d{2}/\d{4}$', data.field_ngay_cap):
+            if not QRCodeParser._format_date(data.field_ngay_cap.replace('/', '')):
                 return False
             
             return True
@@ -120,7 +121,7 @@ class CCCDScanner:
         Returns:
             CCCDScanResponse with parsed data
         """
-        start_time = time.time()
+        start_time = time.perf_counter()
         
         try:
             # Decode image
@@ -128,12 +129,14 @@ class CCCDScanner:
             if image is None:
                 return CCCDScanResponse(
                     success=False,
-                    message="Invalid image data"
+                    message="Không đọc được ảnh. Hãy chọn ảnh có mã QR rõ nét."
                 )
             
             # Multi-stage detection
             result = self._multi_stage_detection(image)
-            result.processing_time = time.time() - start_time
+            result.processing_time = time.perf_counter() - start_time
+            logger.info('QR-only scan: success=%s duration_ms=%d', result.success,
+                        round(result.processing_time * 1000))
             return result
             
         except Exception as e:
@@ -148,8 +151,10 @@ class CCCDScanner:
         try:
             if base64_string.startswith('data:image'):
                 base64_string = base64_string.split(',')[1]
-            
-            image_data = base64.b64decode(base64_string)
+
+            if len(base64_string) > 14_000_000:
+                return None
+            image_data = base64.b64decode(base64_string, validate=True)
             nparr = np.frombuffer(image_data, np.uint8)
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
             return image
@@ -193,13 +198,25 @@ class CCCDScanner:
         return regions
     
     def _detect_qr(self, image: np.ndarray) -> Optional[str]:
-        """Detect QR code using pyzbar and OpenCV"""
+        """Only QR symbols with valid CCCD payloads, never OCR or barcodes.
+
+        Try every candidate: a URL/unrelated QR in the image must not hide a
+        later citizen-identity QR. Invalid candidates do not stop later stages.
+        """
         # Method 1: pyzbar
         try:
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if len(image.shape) == 3 else image
-            qr_codes = pyzbar.decode(gray)
-            if qr_codes:
-                return qr_codes[0].data.decode('utf-8')
+            qr_codes = pyzbar.decode(gray, symbols=[pyzbar.ZBarSymbol.QRCODE])
+            for code in qr_codes:
+                if code.type != 'QRCODE':
+                    continue
+                try:
+                    payload = code.data.decode('utf-8')
+                except UnicodeDecodeError:
+                    continue
+                parsed = self.parser.parse_qr_data(payload)
+                if parsed is not None and self.parser.validate_cccd_data(parsed):
+                    return payload
         except Exception as e:
             logger.debug(f"pyzbar error: {e}")
         
@@ -207,8 +224,11 @@ class CCCDScanner:
         try:
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if len(image.shape) == 3 else image
             retval, decoded_info, _, _ = self.qr_detector.detectAndDecodeMulti(gray)
-            if retval and decoded_info and decoded_info[0]:
-                return decoded_info[0]
+            if retval:
+                for payload in decoded_info:
+                    parsed = self.parser.parse_qr_data(payload)
+                    if parsed is not None and self.parser.validate_cccd_data(parsed):
+                        return payload
         except Exception as e:
             logger.debug(f"OpenCV error: {e}")
         
@@ -216,6 +236,14 @@ class CCCDScanner:
 
     def _rotate_image(self, image: np.ndarray, angle: float) -> np.ndarray:
         """Rotate image by angle in degrees"""
+        # These recovery stages use right angles. Unlike warpAffine with the
+        # old dimensions, they retain the edges of a portrait camera frame.
+        if angle == 90:
+            return np.rot90(image, 1).copy()
+        if angle == 180:
+            return np.rot90(image, 2).copy()
+        if angle == 270:
+            return np.rot90(image, 3).copy()
         h, w = image.shape[:2]
         center = (w // 2, h // 2)
         rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
@@ -235,7 +263,7 @@ class CCCDScanner:
             return CCCDScanResponse(
                 success=False,
                 message="Invalid CCCD data",
-                data=cccd_data  # Still include data for debugging
+                data=None
             )
         
         return CCCDScanResponse(
@@ -301,5 +329,5 @@ class CCCDScanner:
         
         return CCCDScanResponse(
             success=False,
-            message="QR code not detected"
+            message="Chưa đọc được mã QR căn cước hợp lệ. Đưa rõ mã QR vào khung hoặc chọn ảnh nét hơn; ảnh chỉ có chữ sẽ không được nhận diện."
         )

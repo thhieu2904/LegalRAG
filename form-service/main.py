@@ -145,7 +145,8 @@ async def fill_form(request: FormFillRequest):
     try:
         filled_content, error, validation_info = await form_filler.fill(
             template_path=request.template_path,
-            data=request.data
+            data=request.data,
+            template_sha256=request.template_sha256,
         )
         
         if error:

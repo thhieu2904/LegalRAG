@@ -375,6 +375,7 @@
 
 .cameraHeader {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
@@ -419,18 +420,61 @@
   color: #1d4ed8;
 }
 
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cameraSource {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  min-width: 0;
+}
+
+.cameraSource label {
+  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.cameraSource select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  background: white;
+  color: #0f172a;
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.cameraSource select:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.cameraDeviceHint {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.813rem;
+  line-height: 1.5;
+}
+
 .cameraViewport {
   position: relative;
   border-radius: 0.75rem;
   background: black;
   overflow: hidden;
   min-height: 240px;
+  aspect-ratio: 4 / 3;
 }
 
 .cameraVideo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -485,10 +529,11 @@
 }
 
 .overlayFrame {
-  width: 80%;
-  max-width: 420px;
+  position: relative;
+  width: 52%;
+  max-width: 260px;
+  aspect-ratio: 1;
   border-radius: 1rem;
-  padding: 3rem 1.5rem 2rem;
   border: 2px dashed rgba(255, 255, 255, 0.35);
   display: flex;
   flex-direction: column;
@@ -504,8 +549,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  width: 70%;
-  height: 60%;
+  width: 100%;
+  height: 100%;
 }
 
 .corner {
@@ -537,6 +582,10 @@
 }
 
 .overlayText {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  width: 150%;
+  text-align: center;
   margin: 0;
   color: white;
   font-size: 0.875rem;

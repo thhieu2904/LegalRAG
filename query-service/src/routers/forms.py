@@ -12,7 +12,7 @@ User-facing API is here at query-service (port 8002).
 """
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Literal
 import httpx
 import logging
 import base64
@@ -40,6 +40,7 @@ class CCCDData(BaseModel):
 class CCCDScanRequest(BaseModel):
     """Request to scan CCCD QR code"""
     image_data: str  # Base64 encoded image
+    scan_mode: Literal['qr'] = 'qr'
 
 
 class CCCDScanResponse(BaseModel):
@@ -49,6 +50,7 @@ class CCCDScanResponse(BaseModel):
     data: Optional[CCCDData] = None
     processing_time: Optional[float] = None
     confidence: Optional[float] = None
+    scan_mode: Literal['qr'] = 'qr'
 
 
 class FormRenderRequest(BaseModel):
@@ -64,6 +66,7 @@ class FormRenderResponse(BaseModel):
     raw_html: Optional[str] = None
     placeholders: Optional[list] = None
     template_path: Optional[str] = None
+    template_sha256: Optional[str] = None
 
 
 class FormFillRequest(BaseModel):
@@ -73,6 +76,7 @@ class FormFillRequest(BaseModel):
     session_id: Optional[str] = None  # For naming saved file
     form_name: Optional[str] = None  # Human-readable form name for filename
     cccd_number: Optional[str] = None  # For naming saved file
+    template_sha256: Optional[str] = None
 
 
 class FormFillResponse(BaseModel):
@@ -138,7 +142,7 @@ async def scan_cccd(request: CCCDScanRequest):
         
         response = await client.post(
             f"{settings.FORM_SERVICE_URL}/cccd/scan",
-            json={"image_data": request.image_data}
+            json={"image_data": request.image_data, "scan_mode": request.scan_mode}
         )
         
         if response.status_code == 200:
@@ -191,7 +195,7 @@ async def scan_cccd_upload(file: UploadFile = File(...)):
         
         response = await client.post(
             f"{settings.FORM_SERVICE_URL}/cccd/scan",
-            json={"image_data": image_data}
+            json={"image_data": image_data, "scan_mode": "qr"}
         )
         
         if response.status_code == 200:
@@ -293,6 +297,8 @@ async def fill_form(request: FormFillRequest):
             payload["form_name"] = request.form_name
         if request.cccd_number:
             payload["cccd_number"] = request.cccd_number
+        if request.template_sha256:
+            payload["template_sha256"] = request.template_sha256
         
         response = await client.post(
             f"{settings.FORM_SERVICE_URL}/fill",

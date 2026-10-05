@@ -258,3 +258,11 @@ build/
 *.swp
 *.swo
 *~
+
+# Share only the form-demo launcher, not personal editor configuration.
+!.vscode/
+.vscode/*
+!.vscode/tasks.json
+
+# User-supplied identity image: local diagnostics only, never a public fixture.
+/QR thật.jpg

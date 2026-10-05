@@ -7,13 +7,14 @@ Features:
 - Run-level replacement: Preserves text styles
 """
 
-import io
 import re
 import logging
 import httpx
-from typing import Dict, Any, Optional, Tuple
+import hashlib
+from typing import Dict, Any
 
 from config import settings
+from src.services.docx_fields import extract_docx_fields, fill_docx_fields
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ class FormFiller:
         self.timeout = settings.STORAGE_TIMEOUT
         logger.info(f"FormFiller initialized with storage: {self.storage_url}")
     
-    async def fill(self, template_path: str, data: Dict[str, Any]) -> tuple[bytes | None, str | None, Dict[str, Any] | None]:
+    async def fill(self, template_path: str, data: Dict[str, Any], template_sha256: str | None = None) -> tuple[bytes | None, str | None, Dict[str, Any] | None]:
         """
         Fill template with provided data.
         
@@ -53,6 +54,8 @@ class FormFiller:
             template_content = await self._download_template(template_path)
             if not template_content:
                 return None, f"Failed to download template: {template_path}", None
+            if template_sha256 and hashlib.sha256(template_content).hexdigest() != template_sha256.lower():
+                return None, "Mẫu Word đã thay đổi. Vui lòng tải lại mẫu trước khi xuất.", None
             
             # Extract placeholders from template
             placeholders = self._extract_placeholders_from_docx(template_content)
@@ -105,24 +108,7 @@ class FormFiller:
     def _extract_placeholders_from_docx(self, docx_content: bytes) -> list[str]:
         """Extract {{placeholder}} names from DOCX content"""
         try:
-            from docx import Document
-            
-            doc = Document(io.BytesIO(docx_content))
-            
-            all_text = ""
-            for paragraph in doc.paragraphs:
-                all_text += paragraph.text + "\n"
-            
-            for table in doc.tables:
-                for row in table.rows:
-                    for cell in row.cells:
-                        all_text += cell.text + "\n"
-            
-            # Find all {{placeholder}} patterns
-            matches = re.findall(r'\{\{([^}]+)\}\}', all_text)
-            unique_placeholders = list(set(matches))
-            
-            return unique_placeholders
+            return extract_docx_fields(docx_content)
             
         except Exception as e:
             logger.error(f"Extraction error: {e}")
@@ -138,7 +124,7 @@ class FormFiller:
         for placeholder in placeholders:
             if placeholder in data:
                 value = data[placeholder]
-                context[placeholder] = str(value) if value is not None else ""
+                context[placeholder] = str(value).strip() if value is not None else ""
             else:
                 context[placeholder] = ""  # Empty string for missing values
         
@@ -151,88 +137,11 @@ class FormFiller:
         """
         Fill DOCX template with dot-padding to preserve formatting.
         
-        Uses RUN MERGING to handle Word splitting {{placeholder}} across multiple runs.
-        Pattern: {{field_id}}.... → value........
+        Replace text spans across runs, including nested tables. Keep unrelated
+        text styles, drawings and document structure intact.
         """
         try:
-            from docx import Document
-            
-            doc = Document(io.BytesIO(template_content))
-            filled_count = 0
-            
-            def process_paragraph(para):
-                """Process a paragraph by merging runs, replacing placeholders, then writing back."""
-                nonlocal filled_count
-                
-                runs = para.runs
-                if not runs:
-                    return
-                
-                # Step 1: Merge all runs into single text
-                full_text = ''.join(run.text for run in runs)
-                
-                if not full_text or '{{' not in full_text:
-                    return  # No placeholders possible
-                
-                original_text = full_text
-                
-                # Step 2: Replace all placeholders in merged text
-                for field_id, value in context.items():
-                    placeholder = f"{{{{{field_id}}}}}"
-                    
-                    if placeholder not in full_text:
-                        continue
-                    
-                    # Pattern: {{field}}[dots] - capture dots after placeholder
-                    pattern = re.escape(placeholder) + r'([\.\…]*)'
-                    match = re.search(pattern, full_text)
-                    
-                    if not match:
-                        continue
-                    
-                    original_dots = match.group(1)
-                    total_space = len(placeholder) + len(original_dots)
-                    
-                    if value:  # Has value - replace with value + padding dots
-                        value_len = len(value)
-                        padding_dots = max(self.MIN_PADDING_DOTS, total_space - value_len)
-                        replacement = value + ('.' * padding_dots)
-                        full_text = re.sub(pattern, replacement, full_text, count=1)
-                        filled_count += 1
-                        logger.debug(f"Filled '{field_id}' = '{value}' ({padding_dots} dots)")
-                    
-                    else:  # Empty value - restore to dots
-                        restored_dots = '.' * total_space
-                        full_text = re.sub(pattern, restored_dots, full_text, count=1)
-                        logger.debug(f"Restored '{field_id}' to {total_space} dots (empty value)")
-                
-                # Step 3: Only update if text changed
-                if full_text != original_text:
-                    # Put all text in first run, clear others
-                    if runs:
-                        runs[0].text = full_text
-                        for run in runs[1:]:
-                            run.text = ''
-            
-            # Process all paragraphs in tables
-            for table in doc.tables:
-                for row in table.rows:
-                    for cell in row.cells:
-                        for para in cell.paragraphs:
-                            process_paragraph(para)
-            
-            # Process main document paragraphs
-            for para in doc.paragraphs:
-                process_paragraph(para)
-            
-            logger.info(f"Filled {filled_count} placeholders with dot-padding")
-            
-            # Save to bytes
-            output_buffer = io.BytesIO()
-            doc.save(output_buffer)
-            output_buffer.seek(0)
-            
-            return output_buffer.getvalue()
+            return fill_docx_fields(template_content, context, self.MIN_PADDING_DOTS)
             
         except ImportError:
             logger.error("python-docx not installed")

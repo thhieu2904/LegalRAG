@@ -7,6 +7,10 @@
 
 /* Display element */
 .display {
+  font: inherit;
+  text-align: inherit;
+  background: transparent;
+  border: 1px solid transparent;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -72,6 +76,8 @@
 
 /* Popover */
 .popover {
+  max-height: 90vh;
+  overflow-y: auto;
   background: white;
   border-radius: 0.75rem;
   box-shadow:
@@ -140,6 +146,7 @@
 }
 
 .cccdRef {
+  flex-wrap: wrap;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -219,6 +226,19 @@
   color: white;
 }
 
-.saveBtn:hover {
+.saveBtn:hover:not(:disabled) {
   background: #2563eb;
 }
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dictation { margin-top: 1rem; font-size: 0.8125rem; line-height: 1.5; color: #475569; }
+.voiceButton { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; margin-top: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; background: white; color: #1e293b; cursor: pointer; font-size: 0.8125rem; }
+.voiceButton:disabled { opacity: 0.5; cursor: not-allowed; }
+.voiceActive { border-color: #fca5a5; background: #fef2f2; color: #b91c1c; }
+.voiceStatus { margin-left: 0.75rem; }
+.voiceError { color: #b91c1c; }
+.hint { font-size: 0.8125rem; line-height: 1.5; color: #64748b; }

@@ -2,13 +2,13 @@
  * CCCDScanner Component
  *
  * Features:
- * - Upload CCCD image
- * - Call scan API
+ * - Upload/capture an image containing an identity-card QR code
+ * - Call the QR-only scan API (not OCR)
  * - Display scanned data
  * - Reset functionality
  */
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useId } from 'react';
 import {
   Camera,
   Upload,
@@ -19,8 +19,10 @@ import {
   CameraOff,
   RefreshCw,
   RotateCcw,
+  QrCode,
 } from 'lucide-react';
 import type { CCCDData } from '../types';
+import { captureQrFrame } from '../cameraCapture';
 import styles from './CCCDScanner.module.css';
 
 interface CCCDScannerProps {
@@ -34,18 +36,65 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
   const [dragActive, setDragActive] = useState(false);
   const [scanMode, setScanMode] = useState<'upload' | 'camera'>('upload');
   const [cameraStarting, setCameraStarting] = useState(false);
+  const [capturing, setCapturing] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
-  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [cameraDevices, setCameraDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedCameraId, setSelectedCameraId] = useState('');
+  const [activeCameraName, setActiveCameraName] = useState('');
+  const [cameraListError, setCameraListError] = useState<string | null>(null);
+  const cameraSelectId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const previousFacingModeRef = useRef(facingMode);
   const streamRef = useRef<MediaStream | null>(null);
+  const cameraPendingRef = useRef(false);
+  const cameraGenerationRef = useRef(0);
+  const cameraListGenerationRef = useRef(0);
+  const readerRef = useRef<FileReader | null>(null);
+  const capturePendingRef = useRef(false);
+
+  // Listing devices does not open the camera or request permission.
+  const refreshCameraDevices = useCallback(async () => {
+    const generation = ++cameraListGenerationRef.current;
+    if (!navigator.mediaDevices?.enumerateDevices) return;
+    try {
+      const devices = (await navigator.mediaDevices.enumerateDevices())
+        .filter((device) => device.kind === 'videoinput' && device.deviceId);
+      if (generation !== cameraListGenerationRef.current) return;
+      setCameraDevices(devices);
+      setCameraListError(null);
+      setSelectedCameraId((previous) => devices.some((device) => device.deviceId === previous) ? previous : '');
+    } catch {
+      if (generation === cameraListGenerationRef.current) {
+        setCameraListError('Chưa lấy được danh sách camera. Bấm Làm mới để thử lại.');
+      }
+    }
+  }, []);
+
+  const stopCamera = useCallback(() => {
+    cameraGenerationRef.current++;
+    cameraPendingRef.current = false;
+    capturePendingRef.current = false;
+    setCameraStarting(false);
+    setCapturing(false);
+    readerRef.current?.abort();
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => {
+        track.onended = null;
+        track.stop();
+      });
+      streamRef.current = null;
+    }
+    if (videoRef.current) videoRef.current.srcObject = null;
+    setIsCameraActive(false);
+    setActiveCameraName('');
+  }, []);
 
   // Start camera stream
-  const startCamera = useCallback(async () => {
-    if (cameraStarting || isCameraActive) return;
+  const startCamera = useCallback(async (deviceId = selectedCameraId) => {
+    if (cameraPendingRef.current || streamRef.current) return;
+    const generation = ++cameraGenerationRef.current;
 
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
@@ -54,110 +103,170 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
       }
 
       setCameraStarting(true);
+      cameraPendingRef.current = true;
       setCameraError(null);
 
       const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
         video: {
-          facingMode,
+          ...(deviceId ? { deviceId: { exact: deviceId } } : { facingMode: 'environment' }),
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
         },
       });
 
+      if (generation !== cameraGenerationRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+
       streamRef.current = stream;
+      const track = stream.getVideoTracks()[0];
+      if (!track) throw new Error('Thiết bị không cung cấp luồng camera.');
+      track.onended = () => {
+        if (generation !== cameraGenerationRef.current) return;
+        stopCamera();
+        setCameraError('Camera đã bị ngắt. Hãy kết nối lại hoặc chọn camera khác.');
+        void refreshCameraDevices();
+      };
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
 
+      if (generation !== cameraGenerationRef.current) {
+        stream.getTracks().forEach((item) => item.stop());
+        return;
+      }
+      const actualDeviceId = track.getSettings().deviceId;
+      if (actualDeviceId) setSelectedCameraId(actualDeviceId);
+      setActiveCameraName(track.label || 'Camera đã chọn');
       setIsCameraActive(true);
+      // Permission can reveal additional devices and their names.
+      void refreshCameraDevices();
     } catch (error) {
-      console.error('Camera error:', error);
+      if (generation !== cameraGenerationRef.current) return;
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      if (videoRef.current) videoRef.current.srcObject = null;
       const err = error as Error;
-      setCameraError(err.message || 'Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.');
+      const messages: Record<string, string> = {
+        NotAllowedError: 'Chưa được cấp quyền camera. Hãy cho phép trang truy cập camera rồi thử lại.',
+        NotFoundError: 'Không tìm thấy camera đã chọn. Hãy kết nối camera hoặc chọn nguồn khác.',
+        NotReadableError: 'Không mở được camera đã chọn. Hãy kiểm tra ứng dụng webcam đang chạy và camera không bị ứng dụng khác giữ.',
+        OverconstrainedError: 'Camera đã chọn không còn sẵn sàng. Bấm Làm mới hoặc chọn nguồn khác.',
+      };
+      setCameraError(messages[err.name] || err.message || 'Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.');
+      setActiveCameraName('');
       setIsCameraActive(false);
     } finally {
-      setCameraStarting(false);
+      if (generation === cameraGenerationRef.current) {
+        cameraPendingRef.current = false;
+        setCameraStarting(false);
+      }
     }
-  }, [cameraStarting, isCameraActive, facingMode]);
-
-  // Stop camera
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-    setIsCameraActive(false);
-  }, []);
+  }, [selectedCameraId, stopCamera, refreshCameraDevices]);
 
   const restartCamera = useCallback(() => {
-    stopCamera();
-    startCamera();
-  }, [startCamera, stopCamera]);
+    void refreshCameraDevices();
+    if (streamRef.current) {
+      stopCamera();
+      void startCamera();
+    }
+  }, [refreshCameraDevices, startCamera, stopCamera]);
 
-  const switchFacingMode = () => {
-    setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
+  const changeCamera = (deviceId: string) => {
+    const wasActive = !!streamRef.current;
+    stopCamera();
+    setSelectedCameraId(deviceId);
+    setCameraError(null);
+    if (wasActive) void startCamera(deviceId);
+  };
+
+  const switchCamera = () => {
+    if (cameraDevices.length < 2) return;
+    const current = cameraDevices.findIndex((device) => device.deviceId === selectedCameraId);
+    const nextCamera = cameraDevices[(current + 1) % cameraDevices.length];
+    if (nextCamera) changeCamera(nextCamera.deviceId);
   };
 
   // Capture photo from camera
   const capturePhoto = () => {
-    if (!videoRef.current || !canvasRef.current || !isCameraActive || cameraStarting) return;
+    if (!videoRef.current || !canvasRef.current || !isCameraActive || cameraStarting || scanning || capturePendingRef.current) return;
 
     const video = videoRef.current;
-    const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.drawImage(video, 0, 0);
-
-    // Convert to base64
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) return;
-
+    const generation = cameraGenerationRef.current;
+    const finish = () => {
+      if (generation !== cameraGenerationRef.current) return;
+      capturePendingRef.current = false;
+      setCapturing(false);
+    };
+    capturePendingRef.current = true;
+    setCapturing(true);
+    setCameraError(null);
+    try {
+      captureQrFrame(video, canvasRef.current, (blob) => {
+        if (generation !== cameraGenerationRef.current) return;
+        if (!blob || blob.size > 10_000_000) {
+          finish();
+          setCameraError(blob ? 'Ảnh camera quá lớn. Chọn độ phân giải thấp hơn hoặc tải ảnh mã QR lên.' : 'Chưa lấy được ảnh. Hãy thử chụp lại.');
+          return;
+        }
         const reader = new FileReader();
+        readerRef.current?.abort();
+        readerRef.current = reader;
+        reader.onerror = () => {
+          if (generation !== cameraGenerationRef.current) return;
+          finish();
+          setCameraError('Không đọc được ảnh camera. Hãy thử lại.');
+        };
         reader.onload = (e) => {
+          if (generation !== cameraGenerationRef.current) return;
           const base64 = e.target?.result as string;
           const base64Data = base64.split(',')[1];
+          finish();
           if (base64Data) {
             onScan(base64Data);
-            // keep camera active for next capture
           }
         };
         reader.readAsDataURL(blob);
-      },
-      'image/jpeg',
-      0.9
-    );
+      });
+    } catch (error) {
+      finish();
+      setCameraError(error instanceof Error ? error.message : 'Không lấy được ảnh camera.');
+    }
   };
 
   // Cleanup camera on unmount
   useEffect(() => {
+    const generation = cameraGenerationRef;
+    const listGeneration = cameraListGenerationRef;
+    const reader = readerRef;
+    const stream = streamRef;
     return () => {
-      stopCamera();
+      generation.current++;
+      listGeneration.current++;
+      reader.current?.abort();
+      stream.current?.getTracks().forEach((track) => {
+        track.onended = null;
+        track.stop();
+      });
+      stream.current = null;
     };
-  }, [stopCamera]);
+  }, []);
 
   // Handle tab changes
   useEffect(() => {
-    if (scanMode === 'camera') {
-      startCamera();
-    } else {
+    if (scanMode !== 'camera') {
       stopCamera();
+      return;
     }
-  }, [scanMode, startCamera, stopCamera]);
-
-  // Restart when facing mode changes while camera tab active
-  useEffect(() => {
-    if (scanMode === 'camera' && previousFacingModeRef.current !== facingMode) {
-      restartCamera();
-    }
-    previousFacingModeRef.current = facingMode;
-  }, [facingMode, scanMode, restartCamera]);
+    const mediaDevices = navigator.mediaDevices;
+    void refreshCameraDevices();
+    const handleDeviceChange = () => { void refreshCameraDevices(); };
+    mediaDevices?.addEventListener('devicechange', handleDeviceChange);
+    return () => { mediaDevices?.removeEventListener('devicechange', handleDeviceChange); };
+  }, [scanMode, stopCamera, refreshCameraDevices]);
 
   // Stop camera once data has been captured
   useEffect(() => {
@@ -168,13 +277,16 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
 
   // Handle file upload
   const handleFileUpload = async (file: File) => {
+    if (scanning || capturing) return;
     if (!file.type.startsWith('image/')) {
       alert('Vui lòng chọn file ảnh');
       return;
     }
 
     // Convert to base64
+    readerRef.current?.abort();
     const reader = new FileReader();
+    readerRef.current = reader;
     reader.onload = (e) => {
       const base64 = e.target?.result as string;
       // Remove data:image/...;base64, prefix
@@ -225,8 +337,8 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <Camera size={20} />
-        <h2 className={styles.title}>Quét CCCD</h2>
+        <QrCode size={20} />
+        <h2 className={styles.title}>Quét QR căn cước</h2>
       </div>
 
       {!cccdData ? (
@@ -235,16 +347,18 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
             <button
               className={`${styles.modeTab} ${scanMode === 'camera' ? styles.modeTabActive : ''}`}
               onClick={() => setScanMode('camera')}
+              disabled={scanning || capturing}
             >
               <Camera size={16} />
-              <span>Quét bằng camera</span>
+              <span>Camera QR</span>
             </button>
             <button
               className={`${styles.modeTab} ${scanMode === 'upload' ? styles.modeTabActive : ''}`}
               onClick={() => setScanMode('upload')}
+              disabled={scanning || capturing}
             >
               <Upload size={16} />
-              <span>Tải ảnh từ thư viện</span>
+              <span>Ảnh mã QR</span>
             </button>
           </div>
 
@@ -252,30 +366,64 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
             <div className={styles.cameraSection}>
               <div className={styles.cameraHeader}>
                 <div>
-                  <p className={styles.cameraTitle}>Chế độ camera</p>
+                  <p className={styles.cameraTitle}>Đọc mã QR</p>
                   <p className={styles.cameraSubtitle}>
-                    Đặt mặt trước CCCD trong khung, đảm bảo ánh sáng tốt
+                    Đưa mã QR vào khung, giữ thẻ ổn định rồi bấm chụp
                   </p>
                 </div>
                 <div className={styles.cameraActions}>
-                  <button onClick={switchFacingMode} className={styles.actionButton}>
+                  <button
+                    onClick={switchCamera}
+                    className={styles.actionButton}
+                    disabled={cameraDevices.length < 2 || cameraStarting || capturing || scanning}
+                    title={cameraDevices.length < 2 ? 'Cần ít nhất hai camera để chuyển' : 'Chuyển sang camera kế tiếp'}
+                  >
                     <RefreshCw size={14} />
                     <span>Đổi camera</span>
                   </button>
-                  <button onClick={restartCamera} className={styles.actionButton}>
+                  <button
+                    onClick={restartCamera}
+                    className={styles.actionButton}
+                    disabled={cameraStarting || capturing || scanning}
+                  >
                     <RotateCcw size={14} />
                     <span>Làm mới</span>
                   </button>
                 </div>
               </div>
 
+              <div className={styles.cameraSource}>
+                <label htmlFor={cameraSelectId}>Nguồn camera</label>
+                <select
+                  id={cameraSelectId}
+                  value={selectedCameraId}
+                  onChange={(event) => changeCamera(event.target.value)}
+                  disabled={cameraStarting || capturing || scanning}
+                >
+                  <option value="">Tự động (ưu tiên camera sau)</option>
+                  {cameraDevices.map((device, index) => (
+                    <option key={device.deviceId} value={device.deviceId}>
+                      {device.label || `Camera ${index + 1}`}
+                    </option>
+                  ))}
+                </select>
+                {activeCameraName && <p className={styles.cameraDeviceHint}>Đang dùng: {activeCameraName}</p>}
+                {cameraListError ? (
+                  <p className={styles.cameraDeviceHint} role="alert">{cameraListError}</p>
+                ) : !isCameraActive && (
+                  <p className={styles.cameraDeviceHint}>
+                    Mở camera để xem đầy đủ tên thiết bị. Nếu chưa thấy camera mới, bấm Làm mới.
+                  </p>
+                )}
+              </div>
+
               <div className={styles.cameraViewport}>
                 {!isCameraActive && !cameraStarting && !cameraError && (
                   <div className={styles.cameraPlaceholder}>
                     <Camera size={32} />
-                    <p>Nhấn "Mở camera" để bắt đầu quét mã QR trên CCCD</p>
+                    <p>Nhấn "Mở camera" rồi đưa mã QR trên căn cước vào khung</p>
                     <button
-                      onClick={startCamera}
+                      onClick={() => void startCamera()}
                       className={styles.primaryButton}
                       disabled={cameraStarting}
                     >
@@ -284,11 +432,11 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
                   </div>
                 )}
 
-                {cameraError && (
+                {cameraError && !isCameraActive && (
                   <div className={styles.cameraError}>
                     <CameraOff size={28} />
                     <p>{cameraError}</p>
-                    <button onClick={startCamera} className={styles.primaryButton}>
+                    <button onClick={() => void startCamera()} className={styles.primaryButton}>
                       Thử lại
                     </button>
                   </div>
@@ -298,11 +446,12 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
                   ref={videoRef}
                   autoPlay
                   playsInline
+                  muted
                   className={`${styles.cameraVideo} ${isCameraActive ? styles.visible : ''}`}
                 />
                 <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-                {isCameraActive && !cameraError && (
+                {isCameraActive && (
                   <div className={styles.cameraOverlay}>
                     <div className={styles.overlayFrame}>
                       <div className={styles.overlayCorners}>
@@ -312,29 +461,35 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
                         <span className={styles.corner} />
                       </div>
                       <p className={styles.overlayText}>
-                        Căn chỉnh CCCD trong khung để quét QR rõ nét
+                        Căn mã QR vào giữa khung, tránh lóa sáng
                       </p>
                     </div>
                   </div>
                 )}
               </div>
 
+              {cameraError && isCameraActive && <p className={styles.cameraDeviceHint} role="alert">{cameraError}</p>}
+
               <div className={styles.cameraFooter}>
                 <button
-                  onClick={isCameraActive ? capturePhoto : startCamera}
+                  onClick={isCameraActive ? capturePhoto : () => void startCamera()}
                   className={styles.capturePrimary}
-                  disabled={cameraStarting || scanning}
+                  disabled={cameraStarting || capturing || scanning}
                 >
-                  {cameraStarting ? (
+                  {cameraStarting || capturing || scanning ? (
                     <Loader className={styles.spinner} size={18} />
                   ) : (
                     <Camera size={18} />
                   )}
                   <span>
-                    {cameraStarting
+                    {scanning
+                      ? 'Đang đọc mã QR...'
+                      : capturing
+                        ? 'Đang lấy ảnh...'
+                        : cameraStarting
                       ? 'Đang mở camera...'
                       : isCameraActive
-                        ? 'Chụp & quét'
+                        ? 'Chụp & đọc QR'
                         : 'Mở camera'}
                   </span>
                 </button>
@@ -366,23 +521,22 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
                 {scanning ? (
                   <div className={styles.scanningState}>
                     <Loader className={styles.spinner} size={40} />
-                    <p className={styles.scanningText}>Đang quét CCCD...</p>
+                    <p className={styles.scanningText}>Đang đọc mã QR...</p>
                   </div>
                 ) : (
                   <div className={styles.uploadState}>
                     <Upload size={40} className={styles.uploadIcon} />
-                    <p className={styles.uploadText}>Kéo thả ảnh CCCD vào đây</p>
+                    <p className={styles.uploadText}>Kéo thả ảnh có mã QR vào đây</p>
                     <p className={styles.uploadSubtext}>
-                      Hỗ trợ JPG, PNG, độ phân giải &gt;= 1000px
+                      JPG, PNG — mã QR rõ, đủ bốn góc, không lóa
                     </p>
-                    <button className={styles.uploadButton}>Chọn ảnh CCCD</button>
+                    <button className={styles.uploadButton}>Chọn ảnh mã QR</button>
                   </div>
                 )}
               </div>
 
               <p className={styles.uploadHint}>
-                Gợi ý: Nếu chụp ảnh trực tiếp thuận tiện hơn, chuyển sang tab "Quét bằng camera" bên
-                trên.
+                Gợi ý: Nếu muốn chụp trực tiếp, chuyển sang tab "Camera QR" bên trên.
               </p>
             </>
           )}
@@ -392,7 +546,7 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
         <div className={styles.dataDisplay}>
           <div className={styles.successHeader}>
             <CheckCircle size={20} className={styles.successIcon} />
-            <span className={styles.successText}>Đã quét thành công</span>
+            <span className={styles.successText}>Đã đọc QR căn cước</span>
           </div>
 
           <div className={styles.dataGrid}>
@@ -414,7 +568,7 @@ export const CCCDScanner = ({ cccdData, scanning, onScan, onReset }: CCCDScanner
       {/* Info */}
       <div className={styles.info}>
         <AlertCircle size={16} />
-        <p className={styles.infoText}>Bạn có thể bỏ qua bước quét CCCD và điền thủ công</p>
+        <p className={styles.infoText}>Chỉ đọc mã QR, không đọc chữ trên ảnh. Có thể bỏ qua và nhập bằng tay.</p>
       </div>
     </div>
   );

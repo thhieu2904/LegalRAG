@@ -38,6 +38,7 @@ class CCCDScanResponse(BaseModel):
     message: Optional[str] = None
     processing_time: Optional[float] = None
     confidence: Optional[float] = None
+    scan_mode: ScanMode = ScanMode.QR
 
 
 # ============================================
@@ -56,6 +57,7 @@ class FormRenderResponse(BaseModel):
     raw_html: Optional[str] = None  # Raw HTML without wrapper
     placeholders: Optional[list[str]] = None  # List of {{placeholder}} names found
     message: Optional[str] = None
+    template_sha256: Optional[str] = None
 
 
 # ============================================
@@ -68,6 +70,7 @@ class FormFillRequest(BaseModel):
     data: Dict[str, Any]  # Combined data: {scan_ho_ten: "...", form_nghe_nghiep: "..."}
     session_id: Optional[str] = None  # For filename generation
     form_name: Optional[str] = None  # Human-readable form name
+    template_sha256: Optional[str] = None
 
 
 class FormFillResponse(BaseModel):

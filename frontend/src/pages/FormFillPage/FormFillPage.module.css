@@ -73,6 +73,21 @@
   min-height: 600px;
 }
 
+.mappingPanel {
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: white;
+  color: #475569;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.mappingPanel h2 { margin: 0 0 1rem; font-size: 1rem; color: #1e293b; }
+.mappingPanel label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+.mappingPanel select { width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; background: white; }
+
 /* Responsive */
 @media (max-width: 1024px) {
   .content {
