@@ -5,10 +5,11 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/constants';
-import { documentBookmarks, documentCategories, normalizeSearch } from './data';
+import { documentBookmarks, documentCategories, normalizeSearch, SOURCE_LINK_TARGET } from './data';
 import styles from './PublicPortal.module.css';
 
-const STORAGE_KEY = 'legalrag-document-bookmarks';
+// Keep the previous law-bookmark key untouched when switching to OA procedures.
+const STORAGE_KEY = 'legalrag-procedure-bookmarks';
 
 function readSavedBookmarks(): string[] {
   try {
@@ -57,12 +58,12 @@ export default function BookmarksPage() {
             <p className={styles.eyebrow}><Bookmark size={15} /> TỦ VĂN BẢN</p>
             <h1 id="bookmarks-title">Văn bản thường gặp</h1>
             <p className={styles.description}>
-              Tập hợp các đường dẫn văn bản để bạn tra cứu nhanh khi cần.
+              Tra cứu các thủ tục thường dùng tại Cổng Dịch vụ công Quốc gia.
             </p>
           </div>
           <div className={styles.heroCount}>
             <BookOpen size={27} aria-hidden="true" />
-            <div><strong>{String(documentBookmarks.length).padStart(2, '0')}</strong><span>liên kết văn bản</span></div>
+            <div><strong>{String(documentBookmarks.length).padStart(2, '0')}</strong><span>liên kết thủ tục</span></div>
           </div>
         </section>
 
@@ -72,7 +73,7 @@ export default function BookmarksPage() {
               <Search size={20} aria-hidden="true" />
               <input
                 aria-label="Tìm văn bản"
-                placeholder="Tìm tên văn bản, số hiệu hoặc lĩnh vực..."
+                placeholder="Tìm tên thủ tục hoặc lĩnh vực..."
                 value={query}
                 onChange={event => setQuery(event.target.value)}
                 type="search"
@@ -90,7 +91,7 @@ export default function BookmarksPage() {
               ))}
             </div>
             <div className={styles.listHeading}>
-              <span aria-live="polite">{visibleDocuments.length} văn bản{savedOnly ? ' đã đánh dấu' : ''}</span>
+              <span aria-live="polite">{visibleDocuments.length} thủ tục{savedOnly ? ' đã đánh dấu' : ''}</span>
               <button
                 className={`${styles.savedFilter} ${savedOnly ? styles.savedFilterActive : ''}`}
                 aria-pressed={savedOnly}
@@ -103,7 +104,7 @@ export default function BookmarksPage() {
               {visibleDocuments.map(document => (
                 <li key={document.id} className={styles.documentRow}>
                   <div className={styles.documentIcon}><FileText size={23} aria-hidden="true" /></div>
-                  <a className={styles.documentLink} href={document.url} target="_blank" rel="noopener noreferrer">
+                  <a className={styles.documentLink} href={document.url} target={SOURCE_LINK_TARGET} rel="noopener noreferrer">
                     <h2>{document.title}</h2>
                     <div className={styles.documentMeta}>
                       <span>{document.number}</span><span className={styles.metaDot}>·</span><span>{document.source}</span>
@@ -122,10 +123,10 @@ export default function BookmarksPage() {
                   <a
                     className={styles.openDocument}
                     href={document.url}
-                    target="_blank"
+                    target={SOURCE_LINK_TARGET}
                     rel="noopener noreferrer"
-                    aria-label={`Mở ${document.title} trong tab mới`}
-                    title="Mở văn bản trong tab mới"
+                    aria-label={`Mở ${document.title} tại trang nguồn`}
+                    title="Mở trang nguồn"
                   ><ExternalLink size={17} /></a>
                 </li>
               ))}
@@ -133,14 +134,14 @@ export default function BookmarksPage() {
             {visibleDocuments.length === 0 && (
               <div className={styles.emptyState}>
                 <Search size={30} aria-hidden="true" />
-                <h2>Chưa có văn bản phù hợp</h2>
+                <h2>Chưa có thủ tục phù hợp</h2>
                 <p>Thử từ khóa khác hoặc xem toàn bộ danh sách.</p>
                 <button className={styles.textButton} onClick={() => {
                   setQuery(''); setCategory('Tất cả'); setSavedOnly(false);
-                }}>Xem tất cả văn bản <ArrowRight size={16} /></button>
+                }}>Xem tất cả thủ tục <ArrowRight size={16} /></button>
               </div>
             )}
-            <p className={styles.listNote}><ExternalLink size={14} /> Các văn bản mở tại trang nguồn trong tab mới.</p>
+            <p className={styles.listNote}><ExternalLink size={14} /> Xem thông tin chính thức tại Cổng Dịch vụ công Quốc gia.</p>
           </section>
 
           <aside className={styles.bookmarkAside}>
@@ -148,10 +149,10 @@ export default function BookmarksPage() {
               <p className={styles.eyebrow}>TRUY CẬP NHANH</p>
               <h2>Bạn cần hỗ trợ gì?</h2>
               <Link to={ROUTES.PUBLIC_SERVICES} className={styles.quickLink}>
-                <Landmark size={22} /><div><strong>Hành chính công</strong><span>Nộp hồ sơ trực tuyến</span></div><ArrowRight size={17} />
+                <Landmark size={22} /><div><strong>Cổng Dịch vụ công</strong><span>Nộp hồ sơ trực tuyến</span></div><ArrowRight size={17} />
               </Link>
               <Link to={ROUTES.DOSSIER_LOOKUP} className={styles.quickLink}>
-                <ClipboardCheck size={22} /><div><strong>Kiểm tra hồ sơ</strong><span>Theo dõi tiến độ xử lý</span></div><ArrowRight size={17} />
+                <ClipboardCheck size={22} /><div><strong>Tra cứu hồ sơ</strong><span>Theo dõi tiến độ xử lý</span></div><ArrowRight size={17} />
               </Link>
               <Link to={ROUTES.CHAT} className={styles.quickLink}>
                 <MessagesSquare size={22} /><div><strong>Hỏi Trợ lý AI</strong><span>Giải đáp thủ tục, pháp luật</span></div><ArrowRight size={17} />
@@ -159,10 +160,9 @@ export default function BookmarksPage() {
             </section>
             <section className={styles.bookmarkTip}>
               <Star size={21} aria-hidden="true" />
-              <h3>Giữ văn bản bạn hay dùng</h3>
-              <p>Bấm ngôi sao cạnh văn bản, sau đó chọn “Đã đánh dấu” để tìm lại nhanh hơn.</p>
+              <h3>Giữ thủ tục bạn hay dùng</h3>
+              <p>Bấm ngôi sao cạnh thủ tục, sau đó chọn “Đã đánh dấu” để tìm lại nhanh hơn.</p>
             </section>
-            <p className={styles.demoCaption}>Danh sách gợi ý cho bản demo.</p>
           </aside>
         </div>
       </div>

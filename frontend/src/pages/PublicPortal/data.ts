@@ -1,67 +1,71 @@
-// Curated demo links. These do not assert the current legal validity of a document.
-export const PUBLIC_SERVICE_URL = 'https://vpcp.dichvucong.gov.vn/p/home/dvc-trang-chu.html';
-export const DOSSIER_LOOKUP_URL = 'https://vpcp.dichvucong.gov.vn/p/home/dvc-tra-cuu-ho-so.html';
+// Public destinations reviewed against the Long Phu OA menu on 2026-10-06.
+// Do not derive procedure IDs or substitute a simulated lookup result.
+export const PUBLIC_SERVICE_URL = 'https://dichvucong.gov.vn/';
+export const ONLINE_SERVICES_URL = 'https://dichvucong.gov.vn/dvc-dich-vu-cong-truc-tuyen';
+export const DOSSIER_LOOKUP_URL = 'https://dichvucong.gov.vn/tra-cuu-ho-so';
+export const PAYMENT_URL = 'https://dichvucong.gov.vn/thanh-toan-truc-tuyen';
+export const SOURCE_LINK_TARGET = '_blank';
 
 export const documentBookmarks = [
   {
-    id: 'ho-tich',
-    title: 'Luật Hộ tịch',
-    number: '60/2014/QH13',
+    id: 'dang-ky-khai-sinh',
+    title: 'Đăng ký khai sinh',
+    number: 'Thủ tục hành chính',
     category: 'Hộ tịch',
-    source: 'Công báo Chính phủ',
-    url: 'https://congbao.chinhphu.vn/van-ban/luat-so-60-2014-qh13-5264/10513.htm',
+    source: 'Cổng Dịch vụ công Quốc gia',
+    url: 'https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?formalityId=019d2bfd-3fe0-70ac-b9d6-5e9e20d6eef7&formalityCaseId=019dd20f-6f0d-72cd-9eca-fbc9d34053a6',
   },
   {
-    id: 'hon-nhan',
-    title: 'Luật Hôn nhân và gia đình',
-    number: '52/2014/QH13',
+    id: 'trich-luc-ho-tich',
+    title: 'Trích lục hộ tịch',
+    number: 'Thủ tục hành chính',
     category: 'Hộ tịch',
-    source: 'Công báo Chính phủ',
-    url: 'https://congbao.chinhphu.vn/van-ban/luat-so-52-2014-qh13-6127.htm',
+    source: 'Cổng Dịch vụ công Quốc gia',
+    url: 'https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?formalityId=019d2bfd-867c-72db-b6a7-dcbd8c763807&formalityCaseId=019d62ec-f5f3-7429-afd0-1d8765b43722',
   },
   {
-    id: 'cu-tru',
-    title: 'Luật Cư trú',
-    number: '68/2020/QH14',
-    category: 'Cư trú',
-    source: 'Công báo Chính phủ',
-    url: 'https://congbao.chinhphu.vn/van-ban/luat-so-68-2020-qh14-32684/33716.htm',
+    id: 'dang-ky-khai-tu',
+    title: 'Đăng ký khai tử',
+    number: 'Thủ tục hành chính',
+    category: 'Hộ tịch',
+    source: 'Cổng Dịch vụ công Quốc gia',
+    url: 'https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?formalityId=019d2bfd-3fac-7489-b53b-9c6c958f2da4&formalityCaseId=019d6642-b82d-75cb-b429-16055891d02c',
   },
   {
-    id: 'can-cuoc',
-    title: 'Luật Căn cước',
-    number: '26/2023/QH15',
-    category: 'Cư trú',
-    source: 'Công báo Chính phủ',
-    url: 'https://congbao.chinhphu.vn/van-ban/luat-so-26-2023-qh15-40850/47828.htm',
+    id: 'dang-ky-ket-hon',
+    title: 'Đăng ký kết hôn',
+    number: 'Thủ tục hành chính',
+    category: 'Hôn nhân',
+    source: 'Cổng Dịch vụ công Quốc gia',
+    url: 'https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?formalityId=019d2bfd-3fac-7489-b53b-a15eb239a6fe&formalityCaseId=019d4346-42c5-71a1-9328-f59faac00421',
   },
   {
-    id: 'dat-dai',
-    title: 'Luật Đất đai',
-    number: '31/2024/QH15',
-    category: 'Đất đai',
-    source: 'Cổng thông tin Chính phủ',
-    url: 'https://vanban.chinhphu.vn/?classid=1&docid=211189&orggroupid=1&pageid=27160',
+    id: 'xac-nhan-hon-nhan',
+    title: 'Xác nhận tình trạng hôn nhân',
+    number: 'Thủ tục hành chính',
+    category: 'Hôn nhân',
+    source: 'Cổng Dịch vụ công Quốc gia',
+    url: 'https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?formalityId=019d2bfd-6eb3-7019-bf3f-fc58c9ee44b9&formalityCaseId=019db0ca-2db5-749f-8967-9cd8d16b1b80',
   },
   {
-    id: 'mot-cua',
-    title: 'Thực hiện thủ tục hành chính theo cơ chế một cửa, một cửa liên thông',
-    number: '118/2025/NĐ-CP',
-    category: 'Hành chính',
-    source: 'Cổng thông tin Chính phủ',
-    url: 'https://chinhphu.vn/?docid=213871&pageid=27160',
+    id: 'chung-thuc-ban-sao',
+    title: 'Chứng thực bản sao',
+    number: 'Thủ tục hành chính',
+    category: 'Chứng thực',
+    source: 'Cổng Dịch vụ công Quốc gia',
+    url: 'https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?formalityId=019d2bfd-8e22-77ef-819f-e49460350904&formalityCaseId=019d2e45-9f74-7708-b183-4a33c75cddf8',
   },
   {
-    id: 'chung-thuc',
-    title: 'Cấp bản sao, chứng thực chữ ký và hợp đồng, giao dịch',
-    number: '23/2015/NĐ-CP',
-    category: 'Hành chính',
-    source: 'Cổng thông tin Chính phủ',
-    url: 'https://vanban.chinhphu.vn/default.aspx?docid=179100&pageid=27160',
+    id: 'chung-thuc-chu-ky',
+    title: 'Chứng thực chữ ký',
+    number: 'Thủ tục hành chính',
+    category: 'Chứng thực',
+    source: 'Cổng Dịch vụ công Quốc gia',
+    url: 'https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?formalityId=019d2bfd-8e2e-7359-b42f-d5dc8d74741b&formalityCaseId=019e765b-3568-746a-baed-ccf7b0ed2ceb',
   },
 ];
 
-export const documentCategories = ['Tất cả', 'Hộ tịch', 'Cư trú', 'Đất đai', 'Hành chính'];
+export const documentCategories = ['Tất cả', ...new Set(documentBookmarks.map(document => document.category))];
 
 export function normalizeSearch(value: string) {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').toLowerCase();

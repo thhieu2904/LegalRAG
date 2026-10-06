@@ -13,8 +13,8 @@ export const ROUTES = {
 
 export const ROUTE_LABELS = {
   [ROUTES.HOME]: 'Văn bản thường gặp',
-  [ROUTES.PUBLIC_SERVICES]: 'Hành chính công',
+  [ROUTES.PUBLIC_SERVICES]: 'Cổng Dịch vụ công',
   [ROUTES.CHAT]: 'Chat AI',
-  [ROUTES.DOSSIER_LOOKUP]: 'Kiểm tra hồ sơ',
+  [ROUTES.DOSSIER_LOOKUP]: 'Tra cứu hồ sơ',
   [ROUTES.ADMIN]: 'Admin',
 } as const;

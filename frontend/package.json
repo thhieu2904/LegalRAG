@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:forms": "node scripts/test-form-demo.cjs"
+    "test:forms": "node scripts/test-form-demo.cjs",
+    "test:portal": "node scripts/test-public-portal.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
