@@ -7,6 +7,7 @@
 import { Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUIStore } from '@/stores/uiStore';
+import { PublicNavigation } from '../PublicNavigation/PublicNavigation';
 import styles from './Header.module.css';
 import type { HeaderProps } from './Header.types';
 
@@ -14,7 +15,7 @@ export const Header = ({ variant = 'chat' }: HeaderProps) => {
   const { toggleSidebar } = useUIStore();
 
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${variant === 'chat' ? styles.publicHeader : ''}`}>
       <div className={styles.container}>
         {/* Mobile Menu Button (Admin only) */}
         {variant === 'admin' && (
@@ -56,6 +57,7 @@ export const Header = ({ variant = 'chat' }: HeaderProps) => {
           </div>
         </div>
       </div>
+      {variant === 'chat' && <PublicNavigation />}
     </header>
   );
 };

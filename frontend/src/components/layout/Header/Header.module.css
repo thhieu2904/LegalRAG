@@ -12,6 +12,42 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* Public workspace header keeps all four tabs in the same sticky region. */
+.publicHeader .container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  gap: 1.25rem;
+}
+
+.publicHeader .logoSection {
+  width: auto;
+}
+
+.publicHeader .logo {
+  width: 52px;
+  height: 52px;
+}
+
+.publicHeader .titleSection {
+  width: auto;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.publicHeader .organizationName {
+  max-width: 660px;
+  color: #9e342f;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+.publicHeader .assistantSection {
+  width: auto;
+  padding-right: 0;
+}
+
 .container {
   display: flex;
   align-items: center;
@@ -358,5 +394,33 @@
   .logoutButton {
     width: 36px;
     height: 36px;
+  }
+}
+
+@media (max-width: 900px) {
+  .publicHeader .container {
+    padding: 0.875rem 1.25rem;
+    gap: 0.875rem;
+  }
+
+  .publicHeader .assistantSection {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .publicHeader .container {
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .publicHeader .logo {
+    width: 42px;
+    height: 42px;
+  }
+
+  .publicHeader .organizationName {
+    font-size: 0.8125rem;
+    line-height: 1.4;
   }
 }

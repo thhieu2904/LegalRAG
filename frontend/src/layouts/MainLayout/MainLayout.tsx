@@ -1,9 +1,9 @@
 /**
  * MainLayout Component
- * Layout for Chat Page (Public)
+ * Shared layout for the public document, services, chat and lookup pages.
  */
 
-import { Outlet } from 'react-router-dom';
+import { Outlet, ScrollRestoration } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import styles from './MainLayout.module.css';
@@ -21,6 +21,7 @@ export const MainLayout = () => {
 
       {/* Footer */}
       <Footer />
+      <ScrollRestoration />
     </div>
   );
 };

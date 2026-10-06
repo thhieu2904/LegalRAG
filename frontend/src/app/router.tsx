@@ -2,7 +2,10 @@
  * React Router Configuration - LegalRAG
  *
  * Public Routes:
- * - / → Chat page (no auth required)
+ * - / → Common document bookmarks
+ * - /hanh-chinh-cong → Public services demo
+ * - /chat → Existing AI chat
+ * - /kiem-tra-ho-so → Dossier lookup demo
  *
  * Admin Routes:
  * - /admin/login → Admin login
@@ -16,7 +19,7 @@ import { MainLayout, AdminLayout } from '@/layouts';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 // Loading fallback component
-const LoadingFallback = () => (
+const loadingFallback = (
   <div
     style={{
       display: 'flex',
@@ -33,6 +36,9 @@ const LoadingFallback = () => (
 // Lazy load pages
 // Pages with default export (no conversion needed)
 const ChatPage = lazy(() => import('@/pages/ChatPage'));
+const BookmarksPage = lazy(() => import('@/pages/PublicPortal/BookmarksPage'));
+const PublicServicesPage = lazy(() => import('@/pages/PublicPortal/PublicServicesPage'));
+const DossierLookupPage = lazy(() => import('@/pages/PublicPortal/DossierLookupPage'));
 const AdminLoginPage = lazy(() =>
   import('@/pages/AdminLoginPage').then((m) => ({ default: m.AdminLoginPage }))
 );
@@ -67,7 +73,7 @@ const UserFormsPage = lazy(() =>
 
 export const router = createBrowserRouter([
   // ============ PUBLIC ROUTES ============
-  // Root: Chat page (no auth)
+  // Public workspace with four navigation tabs (no auth)
   {
     path: ROUTES.HOME,
     element: <MainLayout />,
@@ -75,8 +81,32 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
+            <BookmarksPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: ROUTES.PUBLIC_SERVICES,
+        element: (
+          <Suspense fallback={loadingFallback}>
+            <PublicServicesPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: ROUTES.CHAT,
+        element: (
+          <Suspense fallback={loadingFallback}>
             <ChatPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: ROUTES.DOSSIER_LOOKUP,
+        element: (
+          <Suspense fallback={loadingFallback}>
+            <DossierLookupPage />
           </Suspense>
         ),
       },
@@ -84,7 +114,7 @@ export const router = createBrowserRouter([
       {
         path: 'forms/:docId/:formFilename',
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
             <FormFillPage />
           </Suspense>
         ),
@@ -97,7 +127,7 @@ export const router = createBrowserRouter([
   {
     path: '/admin/login',
     element: (
-      <Suspense fallback={<LoadingFallback />}>
+      <Suspense fallback={loadingFallback}>
         <AdminLoginPage />
       </Suspense>
     ),
@@ -115,7 +145,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
             <DashboardPage />
           </Suspense>
         ),
@@ -123,7 +153,7 @@ export const router = createBrowserRouter([
       {
         path: 'collections',
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
             <CollectionsPage />
           </Suspense>
         ),
@@ -131,7 +161,7 @@ export const router = createBrowserRouter([
       {
         path: 'collections/:id',
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
             <CollectionDetailPage />
           </Suspense>
         ),
@@ -139,7 +169,7 @@ export const router = createBrowserRouter([
       {
         path: 'collections/:id/upload',
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
             <UploadDocumentPage />
           </Suspense>
         ),
@@ -147,7 +177,7 @@ export const router = createBrowserRouter([
       {
         path: 'documents',
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
             <DocumentsPage />
           </Suspense>
         ),
@@ -155,7 +185,7 @@ export const router = createBrowserRouter([
       {
         path: 'documents/:id',
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
             <DocumentDetailPage />
           </Suspense>
         ),
@@ -163,7 +193,7 @@ export const router = createBrowserRouter([
       {
         path: 'user-forms',
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
             <UserFormsPage />
           </Suspense>
         ),
@@ -176,7 +206,7 @@ export const router = createBrowserRouter([
       {
         path: 'old',
         element: (
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={loadingFallback}>
             <AdminPage />
           </Suspense>
         ),
@@ -188,7 +218,7 @@ export const router = createBrowserRouter([
   {
     path: '*',
     element: (
-      <Suspense fallback={<LoadingFallback />}>
+      <Suspense fallback={loadingFallback}>
         <NotFoundPage />
       </Suspense>
     ),
