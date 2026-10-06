@@ -22,11 +22,14 @@ Build context là đường dẫn tuyệt đối của clone, không phụ thu�
 cũ. Script đối chiếu cấu hình trước/sau trong RAM, không in mật khẩu `.env`.
 Chỉ cho phép đổi image/build/pull policy và healthcheck ở 3 service đã chọn.
 Query healthcheck dùng Python/httpx vì image Python slim không có curl.
+Frontend healthcheck dùng IPv4 `127.0.0.1`, tránh Alpine wget kiểm tra vào `::1`
+trong khi Nginx chỉ listen IPv4.
 
 ## 1. Chuẩn bị source và xác định cấu hình server đang dùng
 
 Sau khi commit được push lên GitHub, trên server clone/pull đúng revision.
-Lượt làm này chỉ tạo commit local; **chưa push hoặc thao tác server**.
+Các lệnh dưới đây là hướng dẫn vận hành; trạng thái một lần triển khai phải
+được xác nhận bằng log và metadata thực tế, không suy ra từ tài liệu này.
 
 ```powershell
 git clone https://github.com/thhieu2904/LegalRAG.git
@@ -39,9 +42,10 @@ Nếu đã có clone, không clone chồng vào đó; chỉ pull khi đã xử l
 Kiểm tra project và vị trí Compose cũ (chỉ đọc):
 
 ```powershell
-docker inspect legalrag-query --format '{{ index .Config.Labels "com.docker.compose.project" }}'
-docker inspect legalrag-query --format '{{ index .Config.Labels "com.docker.compose.project.config_files" }}'
-docker inspect legalrag-query --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}'
+$legalragLabels = (docker inspect legalrag-query --format '{{json .Config.Labels}}' | ConvertFrom-Json)
+$legalragLabels.'com.docker.compose.project'
+$legalragLabels.'com.docker.compose.project.config_files'
+$legalragLabels.'com.docker.compose.project.working_dir'
 ```
 
 Điền **đường dẫn thực tế** và project vừa kiểm tra, không dùng các ví dụ này
@@ -64,12 +68,16 @@ Tại root clone, trong PowerShell:
 ```powershell
 & .\scripts\deploy\form-source.ps1 -Action check @legalragDeploy
 & .\scripts\deploy\form-source.ps1 -Action build @legalragDeploy
+& .\scripts\deploy\form-source.ps1 -Action preflight @legalragDeploy
 ```
 
 `check` gọi Compose config, không cần engine và không khởi động container.
 `build` cần engine; tải image nền nếu cần, build đúng 3 service, chưa thay
 container đang chạy. Tag mặc định là commit Git hiện tại. Script từ chối build
 hoặc cập nhật khi các đầu vào source còn thay đổi chưa commit.
+`preflight` chỉ kiểm tra engine, ownership project/service và sự tồn tại của
+ba image local; không khởi động hoặc thay container. Ownership đọc JSON labels,
+không dùng tên label có dấu nháy trong Go template trên Windows PowerShell 5.
 
 Frontend dùng Node 22, `npm ci` với lockfile và `npm run build` (có kiểm tra TS).
 Chỉ `.env.docker` công khai được chép vào build; không chép `.env` riêng.
@@ -136,9 +144,12 @@ bức và frontend build PASS từ bản source xuất theo Git index. Frontend 
 dependency local hiện có; đây chưa phải cài dependency/build Linux trong image.
 Compose/script check PASS trên Windows PowerShell 5 với `.env` giả không có
 secret; đã thử từ chối base sai và source bẩn trước khi truy cập engine.
-**NOT RUN:** Docker image build mới, smoke trên stack production, cập nhật
-server. Script `build/up` ở tài liệu này là thao tác người vận hành sẽ chạy,
-không phải thao tác đã làm thay người dùng.
+Guard triển khai có test offline bằng mock CLI (không dùng engine hoặc dữ liệu):
+`powershell.exe -NoProfile -File scripts/deploy/tests/form-source.tests.ps1`.
+Test kiểm tra check/preflight/up, từ chối project/service sai, thiếu image,
+source bẩn và environment bị đổi; không tự suy ra acceptance production từ test.
+Build Docker, triển khai và smoke trên một server cụ thể phải được ghi nhận
+bằng log riêng. Không coi việc đọc tài liệu hoặc chạy preflight là đã deploy.
 
 Tham khảo: [Docker Compose build](https://docs.docker.com/reference/compose-file/build/),
 [quy tắc merge và đường dẫn](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/).

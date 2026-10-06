@@ -8,6 +8,9 @@ services:
     build:
       context: ${LEGALRAG_SOURCE_ROOT:?Set LEGALRAG_SOURCE_ROOT}/frontend
       dockerfile: Dockerfile
+    # Nginx listens on IPv4; Alpine wget can resolve localhost to ::1 first.
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://127.0.0.1:3000/']
 
   query-service:
     image: legalrag-source/query:${LEGALRAG_SOURCE_TAG:?Set LEGALRAG_SOURCE_TAG}
